@@ -2,9 +2,13 @@
 	"name": "empathy-link",
 	"version": "0.0.1",
 	"private": true,
+	"engines": {
+		"node": ">=20.10.0"
+	},
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --port 3000",
 		"build": "vite build",
+		"buildprod": "vite -r dotenv/config build",
 		"preview": "vite preview",
 		"test": "playwright test",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -17,13 +21,29 @@
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
+		"autoprefixer": "^10.4.16",
+		"dotenv": "^16.4.5",
+		"postcss": "^8.4.32",
+		"postcss-load-config": "^5.0.2",
 		"prettier": "^3.1.1",
 		"prettier-plugin-svelte": "^3.1.2",
+		"prettier-plugin-tailwindcss": "^0.5.9",
+		"sass": "^1.71.0",
 		"svelte": "^4.2.7",
 		"svelte-check": "^3.6.0",
+		"svelte-preprocess": "^5.1.3",
+		"tailwindcss": "^3.3.6",
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
 		"vite": "^5.0.3"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"bits-ui": "^0.18.1",
+		"clsx": "^2.1.0",
+		"mode-watcher": "^0.2.1",
+		"radix-icons-svelte": "^1.2.1",
+		"tailwind-merge": "^2.2.1",
+		"tailwind-variants": "^0.2.0"
+	}
 }
