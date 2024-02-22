@@ -24,7 +24,7 @@ jobs:
             
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
-            npm --help
+            pnpm --help
 
             nvm use 20.11.1
 
@@ -36,9 +36,9 @@ jobs:
             sudo systemctl stop svelteapp.service
             
             node -v
-            npm -v
-            npm i
+            pnpm -v
+            pnpm i
 
-            npm run build
+            pnpm run build
             
             sudo systemctl start svelteapp.service
