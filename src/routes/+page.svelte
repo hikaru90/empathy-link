@@ -20,7 +20,8 @@
 			</Button>
 		</div>
 	</div>
-	<div class="flex flex-col px-4 py-4 gap-2">
+	<div class="flex flex-col mx-4 my-4 gap-2 w-[36px]">
+		<Locale />
     <Button on:click={toggleMode} variant="outline" size="icon">
 			<Sun
       class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
@@ -30,15 +31,9 @@
 			/>
 			<span class="sr-only">Toggle theme</span>
 		</Button>
-    <Locale />
 	</div>
 </div>
 
 <style lang="scss">
-	:global(html, body) {
-		@apply h-full w-full;
-	}
-	:global(.max-container) {
-		@apply mx-auto w-full max-w-[1200px] px-8;
-	}
+	@import '../assets/styles/style.scss';
 </style>

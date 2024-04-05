@@ -1,0 +1,13 @@
+@font-face {
+  font-family: 'Inter Tight';
+  src: url('$assets/fonts/InterTight-Regular.eot');
+  src: local('Inter Tight Regular'), local('InterTight-Regular'),
+      url('$assets/fonts/InterTight-Regular.eot?#iefix') format('embedded-opentype'),
+      url('$assets/fonts/InterTight-Regular.woff2') format('woff2'),
+      url('$assets/fonts/InterTight-Regular.woff') format('woff'),
+      url('$assets/fonts/InterTight-Regular.ttf') format('truetype'),
+      url('$assets/fonts/InterTight-Regular.svg#InterTight-Regular') format('svg');
+  font-weight: semibold;
+  font-style: normal;
+}
+

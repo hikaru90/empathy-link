@@ -1,0 +1,8 @@
+@import 'fonts.scss';
+
+:global(html, body) {
+  @apply h-full w-full;
+}
+:global(.max-container) {
+  @apply mx-auto w-full max-w-[1200px] px-8;
+}

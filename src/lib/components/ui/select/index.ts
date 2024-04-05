@@ -4,6 +4,7 @@ import Label from "./select-label.svelte";
 import Item from "./select-item.svelte";
 import Content from "./select-content.svelte";
 import Trigger from "./select-trigger.svelte";
+import Button from "./select-button.svelte";
 import Separator from "./select-separator.svelte";
 
 const Root = SelectPrimitive.Root;
@@ -20,6 +21,7 @@ export {
 	Value,
 	Content,
 	Trigger,
+	Button,
 	Separator,
 	//
 	Root as Select,
@@ -30,5 +32,6 @@ export {
 	Value as SelectValue,
 	Content as SelectContent,
 	Trigger as SelectTrigger,
+	Button as SelectButton,
 	Separator as SelectSeparator,
 };

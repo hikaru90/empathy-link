@@ -23,8 +23,8 @@
 
 <!-- Component HTML structure -->
 <nav class="flex items-center justify-between px-4 py-3 border-b dark:border-red-200">
-  <div>
-    Empathy Link
+  <div class="font-display font-semibold">
+    Empathy/Link
   </div>
   <div class="flex items-center gap-4">
     {#each menuItems as item}

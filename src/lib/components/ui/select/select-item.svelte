@@ -11,6 +11,7 @@
 	export let label: $$Props["label"] = undefined;
 	export let disabled: $$Props["disabled"] = undefined;
 	export { className as class };
+	export let noIndicator = false;
 </script>
 
 <SelectPrimitive.Item
@@ -27,9 +28,11 @@
 	on:focusin
 >
 	<span class="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+		{#if !noIndicator}
 		<SelectPrimitive.ItemIndicator>
 			<Check class="h-4 w-4" />
 		</SelectPrimitive.ItemIndicator>
+		{/if}
 	</span>
 	<slot>
 		{label || value}
