@@ -6,6 +6,14 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 const config = {
 	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
 	// for more information about preprocessors
+	css: {
+		preprocessorOptions: {
+			scss: {
+				additionalData: `@use './src/assets/style.scss';`,
+			}
+		}
+	},
+
 	preprocess: [vitePreprocess({})],
 
 	kit: {

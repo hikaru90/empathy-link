@@ -1,32 +1,44 @@
 <script>
-  import { ChevronRight } from "radix-icons-svelte";
-  import { Button } from '$lib/components/ui/button'
-  import { Sun, Moon } from "radix-icons-svelte";
-  import { toggleMode } from "mode-watcher";
-
-  import Menu from '$lib/components/Menu.svelte';
+	import { ChevronRight } from 'radix-icons-svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { Sun, Moon } from 'radix-icons-svelte';
+	import { toggleMode } from 'mode-watcher';
+	import Menu from '$lib/components/Menu.svelte';
+	import HeroBig from '$lib/components/HeroBig.svelte';
+	import Locale from '$lib/components/Locale.svelte';
+	import { _ } from 'svelte-i18n';
 </script>
 
-<Menu />
+<div class="flex h-full flex-col justify-between">
+	<div class="flex-grow">
+		<Menu />
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
-<Button variant="outline" size="icon">
-  <ChevronRight class="h-4 w-4" />
-</Button>
-
-<Button on:click={toggleMode} variant="outline" size="icon">
-  <Sun
-    class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
-  />
-  <Moon
-    class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
-  />
-  <span class="sr-only">Toggle theme</span>
-</Button>
+		<div class="max-container">
+			<HeroBig />
+			<Button variant="outline" size="icon">
+				<ChevronRight class="h-4 w-4" />
+			</Button>
+		</div>
+	</div>
+	<div class="flex flex-col px-4 py-4 gap-2">
+    <Button on:click={toggleMode} variant="outline" size="icon">
+			<Sun
+      class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+			/>
+			<Moon
+      class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+			/>
+			<span class="sr-only">Toggle theme</span>
+		</Button>
+    <Locale />
+	</div>
+</div>
 
 <style lang="scss">
-	:global(.max-container){
-    color: blue;
-  }
+	:global(html, body) {
+		@apply h-full w-full;
+	}
+	:global(.max-container) {
+		@apply mx-auto w-full max-w-[1200px] px-8;
+	}
 </style>

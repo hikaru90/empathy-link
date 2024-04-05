@@ -1,0 +1,17 @@
+{
+  "page": {
+    "home": {
+      "title": "Startseite",
+      "nav": "Start",
+      "hero": "Es war noch nie so schwer wie jetzt, inmitten des hektischen Alltags, voller endloser Ablenkungen und immer länger werdender To-Do-Listen, achtsam darüber zu sein, wie und warum wir uns mit unseren Bezugspersonen verbinden."
+    },
+    "about": {
+      "title": "Infos",
+      "nav": "Infos"
+    },
+    "contact": {
+      "title": "Kontakt",
+      "nav": "Kontakt"
+    }
+  }
+}

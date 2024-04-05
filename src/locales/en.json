@@ -1,0 +1,17 @@
+{
+  "page": {
+    "home": {
+      "title": "Homepage",
+      "nav": "Home",
+      "hero": "In today’s rush, amid endless distractions and mounting todo lists, being mindful of how and why you connect with your Peers has never been more difficult."
+    },
+    "about": {
+      "title": "About",
+      "nav": "About"
+    },
+    "contact": {
+      "title": "Contact",
+      "nav": "Contact Us"
+    }
+  }
+}

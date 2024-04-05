@@ -1,11 +1,12 @@
 <script>
   // Import any necessary dependencies
   import { onMount } from 'svelte';
+  import { _ } from 'svelte-i18n'
 
   // Define component properties
-  export let menuItems = [
-    { label: 'Home' },
-    { label: 'Kontakt' },
+  $: menuItems = [
+    { label: $_('page.home.nav') },
+    { label: $_('page.contact.nav') },
   ];
 
   // Define any component functions or lifecycle hooks
@@ -21,13 +22,13 @@
 </script>
 
 <!-- Component HTML structure -->
-<nav class="flex items-center justify-between max-container">
+<nav class="flex items-center justify-between px-4 py-3 border-b dark:border-red-200">
   <div>
     Empathy Link
   </div>
-  <div class="flex items-center">
+  <div class="flex items-center gap-4">
     {#each menuItems as item}
-      <div on:click={() => handleMenuItemClick(item)}>{item.label}</div>
+      <button on:click={() => handleMenuItemClick(item)}>{item.label}</button>
     {/each}
   </div>
 </nav>
