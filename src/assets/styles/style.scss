@@ -1,7 +1,11 @@
 @import 'fonts.scss';
+@import 'animations.scss';
 
 :global(html, body) {
   @apply h-full w-full;
+}
+:global(body){
+  @apply flex flex-col;
 }
 :global(.max-container) {
   @apply mx-auto w-full max-w-[1200px] px-8;

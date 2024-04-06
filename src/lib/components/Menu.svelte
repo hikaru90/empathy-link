@@ -1,6 +1,7 @@
 <script>
   // Import any necessary dependencies
   import { onMount } from 'svelte';
+  import Logo from './Logo.svelte'
   import { _ } from 'svelte-i18n'
 
   // Define component properties
@@ -22,10 +23,10 @@
 </script>
 
 <!-- Component HTML structure -->
-<nav class="flex items-center justify-between px-4 py-3 border-b dark:border-red-200">
-  <div class="font-display font-semibold">
-    Empathy/Link
-  </div>
+<nav class="flex items-center justify-between px-4 py-3 border-b dark:border-gray-200/10">
+  <a href="/">
+    <Logo />
+  </a>
   <div class="flex items-center gap-4">
     {#each menuItems as item}
       <button on:click={() => handleMenuItemClick(item)}>{item.label}</button>

@@ -9,5 +9,34 @@
       url('$assets/fonts/InterTight-Regular.svg#InterTight-Regular') format('svg');
   font-weight: semibold;
   font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('$assets/fonts/Inter-Regular.eot');
+  src: local('Inter Regular'), local('Inter-Regular'),
+      url('$assets/fonts/Inter-Regular.eot?#iefix') format('embedded-opentype'),
+      url('$assets/fonts/Inter-Regular.woff2') format('woff2'),
+      url('$assets/fonts/Inter-Regular.woff') format('woff'),
+      url('$assets/fonts/Inter-Regular.ttf') format('truetype'),
+      url('$assets/fonts/Inter-Regular.svg#Inter-Regular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('$assets/fonts/Inter-Bold.eot');
+  src: local('Inter Bold'), local('Inter-Bold'),
+      url('$assets/fonts/Inter-Bold.eot?#iefix') format('embedded-opentype'),
+      url('$assets/fonts/Inter-Bold.woff2') format('woff2'),
+      url('$assets/fonts/Inter-Bold.woff') format('woff'),
+      url('$assets/fonts/Inter-Bold.ttf') format('truetype'),
+      url('$assets/fonts/Inter-Bold.svg#Inter-Bold') format('svg');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
 }
 
