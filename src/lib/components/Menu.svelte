@@ -2,12 +2,12 @@
   // Import any necessary dependencies
   import { onMount } from 'svelte';
   import Logo from './Logo.svelte'
-  import { _ } from 'svelte-i18n'
+  import { t } from '$lib/translations';
 
   // Define component properties
   $: menuItems = [
-    { label: $_('page.home.nav') },
-    { label: $_('page.contact.nav') },
+    { label: $t('default.page.home.nav') },
+    { label: $t('default.page.contact.nav') },
   ];
 
   // Define any component functions or lifecycle hooks

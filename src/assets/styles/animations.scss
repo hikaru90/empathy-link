@@ -1,8 +1,24 @@
-:global(.animate-fast-bg) {
-  animation: slide 2s linear infinite;
+:global(.animate-bg-fast) {
+  animation-name: slide;
+  animation-duration: 2s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 :global(.animate-bg) {
-  animation: slide 10s linear infinite;
+  animation-name: slide;
+  animation-duration: 10s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+:global(.animate-bg-hover-fast) {
+  animation-name: slide;
+  animation-duration: 10s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+
+  &:hover{
+    animation-duration: 2s;
+  }
 }
 :global(.animate-wobble) {
   animation-name: sparkle;

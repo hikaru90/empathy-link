@@ -6,7 +6,7 @@
 	import Menu from '$lib/components/Menu.svelte';
 	import HeroBig from '$lib/components/HeroBig.svelte';
 	import Locale from '$lib/components/Locale.svelte';
-	import { _ } from 'svelte-i18n';
+	import { t } from '$lib/translations';
 </script>
 
 <div class="flex-grow flex h-full flex-col justify-between">

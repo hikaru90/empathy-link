@@ -3,23 +3,13 @@
 	import { Sun, Moon } from 'radix-icons-svelte';
 	import { toggleMode } from 'mode-watcher';
 	import Locale from '$lib/components/Locale.svelte';
-	import { _ } from 'svelte-i18n';
+	import { t } from '$lib/translations';
 	import '../app.pcss';
 	import { ModeWatcher } from 'mode-watcher';
-	import { register, t, init, getLocaleFromNavigator, isLoading, locale } from 'svelte-i18n';
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { blur } from 'svelte/transition';
 
-	register('de', () => import('../locales/de.json'));
-	register('en', () => import('../locales/en.json'));
-
 	export let data;
-
-	init({
-		fallbackLocale: 'en'
-	});
-
-	locale.set('de');
 
 	const animationDuration = 400;
 </script>
@@ -30,7 +20,7 @@
 		out:blur={{ duration: animationDuration }}
 		class="flex flex-grow flex-col"
 	>
-		{#if $isLoading}
+		<!-- {#if $isLoading}
 			<div
 				in:blur={{ duration: animationDuration, delay: animationDuration }}
 				out:blur={{ duration: animationDuration }}
@@ -38,7 +28,7 @@
 			>
 				<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
 			</div>
-		{:else}
+		{:else} -->
 			<div
 				in:blur={{ duration: animationDuration, delay: animationDuration }}
 				out:blur={{ duration: animationDuration }}
@@ -46,7 +36,7 @@
 				<ModeWatcher />
 				<slot />
 			</div>
-		{/if}
+		<!-- {/if} -->
 	</main>
 	<div class="fixed bottom-0 left-0 flex flex-col mx-4 my-4 gap-2 w-[36px]">
 		<Locale />

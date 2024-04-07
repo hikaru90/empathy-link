@@ -16,6 +16,7 @@ const config = {
 		adapter: adapter(),
 		alias: {
 			$assets: "src/assets",
+			$locales: "src/locales",
 		},
 	},
 

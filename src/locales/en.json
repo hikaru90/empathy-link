@@ -6,6 +6,20 @@
       "hero": "In today’s rush, amid endless distractions and mounting todo lists, being mindful of how and why you connect with your Peers has never been more difficult.",
       "cta": "Start Connecting"
     },
+    "login": {
+      "form": {
+        "username": {
+          "label": "Username",
+          "tooShortError": "Username must be at least 3 characters long",
+          "tooLongError": "Username must be at most 20 characters long"
+        },
+        "password": {
+          "label": "Password",
+          "tooShortError": "Password must be at least 6 characters long",
+          "tooLongError": "Password must be at most 30 characters long"
+        }
+      }
+    },
     "about": {
       "title": "About",
       "nav": "About"

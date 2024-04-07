@@ -1,5 +1,5 @@
 <script>
-  import { locale, locales } from 'svelte-i18n'
+  import { locale, locales } from '$lib/translations'
   import * as Select from "$lib/components/ui/select";
   import IconLang from "$assets/icons/icon-lang.svg?raw";
 

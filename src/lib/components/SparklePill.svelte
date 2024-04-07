@@ -10,5 +10,5 @@
 
 <div
 	style="background-image: url('{backgroundImage}'); background-size: 300% 100%"
-	class={cn(fast ? 'animate-fast-bg' : 'animate-bg', "h-3 w-6 rounded-full bg-center bg-repeat-x", className)}
+	class={cn(fast ? 'animate-bg-fast' : 'animate-bg', "h-3 w-6 rounded-full bg-center bg-repeat-x", className)}
 ></div>

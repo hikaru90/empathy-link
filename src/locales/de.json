@@ -6,6 +6,20 @@
       "hero": "Es war noch nie so schwer wie jetzt, inmitten des hektischen Alltags, voller endloser Ablenkungen und immer länger werdender To-Do-Listen, achtsam darüber zu sein, wie und warum wir uns mit unseren Bezugspersonen verbinden.",
       "cta": "Verbinde dich"
     },
+    "login": {
+      "form": {
+        "username": {
+          "label": "Nutzername",
+          "tooShortError": "Der Nutzername muss mindestens 3 Zeichen enthalten",
+          "tooLongError": "Der Nutzername darf maximal 20 Zeichen enthalten"
+        },
+        "password": {
+          "label": "Passwort",
+          "tooShortError": "Das Passwort muss mindestens 6 Zeichen enthalten",
+          "tooLongError": "Das Password darf maximal 30 Zeichen lang sein"
+        }
+      }
+    },
     "about": {
       "title": "Infos",
       "nav": "Infos"
