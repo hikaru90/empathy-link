@@ -51,7 +51,7 @@
 <ButtonPrimitive.Root
 	{builders}
 	style="background-image: url('{backgroundImage}'); background-size: 300% 300%;"
-	class={cn(buttonVariants({ variant, size, className }), 'animate-bg-hover-fast group relative')}
+	class={cn(buttonVariants({ variant, size, className }), 'animate-bg-hover-fast group relative transform scale-100 hover:scale-105 transition')}
 	type="button"
 	{...$$restProps}
 	on:click

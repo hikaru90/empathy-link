@@ -3,24 +3,26 @@
 	import { Sun, Moon } from 'radix-icons-svelte';
 	import { toggleMode } from 'mode-watcher';
 	import Locale from '$lib/components/Locale.svelte';
-	import { t } from '$lib/translations';
+	import { t, initialized } from '$lib/translations';
 	import '../app.pcss';
 	import { ModeWatcher } from 'mode-watcher';
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { blur } from 'svelte/transition';
+	import { Toaster } from "$lib/components/ui/sonner";
 
 	export let data;
 
+	console.log('user', data.user);
+
 	const animationDuration = 400;
 </script>
-
 {#key data.url}
 	<main
 		in:blur={{ duration: animationDuration, delay: animationDuration }}
 		out:blur={{ duration: animationDuration }}
 		class="flex flex-grow flex-col"
 	>
-		<!-- {#if $isLoading}
+		{#if !$initialized}
 			<div
 				in:blur={{ duration: animationDuration, delay: animationDuration }}
 				out:blur={{ duration: animationDuration }}
@@ -28,7 +30,7 @@
 			>
 				<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
 			</div>
-		{:else} -->
+		{:else}
 			<div
 				in:blur={{ duration: animationDuration, delay: animationDuration }}
 				out:blur={{ duration: animationDuration }}
@@ -36,7 +38,7 @@
 				<ModeWatcher />
 				<slot />
 			</div>
-		<!-- {/if} -->
+		{/if}
 	</main>
 	<div class="fixed bottom-0 left-0 flex flex-col mx-4 my-4 gap-2 w-[36px]">
 		<Locale />
@@ -51,6 +53,7 @@
 		</Button>
 	</div>
 {/key}
+<Toaster />
 
 <style lang="scss">
 	@import '../assets/styles/style.scss';

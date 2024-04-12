@@ -9,7 +9,7 @@
   <h1 class="font-display font-semibold text-7xl leading-[106%] mb-10">
     {$t('default.page.home.hero')}
   </h1>
-  <a href="/login">
+  <a href="/auth/login">
     <SparkleButton class="shadow-lg dark:shadow-gray-300/30 text-black font-bold text-lg px-6 py-7">
       {$t('default.page.home.cta')}
     </SparkleButton>

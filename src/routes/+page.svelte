@@ -7,6 +7,10 @@
 	import HeroBig from '$lib/components/HeroBig.svelte';
 	import Locale from '$lib/components/Locale.svelte';
 	import { t } from '$lib/translations';
+
+	export let data;
+
+	console.log('data',data);
 </script>
 
 <div class="flex-grow flex h-full flex-col justify-between">

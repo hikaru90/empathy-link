@@ -12,7 +12,7 @@
 </script>
 
 <FormPrimitive.FieldErrors
-	class={cn("text-[0.8rem] font-medium text-destructive", className)}
+	class={cn("text-[0.8rem] font-medium text-destructive bg-red-200 rounded !mb-4", className)}
 	{...$$restProps}
 	let:errors
 	let:fieldErrorsAttrs
@@ -20,7 +20,7 @@
 >
 	<slot {errors} {fieldErrorsAttrs} {errorAttrs}>
 		{#each errors as error}
-			<div {...errorAttrs} class={cn(errorClasses)}>{error}</div>
+			<div {...errorAttrs} class={cn("px-2 py-1",errorClasses)}>{error}</div>
 		{/each}
 	</slot>
 </FormPrimitive.FieldErrors>

@@ -8,16 +8,43 @@
     },
     "login": {
       "form": {
-        "username": {
-          "label": "Username",
-          "tooShortError": "Username must be at least 3 characters long",
-          "tooLongError": "Username must be at most 20 characters long"
+        "email": {
+          "label": "Mail",
+          "validEmailError": "This is not a valid E-Mail",
+          "tooShortError": "Mail must be at least 3 characters long",
+          "tooLongError": "Mail must be at most 30 characters long"
         },
         "password": {
           "label": "Password",
           "tooShortError": "Password must be at least 6 characters long",
           "tooLongError": "Password must be at most 30 characters long"
         }
+      },
+      "cta": "Login",
+      "toasts": {
+        "error": "Error logging in, please try again",
+        "success": "Login successful"
+      }
+    },
+    "register": {
+      "heading": "Register",
+      "form": {
+        "email": {
+          "label": "Mail",
+          "validEmailError": "This is not a valid E-Mail",
+          "tooShortError": "Mail must be at least 3 characters long",
+          "tooLongError": "Mail must be at most 30 characters long"
+        },
+        "password": {
+          "label": "Password",
+          "tooShortError": "Password must be at least 6 characters long",
+          "tooLongError": "Password must be at most 30 characters long"
+        }
+      },
+      "cta": "Register",
+      "toasts": {
+        "error": "Error registering, please try again",
+        "success": "Registering successful"
       }
     },
     "about": {

@@ -1,32 +1,59 @@
 {
-  "page": {
-    "home": {
-      "title": "Startseite",
-      "nav": "Start",
-      "hero": "Es war noch nie so schwer wie jetzt, inmitten des hektischen Alltags, voller endloser Ablenkungen und immer länger werdender To-Do-Listen, achtsam darüber zu sein, wie und warum wir uns mit unseren Bezugspersonen verbinden.",
-      "cta": "Verbinde dich"
-    },
-    "login": {
-      "form": {
-        "username": {
-          "label": "Nutzername",
-          "tooShortError": "Der Nutzername muss mindestens 3 Zeichen enthalten",
-          "tooLongError": "Der Nutzername darf maximal 20 Zeichen enthalten"
-        },
-        "password": {
-          "label": "Passwort",
-          "tooShortError": "Das Passwort muss mindestens 6 Zeichen enthalten",
-          "tooLongError": "Das Password darf maximal 30 Zeichen lang sein"
-        }
-      }
-    },
-    "about": {
-      "title": "Infos",
-      "nav": "Infos"
-    },
-    "contact": {
-      "title": "Kontakt",
-      "nav": "Kontakt"
-    }
-  }
+	"page": {
+		"home": {
+			"title": "Startseite",
+			"nav": "Start",
+			"hero": "Es war noch nie so schwer wie jetzt, inmitten des hektischen Alltags, voller endloser Ablenkungen und immer länger werdender To-Do-Listen, achtsam darüber zu sein, wie und warum wir uns mit unseren Bezugspersonen verbinden.",
+			"cta": "Verbinde dich"
+		},
+		"login": {
+			"form": {
+				"email": {
+					"label": "E-Mail",
+					"validEmailError": "Die E-Mail muss gültig sein",
+					"tooShortError": "Die E-Mail muss mindestens 3 Zeichen enthalten",
+					"tooLongError": "Die E-Mail darf maximal 30 Zeichen enthalten"
+				},
+				"password": {
+					"label": "Passwort",
+					"tooShortError": "Das Passwort muss mindestens 6 Zeichen enthalten",
+					"tooLongError": "Das Password darf maximal 30 Zeichen lang sein"
+				}
+			},
+			"cta": "Einloggen",
+			"toasts": {
+				"error": "Fehler beim Login, versuch es bitte noch einmal",
+				"success": "Login erfolgreich"
+			}
+		},
+		"register": {
+      "heading": "Registrieren",
+			"form": {
+				"email": {
+					"label": "E-Mail",
+					"validEmailError": "Die E-Mail muss gültig sein",
+					"tooShortError": "Die E-Mail muss mindestens 3 Zeichen enthalten",
+					"tooLongError": "Die E-Mail darf maximal 30 Zeichen enthalten"
+				},
+				"password": {
+					"label": "Passwort",
+					"tooShortError": "Das Passwort muss mindestens 6 Zeichen enthalten",
+					"tooLongError": "Das Password darf maximal 30 Zeichen lang sein"
+				}
+			},
+			"cta": "Registrieren",
+			"toasts": {
+				"error": "Fehler bei der Registrierung, versuch es bitte noch einmal",
+				"success": "Registrierung erfolgreich"
+			}
+		},
+		"about": {
+			"title": "Infos",
+			"nav": "Infos"
+		},
+		"contact": {
+			"title": "Kontakt",
+			"nav": "Kontakt"
+		}
+	}
 }

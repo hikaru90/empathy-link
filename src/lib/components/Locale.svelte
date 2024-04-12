@@ -1,10 +1,16 @@
-<script>
+<script lang="ts">
   import { locale, locales } from '$lib/translations'
   import * as Select from "$lib/components/ui/select";
   import IconLang from "$assets/icons/icon-lang.svg?raw";
+	import { setCookie } from '$scripts/helpers';
 
-  const handleSelect = (event) => {
-    locale.update(() => event.value)
+  type SelectedChangeEvent = { value: string } | undefined;
+
+  const handleSelect: (event: SelectedChangeEvent) => void = (event) => {
+    if (event) {
+      setCookie('locale', event.value)
+      locale.update(() => event.value)
+    }
   }
 </script>
 
