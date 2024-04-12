@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 		if (locals.user) {
 			console.log('redirecting');
-			throw redirect(303, '/');
+			throw redirect(303, '/dashboard');
 		}
 		return {
 			form: await superValidate(zod(formSchema))

@@ -1,4 +1,18 @@
 {
+  "menu": {
+    "profile": {
+      "account": "My Account",
+      "logout": "Logout"
+    },
+    "bar": {
+      "home": "Home",
+      "selfempathy": "Selfempathy",
+      "fights": "Fights",
+      "feedback": "Feedback",
+      "learn": "Learn"
+    },
+    "soon": "soon"
+  },
   "page": {
     "home": {
       "title": "Homepage",
@@ -7,6 +21,7 @@
       "cta": "Start Connecting"
     },
     "login": {
+      "heading": "Login",
       "form": {
         "email": {
           "label": "Mail",

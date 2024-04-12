@@ -1,4 +1,18 @@
 {
+  "menu": {
+    "profile": {
+      "account": "Mein Account",
+      "logout": "Ausloggen"
+    },
+    "bar": {
+      "home": "Start",
+      "selfempathy": "Selbstempathie",
+      "fights": "Streit",
+      "feedback": "Feedback",
+      "learn": "Lernen"
+    },
+    "soon": "bald"
+  },
 	"page": {
 		"home": {
 			"title": "Startseite",
@@ -7,6 +21,7 @@
 			"cta": "Verbinde dich"
 		},
 		"login": {
+      "heading": "Login",
 			"form": {
 				"email": {
 					"label": "E-Mail",

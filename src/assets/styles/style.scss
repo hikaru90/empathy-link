@@ -3,7 +3,7 @@
 
 :global(html, body) {
   @apply h-full w-full;
-  scrollbar-gutter: stable;
+  scrollbar-gutter: auto;
 }
 :global(body){
   @apply flex flex-col;

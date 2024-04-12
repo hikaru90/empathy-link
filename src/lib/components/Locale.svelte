@@ -20,7 +20,7 @@
         {@html IconLang}
       </div>
     </Select.Button>
-    <Select.Content>
+    <Select.Content >
       <Select.Group>
         {#each $locales as locale}
         <Select.Item value={locale} label={locale} noIndicator="true" class="p-1"

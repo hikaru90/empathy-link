@@ -10,11 +10,11 @@ export const handle = async ({ event, resolve }) => {
 
 	if (localeCookie) {
 		event.locals.locale = localeCookie
-		locale.set(localeCookie);
+		// locale.set(localeCookie);
 	}
 	else if (langHeaders) {
 		event.locals.locale = langHeaders
-		locale.set(langHeaders);
+		// locale.set(langHeaders);
 	}
 
 	event.locals.pb = new PocketBase('https://backend.empathy-link.de/');

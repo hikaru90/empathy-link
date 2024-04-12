@@ -12,6 +12,6 @@
 	<div class="flex-grow">
 		<Menu />
 
-		<h1>Dashboard</h1>
+		<h1>Selfempathy</h1>
 	</div>
 </div>
