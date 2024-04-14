@@ -6,7 +6,7 @@
 	import { t } from '$lib/translations';
 </script>
 
-<DropdownMenu.Root>
+<DropdownMenu.Root preventScroll={false}>
 	<DropdownMenu.Trigger>
 		<Avatar.Root class="w-8 h-8">
 			<!-- <Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" /> -->

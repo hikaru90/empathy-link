@@ -10,10 +10,10 @@
 	import { t } from '$lib/translations';
 	import { user } from '$store/auth';
 	import * as Popover from '$lib/components/ui/popover';
-	import { Switch } from "$lib/components/ui/switch";
-	import { Label } from "$lib/components/ui/label/index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
-	import { locale, locales } from '$lib/translations'
+	import { Switch } from '$lib/components/ui/switch';
+	import { Label } from '$lib/components/ui/label/index.js';
+	import * as Select from '$lib/components/ui/select/index.js';
+	import { locale, locales } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
 
 	let navbarHeight = 56;
@@ -25,18 +25,18 @@
 	];
 
 	const langs = [
-    { value: "en", label: "English" },
-    { value: "de", label: "German" }
-  ];
+		{ value: 'en', label: 'English' },
+		{ value: 'de', label: 'German' }
+	];
 
 	const handleSelect: (event: SelectedChangeEvent) => void = (event) => {
-    if (event) {
-      setCookie('locale', event.value)
-      locale.update(() => event.value)
-    }
-  }
+		if (event) {
+			setCookie('locale', event.value);
+			locale.update(() => event.value);
+		}
+	};
 
-	$: darkMode = $mode === 'dark'
+	$: darkMode = $mode === 'dark';
 
 	// Define any component functions or lifecycle hooks
 	onMount(() => {
@@ -52,47 +52,52 @@
 
 <!-- Component HTML structure -->
 <div style="height: {navbarHeight}px"></div>
-<nav
-	bind:clientHeight={navbarHeight}
-	class="fixed left-0 top-0 flex w-full items-center justify-between border-b px-4 py-3 dark:border-gray-200/10 bg-background"
->
-	<a href="/">
-		<Logo />
-	</a>
-	<div class="flex items-center gap-4">
-		<Popover.Root>
-			<Popover.Trigger>
-				<MixerVertical class="w-5 h-5" />
-			</Popover.Trigger>
-			<Popover.Content class="w-40 mt-[10px] bg-background">
-				<div class="pb-3 mb-3 border-b border-gray-300/60 dark:border-gray-300/20">
-					<Select.Root selected={langs.find(lang => lang.value === $locale)} onSelectedChange={handleSelect}>
-						<Select.Trigger class="">
-							<Select.Value placeholder="Language" />
-						</Select.Trigger>
-						<Select.Content>
-							{#each langs as lang}
-							<Select.Item value={lang.value} label={lang.label}
-							>{lang.label}</Select.Item
-							>
-							{/each}
-						</Select.Content>
-						<Select.Input name="favoriteFruit" />
-					</Select.Root>
+<div bind:clientHeight={navbarHeight} class="fixed left-0 top-0 z-20 w-full">
+<!-- <div bind:clientHeight={navbarHeight} class="fixed left-0 top-0 z-20 w-full py-4 px-4"> -->
+	<!-- <nav
+		class="flex items-center justify-between px-2 py-2 bg-muted/60 backdrop-blur-xl backdrop-brightness-110 backdrop-hue-rotate-180 rounded-full"
+	> -->
+	<nav
+		class="flex items-center justify-between bg-offwhite/10 px-2 py-2 backdrop-blur-2xl "
+	>
+		<a href="/" class="ml-2">
+			<Logo />
+		</a>
+		<div class="flex items-center gap-4">
+			<Popover.Root>
+				<Popover.Trigger>
+					<MixerVertical class="h-5 w-5" />
+				</Popover.Trigger>
+				<Popover.Content class="mt-[10px] w-40 bg-background">
+					<div class="mb-3 border-b border-gray-300/60 pb-3 dark:border-gray-300/20">
+						<Select.Root
+							selected={langs.find((lang) => lang.value === $locale)}
+							onSelectedChange={handleSelect}
+						>
+							<Select.Trigger class="">
+								<Select.Value placeholder="Language" />
+							</Select.Trigger>
+							<Select.Content>
+								{#each langs as lang}
+									<Select.Item value={lang.value} label={lang.label}>{lang.label}</Select.Item>
+								{/each}
+							</Select.Content>
+							<Select.Input name="favoriteFruit" />
+						</Select.Root>
+					</div>
+					<div class="flex items-center space-x-2">
+						<Switch id="lightMode" bind:checked={darkMode} on:click={toggleMode} />
+						<Label for="lightMode">Dark Mode</Label>
+					</div>
+				</Popover.Content>
+			</Popover.Root>
+			{#if $user}
+				<div class="">
+					<Avatar />
 				</div>
-				<div class="flex items-center space-x-2">
-					<Switch id="lightMode" bind:checked={darkMode} on:click={toggleMode} />
-					<Label for="lightMode">Dark Mode</Label>
-				</div>
-			</Popover.Content>
-		</Popover.Root>
-		{#if $user}
-		<div class="">
-			<Avatar />
+			{/if}
 		</div>
-	{/if}
-	</div>
-	<!-- <div class="flex items-center gap-4">
+		<!-- <div class="flex items-center gap-4">
 		<Locale />
     <Button on:click={toggleMode} variant="outline" size="icon">
 			<Sun
@@ -109,5 +114,5 @@
 			{/each}
 		</div>
 	</div> -->
-	
-</nav>
+	</nav>
+</div>

@@ -20,6 +20,20 @@
       "hero": "In today’s rush, amid endless distractions and mounting todo lists, being mindful of how and why you connect with your Peers has never been more difficult.",
       "cta": "Start Connecting"
     },
+    "fights": {
+      "create": "Start a fight",
+      "form":{
+        "prev": "back",
+        "next": "Next",
+        "steps": {
+          "info": "Informations",
+          "observation": "Observation",
+          "feelings": "Feelings",
+          "needs": "Needs",
+          "request": "Request"
+        }
+      }
+    },
     "login": {
       "heading": "Login",
       "form": {

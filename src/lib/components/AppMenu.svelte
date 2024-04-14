@@ -9,30 +9,32 @@
   import { page } from '$app/stores';
 
   let menuItems = [
-    { name: get(t)('default.menu.bar.home'), slug: '/home', icon: IconFolder, available: true },
-    { name: get(t)('default.menu.bar.selfempathy'), slug: '/selfempathy', icon: IconSelf, available: true },
-    { name: get(t)('default.menu.bar.fights'), slug: '/fights', icon: IconFight, available: false },
-    { name: get(t)('default.menu.bar.feedback'), slug: '/feedback', icon: IconFeedback, available: false },
-    { name: get(t)('default.menu.bar.learn'), slug: '/learn', icon: IconLearn, available: false },
+    { slug: 'home', name: get(t)('default.menu.bar.home'), path: '/dashboard', icon: IconFolder, available: true },
+    { slug: 'selfempathy', name: get(t)('default.menu.bar.selfempathy'), path: '/selfempathy', icon: IconSelf, available: false },
+    { slug: 'fights', name: get(t)('default.menu.bar.fights'), path: '/fights', icon: IconFight, available: true },
+    { slug: 'feedback', name: get(t)('default.menu.bar.feedback'), path: '/feedback', icon: IconFeedback, available: false },
+    { slug: 'learn', name: get(t)('default.menu.bar.learn'), path: '/learn', icon: IconLearn, available: false },
   ]
 
   t.subscribe(value => {
-    menuItems = [
-    { name: value('default.menu.bar.home'), url: '/dashboard', icon: IconFolder, available: true },
-    { name: value('default.menu.bar.selfempathy'), url: '/selfempathy', icon: IconSelf, available: true },
-    { name: value('default.menu.bar.fights'), url: '/fights', icon: IconFight, available: false },
-    { name: value('default.menu.bar.feedback'), url: '/feedback', icon: IconFeedback, available: false },
-    { name: value('default.menu.bar.learn'), url: '/learn', icon: IconLearn, available: false },
-  ]
+    const newMenuItems = menuItems.map(entry => {
+      const translation = value(`default.menu.bar.${entry.slug}`)
+      entry.name = translation
+      return entry
+    })
+    menuItems = [...newMenuItems]
   })
 
 </script>
 
-<div class="inverted-border fixed bottom-0 left-0 w-full bg-black text-gray-200 p-4">
+<div class="inverted-border fixed bottom-0 left-0 w-full bg-black text-gray-200 px-4 pb-4 pt-2">
+  <div class="bg-black absolute top-0 left-0 w-full h-[0.5px] transform -translate-y-full">
+
+  </div>
   <div class="flex items-center justify-around">
     {#each menuItems as item}
     <div class="relative flex flex-col items-center justify-center { item.available ? '':'opacity-40'}">
-      <a href={item.url} class="flex flex-col items-center justify-center { item.available ? '' :'pointer-events-none' }">
+      <a href={item.path} class="flex flex-col items-center justify-center { item.available ? '' :'pointer-events-none' }">
         <div class="w-6 h-6 fill-white">
           {@html item.icon}
         </div>
@@ -40,14 +42,14 @@
           {item.name}
         </span>
       </a>
-      {#if $page.data.route === item.url}
+      {#if $page.data.route === item.path}
       <div class="absolute -bottom-2 flex justify-center">
         <div class="w-1 h-1 rounded-full bg-neon">
         </div>
       </div>
       {/if}
       {#if !item.available}
-      <div class="absolute bottom-2.5 right-1 bg-red-600 rounded-full text-2xs px-1 transform translate-x-full">
+      <div class="absolute bottom-2.5 left-1/3 bg-red-600 rounded-full text-2xs px-1 transform translate-x-1/2">
         {$t('default.menu.soon')}
       </div>
       {/if}

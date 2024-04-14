@@ -2,7 +2,6 @@ import { loadTranslations } from '$lib/translations';
 import { user } from '$store/auth';
 
 export const load = async ({ url, data }) => {
-	console.log('data in layout.ts', data);
 
 	await loadTranslations(data.locale, url.pathname);
 	if (data.user) user.set(data.user);

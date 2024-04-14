@@ -51,14 +51,14 @@
 <ButtonPrimitive.Root
 	{builders}
 	style="background-image: url('{backgroundImage}'); background-size: 300% 300%;"
-	class={cn(buttonVariants({ variant, size, className }), 'animate-bg-hover-fast group relative transform scale-100 hover:scale-105 transition')}
+	class={cn(buttonVariants({ variant, size, className }), 'animate-bg-hover-fast group relative transform scale-100 hover:scale-105 transition ease-in')}
 	type="button"
 	{...$$restProps}
 	on:click
 	on:keydown
 >
 	<div
-		class="pointer-events-none absolute h-full w-full scale-95 transform opacity-0 transition group-hover:scale-100 group-hover:opacity-100"
+		class="pointer-events-none absolute h-full w-full scale-60 -z-10 transform opacity-0 transition group-hover:scale-100 group-hover:opacity-100 group-hover:delay-300"
 	>
 		{#each positions as star, index}
 			<div

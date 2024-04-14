@@ -23,7 +23,7 @@
 	<main
 		in:blur={{ duration: animationDuration, delay: animationDuration }}
 		out:blur={{ duration: animationDuration }}
-		class="flex flex-grow flex-col"
+		class="flex flex-grow flex-col bg-offwhite overflow-x-hidden"
 	>
 		{#if !contentReady}
 			<div
@@ -37,6 +37,7 @@
 			<div
 				in:blur={{ duration: animationDuration, delay: animationDuration }}
 				out:blur={{ duration: animationDuration }}
+				class="flex flex-col flex-grow"
 			>
 				<ModeWatcher />
 				<slot />
