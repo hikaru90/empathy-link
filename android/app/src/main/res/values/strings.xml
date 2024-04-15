@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Empathy-Link</string>
+    <string name="title_activity_main">Empathy-Link</string>
+    <string name="package_name">de.empathylink.app</string>
+    <string name="custom_url_scheme">de.empathylink.app</string>
+</resources>

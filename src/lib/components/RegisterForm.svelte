@@ -26,6 +26,7 @@
 	});
 
 	const { form: formData, errors, enhance, delayed, message, constraints, reset } = form;
+	console.log('form',form);
 </script>
 
 <!-- <SuperDebug data={formData} /> -->

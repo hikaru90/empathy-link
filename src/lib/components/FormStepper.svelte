@@ -21,13 +21,13 @@
 <div class="flex justify-between py-2 {className}">
 	<div>
 		{#if step > 1}
-			<Button type="submit" on:click={toPrev} variant="ghost" class="py-6 hover:bg-transparent">
-				{$t('default.page.fights.form.prev')}
+			<Button on:click={toPrev} variant="ghost" class="py-6 hover:bg-transparent">
+				{$t('default.page.fights.form.general.prev')}
 			</Button>
 		{/if}
 	</div>
 	<Button type="submit" class="py-6 flex-grow flex items-center justify-between bg-white/10 hover:bg-white/20 text-black dark:text-white font-bold">
-		{$t('default.page.fights.form.next')}
+		{$t('default.page.fights.form.general.next')}
     <ArrowRight />
 	</Button>
 </div>

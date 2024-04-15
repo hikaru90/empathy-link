@@ -1,6 +1,8 @@
 import { loadTranslations } from '$lib/translations';
 import { user } from '$store/auth';
 
+export const prerender = true;
+
 export const load = async ({ url, data }) => {
 
 	await loadTranslations(data.locale, url.pathname);

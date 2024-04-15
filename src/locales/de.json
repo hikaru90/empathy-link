@@ -17,15 +17,25 @@
 		"fights": {
       "create": "Fang einen Streit an",
 			"form":{
-        "prev": "zurück",
-        "next": "Weiter",
-				"steps": {
-          "info": "Infos",
-          "observation": "Beobachtung",
-          "feelings": "Gefühle",
-          "needs": "Bedürfnisse",
-          "request": "Bitte"
-        }
+				"general": {
+					"prev": "zurück",
+					"next": "Weiter",
+					"steps": {
+						"info": "Infos",
+						"observation": "Beobachtung",
+						"feelings": "Gefühle",
+						"needs": "Bedürfnisse",
+						"request": "Bitte"
+					}
+				},
+				"name": {
+          "label": "Wie heißt die Person, mit der Du Dich streiten möchtest?",
+          "tooShortError": "Der Name muss mindestens 3 Zeichen lang sein"
+        },
+				"feelings": {
+					"label": "Wie fühlst Du Dich?",
+					"tooFewError": "Du solltest mindestens ein Gefühl auswählen"
+				}
       }
     },
 		"home": {

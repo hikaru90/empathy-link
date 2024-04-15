@@ -7,7 +7,7 @@ const config = ({
     en: { lang },
     de: { lang },
   },
-  // initLocale: 'de',
+  initLocale: 'en',
   loaders: [
     {
       locale: 'de',

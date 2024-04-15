@@ -6,6 +6,8 @@ import { formSchema } from './schema';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 
+export const prerender = false;
+
 export const load: PageServerLoad = async ({ locals }) => {
 		console.log('PageServerLoad');
 

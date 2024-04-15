@@ -23,15 +23,29 @@
     "fights": {
       "create": "Start a fight",
       "form":{
-        "prev": "back",
-        "next": "Next",
-        "steps": {
-          "info": "Informations",
-          "observation": "Observation",
-          "feelings": "Feelings",
-          "needs": "Needs",
-          "request": "Request"
-        }
+        "general": {
+          "prev": "back",
+          "next": "Next",
+          "steps": {
+            "info": "Informations",
+            "observation": "Observation",
+            "feelings": "Feelings",
+            "needs": "Needs",
+            "request": "Request"
+          }
+        },
+        "name": {
+          "label": "What is the Name of the Person you are fighting with?",
+          "tooShortError": "Name must be at least 3 characters long"
+        },
+        "feelings": {
+					"label": "Wie fühlst Du Dich?",
+					"tooFewError": "Du solltest mindestens ein Gefühl auswählen",
+          "options":{
+            "amazed": { "prettyName": "Amazed", "prettyCatgeory": "Surprised"},
+            "astounded": { "prettyName": "Astounded", "prettyCatgeory": "Surprised"},
+          }
+				}
       }
     },
     "login": {
