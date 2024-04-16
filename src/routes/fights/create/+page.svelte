@@ -2,16 +2,11 @@
 	import Menu from '$lib/components/Menu.svelte';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
-	import * as ToggleGroup from "$lib/components/ui/toggle-group";
-	import {
-		type SuperValidated,
-		type Infer,
-		defaults,
-		superForm
-	} from 'sveltekit-superforms';
+	import * as ToggleGroup from '$lib/components/ui/toggle-group';
+	import { type SuperValidated, type Infer, defaults, superForm } from 'sveltekit-superforms';
 	import FormStepper from '$lib/components/FormStepper.svelte';
 	import FormStepDisplay from '$lib/components/FormStepDisplay.svelte';
-	import { t } from '$lib/translations';
+	import { t, locale } from '$lib/translations';
 	import { get } from 'svelte/store';
 	import { zodClient, zod } from 'sveltekit-superforms/adapters';
 	import {
@@ -26,8 +21,14 @@
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import IconSteps from '$assets/icons/icon-steps.svg?raw';
+	import { pb } from '$scripts/pocketbase';
+	import { onMount } from 'svelte';
+	import { serializeNonPOJOs, groupBy } from '$scripts/helpers';
+	import { Textarea } from "$lib/components/ui/textarea";
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
+	let feelings = [];
+	let needs = [];
 
 	const steps = [
 		zod(schemaStep1),
@@ -64,10 +65,10 @@
 			else cancel();
 
 			// Make a manual client-side validation, since we have cancelled
-			if (step === 1) checkValidationAndContinue() 
-			else if (step === 2) checkValidationAndContinue()
-			else if (step === 3) checkValidationAndContinue()
-			else if (step === 4) checkValidationAndContinue()
+			if (step === 1) checkValidationAndContinue();
+			else if (step === 2) checkValidationAndContinue();
+			else if (step === 3) checkValidationAndContinue();
+			else if (step === 4) checkValidationAndContinue();
 		},
 		async onUpdated({ form }) {
 			console.log('onUpdated');
@@ -86,34 +87,33 @@
 			slug: 'info',
 			name: get(t)('default.page.fights.form.general.steps.info'),
 			icon: IconFolder,
-			invertedTextColor: false
+			invertedTextColor: false,
 		},
 		{
 			slug: 'observation',
 			name: get(t)('default.page.fights.form.general.steps.observation'),
 			icon: IconEye,
-			invertedTextColor: true
+			invertedTextColor: true,
 		},
 		{
 			slug: 'feelings',
 			name: get(t)('default.page.fights.form.general.steps.feelings'),
 			icon: IconHeart,
-			invertedTextColor: false
+			invertedTextColor: false,
 		},
 		{
 			slug: 'needs',
 			name: get(t)('default.page.fights.form.general.steps.needs'),
 			icon: IconSwirl,
-			invertedTextColor: false
+			invertedTextColor: false,
 		},
 		{
 			slug: 'request',
 			name: get(t)('default.page.fights.form.general.steps.request'),
 			icon: IconSteps,
-			invertedTextColor: false
+			invertedTextColor: false,
 		}
 	];
-
 	t.subscribe((value) => {
 		const newSteps = stepConstructor.map((entry) => {
 			const translation = value(`default.page.fights.form.general.steps.${entry.slug}`);
@@ -122,7 +122,6 @@
 		});
 		stepConstructor = [...newSteps];
 	});
-
 	const decreaseStep = () => {
 		console.log('decreaseStep');
 		if (step > 1) {
@@ -131,6 +130,32 @@
 			console.log('step', step);
 		}
 	};
+	const initFeelings = async () => {
+		const records = await pb.collection('feelings').getFullList({
+			sort: 'category'
+		});
+		const data = serializeNonPOJOs(records);
+		const res = groupBy(data, 'category');
+		console.log('res', res);
+		feelings = res;
+	};
+	const initNeeds = async () => {
+		const records = await pb.collection('needs').getFullList({
+			sort: 'category'
+		});
+		const data = serializeNonPOJOs(records);
+		const res = groupBy(data, 'category');
+		console.log('res', res);
+		needs = res;
+	};
+
+	onMount(async () => {
+		await initFeelings();
+		await initNeeds();
+	});
+
+	//todo: remove
+	// step = 4;
 </script>
 
 <!-- {#if $message}
@@ -143,16 +168,18 @@
 >
 	<div class="max-container relative flex h-dvh flex-grow flex-col">
 		<Menu />
-		<form method="POST" use:enhance class="flex h-full flex-grow flex-col pb-[74px] pt-1">
+		<form method="POST" use:enhance class="flex h-full flex-grow flex-col pb-[74px] -mt-1">
 			<div class="flex justify-center">
 				<FormStepDisplay {step} steps={stepConstructor} />
 			</div>
 			{#key step}
 				{#if step === 1}
-					<div class="flex-grow overflow-y-auto">
+					<div data-simplebar class="h-60 flex-grow overflow-y-auto">
 						<Form.Field {form} name="name">
 							<Form.Control let:attrs>
-								<Form.Label>{$t('default.page.fights.form.name.label')}</Form.Label>
+								<Form.Label class="text-md mb-2 mt-4 block w-full border-b border-gray-200/20 pb-2"
+									>{$t('default.page.fights.form.name.label')}</Form.Label
+								>
 								<Input {...attrs} bind:value={$formData.name} />
 							</Form.Control>
 							<!-- <Form.Description>This is your public display name.</Form.Description> -->
@@ -160,34 +187,88 @@
 						</Form.Field>
 					</div>
 				{:else if step === 2}
-					<div class="flex-grow overflow-y-auto">
-						<Form.Field {form} name="feelings">
-							<Form.Control let:attrs>
-								<Form.Label>{$t('default.page.fights.form.feelings.label')}</Form.Label>
-								<ToggleGroup.Root type="multiple" {...attrs} bind:value={$formData.feelings}>
-									<ToggleGroup.Item value="a">A</ToggleGroup.Item>
-									<ToggleGroup.Item value="b">B</ToggleGroup.Item>
-									<ToggleGroup.Item value="c">C</ToggleGroup.Item>
-								</ToggleGroup.Root>
-							</Form.Control>
-							<!-- <Form.Description>This is your public display name.</Form.Description> -->
-							<Form.FieldErrors />
-						</Form.Field>
-					</div>
+				<div data-simplebar class="h-60 flex-grow overflow-y-auto">
+					<Form.Field {form} name="observation">
+						<Form.Control let:attrs>
+							<Form.Label class="text-md mb-2 mt-4 block w-full border-b border-gray-200/20 pb-2"
+								>{$t('default.page.fights.form.observation.label')}</Form.Label
+							>
+							<Textarea {...attrs} bind:value={$formData.observation} />
+						</Form.Control>
+						<!-- <Form.Description>This is your public display name.</Form.Description> -->
+						<Form.FieldErrors />
+					</Form.Field>
+				</div>
 				{:else if step === 3}
-					<div class="flex-grow overflow-y-auto">
-						<label>
-							lastName<br />
-							<input name="lastName" bind:value={$formData.lastName} />
-						</label>
-					</div>
+				<div data-simplebar class="h-60 flex-grow overflow-y-auto">
+					<Form.Field {form} name="feelings">
+						<Form.Control let:attrs>
+							<Form.Label class="text-md mb-2 mt-4 block w-full border-b border-gray-200/20 pb-2"
+								>{$t('default.page.fights.form.feelings.label')}</Form.Label
+							>
+							<ToggleGroup.Root
+								type="multiple"
+								{...attrs}
+								bind:value={$formData.feelings}
+								class="flex flex-col gap-4"
+							>
+								{#if feelings.length > 0}
+									{#each feelings as category}
+										<div class="flex w-full flex-wrap justify-start gap-1.5">
+											{#each category.content as feeling}
+												<ToggleGroup.Item
+													value={feeling.id}
+													class="data-[state=on]:bg-feelings-foreground data-[state=on]:text-white {feeling.nameEN === category.category
+														? `bg-white/40`
+														: 'bg-white/20'} text-black dark:text-white dark:hover:bg-black/20 hover:text-black py-0 shadow"
+												>
+													{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
+												</ToggleGroup.Item>
+											{/each}
+										</div>
+									{/each}
+								{/if}
+							</ToggleGroup.Root>
+						</Form.Control>
+						<!-- <Form.Description>This is your public display name.</Form.Description> -->
+						<Form.FieldErrors />
+					</Form.Field>
+				</div>
 				{:else if step === 4}
-					<div class="flex-grow overflow-y-auto">
-						<label>
-							haha<br />
-							<input name="haha" bind:value={$formData.haha} />
-						</label>
-					</div>
+				<div data-simplebar class="h-60 flex-grow overflow-y-auto">
+					<Form.Field {form} name="needs">
+						<Form.Control let:attrs>
+							<Form.Label class="text-md mb-2 mt-4 block w-full border-b border-gray-200/20 pb-2"
+								>{$t('default.page.fights.form.needs.label')}</Form.Label
+							>
+							<ToggleGroup.Root
+								type="multiple"
+								{...attrs}
+								bind:value={$formData.needs}
+								class="flex flex-col gap-4"
+							>
+								{#if needs.length > 0}
+									{#each needs as category}
+										<div class="flex w-full flex-wrap justify-start gap-1.5">
+											{#each category.content as feeling}
+												<ToggleGroup.Item
+													value={feeling.id}
+													class="data-[state=on]:bg-needs-foreground data-[state=on]:text-white {feeling.nameEN === category.category
+														? `bg-white/40`
+														: 'bg-white/20'} text-black dark:text-white dark:hover:bg-black/20 hover:text-black py-0 shadow"
+												>
+													{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
+												</ToggleGroup.Item>
+											{/each}
+										</div>
+									{/each}
+								{/if}
+							</ToggleGroup.Root>
+						</Form.Control>
+						<!-- <Form.Description>This is your public display name.</Form.Description> -->
+						<Form.FieldErrors />
+					</Form.Field>
+				</div>
 				{:else}
 					<div class="flex-grow overflow-y-auto">
 						<label>
@@ -205,3 +286,10 @@
 		</form>
 	</div>
 </div>
+
+<!-- <style lang="scss">
+	/* .data-\[state\=on\]\:text-accent-foreground[data-state=on] */
+	:global(.toggle-group-item[data-state=on]) {
+		@apply var(--current-foreground-color);
+	}
+</style> -->

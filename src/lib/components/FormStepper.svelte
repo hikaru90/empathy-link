@@ -18,7 +18,7 @@
 	};
 </script>
 
-<div class="flex justify-between py-2 {className}">
+<div class="flex justify-between pb-4 pt-8 {className}">
 	<div>
 		{#if step > 1}
 			<Button on:click={toPrev} variant="ghost" class="py-6 hover:bg-transparent">

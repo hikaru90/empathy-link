@@ -32,9 +32,17 @@
           "label": "Wie heißt die Person, mit der Du Dich streiten möchtest?",
           "tooShortError": "Der Name muss mindestens 3 Zeichen lang sein"
         },
+				"observation": {
+          "label": "Was hast Du beobachtet?",
+          "tooShortError": "Deine Beobachtung sollte mindestens 10 Zeichen lang sein"
+        },
 				"feelings": {
 					"label": "Wie fühlst Du Dich?",
 					"tooFewError": "Du solltest mindestens ein Gefühl auswählen"
+				},
+				"needs": {
+					"label": "Welche Bedürfnisse stecken dahinter?",
+					"tooFewError": "Du solltest mindestens ein Bedürfnis auswählen"
 				}
       }
     },

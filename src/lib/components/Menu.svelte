@@ -15,6 +15,7 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { locale, locales } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
+	import { scroll } from '$store/page';
 
 	let navbarHeight = 56;
 
@@ -51,14 +52,16 @@
 </script>
 
 <!-- Component HTML structure -->
-<div style="height: {navbarHeight}px"></div>
+<div style="height: {navbarHeight}px" class="flex-shrink-0"></div>
 <div bind:clientHeight={navbarHeight} class="fixed left-0 top-0 z-20 w-full">
-<!-- <div bind:clientHeight={navbarHeight} class="fixed left-0 top-0 z-20 w-full py-4 px-4"> -->
+	<!-- <div bind:clientHeight={navbarHeight} class="fixed left-0 top-0 z-20 w-full py-4 px-4"> -->
 	<!-- <nav
 		class="flex items-center justify-between px-2 py-2 bg-muted/60 backdrop-blur-xl backdrop-brightness-110 backdrop-hue-rotate-180 rounded-full"
 	> -->
 	<nav
-		class="flex items-center justify-between bg-offwhite/10 px-2 py-2 backdrop-blur-2xl "
+		class="flex items-center justify-between {$scroll > 50
+			? 'bg-offwhite/10 backdrop-blur-2xl'
+			: ''}  px-2 py-2 transition-all"
 	>
 		<a href="/" class="ml-2">
 			<Logo />

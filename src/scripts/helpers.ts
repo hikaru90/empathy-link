@@ -1,8 +1,18 @@
 import { browser } from '$app/environment';
 
-export const serializeNonPOJOs = (obj:object) => {
-  return structuredClone(obj)
-}
+export const serializeNonPOJOs = (obj: object) => {
+	return structuredClone(obj);
+};
+
+export const groupBy = (array: object[], key: string) =>
+	Object.entries(
+		array.reduce((result, currentValue) => {
+			const groupKey = currentValue[key];
+			result[groupKey] = result[groupKey] || [];
+			result[groupKey].push(currentValue);
+			return result;
+		}, {})
+	).map(([category, content]) => ({ category, content }));
 
 export const setCookie = (name: string, value: string, days?: number) => {
 	if (!import.meta.env.SSR) {
@@ -32,7 +42,7 @@ export const getCookie = (name: string) => {
 		}
 		return undefined;
 	}
-  return undefined;
+	return undefined;
 };
 
 export const debounce = <T extends (...args: any[]) => void>(

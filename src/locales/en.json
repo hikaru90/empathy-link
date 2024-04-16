@@ -38,13 +38,17 @@
           "label": "What is the Name of the Person you are fighting with?",
           "tooShortError": "Name must be at least 3 characters long"
         },
+        "observation": {
+          "label": "What did you observe?",
+          "tooShortError": "Please explain your observation in at least 10 characters"
+        },
         "feelings": {
-					"label": "Wie fühlst Du Dich?",
-					"tooFewError": "Du solltest mindestens ein Gefühl auswählen",
-          "options":{
-            "amazed": { "prettyName": "Amazed", "prettyCatgeory": "Surprised"},
-            "astounded": { "prettyName": "Astounded", "prettyCatgeory": "Surprised"},
-          }
+					"label": "How did you feel?",
+					"tooFewError": "Select at least one Feeling"
+				},
+        "needs": {
+					"label": "What are your Needs?",
+					"tooFewError": "Select at least one Need"
 				}
       }
     },

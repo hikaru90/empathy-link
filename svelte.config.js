@@ -25,6 +25,7 @@ const config = {
 			strict: false
 		}),
 		alias: {
+			$static: "static",
 			$assets: "src/assets",
 			$routes: "src/routes",
 			$locales: "src/locales",

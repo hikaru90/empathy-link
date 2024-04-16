@@ -1,6 +1,6 @@
-import PocketBase from 'pocketbase';
 import { locale, loadTranslations } from '$lib/translations';
 import { serializeNonPOJOs } from '$scripts/helpers';
+import { pb } from '$scripts/pocketbase'
 
 export const handle = async ({ event, resolve }) => {
 	const localeCookie = event.cookies.get('locale');
@@ -17,7 +17,7 @@ export const handle = async ({ event, resolve }) => {
 		// locale.set(langHeaders);
 	}
 
-	event.locals.pb = new PocketBase('https://backend.empathy-link.de/');
+	event.locals.pb = pb;
 	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 
 	if (event.locals.pb.authStore.isValid) {
