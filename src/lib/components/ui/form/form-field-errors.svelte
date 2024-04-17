@@ -20,7 +20,7 @@
 >
 	<slot {errors} {fieldErrorsAttrs} {errorAttrs}>
 		{#each errors as error}
-			<div {...errorAttrs} class={cn("px-2 py-1",errorClasses)}>{error}</div>
+		<div {...errorAttrs} class={cn("px-2 py-1 border border-red-600/10",errorClasses)}>{error}</div>
 		{/each}
 	</slot>
 </FormPrimitive.FieldErrors>

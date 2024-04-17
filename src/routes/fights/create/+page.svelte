@@ -164,20 +164,18 @@
 	</div>
 {/if} -->
 <div
-	class="flex flex-grow flex-col justify-between {`bg-${stepConstructor[step - 1].slug}-background`}"
+	class="flex flex-grow flex-col justify-between transition duration-700 {`bg-${stepConstructor[step - 1].slug}-background`}"
 >
 	<div class="max-container relative flex h-dvh flex-grow flex-col">
 		<Menu />
 		<form method="POST" use:enhance class="flex h-full flex-grow flex-col pb-[74px] -mt-1">
-			<div class="flex justify-center">
-				<FormStepDisplay {step} steps={stepConstructor} />
-			</div>
+			<FormStepDisplay {step} steps={stepConstructor} stepBackground={`bg-${stepConstructor[step - 1].slug}-background`} />
 			{#key step}
 				{#if step === 1}
-					<div data-simplebar class="h-60 flex-grow overflow-y-auto">
+					<div data-simplebar class="form-content">
 						<Form.Field {form} name="name">
 							<Form.Control let:attrs>
-								<Form.Label class="text-md mb-2 mt-4 block w-full border-b border-gray-200/20 pb-2"
+								<Form.Label class="form-label"
 									>{$t('default.page.fights.form.name.label')}</Form.Label
 								>
 								<Input {...attrs} bind:value={$formData.name} />
@@ -187,10 +185,10 @@
 						</Form.Field>
 					</div>
 				{:else if step === 2}
-				<div data-simplebar class="h-60 flex-grow overflow-y-auto">
+				<div data-simplebar class="form-content">
 					<Form.Field {form} name="observation">
 						<Form.Control let:attrs>
-							<Form.Label class="text-md mb-2 mt-4 block w-full border-b border-gray-200/20 pb-2"
+							<Form.Label class="form-label"
 								>{$t('default.page.fights.form.observation.label')}</Form.Label
 							>
 							<Textarea {...attrs} bind:value={$formData.observation} />
@@ -200,10 +198,10 @@
 					</Form.Field>
 				</div>
 				{:else if step === 3}
-				<div data-simplebar class="h-60 flex-grow overflow-y-auto">
+				<div data-simplebar class="form-content">
 					<Form.Field {form} name="feelings">
 						<Form.Control let:attrs>
-							<Form.Label class="text-md mb-2 mt-4 block w-full border-b border-gray-200/20 pb-2"
+							<Form.Label class="form-label"
 								>{$t('default.page.fights.form.feelings.label')}</Form.Label
 							>
 							<ToggleGroup.Root
@@ -235,10 +233,10 @@
 					</Form.Field>
 				</div>
 				{:else if step === 4}
-				<div data-simplebar class="h-60 flex-grow overflow-y-auto">
+				<div data-simplebar class="form-content">
 					<Form.Field {form} name="needs">
 						<Form.Control let:attrs>
-							<Form.Label class="text-md mb-2 mt-4 block w-full border-b border-gray-200/20 pb-2"
+							<Form.Label class="form-label"
 								>{$t('default.page.fights.form.needs.label')}</Form.Label
 							>
 							<ToggleGroup.Root
@@ -281,15 +279,23 @@
 			<FormStepper
 				{step}
 				on:toPrev={decreaseStep}
-				class="{`bg-${stepConstructor[step - 1].slug}-background`} flex-shrink-0"
+				primaryButtonClass={`bg-${stepConstructor[step - 1].slug}-background`}
+				class="transition flex-shrink-0"
 			/>
 		</form>
 	</div>
 </div>
 
-<!-- <style lang="scss">
+<style lang="scss">
 	/* .data-\[state\=on\]\:text-accent-foreground[data-state=on] */
-	:global(.toggle-group-item[data-state=on]) {
-		@apply var(--current-foreground-color);
+	// :global(.toggle-group-item[data-state=on]) {
+	// 	@apply var(--current-foreground-color);
+	// }
+
+	:global(.form-content){
+		@apply h-60 flex-grow overflow-y-auto px-[1px];
 	}
-</style> -->
+	:global(.form-label){
+		@apply text-xl mb-2 mt-4 block w-full border-b border-gray-200/20 pb-2 font-bold leading-tight;
+	}
+</style>

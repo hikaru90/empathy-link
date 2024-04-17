@@ -60,12 +60,12 @@
 
 <style>
   .inverted-border:before{
-    @apply w-4 h-40 rounded-bl-full md:w-8 lg:w-12 absolute -z-10 top-0 left-0 transform -translate-y-full pointer-events-none;
+    @apply w-4 h-40 rounded-bl-full md:w-8 absolute -z-10 top-0 left-0 transform -translate-y-full pointer-events-none;
     content: '';
     box-shadow: 0 50px 0 0 black;
   }
   .inverted-border:after{
-    @apply w-4 h-40 rounded-br-full md:w-8 lg:w-12 absolute -z-10 top-0 right-0 transform -translate-y-full pointer-events-none;
+    @apply w-4 h-40 rounded-br-full md:w-8 absolute -z-10 top-0 right-0 transform -translate-y-full pointer-events-none;
     content: '';
     box-shadow: 0 50px 0 0 black;
   }

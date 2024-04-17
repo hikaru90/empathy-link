@@ -61,9 +61,9 @@
 	<nav
 		class="flex items-center justify-between {$scroll > 50
 			? 'bg-offwhite/10 backdrop-blur-2xl'
-			: ''}  px-2 py-2 transition-all"
+			: ''}  px-5 py-2 transition-all"
 	>
-		<a href="/" class="ml-2">
+		<a href="/" class="">
 			<Logo />
 		</a>
 		<div class="flex items-center gap-4">
