@@ -155,7 +155,7 @@
 	});
 
 	//todo: remove
-	// step = 4;
+	step = 3;
 </script>
 
 <!-- {#if $message}
@@ -169,7 +169,7 @@
 	<div class="max-container relative flex h-dvh flex-grow flex-col">
 		<Menu />
 		<form method="POST" use:enhance class="flex h-full flex-grow flex-col pb-[74px] -mt-1">
-			<FormStepDisplay {step} steps={stepConstructor} stepBackground={`bg-${stepConstructor[step - 1].slug}-background`} />
+			<FormStepDisplay {step} steps={stepConstructor} stepBackground={stepConstructor[step - 1].slug} />
 			{#key step}
 				{#if step === 1}
 					<div data-simplebar class="form-content">
@@ -276,11 +276,12 @@
 					</div>
 				{/if}
 			{/key}
+			
 			<FormStepper
 				{step}
 				on:toPrev={decreaseStep}
-				primaryButtonClass={`bg-${stepConstructor[step - 1].slug}-background`}
-				class="transition flex-shrink-0"
+				primaryButtonClass="{`bg-${stepConstructor[step - 1].slug}-background`}"
+				class="transition duration-700 flex-shrink-0"
 			/>
 		</form>
 	</div>
@@ -294,6 +295,15 @@
 
 	:global(.form-content){
 		@apply h-60 flex-grow overflow-y-auto px-[1px];
+		--mask: linear-gradient(
+				to bottom,
+				rgba(0, 0, 0, 0) 0,
+				rgba(0, 0, 0, 1) 3%,
+				rgba(0, 0, 0, 1) 97%,
+				rgba(0, 0, 0, 0) 100%
+			);
+		-webkit-mask: var(--mask);
+		mask: var(--mask);
 	}
 	:global(.form-label){
 		@apply text-xl mb-2 mt-4 block w-full border-b border-gray-200/20 pb-2 font-bold leading-tight;
