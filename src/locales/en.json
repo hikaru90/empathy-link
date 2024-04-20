@@ -32,7 +32,11 @@
             "feelings": "Feelings",
             "needs": "Needs",
             "request": "Request"
-          }
+          },
+          "badFeelings": "Bad Feelings",
+          "goodFeelings": "Good Feelings",
+          "positiveNeeds": "When needs are met",
+          "negativeNeeds": "When needs are not met"
         },
         "name": {
           "label": "What is the Name of the Person you are fighting with?",

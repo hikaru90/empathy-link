@@ -12,7 +12,7 @@ export const groupBy = (array: object[], key: string) =>
 			result[groupKey].push(currentValue);
 			return result;
 		}, {})
-	).map(([category, content]) => ({ category, content, visible: false }));
+	).map(([category, content]) => ({ category, content }));
 
 export const setCookie = (name: string, value: string, days?: number) => {
 	if (!import.meta.env.SSR) {

@@ -161,7 +161,12 @@
 			sort: 'category'
 		});
 		const data = serializeNonPOJOs(records);
-		const res = groupBy(data, 'category');
+		let res = groupBy(data, 'positive');
+		res.map((entry) => {
+			entry.content = groupBy(entry.content, 'category');
+			entry.content.map((category) => (category.visible = false));
+			return entry;
+		});
 		console.log('res', res);
 		feelings = res;
 	};
@@ -170,7 +175,9 @@
 			sort: 'category'
 		});
 		const data = serializeNonPOJOs(records);
-		const res = groupBy(data, 'category');
+		let res = groupBy(data, 'category');
+		res.map((category) => (category.visible = false));
+
 		console.log('res', res);
 		needs = res;
 	};
@@ -185,11 +192,28 @@
 		}
 	};
 
-	const toggleFeelingsCatgeory = (category: string) => {
-		console.log('toggleCatgeory', category);
-		const target = feelings.find((entry) => entry.category === category);
-		target.visible = !target.visible;
+	const toggleNeedsCatgeory = (feeling, category: string) => {
+		if (feeling.nameEN !== category) return;
+		const target = needs.find((entry) => entry.category === category);
+		if (target) target.visible = !target.visible;
+		needs = [...needs];
+	};
+
+	const toggleFeelingsCatgeory = (feeling, category: string) => {
+		if (feeling.nameEN !== category) return;
+		const target0 = feelings[0].content.find((entry) => entry.category === category);
+		const target1 = feelings[1].content.find((entry) => entry.category === category);
+		if (target0) target0.visible = !target0.visible;
+		if (target1) target1.visible = !target1.visible;
 		feelings = [...feelings];
+	};
+
+	const categoryIsVisible = (feeling, category) => {
+		const feelingSlug = feeling.nameEN;
+		const categorySlug = category.category;
+		if (feelingSlug === categorySlug) return true;
+		if (category.visible) return true;
+		return false;
 	};
 
 	onMount(async () => {
@@ -198,7 +222,7 @@
 	});
 
 	//todo: remove
-	step = 3;
+	step = 4;
 </script>
 
 <!-- {#if $message}
@@ -260,42 +284,44 @@
 									class="flex flex-col gap-4"
 								>
 									{#if feelings.length > 0}
-										{#each feelings as category}
-											<div
-												class="relative w-full rounded border border-white/20 bg-white/10 shadow"
-											>
-												<button
-													type="button"
-													on:click={toggleFeelingsCatgeory(category.category)}
-													class="flex w-full items-center justify-between p-3"
-												>
-													{$locale === 'de'
-														? category.content[0].nameDE
-														: category.content[0].nameEN}
-													<TriangleDown
-														class="{category.visible
-															? 'rotate-180'
-															: 'rotate-0'} h-4 w-4 transform transition"
-													/>
-												</button>
+										<div class="">
+											{#each feelings as positive}
 												<div
-													class="{category.visible
-														? 'max-h-[2000px] opacity-100 py-3'
-														: 'max-h-0 opacity-0 py-0'} px-3 flex w-full flex-wrap justify-start gap-1.5 transition-all"
+													class="text-{stepConstructor[step - 1]
+														.slug}-foreground mb-1 mt-3 flex items-center gap-3 text-xs"
 												>
-													{#each category.content as feeling}
-														<ToggleGroup.Item
-															value={feeling.id}
-															class="{feeling.nameEN === category.category
-																? `bg-white/40`
-																: 'bg-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:bg-feelings-foreground data-[state=on]:text-white dark:text-white dark:hover:bg-black/20"
-														>
-															{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
-														</ToggleGroup.Item>
+													{positive.category === 'true'
+														? $t('default.page.fights.form.general.goodFeelings')
+														: $t('default.page.fights.form.general.badFeelings')}
+													<div
+														class="border-b border-{stepConstructor[step - 1]
+															.slug}-foreground mr-2 flex-grow border-opacity-20"
+													></div>
+												</div>
+												<div class="-mx-1 flex w-full flex-wrap justify-start transition-all">
+													{#each positive.content as category}
+														{#each category.content as feeling}
+															<button
+																type="button"
+																on:click={toggleFeelingsCatgeory(feeling, category.category)}
+																class="{categoryIsVisible(feeling, category) || $formData.feelings.includes(feeling.id)
+																	? 'pointer-events-auto max-w-[1000px] p-1 opacity-100'
+																	: 'pointer-events-none m-0 max-w-0 p-0 opacity-0'} transition-all"
+															>
+																<ToggleGroup.Item
+																	value={feeling.id}
+																	class="{feeling.nameEN === category.category
+																		? `bg-white/40 font-bold`
+																		: 'border border-white/40'} py-0 text-black  shadow hover:text-black data-[state=on]:bg-feelings-foreground data-[state=on]:text-white dark:text-white dark:hover:bg-black/20"
+																>
+																	{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
+																</ToggleGroup.Item>
+															</button>
+														{/each}
 													{/each}
 												</div>
-											</div>
-										{/each}
+											{/each}
+										</div>
 									{/if}
 								</ToggleGroup.Root>
 							</Form.Control>
@@ -314,24 +340,31 @@
 									type="multiple"
 									{...attrs}
 									bind:value={$formData.needs}
-									class="flex flex-col gap-4"
+									class=""
 								>
 									{#if needs.length > 0}
-										{#each needs as category}
-											<div class="flex w-full flex-wrap justify-start gap-1.5">
-												{#each category.content as feeling}
-													<ToggleGroup.Item
-														value={feeling.id}
-														class="data-[state=on]:bg-needs-foreground data-[state=on]:text-white {feeling.nameEN ===
-														category.category
-															? `bg-white/40`
-															: 'bg-white/20'} py-0 text-black shadow hover:text-black dark:text-white dark:hover:bg-black/20"
+										<div class="-m-1 flex w-full flex-wrap justify-start transition-all">
+											{#each needs as category}
+												{#each category.content as need}
+													<button
+														type="button"
+														on:click={toggleNeedsCatgeory(need, category.category)}
+														class="{categoryIsVisible(need, category) || $formData.needs.includes(need.id)
+															? 'pointer-events-auto max-h-60 max-w-[1000px] p-1 opacity-100'
+															: 'pointer-events-none m-0 max-h-0 max-w-0 p-0 opacity-0'} transition-all"
 													>
-														{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
-													</ToggleGroup.Item>
+														<ToggleGroup.Item
+															value={need.id}
+															class="{need.nameEN === category.category
+																? `bg-white/40 font-bold`
+																: 'border border-white/40'} py-0 text-black  shadow hover:text-black data-[state=on]:bg-needs-foreground data-[state=on]:text-white dark:text-white dark:hover:bg-black/20"
+														>
+															{$locale === 'de' ? need.nameDE : need.nameEN}
+														</ToggleGroup.Item>
+													</button>
 												{/each}
-											</div>
-										{/each}
+											{/each}
+										</div>
 									{/if}
 								</ToggleGroup.Root>
 							</Form.Control>
@@ -366,7 +399,7 @@
 	// }
 
 	:global(.form-content) {
-		@apply h-60 flex-grow overflow-y-auto px-[1px];
+		@apply h-60 flex-grow overflow-y-auto overflow-x-hidden px-[1px];
 		--mask: linear-gradient(
 			to bottom,
 			rgba(0, 0, 0, 0) 0,

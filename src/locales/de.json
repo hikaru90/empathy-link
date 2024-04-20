@@ -26,7 +26,11 @@
 						"feelings": "Gefühle",
 						"needs": "Bedürfnisse",
 						"request": "Bitte"
-					}
+					},
+					"badFeelings": "Negative Gefühle",
+          "goodFeelings": "Positive Gefühle",
+          "positiveNeeds": "Wenn unsere Bedürfnisse erfüllt sind",
+          "negativeNeeds": "Wenn unsere Bedürfnisse nicht erfüllt sind"
 				},
 				"name": {
           "label": "Wie heißt die Person, mit der Du Dich streiten möchtest?",
