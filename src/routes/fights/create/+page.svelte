@@ -24,7 +24,9 @@
 	import { pb } from '$scripts/pocketbase';
 	import { onMount } from 'svelte';
 	import { serializeNonPOJOs, groupBy } from '$scripts/helpers';
-	import { Textarea } from "$lib/components/ui/textarea";
+	import { Textarea } from '$lib/components/ui/textarea';
+	import Mascot from '$lib/components/Mascot.svelte';
+	import { TriangleDown, TriangleUp } from 'radix-icons-svelte';
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
 	let feelings = [];
@@ -45,13 +47,29 @@
 	// 	console.log('form submitted', formData);
 	// }
 
-	const checkValidationAndContinue = async () => {
+	const checkSingleValidationStep = async (step: number) => {
+		const validations = [schemaStep1, schemaStep2, schemaStep3, schemaStep4, lastStep];
+		const constraints = Object.keys(zod(validations[step - 1]).constraints);
+		let allFieldsValid = true;
+
+		for (const constraint of constraints) {
+			const res = await validate(constraint, { update: false });
+			if (res) allFieldsValid = false;
+		}
+
+		if (!allFieldsValid) {
+			// errors.set(validationResult.errors);
+			return false;
+		}
+		return true;
+	};
+	const checkValidation = async () => {
 		const validationResult = await validateForm($formData, lastStep);
 		if (!validationResult.valid) {
 			errors.set(validationResult.errors);
-			return;
+			return false;
 		}
-		step++;
+		return true;
 	};
 
 	const form = superForm(data, {
@@ -65,10 +83,9 @@
 			else cancel();
 
 			// Make a manual client-side validation, since we have cancelled
-			if (step === 1) checkValidationAndContinue();
-			else if (step === 2) checkValidationAndContinue();
-			else if (step === 3) checkValidationAndContinue();
-			else if (step === 4) checkValidationAndContinue();
+			if (await checkValidation()) {
+				step++;
+			}
 		},
 		async onUpdated({ form }) {
 			console.log('onUpdated');
@@ -76,7 +93,16 @@
 		}
 	});
 
-	const { form: formData, errors, message, enhance, validateForm, options, updateForm } = form;
+	const {
+		form: formData,
+		errors,
+		message,
+		enhance,
+		validate,
+		validateForm,
+		options,
+		updateForm
+	} = form;
 
 	formData.subscribe((value) => {
 		console.log('form was updated', value);
@@ -87,31 +113,31 @@
 			slug: 'info',
 			name: get(t)('default.page.fights.form.general.steps.info'),
 			icon: IconFolder,
-			invertedTextColor: false,
+			invertedTextColor: false
 		},
 		{
 			slug: 'observation',
 			name: get(t)('default.page.fights.form.general.steps.observation'),
 			icon: IconEye,
-			invertedTextColor: true,
+			invertedTextColor: true
 		},
 		{
 			slug: 'feelings',
 			name: get(t)('default.page.fights.form.general.steps.feelings'),
 			icon: IconHeart,
-			invertedTextColor: false,
+			invertedTextColor: false
 		},
 		{
 			slug: 'needs',
 			name: get(t)('default.page.fights.form.general.steps.needs'),
 			icon: IconSwirl,
-			invertedTextColor: false,
+			invertedTextColor: false
 		},
 		{
 			slug: 'request',
 			name: get(t)('default.page.fights.form.general.steps.request'),
 			icon: IconSteps,
-			invertedTextColor: false,
+			invertedTextColor: false
 		}
 	];
 	t.subscribe((value) => {
@@ -149,6 +175,23 @@
 		needs = res;
 	};
 
+	const changeStep = async (payload) => {
+		console.log('changeStep');
+		const newStep: number = payload.detail.step;
+		const targetStepIsValid = await checkSingleValidationStep(newStep);
+		console.log('targetStepIsValid', targetStepIsValid);
+		if (targetStepIsValid) {
+			step = newStep;
+		}
+	};
+
+	const toggleFeelingsCatgeory = (category: string) => {
+		console.log('toggleCatgeory', category);
+		const target = feelings.find((entry) => entry.category === category);
+		target.visible = !target.visible;
+		feelings = [...feelings];
+	};
+
 	onMount(async () => {
 		await initFeelings();
 		await initNeeds();
@@ -168,14 +211,20 @@
 >
 	<div class="max-container relative flex h-dvh flex-grow flex-col">
 		<Menu />
-		<form method="POST" use:enhance class="flex h-full flex-grow flex-col pb-[74px] -mt-1">
-			<FormStepDisplay {step} steps={stepConstructor} stepBackground={stepConstructor[step - 1].slug} />
+		<form method="POST" use:enhance class="-mt-1 flex h-full flex-grow flex-col pb-[74px]">
+			<FormStepDisplay
+				on:changeStep={changeStep}
+				{step}
+				steps={stepConstructor}
+				stepBackground={stepConstructor[step - 1].slug}
+			/>
+			<Mascot {step} stepName={stepConstructor[step - 1].slug} />
 			{#key step}
 				{#if step === 1}
 					<div data-simplebar class="form-content">
 						<Form.Field {form} name="name">
 							<Form.Control let:attrs>
-								<Form.Label class="form-label"
+								<Form.Label class="form-label "
 									>{$t('default.page.fights.form.name.label')}</Form.Label
 								>
 								<Input {...attrs} bind:value={$formData.name} />
@@ -185,88 +234,111 @@
 						</Form.Field>
 					</div>
 				{:else if step === 2}
-				<div data-simplebar class="form-content">
-					<Form.Field {form} name="observation">
-						<Form.Control let:attrs>
-							<Form.Label class="form-label"
-								>{$t('default.page.fights.form.observation.label')}</Form.Label
-							>
-							<Textarea {...attrs} bind:value={$formData.observation} />
-						</Form.Control>
-						<!-- <Form.Description>This is your public display name.</Form.Description> -->
-						<Form.FieldErrors />
-					</Form.Field>
-				</div>
+					<div data-simplebar class="form-content">
+						<Form.Field {form} name="observation">
+							<Form.Control let:attrs>
+								<Form.Label class="form-label"
+									>{$t('default.page.fights.form.observation.label')}</Form.Label
+								>
+								<Textarea {...attrs} bind:value={$formData.observation} class="min-h-60" />
+							</Form.Control>
+							<!-- <Form.Description>This is your public display name.</Form.Description> -->
+							<Form.FieldErrors />
+						</Form.Field>
+					</div>
 				{:else if step === 3}
-				<div data-simplebar class="form-content">
-					<Form.Field {form} name="feelings">
-						<Form.Control let:attrs>
-							<Form.Label class="form-label"
-								>{$t('default.page.fights.form.feelings.label')}</Form.Label
-							>
-							<ToggleGroup.Root
-								type="multiple"
-								{...attrs}
-								bind:value={$formData.feelings}
-								class="flex flex-col gap-4"
-							>
-								{#if feelings.length > 0}
-									{#each feelings as category}
-										<div class="flex w-full flex-wrap justify-start gap-1.5">
-											{#each category.content as feeling}
-												<ToggleGroup.Item
-													value={feeling.id}
-													class="data-[state=on]:bg-feelings-foreground data-[state=on]:text-white {feeling.nameEN === category.category
-														? `bg-white/40`
-														: 'bg-white/20'} text-black dark:text-white dark:hover:bg-black/20 hover:text-black py-0 shadow"
+					<div data-simplebar class="form-content">
+						<Form.Field {form} name="feelings">
+							<Form.Control let:attrs>
+								<Form.Label class="form-label"
+									>{$t('default.page.fights.form.feelings.label')}</Form.Label
+								>
+								<ToggleGroup.Root
+									type="multiple"
+									{...attrs}
+									bind:value={$formData.feelings}
+									class="flex flex-col gap-4"
+								>
+									{#if feelings.length > 0}
+										{#each feelings as category}
+											<div
+												class="relative w-full rounded border border-white/20 bg-white/10 shadow"
+											>
+												<button
+													type="button"
+													on:click={toggleFeelingsCatgeory(category.category)}
+													class="flex w-full items-center justify-between p-3"
 												>
-													{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
-												</ToggleGroup.Item>
-											{/each}
-										</div>
-									{/each}
-								{/if}
-							</ToggleGroup.Root>
-						</Form.Control>
-						<!-- <Form.Description>This is your public display name.</Form.Description> -->
-						<Form.FieldErrors />
-					</Form.Field>
-				</div>
+													{$locale === 'de'
+														? category.content[0].nameDE
+														: category.content[0].nameEN}
+													<TriangleDown
+														class="{category.visible
+															? 'rotate-180'
+															: 'rotate-0'} h-4 w-4 transform transition"
+													/>
+												</button>
+												<div
+													class="{category.visible
+														? 'max-h-[2000px] opacity-100 py-3'
+														: 'max-h-0 opacity-0 py-0'} px-3 flex w-full flex-wrap justify-start gap-1.5 transition-all"
+												>
+													{#each category.content as feeling}
+														<ToggleGroup.Item
+															value={feeling.id}
+															class="{feeling.nameEN === category.category
+																? `bg-white/40`
+																: 'bg-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:bg-feelings-foreground data-[state=on]:text-white dark:text-white dark:hover:bg-black/20"
+														>
+															{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
+														</ToggleGroup.Item>
+													{/each}
+												</div>
+											</div>
+										{/each}
+									{/if}
+								</ToggleGroup.Root>
+							</Form.Control>
+							<!-- <Form.Description>This is your public display name.</Form.Description> -->
+							<Form.FieldErrors />
+						</Form.Field>
+					</div>
 				{:else if step === 4}
-				<div data-simplebar class="form-content">
-					<Form.Field {form} name="needs">
-						<Form.Control let:attrs>
-							<Form.Label class="form-label"
-								>{$t('default.page.fights.form.needs.label')}</Form.Label
-							>
-							<ToggleGroup.Root
-								type="multiple"
-								{...attrs}
-								bind:value={$formData.needs}
-								class="flex flex-col gap-4"
-							>
-								{#if needs.length > 0}
-									{#each needs as category}
-										<div class="flex w-full flex-wrap justify-start gap-1.5">
-											{#each category.content as feeling}
-												<ToggleGroup.Item
-													value={feeling.id}
-													class="data-[state=on]:bg-needs-foreground data-[state=on]:text-white {feeling.nameEN === category.category
-														? `bg-white/40`
-														: 'bg-white/20'} text-black dark:text-white dark:hover:bg-black/20 hover:text-black py-0 shadow"
-												>
-													{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
-												</ToggleGroup.Item>
-											{/each}
-										</div>
-									{/each}
-								{/if}
-							</ToggleGroup.Root>
-						</Form.Control>
-						<!-- <Form.Description>This is your public display name.</Form.Description> -->
-						<Form.FieldErrors />
-					</Form.Field>
-				</div>
+					<div data-simplebar class="form-content">
+						<Form.Field {form} name="needs">
+							<Form.Control let:attrs>
+								<Form.Label class="form-label"
+									>{$t('default.page.fights.form.needs.label')}</Form.Label
+								>
+								<ToggleGroup.Root
+									type="multiple"
+									{...attrs}
+									bind:value={$formData.needs}
+									class="flex flex-col gap-4"
+								>
+									{#if needs.length > 0}
+										{#each needs as category}
+											<div class="flex w-full flex-wrap justify-start gap-1.5">
+												{#each category.content as feeling}
+													<ToggleGroup.Item
+														value={feeling.id}
+														class="data-[state=on]:bg-needs-foreground data-[state=on]:text-white {feeling.nameEN ===
+														category.category
+															? `bg-white/40`
+															: 'bg-white/20'} py-0 text-black shadow hover:text-black dark:text-white dark:hover:bg-black/20"
+													>
+														{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
+													</ToggleGroup.Item>
+												{/each}
+											</div>
+										{/each}
+									{/if}
+								</ToggleGroup.Root>
+							</Form.Control>
+							<!-- <Form.Description>This is your public display name.</Form.Description> -->
+							<Form.FieldErrors />
+						</Form.Field>
+					</div>
 				{:else}
 					<div class="flex-grow overflow-y-auto">
 						<label>
@@ -276,12 +348,12 @@
 					</div>
 				{/if}
 			{/key}
-			
+
 			<FormStepper
 				{step}
 				on:toPrev={decreaseStep}
-				primaryButtonClass="{`bg-${stepConstructor[step - 1].slug}-background`}"
-				class="transition duration-700 flex-shrink-0"
+				primaryButtonClass={`bg-${stepConstructor[step - 1].slug}-background`}
+				class="flex-shrink-0"
 			/>
 		</form>
 	</div>
@@ -293,19 +365,22 @@
 	// 	@apply var(--current-foreground-color);
 	// }
 
-	:global(.form-content){
+	:global(.form-content) {
 		@apply h-60 flex-grow overflow-y-auto px-[1px];
 		--mask: linear-gradient(
-				to bottom,
-				rgba(0, 0, 0, 0) 0,
-				rgba(0, 0, 0, 1) 3%,
-				rgba(0, 0, 0, 1) 97%,
-				rgba(0, 0, 0, 0) 100%
-			);
+			to bottom,
+			rgba(0, 0, 0, 0) 0,
+			rgba(0, 0, 0, 1) 3%,
+			rgba(0, 0, 0, 1) 97%,
+			rgba(0, 0, 0, 0) 100%
+		);
 		-webkit-mask: var(--mask);
 		mask: var(--mask);
 	}
-	:global(.form-label){
-		@apply text-xl mb-2 mt-4 block w-full border-b border-gray-200/20 pb-2 font-bold leading-tight;
+	:global(.form-label) {
+		@apply mb-2 mt-4 block w-full border-b border-gray-200/20 pb-2 text-xl font-bold leading-tight;
+		&:not([data-fs-error]) {
+			@apply dark:text-foreground;
+		}
 	}
 </style>
