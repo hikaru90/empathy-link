@@ -27,6 +27,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import Mascot from '$lib/components/Mascot.svelte';
 	import { TriangleDown, TriangleUp } from 'radix-icons-svelte';
+	import { user } from '$store/auth';
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
 	let feelings = [];
@@ -40,12 +41,25 @@
 		zod(lastStep)
 	];
 	let step = 1;
+	let formSubmitted = false;
+	let formSuccess = false;
 
 	$: options.validators = steps[step - 1];
 
-	// const handleSubmit = (formData) => {
-	// 	console.log('form submitted', formData);
-	// }
+	const handleSubmit = async () => {
+		try {
+			let data = $formData;
+			data.owner = $user.id;
+			console.log('submit form', data);
+			const record = await pb.collection('fights').create(data);
+			formSuccess = true;
+			formSubmitted = true;
+		} catch (err) {
+			console.log('error handling submit', err);
+			formSuccess = false;
+			formSubmitted = true;
+		}
+	};
 
 	const checkSingleValidationStep = async (step: number) => {
 		const validations = [schemaStep1, schemaStep2, schemaStep3, schemaStep4, lastStep];
@@ -78,13 +92,12 @@
 		validators: zodClient(lastStep),
 		async onSubmit({ validators, cancel }) {
 			console.log('onSubmit');
-			// If on last step, make a normal request
-			if (step == steps.length) return;
-			else cancel();
 
+			cancel();
 			// Make a manual client-side validation, since we have cancelled
 			if (await checkValidation()) {
-				step++;
+				if (step == steps.length) handleSubmit();
+				else step++;
 			}
 		},
 		async onUpdated({ form }) {
@@ -222,7 +235,7 @@
 	});
 
 	//todo: remove
-	step = 4;
+	step = 5;
 </script>
 
 <!-- {#if $message}
@@ -235,14 +248,20 @@
 >
 	<div class="max-container relative flex h-dvh flex-grow flex-col">
 		<Menu />
-		<form method="POST" use:enhance class="-mt-1 flex h-full flex-grow flex-col pb-[74px]">
-			<FormStepDisplay
-				on:changeStep={changeStep}
-				{step}
-				steps={stepConstructor}
-				stepBackground={stepConstructor[step - 1].slug}
-			/>
-			<Mascot {step} stepName={stepConstructor[step - 1].slug} />
+		<form
+			on:submit|preventDefault
+			use:enhance
+			class="-mt-1 flex h-full flex-grow flex-col pb-[74px]"
+		>
+			{#if !formSubmitted && !formSuccess}
+				<FormStepDisplay
+					on:changeStep={changeStep}
+					{step}
+					steps={stepConstructor}
+					stepBackground={stepConstructor[step - 1].slug}
+				/>
+				<Mascot {step} stepName={stepConstructor[step - 1].slug} />
+			{/if}
 			{#key step}
 				{#if step === 1}
 					<div data-simplebar class="form-content">
@@ -304,7 +323,8 @@
 															<button
 																type="button"
 																on:click={toggleFeelingsCatgeory(feeling, category.category)}
-																class="{categoryIsVisible(feeling, category) || $formData.feelings.includes(feeling.id)
+																class="{categoryIsVisible(feeling, category) ||
+																$formData.feelings.includes(feeling.id)
 																	? 'pointer-events-auto max-w-[1000px] p-1 opacity-100'
 																	: 'pointer-events-none m-0 max-w-0 p-0 opacity-0'} transition-all"
 															>
@@ -336,12 +356,7 @@
 								<Form.Label class="form-label"
 									>{$t('default.page.fights.form.needs.label')}</Form.Label
 								>
-								<ToggleGroup.Root
-									type="multiple"
-									{...attrs}
-									bind:value={$formData.needs}
-									class=""
-								>
+								<ToggleGroup.Root type="multiple" {...attrs} bind:value={$formData.needs} class="">
 									{#if needs.length > 0}
 										<div class="-m-1 flex w-full flex-wrap justify-start transition-all">
 											{#each needs as category}
@@ -349,7 +364,8 @@
 													<button
 														type="button"
 														on:click={toggleNeedsCatgeory(need, category.category)}
-														class="{categoryIsVisible(need, category) || $formData.needs.includes(need.id)
+														class="{categoryIsVisible(need, category) ||
+														$formData.needs.includes(need.id)
 															? 'pointer-events-auto max-h-60 max-w-[1000px] p-1 opacity-100'
 															: 'pointer-events-none m-0 max-h-0 max-w-0 p-0 opacity-0'} transition-all"
 													>
@@ -372,22 +388,34 @@
 							<Form.FieldErrors />
 						</Form.Field>
 					</div>
-				{:else}
-					<div class="flex-grow overflow-y-auto">
-						<label>
-							hoho<br />
-							<input name="hoho" bind:value={$formData.hoho} />
-						</label>
+				{:else if !formSubmitted}
+					<div data-simplebar class="form-content">
+						<Form.Field {form} name="request">
+							<Form.Control let:attrs>
+								<Form.Label class="form-label"
+									>{$t('default.page.fights.form.request.label')}</Form.Label
+								>
+								<Textarea {...attrs} bind:value={$formData.request} class="min-h-60" />
+							</Form.Control>
+							<!-- <Form.Description>This is your public display name.</Form.Description> -->
+							<Form.FieldErrors />
+						</Form.Field>
 					</div>
+				{:else if formSuccess}
+					Success
+				{:else}
+					Error in Submit
 				{/if}
 			{/key}
 
-			<FormStepper
-				{step}
-				on:toPrev={decreaseStep}
-				primaryButtonClass={`bg-${stepConstructor[step - 1].slug}-background`}
-				class="flex-shrink-0"
-			/>
+			{#if !formSubmitted && !formSuccess}
+				<FormStepper
+					{step}
+					on:toPrev={decreaseStep}
+					primaryButtonClass={`bg-${stepConstructor[step - 1].slug}-background`}
+					class="flex-shrink-0"
+				/>
+			{/if}
 		</form>
 	</div>
 </div>

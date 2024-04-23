@@ -1,9 +1,7 @@
 import {needs} from '$static/needs'
-import PocketBase from 'pocketbase';
+import { pb } from '$scripts/pocketbase'
 
 export const prerender = false;
-
-const pb = new PocketBase('https://backend.empathy-link.de');
 
 export const GET = async ({ url, request }) => {
 	

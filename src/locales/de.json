@@ -47,6 +47,10 @@
 				"needs": {
 					"label": "Welche Bedürfnisse stecken dahinter?",
 					"tooFewError": "Du solltest mindestens ein Bedürfnis auswählen"
+				},
+        "request": {
+					"label": "Was ist Deine Bitte?",
+					"tooFewError": "Deine Bitte sollte mindestens 10 Zeichen lang sein"
 				}
       }
     },
