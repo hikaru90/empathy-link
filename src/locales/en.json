@@ -5,7 +5,7 @@
       "logout": "Logout"
     },
     "bar": {
-      "home": "Home",
+      "home": "Dashboard",
       "selfempathy": "Selfempathy",
       "fights": "Fights",
       "feedback": "Feedback",
@@ -19,6 +19,11 @@
       "nav": "Home",
       "hero": "In today’s rush, amid endless distractions and mounting todo lists, being mindful of how and why you connect with your peers has never been more difficult.",
       "cta": "Start Connecting"
+    },
+    "dashboard": {
+      "fights": {
+        "tableCaption": "A list of your recent fights"
+      }
     },
     "fights": {
       "create": "Start a fight",

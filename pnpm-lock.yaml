@@ -52,6 +52,9 @@ devDependencies:
   '@capacitor/ios':
     specifier: ^5.7.4
     version: 5.7.4(@capacitor/core@5.7.4)
+  '@internationalized/date':
+    specifier: ^3.5.2
+    version: 3.5.2
   '@playwright/test':
     specifier: ^1.43.0
     version: 1.43.0
@@ -443,7 +446,6 @@ packages:
     resolution: {integrity: sha512-vo1yOMUt2hzp63IutEaTUxROdvQg1qlMRsbCvbay2AK2Gai7wIgCyK5weEX3nHkiLgo4qCXHijFNC/ILhlRpOQ==}
     dependencies:
       '@swc/helpers': 0.5.8
-    dev: false
 
   /@ionic/cli-framework-output@2.2.8:
     resolution: {integrity: sha512-TshtaFQsovB4NWRBydbNFawql6yul7d5bMiW1WYYf17hd99V6xdDdk3vtF51bw6sLkxON3bDQpWsnUc9/hVo3g==}
@@ -954,7 +956,6 @@ packages:
     resolution: {integrity: sha512-lruDGw3pnfM3wmZHeW7JuhkGQaJjPyiKjxeGhdmfoOT53Ic9qb5JLDNaK2HUdl1zLDeX28H221UvKjfdvSLVMg==}
     dependencies:
       tslib: 2.6.2
-    dev: false
 
   /@types/cookie@0.6.0:
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
