@@ -22,8 +22,24 @@
     },
     "dashboard": {
       "fights": {
-        "tableCaption": "A list of your recent fights"
+        "tableCaption": "A list of your recent fights",
+        "table": {
+          "id": "Id",
+          "partner": "Partner",
+          "date": "Date",
+          "opened": "Opened",
+          "round": "Round"
+        }
       }
+    },
+    "fight": {
+      "heading": "Fight",
+      "card": {
+				"observation": "Observation",
+				"feelings": "Feelings",
+				"needs": "Needs",
+				"request": "Request"
+			}
     },
     "fights": {
       "create": "Start a fight",

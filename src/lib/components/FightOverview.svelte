@@ -5,14 +5,16 @@
 	import { pb } from '$scripts/pocketbase';
 	import { t, locale } from '$lib/translations';
 	import { startDate, endDate } from '$store/dashboard';
+	import { goto } from '$app/navigation';
+	import { CaretRight } from 'radix-icons-svelte';
 
 	let initialized = false;
-  let pending = true;
+	let pending = true;
 	let records = [];
 
 	const fetchData = async () => {
-    const filter = `created >= "${$startDate.toString()} 00:00:00" && created < "${$endDate.toString()} 00:00:00"`
-    console.log('filter',filter);
+		const filter = `created >= "${$startDate.toString()} 00:00:00" && created < "${$endDate.toString()} 00:00:00"`;
+		console.log('filter', filter);
 		records = await pb.collection('fights').getFullList({
 			filter: filter,
 			sort: '-updated',
@@ -20,14 +22,19 @@
 		});
 	};
 
-  endDate.subscribe(async() => {
-    console.log('endDate changed -> fetching data');
-    pending = true
-    await fetchData()
-    setTimeout(() => {
-      pending = false
-    }, 200);
-  })
+	endDate.subscribe(async () => {
+		console.log('endDate changed -> fetching data');
+		pending = true;
+		await fetchData();
+		setTimeout(() => {
+			pending = false;
+		}, 200);
+	});
+
+	const gotoFight = (id) => {
+		console.log('gotoFight');
+		goto(`/fights/${id}`);
+	};
 
 	onMount(async () => {
 		await fetchData();
@@ -36,7 +43,7 @@
 	});
 </script>
 
-{#if !initialized || pending}
+{#if !initialized}
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
 	<div class="rounded border border-input">
@@ -44,22 +51,25 @@
 			<Table.Caption>{$t('default.page.dashboard.fights.tableCaption')}</Table.Caption>
 			<Table.Header>
 				<Table.Row>
-					<Table.Head class="w-[100px]">Id</Table.Head>
-					<Table.Head>Streitpartner</Table.Head>
-					<Table.Head>Datum</Table.Head>
-					<Table.Head class="text-right">Opened</Table.Head>
-					<Table.Head class="text-right">Round</Table.Head>
+					<Table.Head class="w-[100px]">{$t('default.page.dashboard.fights.table.id')}</Table.Head>
+					<Table.Head>{$t('default.page.dashboard.fights.table.partner')}</Table.Head>
+					<Table.Head>{$t('default.page.dashboard.fights.table.date')}</Table.Head>
+					<Table.Head class="">{$t('default.page.dashboard.fights.table.opened')}</Table.Head>
+					<Table.Head class="">{$t('default.page.dashboard.fights.table.round')}</Table.Head>
 					<Table.Head class="text-right"></Table.Head>
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
 				{#each records as record}
-					<Table.Row>
+					<Table.Row on:click={gotoFight(record.id)} class="group cursor-pointer leading-loose">
 						<Table.Cell class="font-medium">{record.id}</Table.Cell>
 						<Table.Cell>{record.name}</Table.Cell>
 						<Table.Cell>{record.created}</Table.Cell>
-						<Table.Cell class="text-right">{record.opened}</Table.Cell>
-						<Table.Cell class="text-right">{record.responses?.length + 1}</Table.Cell>
+						<Table.Cell class="">{record.opened}</Table.Cell>
+						<Table.Cell class="">{record.responses?.length + 1}</Table.Cell>
+						<Table.Cell class="text-right">
+							<CaretRight class="h-4 w-4 group-hover:bg-neon group-hover:text-black rounded-full" />
+						</Table.Cell>
 					</Table.Row>
 				{/each}
 			</Table.Body>

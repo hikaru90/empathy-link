@@ -22,8 +22,24 @@
 		},
 		"dashboard": {
       "fights": {
-        "tableCaption": "Eine liste Deiner Streite"
+        "tableCaption": "Eine liste Deiner Streite",
+				"table": {
+          "id": "Id",
+          "partner": "Streitpartner",
+          "date": "Datum",
+          "opened": "Geöffnet",
+          "round": "Runde"
+        }
       }
+    },
+		"fight": {
+      "heading": "Streit",
+			"card": {
+				"observation": "Beobachtung",
+				"feelings": "Gefühle",
+				"needs": "Bedürfnisse",
+				"request": "Bitte"
+			}
     },
 		"fights": {
       "create": "Fang einen Streit an",
