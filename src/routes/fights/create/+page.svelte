@@ -245,23 +245,23 @@
 {/if} -->
 <div
 	class="flex flex-grow flex-col justify-between transition duration-700 {`bg-${stepConstructor[step - 1].slug}-background`}"
->
+	>
 	<div class="max-container relative flex h-dvh flex-grow flex-col">
 		<Menu />
 		<form
-			on:submit|preventDefault
-			use:enhance
-			class="-mt-1 flex h-full flex-grow flex-col pb-[74px]"
+		on:submit|preventDefault
+		use:enhance
+		class="-mt-1 flex h-full flex-grow flex-col pb-[74px]"
 		>
-			{#if !formSubmitted && !formSuccess}
-				<FormStepDisplay
-					on:changeStep={changeStep}
-					{step}
-					steps={stepConstructor}
-					stepBackground={stepConstructor[step - 1].slug}
-				/>
-				<Mascot {step} stepName={stepConstructor[step - 1].slug} />
-			{/if}
+		{#if !formSubmitted && !formSuccess}
+		<FormStepDisplay
+		on:changeStep={changeStep}
+		{step}
+		steps={stepConstructor}
+		stepBackground={stepConstructor[step - 1].slug}
+		/>
+		<Mascot {step} stepName={stepConstructor[step - 1].slug} />
+		{/if}
 			{#key step}
 				{#if step === 1}
 					<div data-simplebar class="form-content">
@@ -439,7 +439,7 @@
 		mask: var(--mask);
 	}
 	:global(.form-label) {
-		@apply mb-2 mt-4 block w-full border-b border-gray-200/20 pb-2 text-xl font-bold leading-tight;
+		@apply mb-2 mt-4 block w-full pb-2 text-xl font-bold leading-tight;
 		&:not([data-fs-error]) {
 			@apply dark:text-foreground;
 		}

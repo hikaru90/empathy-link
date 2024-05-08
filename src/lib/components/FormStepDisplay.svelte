@@ -15,6 +15,7 @@
 		>
 			<!-- <div class="absolute top-1 left-1 bottom-1 right-1 bg-gradient-to-br from-white to-transparent -m-[3px] md:rounded-full opacity-60"></div> -->
 			{#each steps as entry, index}
+			{#if !entry.hidden}
 				<button
 					on:click={() => dispatch('changeStep', { step: index + 1 })}
 					type="button"
@@ -49,6 +50,7 @@
 						</div>
 					</div>
 				</button>
+				{/if}
 			{/each}
 		</div>
 	</div>

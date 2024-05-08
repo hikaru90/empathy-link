@@ -1,6 +1,11 @@
 @import 'fonts.scss';
 @import 'animations.scss';
 
+:global(html){
+  overflow:hidden;
+  overscroll-behavior: none;
+}
+
 :global(html, body) {
   @apply h-full w-full;
   scrollbar-gutter: auto;

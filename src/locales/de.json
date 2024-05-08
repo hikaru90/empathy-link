@@ -11,9 +11,51 @@
       "feedback": "Feedback",
       "learn": "Lernen"
     },
-    "soon": "bald"
+    "soon": "bald",
+		"share": {
+			"cta": "Teilen",
+			"copyLink": "Link kopieren",
+			"copyLinkConfirmation": "Link in Zwischenablage kopiert",
+			"mailLink": "Link verschicken",
+			"mailLinkConfirmation": "Link erfolgreich verschickt",
+			"mailLinkError": "Fehler beim versenden des Links",
+			"mailDialogText": "Mit wem möchtest Du streiten?"
+		}
   },
 	"page": {
+		"respond": {
+      "explanationTitle": "Erklärung",
+      "explanation": "Ein Empathie-Link ist ein digitales Kommunikationstool, das Empathie, ehrlichen Ausdruck und gegenseitiges Verständnis betont. Es konzentriert sich darauf, Gefühle und Bedürfnisse ohne Bewertung oder Schuldzuweisung zu identifizieren und auszudrücken, mit dem Ziel, mitfühlende Verbindungen herzustellen und Konflikte friedlich zu lösen.",
+			"steps": {
+				"greeting": {
+					"heading": "hat Dir einen Empathie-Link geschickt",
+					"explanationCta": "Was ist ein Empathie-Link?",
+					"question": "Fühlst Du Dich bereit ihn zu öffnen?"
+				},
+				"disclaimer": {
+					"heading":"Denk daran",
+					"description": "Die Sachen die Du gleich liest, haben nichts mit Dir zu tun."
+				},
+				"breathe": {
+					"heading": "Atme ein und aus"
+				},
+				"ownerObservation": {
+					"heading": "hat folgende Beobachtung gemacht"
+				},
+				"ownerFeelings": {
+					"heading": "hat sich so gefühlt"
+				},
+				"ownerNeeds": {
+					"heading": "hat folgende Bedürfnisse"
+				},
+				"ownerRequest": {
+					"heading": "hat folgende Bitte"
+				},
+				"pause": {
+					"heading": "Du hast jetzt die Möglichkeit zu antworten"
+				}
+			}
+    },
 		"home": {
 			"title": "Startseite",
 			"nav": "Start",

@@ -11,9 +11,48 @@
       "feedback": "Feedback",
       "learn": "Learn"
     },
-    "soon": "soon"
+    "soon": "soon",
+    "share": {
+			"cta": "Share",
+			"copyLink": "Copy link",
+      "copyLinkConfirmation": "Link copied to clipboard",
+			"mailLink": "Send link",
+			"mailLinkConfirmation": "Link was sent successfully",
+      "mailLinkError": "Error sending link",
+      "mailDialogText": "With whom do you want to fight?"
+		}
   },
   "page": {
+    "respond": {
+      "explanationTitle": "Explanation",
+      "explanation": "An Empathy-Link is a communication framework that emphasizes empathy, honest expression, and mutual understanding. It focuses on identifying and expressing feelings and needs without judgment or blame, aiming to foster compassionate connections and resolve conflicts peacefully.",
+      "steps": {
+				"greeting": {
+					"heading": "sent you an Empathy-Link",
+					"explanationCta": "What is an Empathy-Link?",
+					"question": "Do you feel ready to open it?"
+				},
+				"disclaimer": {
+					"heading":"Please remeber",
+					"description": "The things you are about to read don't have anything to do with you."
+				},
+				"breathe": {
+					"heading": "Breathe"
+				},
+        "ownerObservation": {
+					"heading": "described the situation as follows"
+				},
+				"ownerFeelings": {
+					"heading": "had the following feelings"
+				},
+				"ownerNeeds": {
+					"heading": "needs were"
+				},
+				"ownerRequest": {
+					"heading": "requested the following"
+				}
+			}
+    },
     "home": {
       "title": "Homepage",
       "nav": "Home",

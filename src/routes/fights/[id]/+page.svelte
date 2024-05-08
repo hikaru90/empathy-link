@@ -1,38 +1,148 @@
 <script lang="ts">
 	import Menu from '$lib/components/Menu.svelte';
-	import DaterangePicker from '$lib/components/DaterangePicker.svelte';
-	import FightOverview from '$lib/components/FightOverview.svelte';
-	import type { PageData } from './$types.js';
-	import LoginForm from '$lib/components/LoginForm.svelte';
+	import * as Form from '$lib/components/ui/form';
+	import { Input } from '$lib/components/ui/input';
+	import { type SuperValidated, type Infer, defaults, superForm } from 'sveltekit-superforms';
 	import { t, locale } from '$lib/translations';
-	import { startDate, endDate } from '$store/dashboard';
-	import { NumberFormatter } from '@internationalized/number';
-	import { onMount } from 'svelte';
+	import { zodClient, zod } from 'sveltekit-superforms/adapters';
+	import { schema } from './schema';
 	import { pb } from '$scripts/pocketbase';
+	import { onMount, onDestroy } from 'svelte';
+	import { serializeNonPOJOs, groupBy } from '$scripts/helpers';
+	import { Textarea } from '$lib/components/ui/textarea';
+	import Mascot from '$lib/components/Mascot.svelte';
+	import { TriangleDown, TriangleUp } from 'radix-icons-svelte';
+	import { user } from '$store/auth';
+
+	import { clsx } from 'clsx';
+	import FightDisplay from '$lib/components/FightDisplay.svelte';
+	import FightOwnerDisplay from '$lib/components/FightOwnerDisplay.svelte';
+	import type { PageData } from './$types.js';
+	import { startDate, endDate } from '$store/dashboard';
 	import { page } from '$app/stores';
 	import { Skeleton } from '$lib/components/ui/skeleton';
-	import * as Card from '$lib/components/ui/card';
-	import IconEye from '$assets/icons/icon-eye.svg?raw';
-	import IconHeart from '$assets/icons/icon-heart.svg?raw';
-	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
-	import IconSteps from '$assets/icons/icon-steps.svg?raw';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import {
+		CaretLeft,
+		Share1,
+		Cross1,
+		Clipboard,
+		EnvelopeClosed,
+		PaperPlane
+	} from 'radix-icons-svelte';
+	import * as Drawer from '$lib/components/ui/drawer';
+	import { copy } from 'svelte-copy';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { toast } from 'svelte-sonner';
+	import { sendMail } from '$scripts/brevo';
 
-	export let data: PageData;
 	let initialized = false;
 	let pending = true;
 	let record = undefined;
+	let responses = [];
+	let dialogOpen = false;
+	let drawerOpen = false;
+	let recipient = '';
+
+	$: shareableLink = `${$page.url.origin}/fights/${$page.params.id}/respond`;
 
 	const fetchData = async () => {
 		record = await pb.collection('fights').getOne($page.params.id, {
-      expand: 'feelings, needs'
-    });
+			expand: 'feelings, needs, owner'
+		});
+
+		pb.collection('responses').subscribe(
+			'*',
+			function (e) {
+				//todo: replace with create
+				if(e.action === 'create' && e.record.fight === record.id){
+					const newRecord = e.record
+					responses = [...responses, newRecord]
+				}
+			},
+			{
+				expand: 'fight, feelings, needs'
+			}
+		);
+
+		responses = await pb.collection('responses').getFullList({
+			filter: `fight = '${record.id}'`,
+			expand: 'fight, feelings, needs'
+		});
+	};
+
+	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(schema));
+	const checkSingleValidationStep = async (step: number) => {
+		const validations = [schemaStep1, schemaStep2, schemaStep3, schemaStep4, lastStep];
+		const constraints = Object.keys(zod(validations[step - 1]).constraints);
+		let allFieldsValid = true;
+
+		for (const constraint of constraints) {
+			const res = await validate(constraint, { update: false });
+			if (res) allFieldsValid = false;
+		}
+
+		if (!allFieldsValid) {
+			// errors.set(validationResult.errors);
+			return false;
+		}
+		return true;
+	};
+	const checkValidation = async () => {
+		const validationResult = await validateForm($formData, schema);
+		if (!validationResult.valid) {
+			errors.set(validationResult.errors);
+			return false;
+		}
+		return true;
+	};
+	const form = superForm(data, {
+		// SPA: true,
+		resetForm: false,
+		validators: zodClient(schema),
+		async onSubmit({ validators, cancel }) {
+			console.log('onSubmit');
+
+			cancel();
+			// Make a manual client-side validation, since we have cancelled
+			if (await checkValidation()) {
+				sendLink();
+			}
+		}
+		// async onUpdated({ form }) {
+		// 	console.log('onUpdated');
+		// 	if (form.valid) step = 1;
+		// }
+	});
+	const { form: formData, errors, enhance, validate, validateForm } = form;
+
+	const sendLink = () => {
+		try {
+			sendMail('sendLink', $locale, $formData.email, {
+				owner: record.expand.owner.firstName,
+				recipientName: record.name,
+				link: shareableLink
+			});
+			dialogOpen = false;
+			toast.success($t('default.menu.share.mailLinkConfirmation'));
+		} catch (err) {
+			console.log('error sending link per mail');
+			toast.error($t('default.menu.share.mailLinkError'));
+		}
 	};
 
 	onMount(async () => {
 		await fetchData();
 		initialized = true;
 		pending = false;
+
+		console.log('record', record);
+		console.log('responses', responses);
 	});
+
+	onDestroy(() => {
+		pb.collection('responses').unsubscribe('*');
+	})
 </script>
 
 {#if !initialized}
@@ -42,7 +152,17 @@
 		<div class="flex-grow">
 			<Menu />
 
-			<div class="max-container relative py-10">
+			<div class="max-container relative pt-2 pb-60">
+				<div class="mb-10 flex items-center justify-between">
+					<a href="/dashboard" class="flex items-center gap-1 text-sm">
+						<CaretLeft class="h-4 w-4 rounded-full" />
+						zurück
+					</a>
+					<Button on:click={() => (drawerOpen = true)} class="flex items-center gap-2">
+						{$t('default.menu.share.cta')}
+						<Share1 />
+					</Button>
+				</div>
 				<div class="mb-10 flex flex-col items-start justify-between md:flex-row md:items-center">
 					<h1 class="font-heading mb-2 text-xl font-semibold md:mb-0">
 						{$t('default.page.fight.heading')}
@@ -51,79 +171,91 @@
 							{record.name}
 						</span>
 					</h1>
-					<div>
+					<div class="">
 						{$locale === 'en' ? 'on the' : 'am'}
 						{new Intl.DateTimeFormat('de-DE').format(new Date($startDate))}
 					</div>
 				</div>
 
-				<Card.Root>
-					<Card.Header>
-						<Card.Title class="flex items-center gap-2">
-							<div
-								class="h-8 w-8 rounded-full bg-observation-background fill-observation-foreground p-1"
-							>
-								{@html IconEye}
-							</div>
-							{$t('default.page.fight.card.observation')}</Card.Title
-						>
-						<!-- <Card.Description>Card Description</Card.Description> -->
-					</Card.Header>
-					<Card.Content>
-						<p>{record.observation}</p>
-					</Card.Content>
-					<div class="border-b border-input"></div>
-					<Card.Header>
-						<Card.Title class="flex items-center gap-2">
-							<div
-								class="h-8 w-8 rounded-full bg-feelings-background fill-feelings-foreground p-1"
-							>
-								{@html IconHeart}
-							</div>
-							{$t('default.page.fight.card.feelings')}</Card.Title
-						>
-					</Card.Header>
-					<Card.Content class="flex flex-wrap gap-2">
-            {#each Object.values(record.expand.feelings) as feeling}
-            <div class="rounded-full bg-feelings-background fill-feelings-foreground px-3 py-0.5">
-              {$locale === 'en' ? feeling.nameEN : feeling.nameDE}
-            </div>
-            {/each}
-					</Card.Content>
-					<div class="border-b border-input"></div>
-					<Card.Header>
-						<Card.Title class="flex items-center gap-2">
-							<div
-								class="h-8 w-8 rounded-full bg-needs-background fill-needs-foreground p-1"
-							>
-								{@html IconSwirl}
-							</div>
-							{$t('default.page.fight.card.needs')}</Card.Title
-						>
-					</Card.Header>
-					<Card.Content class="flex flex-wrap gap-2">
-						{#each Object.values(record.expand.needs) as need}
-            <div class="rounded-full bg-needs-background fill-needs-foreground px-3 py-0.5">
-              {$locale === 'en' ? need.nameEN : need.nameDE}
-            </div>
-            {/each}
-					</Card.Content>
-					<div class="border-b border-input"></div>
-					<Card.Header>
-						<Card.Title class="flex items-center gap-2">
-							<div
-								class="h-8 w-8 rounded-full bg-request-background fill-request-foreground p-1"
-							>
-								{@html IconSteps}
-							</div>
-							{$t('default.page.fight.card.request')}</Card.Title
-						>
-					</Card.Header>
-					<Card.Content>
-						<p>{record.request}</p>
-					</Card.Content>
-				</Card.Root>
+				<div class="relative">
+					<!-- <FightOwnerDisplay {record} /> -->
+					<FightDisplay {record} />
+				</div>
+				{#each responses as response}
+					<div class="relative mt-8">
+						<!-- <FightOwnerDisplay record={response} adversary={record.name} /> -->
+						<FightDisplay record={response} adversary={record.name} />
+					</div>
+				{/each}
 			</div>
 		</div>
 	</div>
+
+	<Drawer.Root bind:open={drawerOpen}>
+		<Drawer.Content class="p-4">
+			<Drawer.Header>
+				<div class="flex items-center justify-between">
+					<Drawer.Title>{$t('default.menu.share.cta')}</Drawer.Title>
+					<!-- <Drawer.Description>This action cannot be undone.</Drawer.Description> -->
+					<Drawer.Close>
+						<Cross1 class="text-red-600" />
+					</Drawer.Close>
+				</div>
+			</Drawer.Header>
+			<Drawer.Footer class="flex flex-row items-center">
+				<button
+					use:copy={shareableLink}
+					on:click={() => {
+						drawerOpen = false;
+						toast.success($t('default.menu.share.copyLinkConfirmation'));
+					}}
+				>
+					<Button class="flex items-center gap-2"
+						>{$t('default.menu.share.copyLink')} <Clipboard /></Button
+					>
+				</button>
+
+				<Button
+					on:click={() => ((drawerOpen = false), (dialogOpen = true))}
+					class="flex items-center gap-2"
+					>{$t('default.menu.share.mailLink')} <EnvelopeClosed /></Button
+				>
+			</Drawer.Footer>
+		</Drawer.Content>
+	</Drawer.Root>
+
+	<Dialog.Root bind:open={dialogOpen} preventScroll={false}>
+		<Dialog.Content>
+			<Dialog.Header>
+				<Dialog.Title class="mb-10">{$t('default.menu.share.mailDialogText')}</Dialog.Title>
+				<Dialog.Description>
+					<form
+						on:submit|preventDefault
+						use:enhance
+						class="-mt-1 flex h-full flex-grow flex-col pb-[74px]"
+					>
+						<Form.Field {form} name="email">
+							<Form.Control let:attrs>
+								<Form.Label class="form-label">E-Mail</Form.Label>
+								<Input
+									{...attrs}
+									bind:value={$formData.email}
+									type="text"
+									placeholder={$locale === 'en' ? 'E-Mail' : 'E-Mail Adresse'}
+									class="mb-4"
+								/>
+							</Form.Control>
+							<!-- <Form.Description>This is your public display name.</Form.Description> -->
+							<Form.FieldErrors />
+						</Form.Field>
+						<div class="flex justify-end">
+							<Button type="submit" class="flex items-center gap-2"
+								>{$t('default.menu.share.cta')} <PaperPlane /></Button
+							>
+						</div>
+					</form>
+				</Dialog.Description>
+			</Dialog.Header>
+		</Dialog.Content>
+	</Dialog.Root>
 {/if}
