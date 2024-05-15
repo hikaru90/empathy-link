@@ -13,6 +13,7 @@
 	import Mascot from '$lib/components/Mascot.svelte';
 	import { TriangleDown, TriangleUp } from 'radix-icons-svelte';
 	import { user } from '$store/auth';
+	import { Button } from '$lib/components/ui/button-op1/index.js';
 
 	import { clsx } from 'clsx';
 	import FightDisplay from '$lib/components/FightDisplay.svelte';
@@ -21,7 +22,6 @@
 	import { startDate, endDate } from '$store/dashboard';
 	import { page } from '$app/stores';
 	import { Skeleton } from '$lib/components/ui/skeleton';
-	import { Button } from '$lib/components/ui/button/index.js';
 	import {
 		CaretLeft,
 		Share1,
@@ -55,9 +55,9 @@
 			'*',
 			function (e) {
 				//todo: replace with create
-				if(e.action === 'create' && e.record.fight === record.id){
-					const newRecord = e.record
-					responses = [...responses, newRecord]
+				if (e.action === 'create' && e.record.fight === record.id) {
+					const newRecord = e.record;
+					responses = [...responses, newRecord];
 				}
 			},
 			{
@@ -142,41 +142,55 @@
 
 	onDestroy(() => {
 		pb.collection('responses').unsubscribe('*');
-	})
+	});
 </script>
 
 {#if !initialized}
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
 	<div class="flex h-full flex-grow flex-col justify-between">
-		<div class="flex-grow">
-			<Menu />
+		<div class="flex-grow bg-black/20">
+			<div class="bg-offwhite">
+				<Menu />
 
-			<div class="max-container relative pt-2 pb-60">
-				<div class="mb-10 flex items-center justify-between">
-					<a href="/dashboard" class="flex items-center gap-1 text-sm">
-						<CaretLeft class="h-4 w-4 rounded-full" />
-						zurück
+				<div class="relative flex h-auto items-center justify-between">
+					<a href="/dashboard" class="block">
+						<Button decoration="op1" class="flex items-center px-1.5 text-sm">
+							<CaretLeft class="h-4 w-4 rounded-full" />
+						</Button>
 					</a>
-					<Button on:click={() => (drawerOpen = true)} class="flex items-center gap-2">
+					<div
+						class="block h-[52px] w-full flex-grow border border-black/10 bg-black/10 p-[3px] shadow-inner"
+					>
+						<div
+							class="h-full w-full rounded-sm bg-offwhite shadow-inner shadow-white/40 dark:shadow-white/10"
+						></div>
+					</div>
+					<Button
+						on:click={() => (drawerOpen = true)}
+						decoration="op1"
+						class="flex items-center gap-2"
+					>
 						{$t('default.menu.share.cta')}
 						<Share1 />
 					</Button>
 				</div>
-				<div class="mb-10 flex flex-col items-start justify-between md:flex-row md:items-center">
-					<h1 class="font-heading mb-2 text-xl font-semibold md:mb-0">
+				<div class="mb-6 flex items-center justify-between md:flex-row md:items-center px-4 py-2.5 border-b border-black/20">
+					<h1 class="font-heading text-lg font-semibold">
 						{$t('default.page.fight.heading')}
 						{$locale === 'en' ? 'with' : 'mit'}
 						<span class="capitalize">
 							{record.name}
 						</span>
 					</h1>
-					<div class="">
+					<div class="text-xs">
 						{$locale === 'en' ? 'on the' : 'am'}
 						{new Intl.DateTimeFormat('de-DE').format(new Date($startDate))}
 					</div>
 				</div>
+			</div>
 
+			<div class="max-container relative pb-42 pt-2">
 				<div class="relative">
 					<!-- <FightOwnerDisplay {record} /> -->
 					<FightDisplay {record} />

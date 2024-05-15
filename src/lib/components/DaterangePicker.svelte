@@ -9,7 +9,7 @@
     getLocalTimeZone
   } from "@internationalized/date";
   import { cn } from "$lib/utils.js";
-  import { Button } from "$lib/components/ui/button/index.js";
+  import { Button } from "$lib/components/ui/button-op1/index.js";
   import { RangeCalendar } from "$lib/components/ui/range-calendar/index.js";
   import * as Popover from "$lib/components/ui/popover/index.js";
   // import { enUS, de } from '@internationalized/date/locale-data';
@@ -38,7 +38,6 @@
   <Popover.Root openFocus>
     <Popover.Trigger asChild let:builder>
       <Button
-        variant="outline"
         class={cn(
           "w-full justify-start text-left font-normal",
           !value && "text-muted-foreground"
@@ -67,7 +66,7 @@
         bind:startValue
         placeholder={value?.start}
         initialFocus
-        numberOfMonths={1}
+        numberOfMonths={2}
       />
     </Popover.Content>
   </Popover.Root>

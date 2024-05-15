@@ -17,8 +17,8 @@
 <div class="{$user.id === record.owner ? 'justify-start' : 'justify-end'} mb-2 flex">
 	<div
 		class="{$user.id === record.owner
-			? 'rounded-t-xl rounded-bl-[2px] rounded-br-xl'
-			: 'rounded-t-xl rounded-bl-xl rounded-br-[2px]'} bg-slate-300 px-3 py-1 text-xs"
+			? 'rounded-xl'
+			: 'rounded-[2px]'} bg-zinc-800 text-zinc-300 px-3 py-1 text-xs"
 	>
 		{$user.id === record.owner ? $user.firstName : record.expand.fight.name} — {new Date(
 			record.created
@@ -29,8 +29,8 @@
 <div class="relative flex flex-col">
 	<Card.Root
 		class="{$user.id === record.owner
-			? 'mr-10 self-start rounded-tl-sm rounded-tr-xl'
-			: 'ml-10 self-end rounded-tl-xl rounded-tr-sm'} card-root w-[calc(100%-16px)] max-w-96 rounded-b-xl border-0 bg-white/40 text-xs"
+			? 'mr-10 self-start rounded-xl'
+			: 'ml-10 self-end rounded-sm'} w-[calc(100%-16px)] max-w-96 rounded-b-xl border-0 bg-offwhite text-xs"
 	>
 		<Card.Header class="px-3 py-4">
 			<Card.Title class="flex items-start gap-2 font-normal">

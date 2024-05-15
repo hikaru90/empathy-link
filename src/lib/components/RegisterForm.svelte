@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { redirect } from '@sveltejs/kit';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { formSchema, type FormSchema } from '$routes/auth/login/schema';
 	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { t } from '$lib/translations';
-	import SuperDebug from 'sveltekit-superforms';
 	import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation'
+  import { Button } from '$lib/components/ui/button';
 
 	let className: string | undefined = undefined;
 	export { className as class };
@@ -47,5 +47,8 @@
 		<!-- <Form.Description>This is your public display name.</Form.Description> -->
 		<Form.FieldErrors />
 	</Form.Field>
-	<Form.Button>{$t('default.page.register.cta')}</Form.Button>
+	<div class="flex items-center justify-between">
+		<Form.Button>{$t('default.page.register.cta')}</Form.Button>
+    <Button variant="ghost" on:click={() => goto('/auth/login')}>{$t('default.page.login.cta')}</Button>
+  </div>
 </form>

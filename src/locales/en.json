@@ -61,7 +61,7 @@
     },
     "dashboard": {
       "fights": {
-        "tableCaption": "A list of your recent fights",
+        "tableCaption": "Fights",
         "table": {
           "id": "Id",
           "partner": "Partner",

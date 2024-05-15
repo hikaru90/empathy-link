@@ -64,7 +64,7 @@
 		},
 		"dashboard": {
       "fights": {
-        "tableCaption": "Eine liste Deiner Streite",
+        "tableCaption": "Streit",
 				"table": {
           "id": "Id",
           "partner": "Streitpartner",

@@ -16,6 +16,7 @@
 	import { locale, locales } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
 	import { scroll } from '$store/page';
+	import { goto } from '$app/navigation'
 
 	let navbarHeight = 56;
 
@@ -98,6 +99,12 @@
 				<div class="">
 					<Avatar />
 				</div>
+				{:else}
+				<!-- <a href="/auth/login" target="_self" title={$t('default.page.login.heading')}> -->
+					<Button on:click={() => goto('/auth/login')} variant="outline">
+						{$t('default.page.login.heading')}
+					</Button>		
+				<!-- </a> -->
 			{/if}
 		</div>
 		<!-- <div class="flex items-center gap-4">
