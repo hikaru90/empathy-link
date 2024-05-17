@@ -14,7 +14,7 @@
 	let records = [];
 
 	const fetchData = async () => {
-		const filter = `created >= "${$startDate.toString()} 00:00:00" && created < "${$endDate.add({ days: 1 }).toString()} 00:00:00"`;
+		const filter = `owner = '${$user.id}' && created >= "${$startDate.toString()} 00:00:00" && created < "${$endDate.add({ days: 1 }).toString()} 00:00:00"`;
 		console.log('filter', filter);
 		records = await pb.collection('fights').getFullList({
 			filter: filter,
@@ -49,8 +49,8 @@
 {#if !initialized}
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
-	<div class="rounded-lg bg-white shadow-2xl shadow-black/10">
-		<div class="border-b border-black/5 px-4 pb-2 pt-3">
+	<div class="">
+		<div class="border-b border-black/5 px-4 pb-2 pt-3 rounded-lg bg-white shadow-2xl shadow-black/10">
 			<h2 class="text-md mb-2 font-bold">
 				{$t('default.page.dashboard.fights.tableCaption')}
 			</h2>
@@ -70,7 +70,7 @@
 				<div class="w-1/6"></div>
 			</div>
 		</div>
-		<div class="px-4 pb-3 pt-2">
+		<div class="px-4 pb-3 pt-2 rounded-lg bg-white shadow-2xl shadow-black/10">
 			{#each records as record}
 				<button on:click={gotoFight(record.id)} class="group w-full text-left flex items-center border-b border-black/5 py-2 sm:py-3 text-xs last:border-b-0">
 					<div class="flex w-1/6">

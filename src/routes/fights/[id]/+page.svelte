@@ -160,7 +160,7 @@
 						</Button>
 					</a>
 					<div
-						class="block h-[52px] w-full flex-grow border border-black/10 bg-black/10 p-[3px] shadow-inner"
+						class="block h-[51px] w-full flex-grow border border-black/10 bg-black/10 p-[3px] shadow-inner"
 					>
 						<div
 							class="h-full w-full rounded-sm bg-offwhite shadow-inner shadow-white/40 dark:shadow-white/10"
@@ -190,7 +190,7 @@
 				</div>
 			</div>
 
-			<div class="max-container relative pb-42 pt-2">
+			<div class="max-container relative pb-60 pt-2">
 				<div class="relative">
 					<!-- <FightOwnerDisplay {record} /> -->
 					<FightDisplay {record} />
@@ -219,7 +219,7 @@
 			<Drawer.Footer class="flex flex-row items-center">
 				<button
 					use:copy={shareableLink}
-					on:click={() => {
+					on:svelte-copy={() => {
 						drawerOpen = false;
 						toast.success($t('default.menu.share.copyLinkConfirmation'));
 					}}

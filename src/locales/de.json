@@ -72,7 +72,10 @@
           "opened": "Geöffnet",
           "round": "Runde"
         }
-      }
+      },
+			"feelings": {
+				"heading":"Gefühle"
+			}
     },
 		"fight": {
       "heading": "Streit",
@@ -85,6 +88,7 @@
     },
 		"fights": {
       "create": "Fang einen Streit an",
+			"loadMore": "Mehr laden",
 			"form":{
 				"general": {
 					"prev": "zurück",

@@ -12,13 +12,18 @@
 	export let adversary;
 
 	console.log('record', record);
+
+	const tableRows = [
+		{ icon: IconEye, color: 'observation-background', type: 'text', content: record.observation },
+		{ icon: IconHeart, color: 'feelings-background', type: 'array', content: record.expand.feelings },
+		{ icon: IconSwirl, color: 'needs-background', type: 'array', content: record.expand.needs },
+		{ icon: IconSteps, color: 'request-background', type: 'text', content: record.request },
+	];
 </script>
 
 <div class="{$user.id === record.owner ? 'justify-start' : 'justify-end'} mb-2 flex">
 	<div
-		class="{$user.id === record.owner
-			? 'rounded-xl'
-			: 'rounded-[2px]'} bg-zinc-800 text-zinc-300 px-3 py-1 text-xs"
+		class="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300"
 	>
 		{$user.id === record.owner ? $user.firstName : record.expand.fight.name} — {new Date(
 			record.created
@@ -26,79 +31,44 @@
 	</div>
 </div>
 
-<div class="relative flex flex-col">
-	<Card.Root
-		class="{$user.id === record.owner
-			? 'mr-10 self-start rounded-xl'
-			: 'ml-10 self-end rounded-sm'} w-[calc(100%-16px)] max-w-96 rounded-b-xl border-0 bg-offwhite text-xs"
-	>
-		<Card.Header class="px-3 py-4">
-			<Card.Title class="flex items-start gap-2 font-normal">
-				<div class="label bg-observation-background fill-observation-foreground">
+<div class="{$user.id === record.owner ? 'mr-10' : 'ml-10'} relative flex flex-col mb-10">
+	{#each tableRows as row}
+		<div class="flex items-stretch rounded-md bg-offwhite text-xs shadow-md border-b border-black/10">
+			<div class="flex-shrink-0 p-3 border-r border-black/10 flex items-center justify-center">
+				<div class="label bg-{row.color}">
 					<div class="icon">
-						{@html IconEye}
+						{@html row.icon}
 					</div>
 				</div>
-				<p class="mt-1">{record.observation}</p>
-			</Card.Title>
-		</Card.Header>
-		<Card.Header class="px-3 py-4">
-			<Card.Title class="flex items-start gap-2 font-normal">
-				<div class="label bg-feelings-background fill-feelings-foreground">
-					<div class="icon">
-						{@html IconHeart}
+			</div>
+			<div class="flex-grow px-3 py-4 break-all">
+				{#if row.type === 'text'}
+					{row.content}
+				{:else}
+				<div class="flex flex-wrap gap-2">
+					{#each row.content as entry}
+					<div class="bg-{row.color} rounded-full px-2 py-0.5">
+						<!-- {JSON.stringify(entry)} -->
+						{$locale === 'en'? entry.nameEN : entry.nameDE}
 					</div>
-				</div>
-				<div class="flex flex-wrap gap-1">
-					{#each Object.values(record.expand.feelings) as feeling}
-						<span class="rounded-full bg-feelings-background px-3 py-0.5">
-							{$locale === 'en' ? feeling.nameEN : feeling.nameDE}
-						</span>
 					{/each}
 				</div>
-			</Card.Title>
-		</Card.Header>
-		<Card.Header class="px-3 py-4">
-			<Card.Title class="flex items-start gap-2 font-normal">
-				<div class="label bg-needs-background fill-needs-foreground">
-					<div class="icon">
-						{@html IconSwirl}
-					</div>
-				</div>
-				<div class="flex flex-wrap gap-1">
-					{#each Object.values(record.expand.needs) as need}
-						{#if need.nameEN.length > 10 || need.nameDE.length > 10}
-							<div class="leading-relaxed">
-								<span class="need rounded-full bg-needs-background px-3 py-0.5">
-									{$locale === 'en' ? need.nameEN : need.nameDE}
-								</span>
-							</div>
-						{:else}
-							<span class="need rounded-full bg-needs-background px-3 py-0.5">
-								{$locale === 'en' ? need.nameEN : need.nameDE}
-							</span>
-						{/if}
-					{/each}
-				</div>
-			</Card.Title>
-		</Card.Header>
-		<Card.Header class="px-3 py-4">
-			<Card.Title class="flex items-start gap-2 font-normal">
-				<div class="label bg-request-background fill-request-foreground">
-					<div class="icon">
-						{@html IconSteps}
-					</div>
-				</div>
-				<p class="mt-1">{record.request}</p>
-			</Card.Title>
-		</Card.Header>
-	</Card.Root>
+				{/if}
+			</div>
+		</div>
+	{/each}
+
 </div>
 
 <style lang="scss">
 	.label {
-		box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.4);
-		@apply relative h-5 w-5 flex-shrink-0 rounded-full;
+		box-shadow: /*inset 0 0 4px rgba(0, 0, 0, 0.4),*/ -4px -4px 8px 0 rgba(white,1);
+		@apply relative h-5 w-5 flex-shrink-0 rounded-full border border-white;
+	}
+	.label:after{
+		content: '';
+		box-shadow: 4px 4px 8px 0 rgba(0,0,0,0.4);
+		@apply block rounded-full w-full h-full;
 	}
 	.icon {
 		@apply absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 transform;

@@ -11,7 +11,7 @@ console.log('todayDate',todayDate);
 
 export let startDate = writable(
 	new CalendarDate(todayDate.getFullYear(), todayDate.getMonth()+1, todayDate.getDate()).subtract({
-		days: 7
+		days: 14
 	})
 );
 export let endDate = writable(

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import FightOverviewAll from '$lib/components/FightOverviewAll.svelte';
 	import Menu from '$lib/components/Menu.svelte';
 	import type { PageData } from './$types.js';
 	import LoginForm from '$lib/components/LoginForm.svelte';
@@ -24,7 +25,7 @@
 			<!-- <h1>Fights</h1> -->
 			<a
 				href="/fights/create"
-				class="flex w-full items-center justify-center rounded-lg border border-border py-4 lg:py-12"
+				class="flex w-full items-center justify-center rounded-lg border border-border py-4 lg:py-12 mb-10"
 			>
 				<SparkleButton
 					class="flex items-center justify-between gap-10 px-3 py-5 font-bold text-black shadow-lg dark:shadow-gray-300/30 lg:px-6 lg:py-7 lg:text-lg"
@@ -33,6 +34,8 @@
 					<Plus class="h-5 w-5" />
 				</SparkleButton>
 			</a>
+
+			<FightOverviewAll />
 		</div>
 	</div>
 {/if}

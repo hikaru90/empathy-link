@@ -2,6 +2,7 @@
 	import Menu from '$lib/components/Menu.svelte';
 	import DaterangePicker from '$lib/components/DaterangePicker.svelte';
 	import FightOverview from '$lib/components/FightOverview.svelte';
+	import FeelingsOverview from '$lib/components/FeelingsOverview.svelte';
 	import type { PageData } from './$types.js';
 	import LoginForm from '$lib/components/LoginForm.svelte';
 	import { t } from '$lib/translations';
@@ -24,7 +25,7 @@
 </script>
 
 {#if $user}
-	<div class="flex h-full flex-grow flex-col justify-between">
+	<div class="flex h-full flex-grow flex-col justify-between pb-60">
 		<div class="flex-grow">
 			<Menu />
 			<div class="relative md:flex md:justify-center -mt-1">
@@ -42,7 +43,10 @@
 					<h1 class="font-heading mb-2 text-xl font-semibold">Dashboard</h1>
 				</div>
 
-				<FightOverview />
+				<div class="mb-10">
+					<FightOverview />
+				</div>
+				<FeelingsOverview />
 			</div>
 		</div>
 	</div>

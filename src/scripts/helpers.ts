@@ -4,6 +4,47 @@ export const serializeNonPOJOs = (obj: object) => {
 	return structuredClone(obj);
 };
 
+export const copyToClipboard = (text) => {
+	const input = document.createElement('input');
+	input.setAttribute('value', text);
+	document.body.appendChild(input);
+	input.select();
+
+	try {
+		const success = document.execCommand('copy');
+		if (success) {
+			console.log('Text copied to clipboard');
+			// Optionally, you can notify the user that the text was copied successfully.
+		} else {
+			console.error('Could not copy text');
+			// Handle error, such as displaying a message to the user that the copy operation failed.
+		}
+	} catch (err) {
+		console.error('Error copying text: ', err);
+		// Handle error, such as displaying a message to the user that the copy operation failed.
+	}
+
+	document.body.removeChild(input);
+};
+
+export const generateHslaColors = (hue, saturation, lightness, length) => {
+	const colors = [];
+
+	for (let i = 1; i < length + 1; i++) {
+		// Calculate the opacity value
+		const opacity = i / (length - 1);
+
+		// Create the HSLA color string
+		const hslaColor = `hsla(${hue}, ${saturation}%, ${lightness}%, ${opacity})`;
+
+		// Add the color to the array
+		colors.push(hslaColor);
+	}
+	
+	colors.reverse();
+	return colors;
+};
+
 export const groupBy = (array: object[], key: string) =>
 	Object.entries(
 		array.reduce((result, currentValue) => {
@@ -13,6 +54,18 @@ export const groupBy = (array: object[], key: string) =>
 			return result;
 		}, {})
 	).map(([category, content]) => ({ category, content }));
+
+export const sortByKey = (array: object[], key: string) => {
+	return array.sort((a, b) => {
+		if (a[key] < b[key]) {
+			return 1;
+		}
+		if (a[key] > b[key]) {
+			return -1;
+		}
+		return 0; // a must be equal to b
+	});
+};
 
 export const setCookie = (name: string, value: string, days?: number) => {
 	if (!import.meta.env.SSR) {

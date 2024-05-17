@@ -69,7 +69,10 @@
           "opened": "Opened",
           "round": "Round"
         }
-      }
+      },
+			"feelings": {
+				"heading":"Feelings"
+			}
     },
     "fight": {
       "heading": "Fight",
@@ -82,6 +85,7 @@
     },
     "fights": {
       "create": "Start a fight",
+      "loadMore": "Load more",
       "form":{
         "general": {
           "prev": "back",

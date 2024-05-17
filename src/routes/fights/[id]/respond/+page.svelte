@@ -76,9 +76,10 @@
 	const handleSubmit = async () => {
 		try {
 			let data = $formData;
-			data.owner = $user.id;
+			data.fight = fight.id
+			// data.owner = $user.id;
 			console.log('submit form', data);
-			const record = await pb.collection('fights').create(data);
+			const record = await pb.collection('responses').create(data);
 			formSuccess = true;
 			formSubmitted = true;
 		} catch (err) {
