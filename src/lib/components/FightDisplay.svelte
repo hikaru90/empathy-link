@@ -1,15 +1,13 @@
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
 	import IconEye from '$assets/icons/icon-eye.svg?raw';
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import IconSteps from '$assets/icons/icon-steps.svg?raw';
-	import { NumberFormatter } from '@internationalized/number';
-	import { t, locale } from '$lib/translations';
+	import { locale } from '$lib/translations';
 	import { user } from '$store/auth';
 
 	export let record;
-	export let adversary;
+	// export let adversary;
 
 	console.log('record', record);
 

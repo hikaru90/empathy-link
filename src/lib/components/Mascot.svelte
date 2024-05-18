@@ -1,8 +1,8 @@
 <script lang="ts">
   import backgroundImage from '$assets/images/holo3.jpg';
 
-	export let step:number;
-	export let stepName:string;
+	// export let step:number;
+	// export let stepName:string;
 </script>
 
 <div class="flex left-0 right-0 justify-center gap-1 h-12 relative -mx-4 mt-2">
@@ -21,21 +21,21 @@
 
 
 <style lang="scss">
-  .face-1{
-    animation: lookaround 19s infinite;
-  }
-  .face-2{
-    animation: lookaround 16s 4s infinite;
-  }
-  .face-3{
-    animation: lookaround 10s 2s infinite;
-  }
-  .face-4{
-    animation: lookaround 20s 5s infinite;
-  }
-  .face-5{
-    animation: lookaround 5s 3s infinite;
-  }
+  // .face-1{
+  //   animation: lookaround 19s infinite;
+  // }
+  // .face-2{
+  //   animation: lookaround 16s 4s infinite;
+  // }
+  // .face-3{
+  //   animation: lookaround 10s 2s infinite;
+  // }
+  // .face-4{
+  //   animation: lookaround 20s 5s infinite;
+  // }
+  // .face-5{
+  //   animation: lookaround 5s 3s infinite;
+  // }
   .mouth{
     animation: mouth 10s infinite;
   }

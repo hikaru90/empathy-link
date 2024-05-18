@@ -10,7 +10,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
-	export let data: PageData;
+	// export let data: PageData;
 
 	onMount(() => {
 		if (!$user) goto('/auth/login');

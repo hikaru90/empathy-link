@@ -8,18 +8,10 @@
 	import { schema } from './schema';
 	import { pb } from '$scripts/pocketbase';
 	import { onMount, onDestroy } from 'svelte';
-	import { serializeNonPOJOs, groupBy } from '$scripts/helpers';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import Mascot from '$lib/components/Mascot.svelte';
-	import { TriangleDown, TriangleUp } from 'radix-icons-svelte';
-	import { user } from '$store/auth';
 	import { Button } from '$lib/components/ui/button-op1/index.js';
 
-	import { clsx } from 'clsx';
 	import FightDisplay from '$lib/components/FightDisplay.svelte';
-	import FightOwnerDisplay from '$lib/components/FightOwnerDisplay.svelte';
-	import type { PageData } from './$types.js';
-	import { startDate, endDate } from '$store/dashboard';
+	import { startDate } from '$store/dashboard';
 	import { page } from '$app/stores';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import {
@@ -34,7 +26,6 @@
 	import { copy } from 'svelte-copy';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { toast } from 'svelte-sonner';
-	import { sendMail } from '$scripts/brevo';
 
 	let initialized = false;
 	let pending = true;
@@ -118,11 +109,21 @@
 
 	const sendLink = () => {
 		try {
-			sendMail('sendLink', $locale, $formData.email, {
-				owner: record.expand.owner.firstName,
-				recipientName: record.name,
-				link: shareableLink
+			const sendMailRes = fetch('/api/mails/send', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					template: 'sendLink',
+					locale: $locale,
+					to: $formData.email,
+					owner: record.expand.owner.firstName,
+					recipientName: record.name,
+					link: shareableLink
+				})
 			});
+			console.log('sendMailRes', sendMailRes);
 			dialogOpen = false;
 			toast.success($t('default.menu.share.mailLinkConfirmation'));
 		} catch (err) {
@@ -175,7 +176,9 @@
 						<Share1 />
 					</Button>
 				</div>
-				<div class="mb-6 flex items-center justify-between md:flex-row md:items-center px-4 py-2.5 border-b border-black/20">
+				<div
+					class="mb-6 flex items-center justify-between border-b border-black/20 px-4 py-2.5 md:flex-row md:items-center"
+				>
 					<h1 class="font-heading text-lg font-semibold">
 						{$t('default.page.fight.heading')}
 						{$locale === 'en' ? 'with' : 'mit'}

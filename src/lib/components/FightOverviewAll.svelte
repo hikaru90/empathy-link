@@ -1,11 +1,10 @@
 <script lang="ts">
-	import * as Table from '$lib/components/ui/table';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { Button } from '$lib/components/ui/button';
 	import { onMount } from 'svelte';
 	import { pb } from '$scripts/pocketbase';
-	import { t, locale } from '$lib/translations';
-	import { startDate, endDate } from '$store/dashboard';
+	import { t } from '$lib/translations';
+	import { endDate } from '$store/dashboard';
 	import { goto } from '$app/navigation';
 	import { CaretRight, Check, Cross2 } from 'radix-icons-svelte';
 	import { user } from '$store/auth';

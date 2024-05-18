@@ -26,7 +26,6 @@
 	import { serializeNonPOJOs, groupBy } from '$scripts/helpers';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import Mascot from '$lib/components/Mascot.svelte';
-	import { TriangleDown, TriangleUp } from 'radix-icons-svelte';
 	import { user } from '$store/auth';
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));

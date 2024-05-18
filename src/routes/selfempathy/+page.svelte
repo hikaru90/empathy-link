@@ -3,7 +3,7 @@
 	import type { PageData } from './$types.js';
 	import LoginForm from '$lib/components/LoginForm.svelte';
 	import { t } from '$lib/translations';
-	export let data: PageData;
+	// export let data: PageData;
 
 	console.log('login page');
 </script>

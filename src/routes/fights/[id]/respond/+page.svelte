@@ -4,7 +4,6 @@
 	import * as Drawer from '$lib/components/ui/drawer';
 	import Menu from '$lib/components/Menu.svelte';
 	import * as Form from '$lib/components/ui/form';
-	import { Input } from '$lib/components/ui/input';
 	import * as ToggleGroup from '$lib/components/ui/toggle-group';
 	import { type SuperValidated, type Infer, defaults, superForm } from 'sveltekit-superforms';
 	import FormStepper from '$lib/components/FormStepper.svelte';
@@ -37,15 +36,8 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import Mascot from '$lib/components/Mascot.svelte';
 	import {
-		CaretLeft,
-		Share1,
 		Cross1,
-		Clipboard,
-		EnvelopeClosed,
-		PaperPlane
 	} from 'radix-icons-svelte';
-	import { user } from '$store/auth';
-	import { record } from 'zod';
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
 	let feelings = [];

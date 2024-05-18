@@ -4,15 +4,12 @@
 	import FightOverview from '$lib/components/FightOverview.svelte';
 	import FeelingsOverview from '$lib/components/FeelingsOverview.svelte';
 	import NeedsOverview from '$lib/components/NeedsOverview.svelte';
-	import type { PageData } from './$types.js';
-	import LoginForm from '$lib/components/LoginForm.svelte';
-	import { t } from '$lib/translations';
 	import { startDate, endDate } from '$store/dashboard';
 	import { user } from '$store/auth';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
-	export let data: PageData;
+	// export let data: PageData;
 
 	const updateStore = (payload) => {
 		// console.log('updateStore',payload.detail);
