@@ -56,7 +56,7 @@
     "home": {
       "title": "Homepage",
       "nav": "Home",
-      "hero": "In today’s rush, amid endless distractions and mounting todo lists, being mindful of how and why you connect with your peers has never been more difficult.",
+      "hero": "In today's rush, amid endless distractions and mounting todo lists, being mindful of how and why you connect with your peers has never been more difficult.",
       "cta": "Start Connecting"
     },
     "dashboard": {
@@ -71,7 +71,16 @@
         }
       },
 			"feelings": {
-				"heading":"Feelings"
+				"heading": "Feelings",
+        "positive": "positive",
+        "negative": "negative",
+        "empty": "No feelings"
+			},
+			"needs": {
+				"heading":"Needs",
+        "selfcentered": "self",
+        "community": "community",
+        "empty": "No needs"
 			}
     },
     "fight": {

@@ -235,7 +235,7 @@
 	});
 
 	//todo: remove
-	step = 5;
+	step = 1;
 </script>
 
 <!-- {#if $message}

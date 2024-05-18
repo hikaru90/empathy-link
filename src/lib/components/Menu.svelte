@@ -60,7 +60,7 @@
 		class="flex items-center justify-between px-2 py-2 bg-muted/60 backdrop-blur-xl backdrop-brightness-110 backdrop-hue-rotate-180 rounded-full"
 	> -->
 	<nav
-		class="flex items-center justify-between {$scroll > 50
+		class="flex items-center justify-between {$scroll > 5
 			? 'bg-offwhite/10 backdrop-blur-2xl'
 			: ''}  px-5 py-2 transition-all"
 	>

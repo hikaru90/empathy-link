@@ -59,7 +59,7 @@
 		"home": {
 			"title": "Startseite",
 			"nav": "Start",
-			"hero": "Es war noch nie so schwer wie jetzt, inmitten des hektischen Alltags, voller endloser Ablenkungen und immer länger werdender To-Do-Listen, achtsam darüber zu sein, wie und warum wir uns mit unseren Bezugspersonen verbinden.",
+			"hero": "Verbinde Dich trotz Stress, Ablenkungen und Hektik mit den Menschen, die Dir wichtig sind.",
 			"cta": "Verbinde dich"
 		},
 		"dashboard": {
@@ -74,7 +74,16 @@
         }
       },
 			"feelings": {
-				"heading":"Gefühle"
+				"heading":"Gefühle",
+				"positive": "positiv",
+        "negative": "negativ",
+				"empty": "Keine Gefühle"
+			},
+			"needs": {
+				"heading":"Bedürfnisse",
+				"selfcentered": "ich",
+        "community": "gemeinschaft",
+				"empty": "Keine Bedürfnisse"
 			}
     },
 		"fight": {

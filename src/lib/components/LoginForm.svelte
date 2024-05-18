@@ -58,7 +58,7 @@
 		<Form.FieldErrors />
 	</Form.Field>
   <div class="flex items-center justify-between">
+		<Button variant="ghost" on:click={() => goto('/auth/register')}>{$t('default.page.register.cta')}</Button>
     <Form.Button>{$t('default.page.login.cta')}</Form.Button>
-    <Button variant="ghost" on:click={() => goto('/auth/register')}>{$t('default.page.register.cta')}</Button>
   </div>
 </form>

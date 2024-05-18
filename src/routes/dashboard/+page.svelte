@@ -3,6 +3,7 @@
 	import DaterangePicker from '$lib/components/DaterangePicker.svelte';
 	import FightOverview from '$lib/components/FightOverview.svelte';
 	import FeelingsOverview from '$lib/components/FeelingsOverview.svelte';
+	import NeedsOverview from '$lib/components/NeedsOverview.svelte';
 	import type { PageData } from './$types.js';
 	import LoginForm from '$lib/components/LoginForm.svelte';
 	import { t } from '$lib/translations';
@@ -46,7 +47,12 @@
 				<div class="mb-10">
 					<FightOverview />
 				</div>
-				<FeelingsOverview />
+				<div class="mb-10">
+					<FeelingsOverview />
+				</div>
+				<div class="mb-10">
+					<NeedsOverview />
+				</div>
 			</div>
 		</div>
 	</div>

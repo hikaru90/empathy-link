@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table';
 	import { Skeleton } from '$lib/components/ui/skeleton';
+	import { Button } from '$lib/components/ui/button';
 	import { onMount } from 'svelte';
 	import { pb } from '$scripts/pocketbase';
 	import { t, locale } from '$lib/translations';
@@ -15,6 +16,7 @@
 	let pending = true;
 	let feelings = [];
 	let colors = [];
+	let displayPositiveFeelings = false
 
 	$: data = feelings.map((entry) => {return {name: $locale === 'en' ? entry.feeling.nameEN : entry.feeling.nameDE, count: entry.count};})
 
@@ -78,10 +80,18 @@
 	<div
 		class="rounded-lg bg-feelings-background text-feelings-foreground shadow-2xl shadow-black/10"
 	>
-		<div class="px-4 pb-2 pt-3">
+		<div class="px-4 pb-2 pt-3 flex items-center justify-between">
 			<h2 class="text-md mb-2 font-bold">
 				{$t('default.page.dashboard.feelings.heading')}
 			</h2>
+			<div class="flex items-center gap-2">
+				<Button on:click={() => displayPositiveFeelings = false} class="{displayPositiveFeelings === false ? 'solid-button':'border-button'} rounded-full px-4 leading-tight h-7 transition">
+					{$t('default.page.dashboard.feelings.negative')}
+				</Button>
+				<Button on:click={() => displayPositiveFeelings = true} class="{displayPositiveFeelings === true ? 'solid-button':'border-button'} rounded-full px-4 leading-tight h-7">
+					{$t('default.page.dashboard.feelings.positive')}
+			</Button>
+		</div>
 		</div>
 		<div class="flex items-center justify-center">
 			{#key feelings.length}
@@ -89,7 +99,11 @@
 			{/key}
 		</div>
 		<div class="px-4 pb-3 pt-2">
+			{#if feelings.length === 0}
+				{$t('default.page.dashboard.feelings.empty')}
+			{:else}
 			{#each feelings as feeling, index}
+			{#if displayPositiveFeelings === feeling.feeling.positive}
 				<div
 					class="flex items-center justify-between border-b border-feelings-foreground/20 py-1 last:border-b-0"
 				>
@@ -105,7 +119,18 @@
 						{feeling.count}
 					</span>
 				</div>
+				{/if}
 			{/each}
+			{/if}
 		</div>
 	</div>
 {/if}
+
+<style lang="scss">
+	:global(.solid-button){
+		@apply bg-feelings-foreground/60 hover:bg-feelings-foreground border-2 border-feelings-foreground/0 hover:border-feelings-foreground/60;
+	}
+	:global(.border-button){
+		@apply border-2 border-feelings-foreground/60 text-feelings-foreground/60 hover:border-feelings-foreground hover:text-feelings-foreground bg-transparent hover:bg-transparent;
+	}
+</style>

@@ -1,4 +1,4 @@
-import { PUBLIC_BREVO_API_KEY } from '$env/static/public';
+import { PRIVATE_BREVO_API_KEY } from '$env/static/private';
 
 const getTemplate = (templateName: string, locale: string, formData: object) => {
 	const templates = [
@@ -24,7 +24,7 @@ export const sendMail = async (template: string, locale: string, to: string, for
 		method: 'POST',
 		headers: {
 			accept: 'application/json',
-			'api-key': PUBLIC_BREVO_API_KEY,
+			'api-key': PRIVATE_BREVO_API_KEY,
 			'content-type': 'application/json'
 		},
 		body: JSON.stringify({

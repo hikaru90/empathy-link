@@ -6,8 +6,8 @@
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { t } from '$lib/translations';
 	import { toast } from 'svelte-sonner';
-	import { goto } from '$app/navigation'
-  import { Button } from '$lib/components/ui/button';
+	import { goto } from '$app/navigation';
+	import { Button } from '$lib/components/ui/button';
 
 	let className: string | undefined = undefined;
 	export { className as class };
@@ -26,29 +26,31 @@
 	});
 
 	const { form: formData, errors, enhance, delayed, message, constraints, reset } = form;
-	console.log('form',form);
+	console.log('form', form);
 </script>
 
 <!-- <SuperDebug data={formData} /> -->
-<form method="POST" use:enhance class={className}>
-	<Form.Field {form} name="email">
-		<Form.Control let:attrs>
-			<Form.Label>{$t('default.page.register.form.email.label')}</Form.Label>
-			<Input {...attrs} bind:value={$formData.email} type="email" />
-		</Form.Control>
-		<!-- <Form.Description>This is your public display name.</Form.Description> -->
-		<Form.FieldErrors />
-	</Form.Field>
-	<Form.Field {form} name="password">
-		<Form.Control let:attrs>
-			<Form.Label>{$t('default.page.register.form.password.label')}</Form.Label>
-			<Input {...attrs} bind:value={$formData.password} type="password" />
-		</Form.Control>
-		<!-- <Form.Description>This is your public display name.</Form.Description> -->
-		<Form.FieldErrors />
-	</Form.Field>
-	<div class="flex items-center justify-between">
-		<Form.Button>{$t('default.page.register.cta')}</Form.Button>
-    <Button variant="ghost" on:click={() => goto('/auth/login')}>{$t('default.page.login.cta')}</Button>
-  </div>
-</form>
+		<form method="POST" use:enhance class={className}>
+			<Form.Field {form} name="email">
+				<Form.Control let:attrs>
+					<Form.Label>{$t('default.page.register.form.email.label')}</Form.Label>
+					<Input {...attrs} bind:value={$formData.email} type="email" />
+				</Form.Control>
+				<!-- <Form.Description>This is your public display name.</Form.Description> -->
+				<Form.FieldErrors />
+			</Form.Field>
+			<Form.Field {form} name="password">
+				<Form.Control let:attrs>
+					<Form.Label>{$t('default.page.register.form.password.label')}</Form.Label>
+					<Input {...attrs} bind:value={$formData.password} type="password" />
+				</Form.Control>
+				<!-- <Form.Description>This is your public display name.</Form.Description> -->
+				<Form.FieldErrors />
+			</Form.Field>
+			<div class="flex items-center justify-between">
+				<Button variant="ghost" on:click={() => goto('/auth/login')}
+					>{$t('default.page.login.cta')}</Button
+				>
+				<Form.Button>{$t('default.page.register.cta')}</Form.Button>
+			</div>
+		</form>
