@@ -5,13 +5,13 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { formSchema } from './schema';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
-
-export const prerender = false;
+import { user } from '$store/auth'
 
 export const load: PageServerLoad = async ({ locals }) => {
 		console.log('PageServerLoad');
 
 		if (locals.user) {
+			user.update(value => locals.user)
 			console.log('redirecting');
 			throw redirect(303, '/dashboard');
 		}

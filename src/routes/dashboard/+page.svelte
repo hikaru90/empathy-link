@@ -9,7 +9,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
-	// export let data: PageData;
+	export let data: PageData;
 
 	const updateStore = (payload) => {
 		// console.log('updateStore',payload.detail);
@@ -18,7 +18,15 @@
 	};
 
 	onMount(() => {
-		if (!$user) goto('/auth/login');
+		console.log('data',data);
+		console.log('onMount: $user',$user);
+		const unsubscribe = user.subscribe($user => {
+			console.log('$user in subscribe',$user);
+			if (!$user) {
+				goto('/auth/login');
+			}
+		});
+		return unsubscribe;
 	});
 </script>
 
@@ -53,4 +61,6 @@
 			</div>
 		</div>
 	</div>
+	{:else}
+	Login please
 {/if}

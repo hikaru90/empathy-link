@@ -3,6 +3,7 @@ import { serializeNonPOJOs } from '$scripts/helpers';
 import { pb } from '$scripts/pocketbase'
 
 export const handle = async ({ event, resolve }) => {
+	console.log('hooks server handle');
 	const localeCookie = event.cookies.get('locale');
 	const langHeaders = event.request.headers.get('accept-language')?.split(',')[0].split('-')[0];
 
@@ -29,5 +30,6 @@ export const handle = async ({ event, resolve }) => {
 	const response = await resolve(event);
 
 	response.headers.set('set-cookie', event.locals.pb.authStore.exportToCookie({ secure: false }));
+	console.log('hooks server handle response', response);
 	return response;
 };

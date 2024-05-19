@@ -19,7 +19,7 @@
 	export let data;
 	let contentReady = false;
 
-	console.log('user', data.user);
+	console.log('+layout.svelte - user:', data.user);
 
 	const animationDuration = 400;
 
