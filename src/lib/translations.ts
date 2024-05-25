@@ -28,4 +28,5 @@ const config = ({
 });
 
 export const { t, locale, locales, loading, loadTranslations, initialized } = new i18n(config);
+
 loading.subscribe(($loading) => $loading && console.log('Loading translations for the main instance...'));

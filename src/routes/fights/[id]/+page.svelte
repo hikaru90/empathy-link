@@ -150,34 +150,39 @@
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
 	<div class="flex h-full flex-grow flex-col justify-between">
-		<div class="flex-grow bg-black/20">
+		<div class="flex-grow ">
 			<div class="bg-offwhite">
 				<Menu />
 
-				<div class="relative flex h-auto items-center justify-between">
-					<a href="/dashboard" class="block">
-						<Button decoration="op1" class="flex items-center px-1.5 text-sm">
-							<CaretLeft class="h-4 w-4 rounded-full" />
-						</Button>
-					</a>
-					<div
-						class="block h-[51px] w-full flex-grow border border-black/10 bg-black/10 p-[3px] shadow-inner"
-					>
+				<div class="relative -mt-1 md:flex md:justify-center">
+					<div class="my-2">
+					<div class="relative flex h-auto items-center justify-between">
+						<a href="/dashboard" class="block">
+							<Button decoration="op1" class="flex items-center px-1.5 text-sm">
+								<CaretLeft class="h-4 w-4 rounded-full" />
+							</Button>
+						</a>
 						<div
-							class="h-full w-full rounded-sm bg-offwhite shadow-inner shadow-white/40 dark:shadow-white/10"
-						></div>
+							class="block h-[51.2px] w-full md:w-40 flex-grow border border-black/10 bg-black/10 p-[2px] shadow-inner"
+						>
+							<div
+								class="h-full w-full rounded-sm bg-offwhite shadow-inner shadow-white/40 dark:shadow-white/10"
+							></div>
+						</div>
+						<Button
+							on:click={() => (drawerOpen = true)}
+							decoration="op1"
+							class="flex items-center gap-2"
+						>
+							{$t('default.menu.share.cta')}
+							<Share1 />
+						</Button>
 					</div>
-					<Button
-						on:click={() => (drawerOpen = true)}
-						decoration="op1"
-						class="flex items-center gap-2"
-					>
-						{$t('default.menu.share.cta')}
-						<Share1 />
-					</Button>
+					</div>
 				</div>
-				<div
-					class="mb-6 flex items-center justify-between border-b border-black/20 px-4 py-2.5 md:flex-row md:items-center"
+				<div class="max-container">
+					<div
+					class="mb-10 flex flex-col items-start justify-between md:flex-row md:items-center border-b border-black/10 -mx-5 px-5 pt-1 pb-1 md:pb-3"
 				>
 					<h1 class="font-heading text-lg font-semibold">
 						{$t('default.page.fight.heading')}
@@ -191,6 +196,7 @@
 						{new Intl.DateTimeFormat('de-DE').format(new Date($startDate))}
 					</div>
 				</div>
+			</div>
 			</div>
 
 			<div class="max-container relative pb-60 pt-2">

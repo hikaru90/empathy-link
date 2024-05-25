@@ -6,6 +6,9 @@ export default defineConfig({
   // resolve:{
   //   preserveSymlinks: false,
   // },
+  ssr: {
+    noExternal: ['three']
+  },
 	server: {
     port: 3000,
   },

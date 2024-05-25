@@ -71,16 +71,28 @@ const config = {
 					foreground: 'hsl(var(--card-foreground) / <alpha-value>)'
 				}
 			},
-			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
-			},
+			
 			fontFamily: {
 				sans: ['Inter, sans-serif'],
 				display: ['Inter Tight, sans-serif']
 			}
-		}
+		},
+		plugins: [
+			function ({ addVariant }) {
+				addVariant('group-first', ({ modifySelectors, separator }) => {
+					modifySelectors(({ className }) => {
+						return `.group:first-child .${className}`;
+					});
+				});
+			},
+			function ({ addVariant }) {
+				addVariant('group-last', ({ modifySelectors, separator }) => {
+					modifySelectors(({ className }) => {
+						return `.group:last-child .${className}`;
+					});
+				});
+			},
+		],
 	}
 };
 

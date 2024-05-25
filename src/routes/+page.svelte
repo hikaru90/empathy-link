@@ -4,9 +4,11 @@
 	import { Sun, Moon } from 'radix-icons-svelte';
 	import { toggleMode } from 'mode-watcher';
 	import Menu from '$lib/components/Menu.svelte';
-	import HeroBig from '$lib/components/HeroBig.svelte';
+	import AnimatedHeroBig from '$lib/components/AnimatedHeroBig.svelte';
 	import Locale from '$lib/components/Locale.svelte';
 	import { t } from '$lib/translations';
+	import The4Steps from '$lib/components/The4Steps.svelte';
+	import Modules from '$lib/components/Modules.svelte';
 
 	export let data;
 
@@ -17,11 +19,10 @@
 	<div class="flex-grow">
 		<Menu />
 
-		<div class="max-container">
-			<HeroBig />
-			<!-- <Button variant="outline" size="icon">
-				<ChevronRight class="h-4 w-4" />
-			</Button> -->
+		<div class="max-container pb-40">
+			<AnimatedHeroBig />
+			<The4Steps />
+			<Modules />
 		</div>
 	</div>
 </div>

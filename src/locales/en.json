@@ -57,7 +57,44 @@
       "title": "Homepage",
       "nav": "Home",
       "hero": "In today's rush, amid endless distractions and mounting todo lists, being mindful of how and why you connect with your peers has never been more difficult.",
-      "cta": "Start Connecting"
+      "cta": "Start Connecting",
+      "components": {
+        "the4steps": {
+          "heading": "The 4 Steps to connect with yourself and others",
+          "steps": {
+            "observation": {
+              "heading": "Observe",
+              "text": "Describe what happened without judgment."
+            },
+            "feelings": {
+              "heading": "Feel",
+              "text": "Express how you felt during your observation."
+            },
+            "needs": {
+              "heading": "Identify needs",
+              "text": "Identify the underlying needs driving your feelings."
+            },
+            "request": {
+              "heading": "Make a request",
+              "text": "Make a clear, specific request to address your needs."
+            }
+          },
+          "cta": {
+						"link": "#",
+						"target": "_self",
+						"text": "Learn more about the 4 steps"
+					}
+        },
+				"modules": {
+					"heading": "4 App Modules for enhanced Mindfulness",
+					"modules": {
+						"selfempathy": "Selfempathy",
+						"fight": "Fight",
+						"feedback": "Feedback",
+						"learn": "Learn"
+					}
+				}
+      }
     },
     "dashboard": {
       "fights": {

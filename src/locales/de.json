@@ -60,7 +60,44 @@
 			"title": "Startseite",
 			"nav": "Start",
 			"hero": "Verbinde Dich trotz Stress, Ablenkungen und Hektik mit den Menschen, die Dir wichtig sind.",
-			"cta": "Verbinde dich"
+			"cta": "Verbinde Dich",
+			"components": {
+        "the4steps": {
+          "heading": "In 4 Schritten mit Dir selbst und anderen in Verbindung  kommen",
+          "steps": {
+            "observation": {
+              "heading": "Beobachten",
+              "text": "Beschreibe objektiv, was du wahrnimmst, ohne zu bewerten oder zu urteilen."
+            },
+            "feelings": {
+              "heading": "Fühlen",
+              "text": "Teile mit, welche Emotionen durch die Beobachtung ausgelöst wurden."
+            },
+            "needs": {
+              "heading": "Bedürfnisse erkennen",
+              "text": "Erkläre, welche Bedürfnisse hinter deinen Gefühlen stehen."
+            },
+            "request": {
+              "heading": "Bitten",
+              "text": "Formuliere eine klare, konkrete Bitte, um deine Bedürfnisse zu erfüllen."
+            }
+          },
+					"cta": {
+						"link": "#",
+						"target": "_self",
+						"text": "Mehr über die 4 Schritte erfahren"
+					}
+        },
+				"modules": {
+					"heading": "4 App-Module für mehr Achtsamkeit",
+					"modules": {
+						"selfempathy": "Selbstempathie",
+						"fight": "Streit",
+						"feedback": "Feedback",
+						"learn": "Lernen"
+					}
+				}
+      }
 		},
 		"dashboard": {
       "fights": {

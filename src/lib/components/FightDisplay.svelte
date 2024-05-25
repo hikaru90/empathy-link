@@ -29,17 +29,17 @@
 	</div>
 </div>
 
-<div class="{$user.id === record.owner ? 'mr-10' : 'ml-10'} relative flex flex-col mb-10">
+<div class="{$user.id === record.owner ? 'mr-10' : 'ml-10'} relative flex flex-col mb-10 rounded-md overflow-hidden shadow-xl">
 	{#each tableRows as row}
-		<div class="flex items-stretch rounded-md bg-offwhite text-xs shadow-md border-b border-black/10">
-			<div class="flex-shrink-0 p-3 border-r border-black/10 flex items-center justify-center">
+		<div class="group flex items-stretch bg-white text-xs shadow-md border-b border-black/5 last:border-b-0">
+			<div class="flex-shrink-0 pt-3 pb-3 px-3 group-first:pt-6 group-last:pb-6 border-r border-black/5 flex items-center justify-center">
 				<div class="label bg-{row.color}">
 					<div class="icon">
 						{@html row.icon}
 					</div>
 				</div>
 			</div>
-			<div class="flex-grow px-3 py-4 break-all">
+			<div class="flex-grow pt-3 pb-3 px-3 group-first:pt-6 group-last:pb-6 break-all">
 				{#if row.type === 'text'}
 					{row.content}
 				{:else}
