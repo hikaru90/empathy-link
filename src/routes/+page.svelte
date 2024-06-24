@@ -9,6 +9,7 @@
 	import { t } from '$lib/translations';
 	import The4Steps from '$lib/components/The4Steps.svelte';
 	import Modules from '$lib/components/Modules.svelte';
+	import Selfempathy from '$lib/components/Selfempathy.svelte';
 
 	export let data;
 
@@ -23,6 +24,7 @@
 			<AnimatedHeroBig />
 			<The4Steps />
 			<Modules />
+			<Selfempathy />
 		</div>
 	</div>
 </div>

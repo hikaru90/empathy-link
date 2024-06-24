@@ -54,7 +54,7 @@
 
 <!-- Component HTML structure -->
 <div style="height: {navbarHeight}px" class="flex-shrink-0"></div>
-<div bind:clientHeight={navbarHeight} class="fixed left-0 top-0 z-20 w-full">
+<div bind:clientHeight={navbarHeight} class="fixed left-0 top-0 z-[100] w-full">
 	<!-- <div bind:clientHeight={navbarHeight} class="fixed left-0 top-0 z-20 w-full py-4 px-4"> -->
 	<!-- <nav
 		class="flex items-center justify-between px-2 py-2 bg-muted/60 backdrop-blur-xl backdrop-brightness-110 backdrop-hue-rotate-180 rounded-full"

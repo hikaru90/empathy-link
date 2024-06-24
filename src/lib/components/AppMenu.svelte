@@ -27,7 +27,7 @@
 
 </script>
 
-<div class="inverted-border fixed bottom-0 left-0 w-full bg-black text-gray-200 px-4 pb-4 pt-2 z-40">
+<div class="inverted-border fixed bottom-0 left-0 w-full bg-black text-gray-200 px-4 pb-4 pt-2 z-[100]">
   <div class="bg-black absolute top-0 left-0 w-full h-[0.5px] transform -translate-y-full">
 
   </div>

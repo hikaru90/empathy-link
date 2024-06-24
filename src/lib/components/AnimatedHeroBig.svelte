@@ -3,22 +3,22 @@
 	import { Button as SparkleButton } from '$lib/components/ui/button-sparkle';
 	import { Button } from '$lib/components/ui/button';
 	import HeroAnimation from '$lib/components/HeroAnimation.svelte';
-	import {onMount, onDestroy} from 'svelte'
+	import { onMount, onDestroy } from 'svelte';
 
-	let animationWidth = 1000
+	let animationWidth = 1000;
 
 	const handleResize = () => {
-		animationWidth = window?.document?.getElementById('animation')?.getBoundingClientRect()?.width
-		console.log('animationWidth',animationWidth);
-	}
+		animationWidth = window?.document?.getElementById('animation')?.getBoundingClientRect()?.width;
+		console.log('animationWidth', animationWidth);
+	};
 
 	onMount(() => {
-		window.addEventListener('resize', handleResize)
-		animationWidth = window?.document?.getElementById('animation')?.getBoundingClientRect()?.width
-	})
+		window.addEventListener('resize', handleResize);
+		animationWidth = window?.document?.getElementById('animation')?.getBoundingClientRect()?.width;
+	});
 	onDestroy(() => {
-		window.removeEventListener('resize', handleResize)
-	})
+		window.removeEventListener('resize', handleResize);
+	});
 </script>
 
 <div class="pt-10 lg:pt-32">
@@ -35,12 +35,15 @@
 </div>
 
 <div id="animation" class="relative mb-40 w-full">
-		<div style="border-radius: {animationWidth/75}px;" class="absolute w-[9.9%] h-[50.8%] z-50 left-[44.6%] top-[19.5%] transform skew-y-[30deg] overflow-hidden">
-			<HeroAnimation />
-		</div>
-	<img src="hero/1phone.png" alt="" class="relative z-40 w-full" />
+	<div
+		style="border-radius: {animationWidth / 75}px;"
+		class="absolute left-[44.6%] top-[19.5%] z-[60] h-[50.8%] w-[9.9%] skew-y-[30deg] transform overflow-hidden"
+	>
+		<HeroAnimation />
+	</div>
+	<img src="hero/2phone.png" alt="" class="relative z-40 w-full" />
 	<img
-		src="hero/1phone_lit.png"
+		src="hero/2phone_lit.png"
 		alt=""
 		class="animate-phone-pulse absolute left-0 top-0 z-50 h-full w-full"
 	/>
@@ -56,12 +59,12 @@
 		alt=""
 		class="animate-icon2-pulse absolute left-0 top-0 h-full w-full"
 	/>
-  <img src="hero/icon4.png" alt="" class="absolute left-0 top-0 h-full w-full" />
-  <img
-    src="hero/icon4_lit.png"
-    alt=""
-    class="animate-icon4-pulse absolute left-0 top-0 h-full w-full"
-  />
+	<img src="hero/icon4.png" alt="" class="absolute left-0 top-0 h-full w-full" />
+	<img
+		src="hero/icon4_lit.png"
+		alt=""
+		class="animate-icon4-pulse absolute left-0 top-0 h-full w-full"
+	/>
 	<img src="hero/icon3.png" alt="" class="absolute left-0 top-0 h-full w-full" />
 	<img
 		src="hero/icon3_lit.png"
@@ -71,7 +74,7 @@
 </div>
 
 <style lang="scss">
-  :global(.animate-icon4-pulse) {
+	:global(.animate-icon4-pulse) {
 		animation-name: phonePulse;
 		animation-duration: 4s;
 		animation-delay: 400ms;
@@ -79,21 +82,21 @@
 		animation-direction: alternate;
 		animation-iteration-count: infinite;
 	}
-  :global(.animate-icon3-pulse) {
+	:global(.animate-icon3-pulse) {
 		animation-name: phonePulse;
 		animation-duration: 4s;
 		animation-timing-function: ease-in-out;
 		animation-direction: alternate;
 		animation-iteration-count: infinite;
 	}
-  :global(.animate-icon2-pulse) {
+	:global(.animate-icon2-pulse) {
 		animation-name: phonePulse;
 		animation-duration: 3s;
 		animation-timing-function: ease-in-out;
 		animation-direction: alternate;
 		animation-iteration-count: infinite;
 	}
-  :global(.animate-icon1-pulse) {
+	:global(.animate-icon1-pulse) {
 		animation-name: phonePulse;
 		animation-duration: 2s;
 		animation-timing-function: ease-in-out;
