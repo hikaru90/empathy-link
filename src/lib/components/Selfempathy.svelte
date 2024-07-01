@@ -4,10 +4,11 @@
 	import IconFight from '$assets/icons/icon-fight.svg?raw';
 	import IconFeedback from '$assets/icons/icon-feedback.svg?raw';
 	import IconLearn from '$assets/icons/icon-learn.svg?raw';
+	import PhoneMockup from '$lib/components/PhoneMockup.svelte'
 
 </script>
 
-<div class="flex flex-col lg:flex-row items-start mb-40">
+<div class="flex flex-col lg:flex-row items-center justify-center gap-20 mb-40">
 	<div class="">
 		<div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite p-1">
 			<div
@@ -25,6 +26,10 @@
 		<p class="max-w-md">
 			{$t('default.page.home.components.selfempathy.description')}
 		</p>
+	</div>
+	<div class="relative">
+		<PhoneMockup mockup="screenshot-fight2.png" color="bg-observation-background" inverted class="w-72" />
+		<PhoneMockup mockup="screenshot-dashboard.png" color="bg-offwhite" class="w-72 absolute -right-36 top-0 z-10" />
 	</div>
 </div>
 
