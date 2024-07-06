@@ -6,6 +6,11 @@
 	import IconLearn from '$assets/icons/icon-learn.svg?raw';
 	import PhoneMockup from '$lib/components/PhoneMockup.svelte'
 
+	let moduleName:string|undefined = undefined
+  locale.subscribe((value) => {
+		moduleName = value === 'en' ? 'Module' : 'Modul'
+	});
+
 </script>
 
 <div class="flex flex-col lg:flex-row items-center justify-center gap-20 mb-40">
@@ -18,7 +23,7 @@
 			</div>
 		</div>
 		<div class="text-slate-500 mb-3 ml-0.5">
-			1. { $locale = 'en' ? 'Module' : 'Modul'}
+			1. { moduleName}
 		</div>
 		<h2 class="font-display text-2xl font-semibold lg:text-4xl mb-8">
 			{$t('default.page.home.components.selfempathy.heading')}
@@ -27,9 +32,9 @@
 			{$t('default.page.home.components.selfempathy.description')}
 		</p>
 	</div>
-	<div class="relative">
-		<PhoneMockup mockup="screenshot-fight2.png" color="bg-observation-background" inverted class="w-72" />
-		<PhoneMockup mockup="screenshot-dashboard.png" color="bg-offwhite" class="w-72 absolute -right-36 top-0 z-10" />
+	<div class="relative flex">
+		<PhoneMockup mockup="screenshot-fight2.png" color="bg-observation-background" inverted class="w-50 md:w-72" />
+		<PhoneMockup mockup="screenshot-dashboard.png" color="bg-offwhite" class="w-50 md:w-72 -ml-36" />
 	</div>
 </div>
 

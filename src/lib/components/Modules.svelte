@@ -15,52 +15,62 @@
 		{
 			heading: $t('default.page.home.components.modules.modules.selfempathy'),
 			icon: IconSelf,
-			delayed: false,
+			delayed: false
 		},
 		{
 			heading: $t('default.page.home.components.modules.modules.fight'),
 			icon: IconFight,
-			delayed: false,
+			delayed: false
 		},
 		{
 			heading: $t('default.page.home.components.modules.modules.feedback'),
 			icon: IconFeedback,
-			delayed: true,
+			delayed: true
 		},
 		{
 			heading: $t('default.page.home.components.modules.modules.learn'),
 			icon: IconLearn,
-			delayed: true,
+			delayed: true
 		}
 	];
 </script>
 
-<div class="flex flex-col items-center mb-40">
+<div class="mb-40 flex flex-col items-center">
 	<h2 class="mb-20 max-w-[19em] text-center font-display text-2xl font-semibold lg:text-4xl">
 		{$t('default.page.home.components.modules.heading')}
 	</h2>
 	<div class="relative">
-		<div class="flex flex-col md:flex-row gap-4">
+		<div class="relative flex flex-row flex-wrap justify-center gap-4">
 			{#each modules as module}
-			<div class="group flex items-center justify-center rounded-[36px] bg-white p-6 relative shadow-xl text-sm">
-					<div class="group-last:hidden absolute w-4 h-1 bg-black/90 left-full top-1/2 transform -translate-y-1/2"></div>
-					<div class="bg-black flex flex-col items-center justify-between rounded-3xl text-offwhite p-4 w-36 h-36 shadow-xl">
-						<div></div>
+					<div
+						class="group relative flex items-center justify-center rounded-[36px] bg-white p-6 text-sm shadow-xl md:w-auto"
+					>
 						<div
-							class="fill-offwhite/90 flex items-center justify-center rounded-full p-1 shadow-inner w-20 h-20 flex-shrink-0"
+							class="absolute left-full top-1/2 hidden h-1 w-4 -translate-y-1/2 transform bg-black/90 md:block group-last:md:hidden"
+						></div>
+						<div
+							class="flex h-[120px] w-[120px] lg:h-[140px] lg:w-[140px] flex-shrink-0 flex-col items-center justify-between rounded-3xl bg-black p-4 text-offwhite shadow-xl"
 						>
-							{@html module.icon}
-						</div>
-						<div class="relative">
-							{#if module.delayed}
-							<div class="absolute bg-red-500 px-2 py-0.5 rounded-full top-0.5 right-4 transform -translate-y-full translate-x-full text-xs">
-								{ $locale == 'en' ? 'soon':'bald' }
+							<div></div>
+							<div
+								class="flex w-16 h-16 lg:h-20 lg:w-20 flex-shrink-0 items-center justify-center rounded-full fill-offwhite/90 p-1 shadow-inner"
+							>
+								{@html module.icon}
 							</div>
-							{/if}
-							{module.heading}
+							<div class="relative">
+								{#if module.delayed}
+									<div
+										class="absolute right-4 top-0.5 -translate-y-full translate-x-full transform rounded-full bg-red-500 px-2 py-0.5 text-xs"
+									>
+										{$locale == 'en' ? 'soon' : 'bald'}
+									</div>
+								{/if}
+								<span class="text-xs">
+									{module.heading}
+								</span>
+							</div>
 						</div>
 					</div>
-				</div>
 			{/each}
 		</div>
 	</div>

@@ -50,17 +50,20 @@
 		{$t('default.page.home.components.the4steps.heading')}
 	</h2>
 	<div class="relative mb-20">
-    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+    <div class="hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
       <img src="/connector.svg" alt="connector" class="w-28">
     </div>
 		<div class="-m-4 flex flex-wrap items-stretch justify-center">
 			{#each cards as card}
-				<div class="group relative h-72 w-full p-4 md:w-1/2 md:max-w-[460px]">
+				<div class="group relative h-80 lg:h-72 w-full p-4 md:w-1/2 md:max-w-[460px]">
 					<div
-						class="absolute left-full top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-first:block"
+						class="absolute left-1/2 top-full block group-last:hidden md:hidden h-8 w-1 -translate-x-1/2 -translate-y-1/2 transform bg-black/90 -z-0"
 					></div>
 					<div
-						class="absolute left-0 top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-last:block"
+						class="absolute left-full top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-first:md:block"
+					></div>
+					<div
+						class="absolute left-0 top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-last:md:block"
 					></div>
 					<div class="flex h-full flex-col justify-between rounded-3xl bg-white p-8 shadow-lg">
 						<div>
@@ -81,7 +84,7 @@
 							</p>
 							<div class="flex items-end">
 								<div
-									class="ml-10 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-black text-offwhite shadow-md"
+									class="ml-2 lg:ml-10 flex w-6 h-6 lg:h-8 lg:w-8 flex-shrink-0 items-center justify-center rounded-full bg-black text-offwhite shadow-md"
 								>
 									<IconPlus />
 								</div>

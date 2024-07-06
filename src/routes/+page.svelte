@@ -10,6 +10,7 @@
 	import The4Steps from '$lib/components/The4Steps.svelte';
 	import Modules from '$lib/components/Modules.svelte';
 	import Selfempathy from '$lib/components/Selfempathy.svelte';
+	import Fight from '$lib/components/Fight.svelte';
 
 	export let data;
 
@@ -25,6 +26,7 @@
 			<The4Steps />
 			<Modules />
 			<Selfempathy />
+			<Fight />
 		</div>
 	</div>
 </div>

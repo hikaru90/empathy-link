@@ -12,61 +12,71 @@
 	console.log('record', record);
 
 	const tableRows = [
-		{ icon: IconEye, color: 'observation-background', type: 'text', content: record.observation },
-		{ icon: IconHeart, color: 'feelings-background', type: 'array', content: record.expand.feelings },
-		{ icon: IconSwirl, color: 'needs-background', type: 'array', content: record.expand.needs },
-		{ icon: IconSteps, color: 'request-background', type: 'text', content: record.request },
+		{ icon: IconEye, color: 'observation', type: 'text', content: record.observation },
+		{
+			icon: IconHeart,
+			color: 'feelings',
+			type: 'array',
+			content: record.expand.feelings
+		},
+		{ icon: IconSwirl, color: 'needs', type: 'array', content: record.expand.needs },
+		{ icon: IconSteps, color: 'request', type: 'text', content: record.request }
 	];
 </script>
 
 <div class="{$user.id === record.owner ? 'justify-start' : 'justify-end'} mb-2 flex">
-	<div
-		class="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300"
-	>
+	<div class="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
 		{$user.id === record.owner ? $user.firstName : record.expand.fight.name} — {new Date(
 			record.created
 		).toLocaleDateString('de-DE')}
 	</div>
 </div>
 
-<div class="{$user.id === record.owner ? 'mr-10' : 'ml-10'} relative flex flex-col mb-10 rounded-md overflow-hidden shadow-xl">
+<div
+	class="{$user.id === record.owner
+		? 'mr-10'
+		: 'ml-10'} relative mb-10 flex flex-col overflow-hidden rounded-md shadow-xl"
+>
 	{#each tableRows as row}
-		<div class="group flex items-stretch bg-white text-xs shadow-md border-b border-black/5 last:border-b-0">
-			<div class="flex-shrink-0 pt-3 pb-3 px-3 group-first:pt-6 group-last:pb-6 border-r border-black/5 flex items-center justify-center">
-				<div class="label bg-{row.color}">
-					<div class="icon">
+		<div
+			class="group flex items-stretch border-b border-black/5 bg-white text-xs shadow-md last:border-b-0"
+		>
+			<div
+				class="flex flex-shrink-0 items-center justify-center border-r border-black/5 px-3 pb-3 pt-3 group-first:pt-6 group-last:pb-6"
+			>
+				<div class="label bg-{row.color}-background">
+					<div class="icon fill{row.color}-foreground">
 						{@html row.icon}
 					</div>
 				</div>
 			</div>
-			<div class="flex-grow pt-3 pb-3 px-3 group-first:pt-6 group-last:pb-6 break-all">
+			<div class="flex-grow break-all px-3 pb-3 pt-3 group-first:pt-6 group-last:pb-6">
 				{#if row.type === 'text'}
 					{row.content}
 				{:else}
-				<div class="flex flex-wrap gap-2">
-					{#each row.content as entry}
-					<div class="bg-{row.color} rounded-full px-2 py-0.5">
-						<!-- {JSON.stringify(entry)} -->
-						{$locale === 'en'? entry.nameEN : entry.nameDE}
+					<div class="flex flex-wrap gap-2">
+						{#each row.content as entry}
+							<div class="bg-{row.color}-background rounded-full px-2 py-0.5">
+								<!-- {JSON.stringify(entry)} -->
+								{$locale === 'en' ? entry.nameEN : entry.nameDE}
+							</div>
+						{/each}
 					</div>
-					{/each}
-				</div>
 				{/if}
 			</div>
 		</div>
 	{/each}
-
 </div>
 
 <style lang="scss">
 	.label {
-		box-shadow: /*inset 0 0 4px rgba(0, 0, 0, 0.4),*/ -4px -4px 8px 0 rgba(white,1);
+		box-shadow: /*inset 0 0 4px rgba(0, 0, 0, 0.4),*/ -4px -4px 8px 0 rgba(white, 1);
 		@apply relative h-5 w-5 flex-shrink-0 rounded-full border border-white;
 	}
-	.label:after{
+	.label:after {
 		content: '';
-		box-shadow: 4px 4px 8px 0 rgba(0,0,0,0.4);
-		@apply block rounded-full w-full h-full;
+		box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.4);
+		@apply block h-full w-full rounded-full;
 	}
 	.icon {
 		@apply absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 transform;

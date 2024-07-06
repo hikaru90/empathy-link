@@ -59,7 +59,7 @@
 		"home": {
 			"title": "Startseite",
 			"nav": "Start",
-			"hero": "Verbinde Dich trotz Stress, Ablenkungen und Hektik mit den Menschen, die Dir wichtig sind.",
+			"hero": "Verbinde Dich trotz Stress und Hektik mit den Menschen, die Dir wichtig sind.",
 			"cta": "Verbinde Dich",
 			"components": {
         "the4steps": {
@@ -100,6 +100,16 @@
         "selfempathy": {
           "heading": "Selbstempathie",
           "description": "Jeder ist sich selbst der Nächste. Deshalb ist es wichtig sich darüber bewusst zu werden was man denkt, fühlt, braucht und will. Anhand der 4 Schritte kannst Du Dir in regelmäßigen abständen Selbstempathie geben und Veränderungen über die Zeit tracken."
+        },
+				"fight": {
+          "heading": "Streit, aber richtig",
+          "description": "",
+					"steps": {
+            "observation": "Beobachtung",
+            "feelings": "Gefühle",
+            "needs": "Bedürfnisse",
+            "request": "Bitte"
+          }
         }
       }
 		},

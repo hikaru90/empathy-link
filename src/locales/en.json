@@ -97,6 +97,16 @@
         "selfempathy": {
           "heading": "Selfempathy",
           "description": "Everyone is their own person. That's why it's important to become aware of what you think, feel, need and want. Using the 4 steps, you can give yourself self-empathy at regular intervals and track changes over time."
+        },
+        "fight": {
+          "heading": "Fighting done right",
+          "description": "",
+          "steps": {
+            "observation": "Observation",
+            "feelings": "Feelings",
+            "needs": "Needs",
+            "request": "Request"
+          }
         }
       }
     },

@@ -6,7 +6,7 @@
 </script>
 
 <div class="py-10 lg:py-32">
-  <h1 class="font-display font-semibold text-3xl lg:text-7xl leading-[106%] mb-10">
+  <h1 class="font-display font-semibold text-3xl lg:text-7xl leading-[106%] mb-10 max-w-[10em]">
     {$t('default.page.home.hero')}
   </h1>
   <a href="/auth/login">
