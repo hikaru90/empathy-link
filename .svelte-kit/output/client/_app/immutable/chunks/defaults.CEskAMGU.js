@@ -1,0 +1,1 @@
+function u(l,f,e){l&&"superFormValidationLibrary"in l&&(e=f,f=l,l=null);const r=f,s=(e==null?void 0:e.defaults)??r.defaults;return{id:(e==null?void 0:e.id)??r.id??"",valid:!1,posted:!1,errors:{},data:{...s,...l},constraints:r.constraints,shape:r.shape}}export{u as d};

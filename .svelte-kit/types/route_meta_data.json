@@ -1,0 +1,56 @@
+{
+	"/": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/api/mails/send": [
+		"src/routes/api/mails/send/+server.ts"
+	],
+	"/api/populateFeelings": [
+		"src/routes/api/populateFeelings/+server.ts"
+	],
+	"/api/populateNeeds": [
+		"src/routes/api/populateNeeds/+server.ts"
+	],
+	"/auth/login": [
+		"src/routes/auth/login/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/auth/logout": [
+		"src/routes/auth/logout/+server.ts"
+	],
+	"/auth/register": [
+		"src/routes/auth/register/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/dashboard": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/fights": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/fights/create": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/fights/[id]": [
+		"src/routes/fights/[id]/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/fights/[id]/respond": [
+		"src/routes/fights/[id]/respond/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/selfempathy": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	]
+}
