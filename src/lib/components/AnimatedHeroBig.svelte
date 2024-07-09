@@ -21,8 +21,8 @@
 	});
 </script>
 
-<div class="pt-10 lg:pt-32">
-	<h1 class="mb-10 font-display text-3xl font-semibold leading-[106%] lg:text-7xl">
+<div class="pt-20 lg:pt-32 lg:-mb-20">
+	<h1 class="mb-10 font-display text-3xl font-semibold leading-[106%] lg:text-7xl max-w-[14em]">
 		{$t('default.page.home.hero')}
 	</h1>
 	<a href="/auth/login">
@@ -34,7 +34,9 @@
 	</a>
 </div>
 
-<div id="animation" class="relative mb-40 w-full">
+<div class="-mx-[10%]">
+
+<div id="animation" class="relative mb-10 lg:mb-40 w-full">
 	<div
 		style="border-radius: {animationWidth / 75}px;"
 		class="absolute left-[44.6%] top-[19.5%] z-[60] h-[50.8%] w-[9.9%] skew-y-[30deg] transform overflow-hidden"
@@ -71,6 +73,7 @@
 		alt=""
 		class="animate-icon3-pulse absolute left-0 top-0 h-full w-full"
 	/>
+</div>
 </div>
 
 <style lang="scss">

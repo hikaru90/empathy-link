@@ -45,7 +45,7 @@
 
 </script>
 
-<div>
+<div class="mb-32">
 	<div class="flex flex-col items-center">
 		<div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite p-1">
 			<div

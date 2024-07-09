@@ -11,23 +11,32 @@
 	import Modules from '$lib/components/Modules.svelte';
 	import Selfempathy from '$lib/components/Selfempathy.svelte';
 	import Fight from '$lib/components/Fight.svelte';
+	import Feedback from '$lib/components/Feedback.svelte';
+	import Learn from '$lib/components/Learn.svelte';
 
 	export let data;
 
-	console.log('data',data);
+	console.log('data', data);
 </script>
 
-<div class="flex-grow flex h-full flex-col justify-between">
+<div class="flex h-full flex-grow flex-col justify-between">
 	<div class="flex-grow">
-		<Menu />
-
-		<div class="max-container pb-40">
-			<AnimatedHeroBig />
-			<The4Steps />
-			<Modules />
-			<Selfempathy />
-			<Fight />
+		<div class="absolute">
+			<Menu />
 		</div>
+
+		<div class="bg-gradient-to-t from-white to-offwhite mb-32">
+			<div class="max-container pb-2">
+				<AnimatedHeroBig />
+			</div>
+			</div>
+			<div class="max-container pb-40">
+				<The4Steps />
+				<Modules />
+				<Selfempathy />
+				<Fight />
+				<Feedback />
+				<Learn />
+			</div>
 	</div>
 </div>
-

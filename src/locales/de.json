@@ -110,6 +110,20 @@
             "needs": "Bedürfnisse",
             "request": "Bitte"
           }
+        },
+				"feedback": {
+          "heading": "Feedback",
+          "description": "Feedback zielt selten darauf ab zwischenmenschliche Bindungen wirklich zu stärken. Gerade im beruflichen Kontext ist es oft schwer sich aufrichtiges und Feedback zu geben. Doch durch die Einhaltung der 4 Schritte, gelingt auch dieses Kunststück.",
+					"steps": {
+            "observation": "Feedback geben, das auf der Wirklichkeit beruht",
+            "feelings": "Ehrliche Botschaften für eine echte Verbindung",
+            "needs": "Stärkere Beziehungen durch das Teilen von Bedürfnissen",
+            "request": "Bessere Performance durch lösungsorientierte Bitten"
+          }
+        },
+				"learn": {
+          "heading": "Lernen",
+          "description": "Empathie-Link beruht auf der Gewaltfreien Kommunikation nach Marshall Rosenberg. Mit ihr kann man sich ungelogen ein Leben lang beschäftigen. Deshalb lohnt es sich umso mehr, stets dazuzulernen. Im Lernbereich der App werden — ansonsten nur oberflächlich angeschnittene — Konzepte erklärt."
         }
       }
 		},
