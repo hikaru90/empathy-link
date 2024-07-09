@@ -38,7 +38,5 @@ jobs:
             node -v
             pnpm -v
             pnpm i
-
-#            pnpm run build
             
             sudo systemctl start svelteapp.service
