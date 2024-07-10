@@ -61,15 +61,15 @@
 	});
 </script>
 
-<div class="relative h-full w-full bg-slate-800 p-3 text-xs">
-	<div
-		class="absolute left-1/2 top-0.5 h-2.5 w-9 -translate-x-1/2 transform rounded-full bg-black"
-	></div>
+<div class="relative h-full w-full bg-slate-800 p-2 sm:p-3 text-[3px] sm:text-base">
+	<div class="absolute left-1/2 top-1.5 sm:top-3 transform -translate-x-1/2 -translate-y-1/2 w-5 sm:w-14 h-1.5 sm:h-4 bg-black rounded-full flex items-center justify-end px-[4px] pt-[2px]">
+		<img src="phone-lens.jpg" alt="Phone Lens" class="w-1 h-1 sm:w-3 sm:h-3 rounded-full">
+	</div>
 	<div class="pop-in">
 		<div class="flex items-center justify-center">
 			<div
 				style="background-image: url('{backgroundImage}'); background-size: 300% 100%"
-				class="animate-bg-fast flex h-3 w-6 flex-col items-center justify-center rounded-md"
+				class="animate-bg-fast flex h-1 w-2 sm:h-3 sm:w-6 flex-col items-center justify-center rounded-md"
 			>
 				<!-- <div class="mt-1.5 flex items-center gap-1">
 					<div class="h-1 w-1 rounded-full bg-white"></div>
@@ -80,56 +80,56 @@
 		</div>
 	</div>
 
-	<div class="relative flex h-full flex-col justify-between pb-[50px]">
-		<div class="flex flex-col gap-1">
+	<div class="relative flex h-full flex-col justify-between sm:pb-[50px]">
+		<div class="flex flex-col gap-px sm:gap-1">
 			<div
-				class="step1 flex items-center justify-center rounded bg-observation-background p-1 shadow-lg"
+				class="step1 flex items-center justify-center rounded-sm bg-observation-background p-[0.3em] shadow-lg"
 			>
-				<div class="w-5 fill-observation-foreground">
+				<div class="w-[2em] fill-observation-foreground">
 					{@html IconEye}
 				</div>
 			</div>
 			<div
-				class="step2 flex items-center justify-center rounded bg-feelings-background p-1 shadow-lg"
+				class="step2 flex items-center justify-center rounded-sm bg-feelings-background p-[0.3em] shadow-lg"
 			>
-				<div class="w-5 fill-feelings-foreground">
+				<div class="w-[2em] fill-feelings-foreground">
 					{@html IconHeart}
 				</div>
 			</div>
-			<div class="step3 flex items-center justify-center rounded bg-needs-background p-1 shadow-lg">
-				<div class="w-5 fill-needs-foreground">
+			<div class="step3 flex items-center justify-center rounded-sm bg-needs-background p-[0.3em] shadow-lg">
+				<div class="w-[2em] fill-needs-foreground">
 					{@html IconSwirl}
 				</div>
 			</div>
 			<div
-				class="step4 flex items-center justify-center rounded bg-request-background p-1 shadow-lg"
+				class="step4 flex items-center justify-center rounded-sm bg-request-background p-[0.3em] shadow-lg"
 			>
-				<div class="w-5 fill-request-foreground">
+				<div class="w-[2em] fill-request-foreground">
 					{@html IconSteps}
 				</div>
 			</div>
 		</div>
-		<div class="step5 flex items-center justify-center rounded p-1 shadow-lg">
+		<div class="step5 flex items-center justify-center rounded p-[0.2em] shadow-lg">
 			<div class="flex w-full items-center justify-between fill-observation-foreground">
-				<div class="h-2 w-12 rounded bg-slate-600"></div>
+				<div class="h-[0.5em] w-[3em] rounded bg-slate-600"></div>
 				<PaperPlane class="text-slate-500" />
 			</div>
 		</div>
 
 		<div class="absolute w-full h-full flex items-center justify-center pb-16">
 			<div class="heart">
-				<HeartFilled class="w-16 h-16 text-red-400" />
+				<HeartFilled class="w-[4em] h-[4em] text-red-400" />
 			</div>
 		</div>
 	</div>
 
-	<div class="fixed bottom-0 left-0 z-40 w-full bg-black px-2 pb-4 pt-1 text-gray-200">
+	<div class="fixed bottom-0 left-0 z-40 w-full bg-black px-1 sm:px-2 pb-1 sm:pb-4 pt-1 text-gray-200">
 		<div class="absolute left-0 top-0 h-[0.5px] w-full -translate-y-full transform bg-black"></div>
 		<div class="flex items-center justify-around">
 			{#each menuItems as item}
 				<div class="relative flex flex-col items-center justify-center">
 					<a href={item.path} class="flex flex-col items-center justify-center">
-						<div class="h-3 w-3 fill-white">
+						<div class="h-1.5 w-1.5 sm:h-3 sm:w-3 fill-white">
 							{@html item.icon}
 						</div>
 					</a>
@@ -306,11 +306,11 @@
 		}
 		10% {
 			opacity: 1;
-			transform: translate(0, 100px);
+			transform: translate(0, 8em);
 		}
 		15% {
 			opacity: 0;
-			transform: translate(0, 100px);
+			transform: translate(0, 8em);
 		}
 		55% {
 			opacity: 0;
@@ -323,7 +323,7 @@
 		}
 		100% {
 			opacity: 0;
-			transform: translate(0, 100px);
+			transform: translate(0, 8em);
 		}
 	}
 </style>

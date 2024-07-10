@@ -25,18 +25,18 @@
 			<Menu />
 		</div>
 
-		<div class="bg-gradient-to-t from-white to-offwhite mb-32">
-			<div class="max-container pb-2">
+		<div class="mb-32 bg-gradient-to-t from-white to-offwhite">
+			<div class="max-container">
 				<AnimatedHeroBig />
 			</div>
-			</div>
-			<div class="max-container pb-40">
-				<The4Steps />
-				<Modules />
-				<Selfempathy />
-				<Fight />
-				<Feedback />
-				<Learn />
-			</div>
+		</div>
+		<div class="max-container pb-40">
+			<The4Steps />
+			<Modules />
+			<Selfempathy />
+			<Fight />
+			<Feedback />
+			<Learn />
+		</div>
 	</div>
 </div>
