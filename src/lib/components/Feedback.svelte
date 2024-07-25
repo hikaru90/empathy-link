@@ -76,7 +76,7 @@
 					class="absolute left-full -ml-3 top-1/2 hidden h-1 w-6 -translate-y-1/2 transform bg-black/90 md:block group-last:md:hidden"
 				></div>
 
-				<div class="group relative h-40 shadow-xl p-6 bg-white rounded-[36px]">
+				<div class="group relative h-40 shadow-xl p-6 bg-white rounded-3xl">
 					<div>
 						<div class="skeumorphic-button mb-8 h-9 w-9 rounded-full bg-offwhite p-0.5">
 							<div

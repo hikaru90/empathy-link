@@ -16,9 +16,14 @@
 	let pending = true;
 	let feelings = [];
 	let colors = [];
-	let displayPositiveFeelings = false
+	let displayPositiveFeelings = false;
 
-	$: data = feelings.map((entry) => {return {name: $locale === 'en' ? entry.feeling.nameEN : entry.feeling.nameDE, count: entry.count};})
+	$: data = feelings.map((entry) => {
+		return {
+			name: $locale === 'en' ? entry.feeling.nameEN : entry.feeling.nameDE,
+			count: entry.count
+		};
+	});
 
 	const fetchData = async () => {
 		const filter = `owner = '${$user.id}' && created >= "${$startDate.toString()} 00:00:00" && created < "${$endDate.add({ days: 1 }).toString()} 00:00:00"`;
@@ -80,57 +85,67 @@
 	<div
 		class="rounded-lg bg-feelings-background text-feelings-foreground shadow-2xl shadow-black/10"
 	>
-		<div class="px-4 pb-2 pt-3 flex items-center justify-between">
+		<div class="flex items-center justify-between px-4 pb-2 pt-3">
 			<h2 class="text-md mb-2 font-bold">
 				{$t('default.page.dashboard.feelings.heading')}
 			</h2>
 			<div class="flex items-center gap-2">
-				<Button on:click={() => displayPositiveFeelings = false} class="{displayPositiveFeelings === false ? 'solid-button':'border-button'} rounded-full px-4 leading-tight h-7 transition">
+				<Button
+					on:click={() => (displayPositiveFeelings = false)}
+					class="{displayPositiveFeelings === false
+						? 'solid-button'
+						: 'border-button'} h-7 rounded-full px-4 leading-tight transition"
+				>
 					{$t('default.page.dashboard.feelings.negative')}
 				</Button>
-				<Button on:click={() => displayPositiveFeelings = true} class="{displayPositiveFeelings === true ? 'solid-button':'border-button'} rounded-full px-4 leading-tight h-7">
+				<Button
+					on:click={() => (displayPositiveFeelings = true)}
+					class="{displayPositiveFeelings === true
+						? 'solid-button'
+						: 'border-button'} h-7 rounded-full px-4 leading-tight"
+				>
 					{$t('default.page.dashboard.feelings.positive')}
-			</Button>
-		</div>
+				</Button>
+			</div>
 		</div>
 		<div class="flex items-center justify-center">
-			{#key feelings.length}
-				<Donut {colors} {data} />
-			{/key}
+			{#if feelings}
+				{#key feelings.length}
+					<Donut {colors} {data} />
+				{/key}
+			{/if}
 		</div>
 		<div class="px-4 pb-3 pt-2">
 			{#if feelings.length === 0}
 				{$t('default.page.dashboard.feelings.empty')}
 			{:else}
-			{#each feelings as feeling, index}
-			{#if displayPositiveFeelings === feeling.feeling.positive}
-				<div
-					class="flex items-center justify-between border-b border-feelings-foreground/20 py-1 last:border-b-0"
-				>
-					<div class="flex items-center gap-4">
-						<div style="background-color: {colors[index]};" class="w-5 h-3 rounded-full">
-
+				{#each feelings as feeling, index}
+					{#if displayPositiveFeelings === feeling.feeling.positive}
+						<div
+							class="flex items-center justify-between border-b border-feelings-foreground/20 py-1 last:border-b-0"
+						>
+							<div class="flex items-center gap-4">
+								<div style="background-color: {colors[index]};" class="h-3 w-5 rounded-full"></div>
+								<span>
+									{$locale === 'en' ? feeling.feeling.nameEN : feeling.feeling.nameDE}
+								</span>
+							</div>
+							<span>
+								{feeling.count}
+							</span>
 						</div>
-						<span>
-							{$locale === 'en' ? feeling.feeling.nameEN : feeling.feeling.nameDE}
-						</span>
-					</div>
-					<span>
-						{feeling.count}
-					</span>
-				</div>
-				{/if}
-			{/each}
+					{/if}
+				{/each}
 			{/if}
 		</div>
 	</div>
 {/if}
 
 <style lang="scss">
-	:global(.solid-button){
-		@apply bg-feelings-foreground/60 hover:bg-feelings-foreground border-2 border-feelings-foreground/0 hover:border-feelings-foreground/60;
+	:global(.solid-button) {
+		@apply border-2 border-feelings-foreground/0 bg-feelings-foreground/60 hover:border-feelings-foreground/60 hover:bg-feelings-foreground;
 	}
-	:global(.border-button){
-		@apply border-2 border-feelings-foreground/60 text-feelings-foreground/60 hover:border-feelings-foreground hover:text-feelings-foreground bg-transparent hover:bg-transparent;
+	:global(.border-button) {
+		@apply border-2 border-feelings-foreground/60 bg-transparent text-feelings-foreground/60 hover:border-feelings-foreground hover:bg-transparent hover:text-feelings-foreground;
 	}
 </style>

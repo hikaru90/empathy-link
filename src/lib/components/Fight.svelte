@@ -76,7 +76,7 @@
 			<div class="hidden lg:block absolute left-0 top-[88px] -ml-8 -translate-y-1/2 transform">
 				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div>
 			</div>
-			<div class="relative w-52 overflow-hidden rounded-lg shadow-xl shadow-black/5">
+			<div class="relative w-full md:w-52 overflow-hidden rounded-lg shadow-xl shadow-black/5">
 				{#each tableRows as row}
 					<div
 						class="group flex items-stretch border-b border-black/5 bg-white text-xs shadow-md last:border-b-0"
@@ -96,7 +96,7 @@
 					</div>
 				{/each}
 			</div>
-			<p class="w-52 py-4">Du notierst Deine Beobachtung, Gefühle, Bedürfnisse und Bitten</p>
+			<p class="w-full md:w-52 py-4">Du notierst Deine Beobachtung, Gefühle, Bedürfnisse und Bitten</p>
 		</div>
 		<div class="relative z-0">
 			<div class="hidden lg:block absolute left-0 top-[88px] -ml-8 -translate-y-1/2 transform">
@@ -107,11 +107,11 @@
 			</div>
 			<div
 				style="background-image: url('{backgroundImage}'); background-size: 300% 100%"
-				class={'shadow-black-5 flex h-[178.22px] w-52 items-center justify-center rounded-lg bg-center bg-repeat-x shadow-xl'}
+				class={'shadow-black-5 flex h-[178.22px] w-full md:w-52 items-center justify-center rounded-lg bg-center bg-repeat-x shadow-xl'}
 			>
 				<div class="h-8 w-20 rounded-full border-4 border-white"></div>
 			</div>
-			<p class="w-52 py-4">
+			<p class="w-full md:w-52 py-4">
 				Wir generieren einen Empathie-Link, den Du Deiner/m Streitpartner*in schickst
 			</p>
 		</div>
@@ -119,7 +119,7 @@
 			<div class="hidden lg:block absolute right-0 top-[88px] -mr-6 -translate-y-1/2 transform">
 				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div>
 			</div>
-			<div class="w-52 overflow-hidden rounded-lg shadow-xl shadow-black/5">
+			<div class="w-full md:w-52 overflow-hidden rounded-lg shadow-xl shadow-black/5">
 				{#each tableRows as row}
 					<div
 						class="group flex items-stretch border-b border-black/5 bg-white text-xs shadow-md last:border-b-0"
@@ -139,7 +139,7 @@
 					</div>
 				{/each}
 			</div>
-			<p class="w-52 py-4">
+			<p class="w-full md:w-52 py-4">
 				Dein/e Streitpartner*in kann sich in Ruhe mit Deiner Sicht der Dinge auseinandersetzen und
 				antwortet dann
 			</p>

@@ -36,20 +36,20 @@
 </script>
 
 <div class="mb-40 flex flex-col items-center">
-	<h2 class="mb-20 max-w-[19em] text-center font-display text-2xl font-semibold lg:text-4xl">
+	<h2 class="mb-16 md:mb:20 max-w-[19em] text-center font-display text-2xl font-semibold lg:text-4xl">
 		{$t('default.page.home.components.modules.heading')}
 	</h2>
 	<div class="relative">
 		<div class="relative flex flex-row flex-wrap justify-center gap-4">
 			{#each modules as module}
 					<div
-						class="group relative flex items-center justify-center rounded-[36px] bg-white p-6 text-sm shadow-xl md:w-auto"
+						class="group relative flex items-center justify-center rounded-[36px] bg-white p-3 md:p-4 lg:p-6 text-sm shadow-xl md:w-auto"
 					>
 						<div
 							class="absolute left-full top-1/2 hidden h-1 w-4 -translate-y-1/2 transform bg-black/90 md:block group-last:md:hidden"
 						></div>
 						<div
-							class="flex h-[120px] w-[120px] lg:h-[140px] lg:w-[140px] flex-shrink-0 flex-col items-center justify-between rounded-3xl bg-black p-4 text-offwhite shadow-xl"
+							class="flex size-[100px] md:size-[120px] lg:size-[140px] flex-shrink-0 flex-col items-center justify-between rounded-3xl bg-black p-2 lg:p-4 text-offwhite shadow-xl"
 						>
 							<div></div>
 							<div
@@ -65,7 +65,7 @@
 										{$locale == 'en' ? 'soon' : 'bald'}
 									</div>
 								{/if}
-								<span class="text-xs">
+								<span class="text-[10px] md:text-xs">
 									{module.heading}
 								</span>
 							</div>

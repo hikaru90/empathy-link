@@ -27,9 +27,11 @@
 
 </script>
 
-<div class="inverted-border fixed bottom-0 left-0 w-full bg-black text-gray-200 px-4 pb-4 pt-2 z-[100]">
+<!-- <div class="inverted-border fixed bottom-0 left-0 w-full bg-black text-gray-200 px-4 pb-4 pt-2 z-[1002]"> -->
+  <div class="fixed bottom-0 left-0 w-full bg-black text-gray-200 px-4 pb-4 pt-2 z-[1002]">
+  <img src="/inverted-border.svg" alt="" class="w-5 absolute top-0 left-0 transform -translate-y-full">
+  <img src="/inverted-border.svg" alt="" class="w-5 absolute top-0 right-0 transform -translate-y-full -rotate-90">
   <div class="bg-black absolute top-0 left-0 w-full h-[0.5px] transform -translate-y-full">
-
   </div>
   <div class="flex items-center justify-around">
     {#each menuItems as item}
@@ -58,15 +60,15 @@
   </div>
 </div>
 
-<style>
-  .inverted-border:before{
-    @apply w-4 h-40 rounded-bl-full md:w-8 absolute -z-10 top-0 left-0 transform -translate-y-full pointer-events-none;
-    content: '';
-    box-shadow: 0 50px 0 0 black;
-  }
-  .inverted-border:after{
-    @apply w-4 h-40 rounded-br-full md:w-8 absolute -z-10 top-0 right-0 transform -translate-y-full pointer-events-none;
-    content: '';
-    box-shadow: 0 50px 0 0 black;
-  }
+<style lang="scss">
+  // .inverted-border:before{
+  //   @apply w-4 h-40 rounded-bl-full md:w-8 absolute -z-10 top-0 left-0 transform -translate-y-full pointer-events-none;
+  //   content: '';
+  //   box-shadow: 0 50px 0 0 black;
+  // }
+  // .inverted-border:after{
+  //   @apply w-4 h-40 rounded-br-full md:w-8 absolute -z-10 top-0 right-0 transform -translate-y-full pointer-events-none;
+  //   content: '';
+  //   box-shadow: 0 50px 0 0 black;
+  // }
 </style>

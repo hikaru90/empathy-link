@@ -25,12 +25,12 @@
 			<Menu />
 		</div>
 
-		<div class="mb-32 bg-gradient-to-t from-white to-offwhite">
+		<div class="mb-32 relative z-0">
 			<div class="max-container">
 				<AnimatedHeroBig />
 			</div>
 		</div>
-		<div class="max-container pb-40">
+		<div class="max-container pb-40 relative z-10 bg-offwhite">
 			<The4Steps />
 			<Modules />
 			<Selfempathy />

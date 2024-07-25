@@ -45,36 +45,33 @@
 	];
 </script>
 
-<div class="flex flex-col items-center mb-40">
-	<h2 class="mb-20 max-w-[19em] text-center font-display text-2xl font-semibold lg:text-4xl">
+<div class="flex flex-col items-center mb-40 pt-12 md:pt-0">
+	<h2 class="mb-16 md:mb:20 max-w-[13em] text-center font-display text-3xl md:text-4xl font-semibold lg:text-5xl">
 		{$t('default.page.home.components.the4steps.heading')}
 	</h2>
-	<div class="relative mb-20">
+	<div class="relative mb-16 md:mb:20">
     <div class="hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
       <img src="/connector.svg" alt="connector" class="w-28">
     </div>
 		<div class="-m-4 flex flex-wrap items-stretch justify-center">
 			{#each cards as card}
-				<div class="group relative h-80 lg:h-72 w-full p-4 md:w-1/2 md:max-w-[460px]">
-					<div
-						class="absolute left-1/2 top-full block group-last:hidden md:hidden h-8 w-1 -translate-x-1/2 -translate-y-1/2 transform bg-black/90 -z-0"
-					></div>
+				<div class="group relative h-64 md:h-72 w-full px-4 py-3 md:py-4 md:w-1/2 md:max-w-[460px]">
 					<div
 						class="absolute left-full top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-first:md:block"
 					></div>
 					<div
 						class="absolute left-0 top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-last:md:block"
 					></div>
-					<div class="flex h-full flex-col justify-between rounded-3xl bg-white p-8 shadow-lg">
+					<div class="flex h-full flex-col justify-between rounded-3xl bg-white p-5 md:p-6 lg:p-8 shadow-lg">
 						<div>
-							<div class="skeumorphic-button mb-4 h-9 w-9 rounded-full bg-offwhite p-0.5">
+							<div class="skeumorphic-button mb-2 md:mb-3 lg:mb-4 h-9 w-9 rounded-full bg-offwhite p-0.5">
 								<div
 									class="bg-{card.backgroundColor} fill-{card.color} flex items-center justify-center rounded-full p-1 shadow-inner"
 								>
 									{@html card.icon}
 								</div>
 							</div>
-							<h3 class="mb-3 font-display text-xl font-semibold md:text-2xl">
+							<h3 class="mb-6 font-display text-xl font-semibold md:text-2xl">
 								{card.heading}
 							</h3>
 						</div>

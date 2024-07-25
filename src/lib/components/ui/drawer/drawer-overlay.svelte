@@ -11,7 +11,7 @@
 
 <DrawerPrimitive.Overlay
 	bind:el
-	class={cn("fixed inset-0 z-50 bg-black/80", className)}
+	class={cn("fixed inset-0 z-[1000] bg-zinc-400/80 backdrop-blur-xl brightness-50", className)}
 	{...$$restProps}
 >
 	<slot />

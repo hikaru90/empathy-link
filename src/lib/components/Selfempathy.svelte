@@ -13,8 +13,8 @@
 
 </script>
 
-<div class="flex flex-col lg:flex-row items-center justify-center gap-20 mb-40">
-	<div class="">
+<div class="flex flex-col lg:flex-row items-center justify-center gap-16 md:gap-20 mb-40">
+	<div class="flex flex-col items-center justify-center">
 		<div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite p-1">
 			<div
 				class="bg-black fill-offwhite flex items-center justify-center rounded-full p-1.5 shadow-inner"

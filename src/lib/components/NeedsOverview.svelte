@@ -104,13 +104,15 @@
 			</div>
 		</div>
 		<div class="flex items-center justify-center">
+			{#if needs}
 			{#key needs.length}
 				<Donut {colors} {data} />
 			{/key}
+			{/if}
 		</div>
 		<div class="px-4 pb-3 pt-2">
 			{#if needs.length === 0}
-				{$t('default.page.dashboard.feelings.empty')}
+				{$t('default.page.dashboard.needs.empty')}
 			{:else}
 				{#each needs as need, index}
 					{#if displaySelfcenteredNeeds === need.need.selfcentered}

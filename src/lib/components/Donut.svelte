@@ -18,8 +18,8 @@
 	const stroke = innerRadius > 0 ? strokeColorWIR : strokeColorWOR; // stroke separating widths
 	const padAngle = stroke === 'none' ? 3 / outerRadius : 0; // angular separation between wedges
 
-	const x = Object.keys(data[0])[0]; // given d in data, returns the (ordinal) x-value
-	const y = Object.keys(data[0])[1]; // given d in data, returns the (quantitative) y-value
+	const x = data[0] ? Object.keys(data[0])[0] : undefined; // given d in data, returns the (ordinal) x-value
+	const y = data[0] ? Object.keys(data[0])[1] : undefined; // given d in data, returns the (quantitative) y-value
 	const xVals = data.map((el) => el[x]);
 	let yVals = data.map((el) => Number(el[y]));
 	if (percent) {

@@ -150,56 +150,56 @@
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
 	<div class="flex h-full flex-grow flex-col justify-between">
-		<div class="flex-grow ">
+		<div class="flex-grow">
 			<div class="bg-offwhite">
 				<Menu />
 
 				<div class="relative -mt-1 md:flex md:justify-center">
-					<div class="my-2">
-					<div class="relative flex h-auto items-center justify-between">
-						<a href="/dashboard" class="block">
-							<Button decoration="op1" class="flex items-center px-1.5 text-sm">
-								<CaretLeft class="h-4 w-4 rounded-full" />
-							</Button>
-						</a>
-						<div
-							class="block h-[51.2px] w-full md:w-40 flex-grow border border-black/10 bg-black/10 p-[2px] shadow-inner"
-						>
+					<div class="mt-2 border-b border-black/20">
+						<div class="relative flex h-auto items-center justify-between">
+							<a href="/dashboard" class="block">
+								<Button decoration="op1" class="flex items-center px-1.5 text-sm">
+									<CaretLeft class="h-4 w-4 rounded-full" />
+								</Button>
+							</a>
 							<div
-								class="h-full w-full rounded-sm bg-offwhite shadow-inner shadow-white/40 dark:shadow-white/10"
-							></div>
+								class="block h-[51.2px] w-full flex-grow border border-black/10 bg-black/10 pt-[2px] px-[2px] pb-[2.5px] shadow-inner md:w-40"
+							>
+								<div
+									class="h-full w-full rounded-sm bg-offwhite shadow-inner shadow-white/40 dark:shadow-white/10"
+								></div>
+							</div>
+							<Button
+								on:click={() => (drawerOpen = true)}
+								decoration="op1"
+								class="flex items-center gap-2"
+							>
+								{$t('default.menu.share.cta')}
+								<Share1 />
+							</Button>
 						</div>
-						<Button
-							on:click={() => (drawerOpen = true)}
-							decoration="op1"
-							class="flex items-center gap-2"
-						>
-							{$t('default.menu.share.cta')}
-							<Share1 />
-						</Button>
-					</div>
 					</div>
 				</div>
 				<div class="max-container">
 					<div
-					class="mb-10 flex flex-col items-start justify-between md:flex-row md:items-center border-b border-black/10 -mx-5 px-5 pt-1 pb-1 md:pb-3"
-				>
-					<h1 class="font-heading text-lg font-semibold">
-						{$t('default.page.fight.heading')}
-						{$locale === 'en' ? 'with' : 'mit'}
-						<span class="capitalize">
-							{record.name}
-						</span>
-					</h1>
-					<div class="text-xs">
-						{$locale === 'en' ? 'on the' : 'am'}
-						{new Intl.DateTimeFormat('de-DE').format(new Date($startDate))}
+						class="-mx-5 flex flex-col items-start justify-between border-b border-black/20 px-5 py-4 md:flex-row md:items-center md:pb-6 bg-black/10"
+					>
+						<h1 class="font-heading text-lg font-semibold">
+							{$t('default.page.fight.heading')}
+							{$locale === 'en' ? 'with' : 'mit'}
+							<span class="capitalize">
+								{record.name}
+							</span>
+						</h1>
+						<div class="text-xs">
+							{$locale === 'en' ? 'on the' : 'am'}
+							{new Intl.DateTimeFormat('de-DE').format(new Date($startDate))}
+						</div>
 					</div>
 				</div>
 			</div>
-			</div>
 
-			<div class="max-container relative pb-60 pt-2">
+			<div class="max-container relative bg-black/10 pb-60 pt-10">
 				<div class="relative">
 					<!-- <FightOwnerDisplay {record} /> -->
 					<FightDisplay {record} />
@@ -215,33 +215,38 @@
 	</div>
 
 	<Drawer.Root bind:open={drawerOpen}>
-		<Drawer.Content class="p-4">
-			<Drawer.Header>
+		<Drawer.Content class="">
+			<Drawer.Header class="w-full border-b border-black/10">
 				<div class="flex items-center justify-between">
 					<Drawer.Title>{$t('default.menu.share.cta')}</Drawer.Title>
 					<!-- <Drawer.Description>This action cannot be undone.</Drawer.Description> -->
 					<Drawer.Close>
-						<Cross1 class="text-red-600" />
+						<div class="label bg-feelings-background">
+							<div class="icon fill-feelings-foreground">
+								<!-- {@html row.icon} -->
+								<Cross1 class="text-red-600" />
+							</div>
+						</div>
 					</Drawer.Close>
 				</div>
 			</Drawer.Header>
-			<Drawer.Footer class="flex flex-row items-center">
+			<Drawer.Footer class="flex flex-col gap-4 pb-10">
 				<button
 					use:copy={shareableLink}
 					on:svelte-copy={() => {
 						drawerOpen = false;
 						toast.success($t('default.menu.share.copyLinkConfirmation'));
 					}}
+					class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm"
 				>
-					<Button class="flex items-center gap-2"
-						>{$t('default.menu.share.copyLink')} <Clipboard /></Button
-					>
+					{$t('default.menu.share.copyLink')}
+					<Clipboard />
 				</button>
 
-				<Button
+				<button
 					on:click={() => ((drawerOpen = false), (dialogOpen = true))}
-					class="flex items-center gap-2"
-					>{$t('default.menu.share.mailLink')} <EnvelopeClosed /></Button
+					class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm"
+					>{$t('default.menu.share.mailLink')} <EnvelopeClosed /></button
 				>
 			</Drawer.Footer>
 		</Drawer.Content>
@@ -250,14 +255,16 @@
 	<Dialog.Root bind:open={dialogOpen} preventScroll={false}>
 		<Dialog.Content>
 			<Dialog.Header>
-				<Dialog.Title class="mb-10">{$t('default.menu.share.mailDialogText')}</Dialog.Title>
+				<Dialog.Title class="mb-10 max-w-[9em] leading-tight"
+					>{$t('default.menu.share.mailDialogText')}</Dialog.Title
+				>
 				<Dialog.Description>
 					<form
 						on:submit|preventDefault
 						use:enhance
-						class="-mt-1 flex h-full flex-grow flex-col pb-[74px]"
+						class="-mt-1 flex h-full flex-grow flex-col items-start"
 					>
-						<Form.Field {form} name="email">
+						<Form.Field {form} name="email" class="w-full">
 							<Form.Control let:attrs>
 								<Form.Label class="form-label">E-Mail</Form.Label>
 								<Input
@@ -271,8 +278,8 @@
 							<!-- <Form.Description>This is your public display name.</Form.Description> -->
 							<Form.FieldErrors />
 						</Form.Field>
-						<div class="flex justify-end">
-							<Button type="submit" class="flex items-center gap-2"
+						<div class="flex w-full justify-end">
+							<Button type="submit" class="flex items-center gap-3"
 								>{$t('default.menu.share.cta')} <PaperPlane /></Button
 							>
 						</div>
@@ -282,3 +289,22 @@
 		</Dialog.Content>
 	</Dialog.Root>
 {/if}
+
+<style lang="scss">
+	.label {
+		box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.4);
+		@apply relative h-7 w-7 flex-shrink-0 rounded-full border border-white;
+	}
+	.label:after {
+		content: '';
+		box-shadow: /*inset 0 0 4px rgba(0, 0, 0, 0.4),*/ -4px -4px 8px 0 rgba(white, 1);
+		@apply block h-full w-full rounded-full;
+	}
+	.icon {
+		@apply absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 transform;
+	}
+	.skeumorphic-button {
+		transition: box-shadow 50ms;
+		box-shadow: var(--skeumorphic-shadow-light);
+	}
+</style>

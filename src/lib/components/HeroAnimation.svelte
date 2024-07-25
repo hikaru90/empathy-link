@@ -61,7 +61,7 @@
 	});
 </script>
 
-<div class="relative h-full w-full bg-slate-800 p-2 sm:p-3 text-[3px] sm:text-base">
+<div class="relative h-full w-full bg-slate-800 p-2 sm:p-3 text-[8px] sm:text-base">
 	<div class="absolute left-1/2 top-1.5 sm:top-3 transform -translate-x-1/2 -translate-y-1/2 w-5 sm:w-14 h-1.5 sm:h-4 bg-black rounded-full flex items-center justify-end px-[4px] pt-[2px]">
 		<img src="phone-lens.jpg" alt="Phone Lens" class="w-1 h-1 sm:w-3 sm:h-3 rounded-full">
 	</div>

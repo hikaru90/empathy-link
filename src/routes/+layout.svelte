@@ -7,7 +7,7 @@
 	import { Toaster } from '$lib/components/ui/sonner';
 	import AppMenu from '$lib/components/AppMenu.svelte';
 	import { onDestroy, onMount } from 'svelte';
-	import { scroll } from '$store/page';
+	import { scroll, windowHeight, windowWidth } from '$store/page';
 	import { browser } from '$app/environment';
 	import 'simplebar';
 	import 'simplebar/dist/simplebar.css';
@@ -26,17 +26,23 @@
 	const handleScroll = (event) => {
 		scroll.set(event.target.scrollTop);
 	};
+	const handleResize = () => {
+		windowWidth.set(window.innerWidth)
+		windowHeight.set(window.innerHeight)
+	}
 
 	onMount(() => {
 		contentReady = true;
 		if (browser) {
 			document.getElementById('scrollContainer')?.addEventListener('scroll', handleScroll);
+			window?.addEventListener('resize', handleResize);
 		}
 	});
 
 	onDestroy(() => {
 		if (browser) {
 			document.getElementById('scrollContainer')?.removeEventListener('scroll', handleScroll);
+			window?.removeEventListener('resize', handleResize);
 		}
 	});
 </script>
@@ -65,7 +71,9 @@
 				<ModeWatcher />
 				<slot />
 			</div>
+			{#if data.user}
 			<AppMenu />
+			{/if}
 		{/if}
 	</main>
 {/key}

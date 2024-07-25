@@ -45,7 +45,8 @@
 				class="flex flex-shrink-0 items-center justify-center border-r border-black/5 px-3 pb-3 pt-3 group-first:pt-6 group-last:pb-6"
 			>
 				<div class="label bg-{row.color}-background">
-					<div class="icon fill{row.color}-foreground">
+					<div class="label-shadow"></div>
+					<div class="icon fill-{row.color}-foreground">
 						{@html row.icon}
 					</div>
 				</div>
@@ -70,13 +71,12 @@
 
 <style lang="scss">
 	.label {
-		box-shadow: /*inset 0 0 4px rgba(0, 0, 0, 0.4),*/ -4px -4px 8px 0 rgba(white, 1);
-		@apply relative h-5 w-5 flex-shrink-0 rounded-full border border-white;
-	}
-	.label:after {
-		content: '';
 		box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.4);
-		@apply block h-full w-full rounded-full;
+		@apply relative z-10 h-6 w-6 flex-shrink-0 rounded-full border border-white;
+	}
+	.label-shadow {
+		box-shadow: /*inset 0 0 4px rgba(0, 0, 0, 0.4),*/ -4px -4px 8px 0 rgba(white, 1);
+		@apply absolute left-0 top-0 z-0 block h-full w-full rounded-full;
 	}
 	.icon {
 		@apply absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 transform;
