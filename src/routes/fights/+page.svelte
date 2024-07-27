@@ -1,6 +1,6 @@
 <script lang="ts">
 	import FightOverviewAll from '$lib/components/FightOverviewAll.svelte';
-	import Menu from '$lib/components/Menu.svelte';
+	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
 	import type { PageData } from './$types.js';
 	import LoginForm from '$lib/components/LoginForm.svelte';
 	import { t } from '$lib/translations';
@@ -20,7 +20,7 @@
 {#if $user}
 	<div class="flex h-full flex-grow flex-col justify-between">
 		<div class="max-container flex-grow py-10">
-			<Menu />
+			<AppBottomMenu />
 
 			<!-- <h1>Fights</h1> -->
 			<a

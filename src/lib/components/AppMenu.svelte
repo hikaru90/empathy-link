@@ -35,7 +35,7 @@
   </div>
   <div class="flex items-center justify-around">
     {#each menuItems as item}
-    <div class="relative flex flex-col items-center justify-center { item.available ? '':'opacity-40'}">
+    <div class="relative flex flex-col items-center justify-center { item.available ? '':'opacity-40'} last:mr-2">
       <a href={item.path} class="flex flex-col items-center justify-center { item.available ? '' :'pointer-events-none' }">
         <div class="w-6 h-6 fill-white">
           {@html item.icon}
@@ -51,7 +51,7 @@
       </div>
       {/if}
       {#if !item.available}
-      <div class="absolute bottom-2.5 left-1/3 bg-red-600 rounded-full text-2xs px-1 transform translate-x-1/2">
+      <div class="absolute bottom-2.5 left-1/3 bg-red-600 rounded-full text-[6px] px-1 transform translate-x-1/2">
         {$t('default.menu.soon')}
       </div>
       {/if}

@@ -52,7 +52,7 @@
 		id="scrollContainer"
 		in:blur={{ duration: animationDuration, delay: animationDuration }}
 		out:blur={{ duration: animationDuration }}
-		class="flex flex-grow flex-col overflow-x-hidden bg-offwhite"
+		class="flex flex-grow flex-col overflow-x-hidden bg-background"
 	>
 		{#if !contentReady}
 			<div

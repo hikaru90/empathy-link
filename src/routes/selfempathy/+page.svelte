@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Menu from '$lib/components/Menu.svelte';
+	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
 	import type { PageData } from './$types.js';
 	import LoginForm from '$lib/components/LoginForm.svelte';
 	import { t } from '$lib/translations';
@@ -10,7 +10,7 @@
 
 <div class="flex h-full flex-grow flex-col justify-between">
 	<div class="flex-grow">
-		<Menu />
+		<AppBottomMenu />
 
 		<h1>Selfempathy</h1>
 	</div>

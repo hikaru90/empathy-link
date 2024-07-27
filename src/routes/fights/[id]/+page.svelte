@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Menu from '$lib/components/Menu.svelte';
+	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
+	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { type SuperValidated, type Infer, defaults, superForm } from 'sveltekit-superforms';
@@ -149,57 +150,30 @@
 {#if !initialized}
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
-	<div class="flex h-full flex-grow flex-col justify-between">
+	<div class="flex h-full flex-grow flex-col justify-between bg-background">
 		<div class="flex-grow">
-			<div class="bg-offwhite">
-				<Menu />
 
-				<div class="relative -mt-1 md:flex md:justify-center">
-					<div class="mt-2 border-b border-black/20">
-						<div class="relative flex h-auto items-center justify-between">
-							<a href="/dashboard" class="block">
-								<Button decoration="op1" class="flex items-center px-1.5 text-sm">
-									<CaretLeft class="h-4 w-4 rounded-full" />
-								</Button>
-							</a>
-							<div
-								class="block h-[51.2px] w-full flex-grow border border-black/10 bg-black/10 pt-[2px] px-[2px] pb-[2.5px] shadow-inner md:w-40"
-							>
-								<div
-									class="h-full w-full rounded-sm bg-offwhite shadow-inner shadow-white/40 dark:shadow-white/10"
-								></div>
-							</div>
-							<Button
-								on:click={() => (drawerOpen = true)}
-								decoration="op1"
-								class="flex items-center gap-2"
-							>
-								{$t('default.menu.share.cta')}
-								<Share1 />
-							</Button>
-						</div>
-					</div>
-				</div>
-				<div class="max-container">
-					<div
-						class="-mx-5 flex flex-col items-start justify-between border-b border-black/20 px-5 py-4 md:flex-row md:items-center md:pb-6 bg-black/10"
-					>
-						<h1 class="font-heading text-lg font-semibold">
-							{$t('default.page.fight.heading')}
-							{$locale === 'en' ? 'with' : 'mit'}
-							<span class="capitalize">
-								{record.name}
-							</span>
-						</h1>
-						<div class="text-xs">
-							{$locale === 'en' ? 'on the' : 'am'}
-							{new Intl.DateTimeFormat('de-DE').format(new Date($startDate))}
-						</div>
+			<AppTopMenu />
+
+			<div class="max-container">
+				<div
+					class="-mx-5 flex flex-col items-start justify-between px-5 py-4 sm:flex-row md:items-center md:bg-transparent md:pb-6"
+				>
+					<h1 class="font-heading text-lg font-semibold">
+						{$t('default.page.fight.heading')}
+						{$locale === 'en' ? 'with' : 'mit'}
+						<span class="capitalize">
+							{record.name}
+						</span>
+					</h1>
+					<div class="text-xs">
+						{$locale === 'en' ? 'on the' : 'am'}
+						{new Intl.DateTimeFormat('de-DE').format(new Date($startDate))}
 					</div>
 				</div>
 			</div>
 
-			<div class="max-container relative bg-black/10 pb-60 pt-10">
+			<div class="max-container relative pb-60 pt-10 md:bg-transparent">
 				<div class="relative">
 					<!-- <FightOwnerDisplay {record} /> -->
 					<FightDisplay {record} />
@@ -211,6 +185,24 @@
 					</div>
 				{/each}
 			</div>
+
+			<AppBottomMenu>
+				<div class="relative flex h-auto items-center justify-between">
+					<a href="/dashboard" class="block">
+						<Button decoration="dark-op1" class="flex items-center px-1.5 text-sm bg-neutral-800 text-zinc-200 border-neutral-900">
+							<CaretLeft class="h-4 w-4 rounded-full" />
+						</Button>
+					</a>
+					<Button
+						on:click={() => (drawerOpen = true)}
+						decoration="dark-op1"
+						class="flex items-center gap-2 text-sm bg-neutral-800 text-zinc-200 border-neutral-900"
+					>
+						{$t('default.menu.share.cta')}
+						<Share1 />
+					</Button>
+				</div>
+			</AppBottomMenu>
 		</div>
 	</div>
 

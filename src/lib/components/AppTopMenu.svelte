@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { Sun, Moon } from 'radix-icons-svelte';
 	import { MixerVertical } from 'radix-icons-svelte';
 	import { toggleMode, mode } from 'mode-watcher';
@@ -42,18 +42,18 @@
 
 	$: darkMode = $mode === 'dark';
 
-	const handleScroll = (value) => {
-			if (value > scrollValue) {
-				scrollingUp = false;
-				scrollValue = value;
-				return;
-			}
-			scrollingUp = true;
-			scrollValue = value;
-	}
-	scroll.subscribe((value) => {
-		debounce(handleScroll(value), 300);
-	});
+	// const handleScroll = (value) => {
+	// 		if (value > scrollValue) {
+	// 			scrollingUp = false;
+	// 			scrollValue = value;
+	// 			return;
+	// 		}
+	// 		scrollingUp = true;
+	// 		scrollValue = value;
+	// }
+	// scroll.subscribe((value) => {
+	// 	debounce(handleScroll(value), 300);
+	// });
 
 	onMount(() => {});
 
@@ -65,19 +65,16 @@
 <!-- <div style="height: {navbarHeight}px" class="flex-shrink-0"></div> -->
 <div
 	bind:clientHeight={navbarHeight}
-	class="fixed left-0 top-0 z-[100] w-full border-b border-black/20 bg-offwhite shadow-xl shadow-offwhite/20"
+	class="left-0 top-0 z-[100] w-full border-b border-black/10"
 >
-	<div class="{scrollingUp ? 'max-h-96' : 'max-h-0'} transition-all overflow-hidden">
 		<nav
-			class="flex items-center justify-between {$scroll > 5
-				? 'bg-offwhite/10 backdrop-blur-2xl'
-				: ''}  px-5 py-2 transition-all"
+			class="flex items-center justify-between px-5 py-2 transition-all"
 		>
 			<a href="/" class="">
-				<Logo />
+				<Logo simplified />
 			</a>
 			<div class="flex items-center gap-4">
-				<Popover.Root>
+				<!-- <Popover.Root>
 					<Popover.Trigger>
 						<MixerVertical class="h-5 w-5" />
 					</Popover.Trigger>
@@ -103,7 +100,7 @@
 							<Label for="lightMode">Dark Mode</Label>
 						</div>
 					</Popover.Content>
-				</Popover.Root>
+				</Popover.Root> -->
 				{#if $user}
 					<div class="">
 						<Avatar />
@@ -115,6 +112,5 @@
 				{/if}
 			</div>
 		</nav>
-	</div>
 	<slot name="submenu" />
 </div>

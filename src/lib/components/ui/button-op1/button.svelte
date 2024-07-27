@@ -12,7 +12,7 @@
 	export let size: $$Props['size'] = 'default';
 	export let builders: $$Props['builders'] = [];
 	export { className as class };
-	export let decoration;
+	export let decoration = 'default';
 </script>
 
 {#if decoration === 'op1'}
@@ -43,6 +43,58 @@
 		</div>
 	</div>
 	</div>
+{:else if decoration === 'dark-op1'}
+	<div
+		class="relative flex items-center gap-[4px]"
+	>
+		<div
+			class="flex items-center justify-center"
+		>
+			<ButtonPrimitive.Root
+				{builders}
+				class="p-1.5"
+				type="button"
+				{...$$restProps}
+				on:click
+				on:keydown
+			>
+				<div
+					class={cn(
+						buttonVariants({ variant, size, className }),
+						'skeumorphic-button-dark h-[29.4px] rounded-full border-2 transition duration-700'
+					)}
+				>
+					<slot />
+				</div>
+			</ButtonPrimitive.Root>
+		</div>
+	</div>
+{:else if decoration === 'floating-op1'}
+	<div
+		class="relative flex items-center gap-[4px]"
+	>
+		<div
+			class="flex items-center justify-center"
+		>
+			<ButtonPrimitive.Root
+				{builders}
+				class="p-1.5"
+				type="button"
+				{...$$restProps}
+				on:click
+				on:keydown
+			>
+				<div
+					class={cn(
+						buttonVariants({ variant, size, className }),
+						'skeumorphic-button h-[29.4px] rounded-full border-2 transition duration-700'
+					)}
+				>
+					<slot />
+				</div>
+			</ButtonPrimitive.Root>
+		</div>
+	</div>
 {:else}
 	<ButtonPrimitive.Root
 		{builders}
@@ -67,5 +119,9 @@
 	.skeumorphic-button {
 		transition: box-shadow 50ms;
 		box-shadow: var(--skeumorphic-shadow-light);
+	}
+	.skeumorphic-button-dark {
+		transition: box-shadow 50ms;
+		box-shadow: var(--skeumorphic-shadow);
 	}
 </style>

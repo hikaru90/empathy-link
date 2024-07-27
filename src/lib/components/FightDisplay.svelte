@@ -24,8 +24,8 @@
 	];
 </script>
 
-<div class="{$user.id === record.owner ? 'justify-start' : 'justify-end'} mb-2 flex">
-	<div class="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
+<div class="{$user.id === record.owner ? 'justify-start' : 'justify-end'} mb-3 flex">
+	<div class="rounded-full bg-neutral-400 bg-opacity-50 px-3 py-1 text-xs text-black">
 		{$user.id === record.owner ? $user.firstName : record.expand.fight.name} — {new Date(
 			record.created
 		).toLocaleDateString('de-DE')}
@@ -35,11 +35,11 @@
 <div
 	class="{$user.id === record.owner
 		? 'mr-10'
-		: 'ml-10'} relative mb-10 flex flex-col overflow-hidden rounded-md shadow-xl"
+		: 'ml-10'} relative mb-10 flex flex-col overflow-hidden rounded-xl shadow-xl"
 >
 	{#each tableRows as row}
 		<div
-			class="group flex items-stretch border-b border-black/5 bg-white text-xs shadow-md last:border-b-0"
+			class="group flex items-stretch border-b border-black/5 bg-almostwhite text-xs shadow-md last:border-b-0"
 		>
 			<div
 				class="flex flex-shrink-0 items-center justify-center border-r border-black/5 px-3 pb-3 pt-3 group-first:pt-6 group-last:pb-6"

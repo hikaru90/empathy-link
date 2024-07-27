@@ -65,56 +65,7 @@
 <!-- <div style="height: {navbarHeight}px" class="flex-shrink-0"></div> -->
 <div
 	bind:clientHeight={navbarHeight}
-	class="fixed left-0 top-0 z-[100] w-full border-b border-black/20 bg-offwhite shadow-xl shadow-offwhite/20"
+	class="fixed left-3 right-3 bottom-[72px] z-[100] rounded-full p-2 backdrop-blur-lg backdrop-brightness-[0.3] shadow-xl shadow-black/20"
 >
-	<div class="{scrollingUp ? 'max-h-96' : 'max-h-0'} transition-all overflow-hidden">
-		<nav
-			class="flex items-center justify-between {$scroll > 5
-				? 'bg-offwhite/10 backdrop-blur-2xl'
-				: ''}  px-5 py-2 transition-all"
-		>
-			<a href="/" class="">
-				<Logo />
-			</a>
-			<div class="flex items-center gap-4">
-				<Popover.Root>
-					<Popover.Trigger>
-						<MixerVertical class="h-5 w-5" />
-					</Popover.Trigger>
-					<Popover.Content class="mt-[10px] w-40 bg-background">
-						<div class="mb-3 border-b border-gray-300/60 pb-3 dark:border-gray-300/20">
-							<Select.Root
-								selected={langs.find((lang) => lang.value === $locale)}
-								onSelectedChange={handleSelect}
-							>
-								<Select.Trigger class="">
-									<Select.Value placeholder="Language" />
-								</Select.Trigger>
-								<Select.Content>
-									{#each langs as lang}
-										<Select.Item value={lang.value} label={lang.label}>{lang.label}</Select.Item>
-									{/each}
-								</Select.Content>
-								<Select.Input name="favoriteFruit" />
-							</Select.Root>
-						</div>
-						<div class="flex items-center space-x-2">
-							<Switch id="lightMode" bind:checked={darkMode} on:click={toggleMode} />
-							<Label for="lightMode">Dark Mode</Label>
-						</div>
-					</Popover.Content>
-				</Popover.Root>
-				{#if $user}
-					<div class="">
-						<Avatar />
-					</div>
-				{:else}
-					<Button on:click={() => goto('/auth/login')} variant="outline">
-						{$t('default.page.login.heading')}
-					</Button>
-				{/if}
-			</div>
-		</nav>
-	</div>
-	<slot name="submenu" />
+	<slot/>
 </div>

@@ -34,7 +34,7 @@ type Size = VariantProps<typeof buttonVariants>["size"];
 type Props = ButtonPrimitive.Props & {
 	variant?: Variant;
 	size?: Size;
-	decoration?: 'default';
+	decoration?: 'default'|'op1'|'dark-op1'|'floating-op1';
 };
 
 type Events = ButtonPrimitive.Events;

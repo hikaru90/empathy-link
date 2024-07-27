@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Menu from '$lib/components/Menu.svelte';
+	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import * as ToggleGroup from '$lib/components/ui/toggle-group';
@@ -246,7 +246,7 @@
 	class="flex flex-grow flex-col justify-between transition duration-700 {`bg-${stepConstructor[step - 1].slug}-background`}"
 	>
 	<div class="max-container relative flex h-dvh flex-grow flex-col">
-		<Menu />
+		<AppBottomMenu />
 		<form
 		on:submit|preventDefault
 		use:enhance

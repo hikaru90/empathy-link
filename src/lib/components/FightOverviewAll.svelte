@@ -63,7 +63,7 @@
 {:else}
 	<div class="">
 		<div
-			class="rounded-lg border-b border-black/5 bg-white px-4 pb-2 pt-3 shadow-2xl shadow-black/10"
+			class="rounded-lg border-b border-black/5 bg-almostwhite px-4 pb-2 pt-3 shadow-2xl shadow-black/10"
 		>
 			<h2 class="text-md mb-2 font-bold">
 				{$t('default.page.dashboard.fights.tableCaption')}
@@ -84,7 +84,7 @@
 				<div class="w-1/6"></div>
 			</div>
 		</div>
-		<div class="rounded-lg bg-white px-4 pb-3 pt-2 shadow-2xl shadow-black/10">
+		<div class="rounded-lg bg-almostwhite px-4 pb-3 pt-2 shadow-2xl shadow-black/10">
 			{#each records as record}
 				<button
 					on:click={gotoFight(record.id)}
