@@ -12,12 +12,13 @@
 	export let size: $$Props['size'] = 'default';
 	export let builders: $$Props['builders'] = [];
 	export { className as class };
-	export let decoration = 'default';
+	export let decoration:string = 'default';
+	export let wrapperClass:string;
 </script>
 
 {#if decoration === 'op1'}
 	<div
-		class="relative flex items-center gap-[4px] border border-black/10 bg-black/10 p-[2px] dark:bg-black/20 md:rounded"
+		class={cn('relative flex items-center gap-[4px] border border-black/10 bg-black/10 p-[2px] dark:bg-black/20 md:rounded',wrapperClass)}
 	>
 	<div class="shadow">
 		<div
@@ -71,14 +72,14 @@
 	</div>
 {:else if decoration === 'floating-op1'}
 	<div
-		class="relative flex items-center gap-[4px]"
+		class={cn('relative flex items-center gap-[4px]', wrapperClass)}
 	>
 		<div
-			class="flex items-center justify-center"
+			class="flex-grow flex items-center justify-center w-full"
 		>
 			<ButtonPrimitive.Root
 				{builders}
-				class="p-1.5"
+				class="p-1.5 w-full"
 				type="button"
 				{...$$restProps}
 				on:click
@@ -118,10 +119,10 @@
 <style lang="scss">
 	.skeumorphic-button {
 		transition: box-shadow 50ms;
-		box-shadow: var(--skeumorphic-shadow-light);
+		box-shadow: inset 0 0 8px 0 rgba(0,0,0,0.2), var(--skeumorphic-shadow-light);
 	}
 	.skeumorphic-button-dark {
 		transition: box-shadow 50ms;
-		box-shadow: var(--skeumorphic-shadow);
+		box-shadow: inset 0 0 8px 0 rgba(0,0,0,0.2), var(--skeumorphic-shadow);
 	}
 </style>

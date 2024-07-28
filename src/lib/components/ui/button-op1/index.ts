@@ -35,6 +35,7 @@ type Props = ButtonPrimitive.Props & {
 	variant?: Variant;
 	size?: Size;
 	decoration?: 'default'|'op1'|'dark-op1'|'floating-op1';
+	wrapperClass?: string;
 };
 
 type Events = ButtonPrimitive.Events;

@@ -2,7 +2,10 @@
 	"menu": {
 		"profile": {
 			"account": "My Account",
-			"logout": "Logout"
+			"logout": "Logout",
+			"sheet": {
+				"header": "Profile"
+			}
 		},
 		"bar": {
 			"home": "Dashboard",

@@ -2,7 +2,10 @@
   "menu": {
     "profile": {
       "account": "Mein Account",
-      "logout": "Ausloggen"
+      "logout": "Ausloggen",
+			"sheet": {
+				"header": "Profil"
+			}
     },
     "bar": {
       "home": "Dashboard",
