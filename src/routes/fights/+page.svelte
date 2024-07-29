@@ -1,5 +1,6 @@
 <script lang="ts">
 	import FightOverviewAll from '$lib/components/FightOverviewAll.svelte';
+	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
 	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
 	import type { PageData } from './$types.js';
 	import LoginForm from '$lib/components/LoginForm.svelte';
@@ -9,6 +10,8 @@
 	import { user } from '$store/auth';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { Button } from '$lib/components/ui/button-op1/index.js';
+	import { CaretLeft } from 'radix-icons-svelte';
 
 	// export let data: PageData;
 
@@ -19,23 +22,43 @@
 
 {#if $user}
 	<div class="flex h-full flex-grow flex-col justify-between">
-		<div class="max-container flex-grow py-10">
-			<AppBottomMenu />
-
-			<!-- <h1>Fights</h1> -->
-			<a
-				href="/fights/create"
-				class="flex w-full items-center justify-center rounded-lg border border-border py-4 lg:py-12 mb-10"
+		<AppTopMenu />
+		<div class="max-container flex-grow pb-40">
+			<div
+				class="mb-8 flex flex-row items-start justify-between py-4 md:items-center md:bg-transparent md:pb-6"
 			>
-				<SparkleButton
-					class="flex items-center justify-between gap-10 px-3 py-5 font-bold text-black shadow-lg dark:shadow-gray-300/30 lg:px-6 lg:py-7 lg:text-lg"
-				>
-					{$t('default.page.fights.create')}
-					<Plus class="h-5 w-5" />
-				</SparkleButton>
-			</a>
-
+				<h1 class="font-heading text-lg font-semibold">{$t('default.page.fight.heading')}</h1>
+			</div>
 			<FightOverviewAll />
+			<AppBottomMenu>
+				<div class="relative flex h-auto items-center justify-between">
+					<a href="/dashboard" class="block">
+						<Button
+							decoration="dark-op1"
+							class="flex items-center border-neutral-900 bg-neutral-800 px-1.5 text-sm text-zinc-200"
+						>
+							<CaretLeft class="h-4 w-4 rounded-full" />
+						</Button>
+					</a>
+					<a href="/fights/create" class="skeumorphic-button-dark inline-block rounded-full mr-1">
+						<SparkleButton
+							class="flex items-center justify-between gap-10 rounded-full pl-5 pr-3 py-1 font-bold text-black dark:shadow-gray-300/30"
+						>
+							{$t('default.page.fights.create')}
+							<Plus class="h-4 w-4" />
+						</SparkleButton>
+					</a>
+				</div>
+			</AppBottomMenu>
 		</div>
 	</div>
 {/if}
+
+<style lang="scss">
+	.skeumorphic-button-dark {
+		transition: box-shadow 50ms;
+		box-shadow:
+			inset 0 0 8px 0 rgba(0, 0, 0, 0.2),
+			var(--skeumorphic-shadow);
+	}
+</style>

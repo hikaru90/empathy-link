@@ -28,13 +28,13 @@
 }
 @keyframes hide{
   0% {
-    @apply opacity-100 w-full overflow-hidden;
+    @apply opacity-100 max-w-40 overflow-hidden;
   }
   80%{
-    @apply opacity-20 w-0 overflow-hidden;
+    @apply opacity-100 max-w-0 overflow-hidden;
   }
   100%{
-    @apply opacity-0 w-0 overflow-hidden;
+    @apply opacity-0 max-w-0 overflow-hidden;
   }
 }
 </style>

@@ -34,12 +34,12 @@
   $: if(value?.start, value?.end) dispatch('rangeChanged', value);
 </script>
  
-<div class={cn(className, 'grid gap-2 w-full md:w-[300px] relative')}>
+<div class={cn(className, 'grid gap-2 w-full relative')}>
   <Popover.Root openFocus>
     <Popover.Trigger asChild let:builder>
-      <Button
+      <Button decoration="dark-op1" wrapperClass="w-full"
         class={cn(
-          "w-full justify-start text-left font-normal",
+          "w-full justify-start text-left font-normal bg-neutral-800 text-zinc-200 border-neutral-900",
           !value && "text-muted-foreground"
         )}
         builders={[builder]}
@@ -60,7 +60,7 @@
         {/if}
       </Button>
     </Popover.Trigger>
-    <Popover.Content class="p-0 w-auto" align="start">
+    <Popover.Content class="p-0 w-auto z-[1002]" align="start">
       <RangeCalendar locale='de'
         bind:value
         bind:startValue

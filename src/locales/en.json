@@ -153,6 +153,7 @@
 		},
 		"fight": {
 			"heading": "Fight",
+			"title": "Overview",
 			"card": {
 				"observation": "Observation",
 				"feelings": "Feelings",

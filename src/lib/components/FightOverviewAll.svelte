@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Skeleton } from '$lib/components/ui/skeleton';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { onMount } from 'svelte';
 	import { pb } from '$scripts/pocketbase';
 	import { t } from '$lib/translations';
@@ -9,6 +9,7 @@
 	import { CaretRight, Check, Cross2 } from 'radix-icons-svelte';
 	import { user } from '$store/auth';
 	import SparklePill from '$lib/components/SparklePill.svelte';
+	import { Plus } from 'radix-icons-svelte';
 
 	let initialized = false;
 	let pending = true;
@@ -26,7 +27,7 @@
 		});
 		if (newRecords.items.length === 0) endReached = true;
 		records = [...records, ...newRecords.items];
-		pending = false
+		pending = false;
 	};
 
 	endDate.subscribe(async () => {
@@ -63,12 +64,12 @@
 {:else}
 	<div class="">
 		<div
-			class="rounded-lg border-b border-black/5 bg-almostwhite px-4 pb-2 pt-3 shadow-2xl shadow-black/10"
+			class="rounded-t-xl border-b border-black/5 bg-almostwhite px-5 pb-3 pt-4 shadow-2xl shadow-black/10"
 		>
-			<h2 class="text-md mb-2 font-bold">
-				{$t('default.page.dashboard.fights.tableCaption')}
+			<h2 class="text-md mb-3 font-bold">
+				{$t('default.page.fight.title')}
 			</h2>
-			<div class="flex items-center text-2xs">
+			<div class="flex items-center text-2xs text-neutral-400">
 				<div class="w-1/6">
 					{$t('default.page.dashboard.fights.table.round')}
 				</div>
@@ -84,14 +85,14 @@
 				<div class="w-1/6"></div>
 			</div>
 		</div>
-		<div class="rounded-lg bg-almostwhite px-4 pb-3 pt-2 shadow-2xl shadow-black/10">
+		<div class="rounded-b-xl bg-almostwhite px-4 pb-3 pt-2 shadow-2xl shadow-black/10">
 			{#each records as record}
 				<button
 					on:click={gotoFight(record.id)}
 					class="group flex w-full items-center border-b border-black/5 py-2 text-left text-xs last:border-b-0 sm:py-3"
 				>
 					<div class="flex w-1/6">
-						<div class="scale-75 transform rounded-full bg-black/5 px-2.5 text-2xs font-bold">
+						<div class="scale-75 transform rounded-full bg-black/10 px-2.5 text-2xs font-bold">
 							{record.responses?.length + 1}
 						</div>
 					</div>
@@ -113,23 +114,38 @@
 						{/if}
 					</div>
 					<div class="flex w-1/6 justify-end">
-						<CaretRight class="h-4 w-4 rounded-full group-hover:bg-neon group-hover:text-black" />
+						<div class="skeumorphic-button rounded-full p-0.5">
+							<CaretRight class="h-4 w-4 rounded-full group-hover:bg-neon group-hover:text-black" />
+						</div>
 					</div>
 				</button>
 			{/each}
 			{#if !endReached}
 				{#if !pending}
-				<div class="mt-4 flex justify-center">
-					<Button on:click={loadMore}>
-						{$t('default.page.fights.loadMore')}
-					</Button>
-				</div>
+					<div class="mt-4 flex justify-center">
+						<Button
+							decoration="floating-op1"
+							noInnerShadow
+							on:click={loadMore}
+							class="gap-3 border-neutral-100 bg-almostwhite text-black"
+						>
+							{$t('default.page.fights.loadMore')}
+							<Plus class="-mr-2 h-4 w-4" />
+						</Button>
+					</div>
 				{:else}
-				<div class="mt-4 flex justify-center">
-					<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
-				</div>
+					<div class="mt-4 flex justify-center">
+						<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
+					</div>
 				{/if}
 			{/if}
 		</div>
 	</div>
 {/if}
+
+<style lang="scss">
+	.skeumorphic-button {
+		transition: box-shadow 50ms;
+		box-shadow: var(--skeumorphic-shadow-light);
+	}
+</style>

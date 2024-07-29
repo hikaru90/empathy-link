@@ -44,7 +44,7 @@
           {item.name}
         </span>
       </a>
-      {#if $page.data.route === item.path}
+      {#if $page.data.route.includes(item.path)}
       <div class="absolute -bottom-2 flex justify-center">
         <div class="w-1 h-1 rounded-full bg-neon">
         </div>

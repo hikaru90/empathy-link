@@ -1,8 +1,41 @@
 import { browser } from '$app/environment';
+import { t, locale } from '$lib/translations';
+import { get } from 'svelte/store';
 
 export const serializeNonPOJOs = (obj: object) => {
 	return structuredClone(obj);
 };
+
+export const daysAgo = (date) => {
+  const now = new Date();
+  const past = new Date(date);
+
+  // Calculate the difference in milliseconds
+  const diffInMilliseconds = now - past;
+
+  // Convert milliseconds to days
+  const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+
+console.log('daysAgo', get(locale));
+
+	if(get(locale) === 'en'){
+		if (diffInDays === 0) {
+			return "today";
+		} else if (diffInDays === 1) {
+			return "1 day ago";
+		} else {
+			return `${diffInDays} days ago`;
+		}
+	}else{
+		if (diffInDays === 0) {
+			return "heute";
+		} else if (diffInDays === 1) {
+			return "vor einem Tag";
+		} else {
+			return `vor ${diffInDays} Tagen`;
+		}
+	}
+}
 
 export const copyToClipboard = (text) => {
 	const input = document.createElement('input');

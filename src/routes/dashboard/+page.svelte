@@ -1,4 +1,5 @@
 <script lang="ts">
+	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
 	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
 	import DaterangePicker from '$lib/components/DaterangePicker.svelte';
 	import FightOverview from '$lib/components/FightOverview.svelte';
@@ -18,10 +19,10 @@
 	};
 
 	onMount(() => {
-		console.log('data',data);
-		console.log('onMount: $user',$user);
-		const unsubscribe = user.subscribe($user => {
-			console.log('$user in subscribe',$user);
+		console.log('data', data);
+		console.log('onMount: $user', $user);
+		const unsubscribe = user.subscribe(($user) => {
+			console.log('$user in subscribe', $user);
 			if (!$user) {
 				goto('/auth/login');
 			}
@@ -32,23 +33,13 @@
 
 {#if $user}
 	<div class="flex h-full flex-grow flex-col justify-between pb-60">
+		<AppTopMenu />
 		<div class="flex-grow">
-			<AppBottomMenu>
-				<div class="relative md:flex md:justify-center -mt-1">
-					<div class="my-2">
-						<div
-							class="lcd-screen relative flex items-center gap-[4px] border border-black/10 bg-black/10 p-[2px] dark:bg-black/20 md:rounded"
-						>
-							<DaterangePicker on:rangeChanged={updateStore} class="w-full md:w-auto shadow" />
-						</div>
-					</div>
-				</div>
-			</AppBottomMenu>
-			
-
 			<div class="max-container relative">
-				<div class="mb-10 flex flex-col items-start justify-between md:flex-row md:items-center border-b border-black/10 -mx-5 px-5 py-1">
-					<h1 class="font-heading mb-2 text-xl font-semibold">Dashboard</h1>
+				<div
+					class="mb-8 flex flex-row items-start justify-between py-4 md:items-center md:bg-transparent md:pb-6"
+				>
+					<h1 class="font-heading text-lg font-semibold">Dashboard</h1>
 				</div>
 
 				<div class="mb-10">
@@ -61,8 +52,14 @@
 					<NeedsOverview />
 				</div>
 			</div>
+
+			<AppBottomMenu>
+				<div class="relative md:flex md:justify-center">
+					<DaterangePicker on:rangeChanged={updateStore} class="w-full shadow flex-grow " />
+				</div>
+			</AppBottomMenu>
 		</div>
 	</div>
-	{:else}
+{:else}
 	Login please
 {/if}

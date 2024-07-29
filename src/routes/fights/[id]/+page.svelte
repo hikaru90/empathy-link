@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { daysAgo } from '$scripts/helpers';
 	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
 	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
 	import * as Form from '$lib/components/ui/form';
@@ -37,6 +38,10 @@
 	let recipient = '';
 
 	$: shareableLink = `${$page.url.origin}/fights/${$page.params.id}/respond`;
+	$: daysAgoIntl = () => {
+		if(!initialized) return '...'
+		return daysAgo(record.created)
+	}
 
 	const fetchData = async () => {
 		record = await pb.collection('fights').getOne($page.params.id, {
@@ -148,16 +153,17 @@
 </script>
 
 {#if !initialized}
+<div class="flex h-full flex-grow items-center justify-center">
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
+</div>
 {:else}
 	<div class="flex h-full flex-grow flex-col justify-between bg-background">
 		<div class="flex-grow">
-
 			<AppTopMenu />
 
 			<div class="max-container">
 				<div
-					class="-mx-5 flex flex-col items-start justify-between px-5 py-4 sm:flex-row md:items-center md:bg-transparent md:pb-6"
+					class="-mx-5 flex flex-row items-start justify-between px-5 py-4 md:items-center md:bg-transparent md:pb-6"
 				>
 					<h1 class="font-heading text-lg font-semibold">
 						{$t('default.page.fight.heading')}
@@ -166,9 +172,15 @@
 							{record.name}
 						</span>
 					</h1>
-					<div class="text-xs">
-						{$locale === 'en' ? 'on the' : 'am'}
-						{new Intl.DateTimeFormat('de-DE').format(new Date($startDate))}
+					<div class="flex flex-col">
+						<div class="text-2xs bg-neutral-600 text-neutral-300 mb-0.5 text-center rounded-full py-0.5">
+							{daysAgoIntl(record.created)}
+						</div>
+						
+						<div class="text-xs">
+							{$locale === 'en' ? 'on the' : 'am'}
+							{new Intl.DateTimeFormat('de-DE').format(new Date(record.created))}
+						</div>
 					</div>
 				</div>
 			</div>

@@ -156,6 +156,7 @@
     },
 		"fight": {
       "heading": "Streit",
+			"title": "Übersicht",
 			"card": {
 				"observation": "Beobachtung",
 				"feelings": "Gefühle",

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
 	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
@@ -245,6 +246,7 @@
 <div
 	class="flex flex-grow flex-col justify-between transition duration-700 {`bg-${stepConstructor[step - 1].slug}-background`}"
 	>
+	<AppTopMenu />
 	<div class="max-container relative flex h-dvh flex-grow flex-col">
 		<AppBottomMenu />
 		<form

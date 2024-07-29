@@ -43,9 +43,9 @@
 	</Sheet.Trigger>
 	<Sheet.Content side="right" class="z-[1003] flex flex-col">
 		<Sheet.Header
-			class="flex flex-row items-center justify-between border-b border-black/10 px-5 py-4"
+			class="flex flex-row items-center justify-between border-b border-black/10 px-5 py-3.5"
 		>
-			<Sheet.Title>{$t('default.menu.profile.sheet.header')}</Sheet.Title>
+			<Sheet.Title class="pt-0.5">{$t('default.menu.profile.sheet.header')}</Sheet.Title>
 			<Sheet.Close class="!m-0">
 				<div class="label bg-feelings-background">
 					<div class="icon flex items-center justify-center fill-feelings-foreground">
@@ -87,7 +87,7 @@
 					<button type="submit" class="w-full">
 						<Button wrapperClass="w-full"
 							decoration="floating-op1"
-							class="flex w-full items-center gap-3 border-offwhite bg-feelings-background text-red-500 data-[highlighted]:bg-red-200 data-[highlighted]:text-red-500 justify-between !h-10"
+							class="flex w-full items-center gap-3 border-offwhite bg-orange-900 text-red-300 data-[highlighted]:bg-red-200 data-[highlighted]:text-red-500 justify-between !h-10"
 							>
 								{$t('default.menu.profile.logout')}
 							 <Exit class="size-3" /></Button

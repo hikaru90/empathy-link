@@ -50,7 +50,9 @@
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
 	<div class="">
-		<div class="border-b border-black/5 px-4 pb-2 pt-3 rounded-lg bg-almostwhite shadow-2xl shadow-black/10">
+		<div
+			class="rounded-t-xl border-b border-black/5 bg-almostwhite px-5 pb-3 pt-4 shadow-2xl shadow-black/10"
+		>
 			<h2 class="text-md mb-2 font-bold">
 				{$t('default.page.dashboard.fights.tableCaption')}
 			</h2>
@@ -70,7 +72,7 @@
 				<div class="w-1/6"></div>
 			</div>
 		</div>
-		<div class="px-4 pb-3 pt-2 rounded-lg bg-almostwhite shadow-2xl shadow-black/10">
+		<div class="rounded-b-xl bg-almostwhite px-4 pb-3 pt-2 shadow-2xl shadow-black/10">
 			{#each records as record}
 				<button on:click={gotoFight(record.id)} class="group w-full text-left flex items-center border-b border-black/5 py-2 sm:py-3 text-xs last:border-b-0">
 					<div class="flex w-1/6">
@@ -96,10 +98,19 @@
 						{/if}
 					</div>
 					<div class="w-1/6 flex justify-end">
-						<CaretRight class="h-4 w-4 rounded-full group-hover:bg-neon group-hover:text-black" />
+						<div class="skeumorphic-button rounded-full p-0.5">
+							<CaretRight class="h-4 w-4 rounded-full group-hover:bg-neon group-hover:text-black" />
+						</div>
 					</div>
 				</button>
 			{/each}
 		</div>
 	</div>
 {/if}
+
+<style lang="scss">
+	.skeumorphic-button {
+		transition: box-shadow 50ms;
+		box-shadow: var(--skeumorphic-shadow-light);
+	}
+</style>

@@ -36,6 +36,7 @@ type Props = ButtonPrimitive.Props & {
 	size?: Size;
 	decoration?: 'default'|'op1'|'dark-op1'|'floating-op1';
 	wrapperClass?: string;
+	noInnerShadow?: boolean;
 };
 
 type Events = ButtonPrimitive.Events;
