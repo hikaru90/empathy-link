@@ -53,7 +53,7 @@
 		<div class="flex w-full items-center justify-center">
 			<ButtonPrimitive.Root
 				{builders}
-				class="p-1.5"
+				class="p-1.5 w-full"
 				type="button"
 				{...$$restProps}
 				on:click

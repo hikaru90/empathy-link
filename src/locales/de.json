@@ -131,8 +131,10 @@
       }
 		},
 		"dashboard": {
+			"selectDate": "Zeitraum wählen",
       "fights": {
         "tableCaption": "Streit",
+				"endReached": "Ende erreicht",
 				"table": {
           "id": "Id",
           "partner": "Streitpartner",

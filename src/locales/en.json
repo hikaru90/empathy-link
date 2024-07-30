@@ -128,8 +128,10 @@
 			}
 		},
 		"dashboard": {
+			"selectDate": "Select Daterange",
 			"fights": {
 				"tableCaption": "Fights",
+				"endReached": "End reached",
 				"table": {
 					"id": "Id",
 					"partner": "Partner",

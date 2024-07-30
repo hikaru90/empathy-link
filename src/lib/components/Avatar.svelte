@@ -99,28 +99,6 @@
 	</Sheet.Content>
 </Sheet.Root>
 
-<!-- <DropdownMenu.Root preventScroll={false}>
-	<DropdownMenu.Trigger class="-mr-2">
-			<Button decoration="floating-op1" class="flex items-center justify-center px-1.5 text-sm bg-background text-neutral-800 border-neutral-200 hover:bg-offwhite transition">
-					<Person class="h-4 w-4" />
-			</Button>
-	</DropdownMenu.Trigger>
-	<DropdownMenu.Content side="bottom" class="mt-1 bg-background">
-		<DropdownMenu.Group>
-			<DropdownMenu.Label>{$t('default.menu.profile.account')}</DropdownMenu.Label>
-			<DropdownMenu.Separator />
-			<form action="/auth/logout" method="POST" class="w-full">
-				<button type="submit" class="w-full">
-					<DropdownMenu.Item
-						class="text-red-500 data-[highlighted]:bg-red-200 data-[highlighted]:text-red-500"
-						>{$t('default.menu.profile.logout')}</DropdownMenu.Item
-					>
-				</button>
-			</form>
-		</DropdownMenu.Group>
-	</DropdownMenu.Content>
-</DropdownMenu.Root> -->
-
 <style lang="scss">
 	.label {
 		box-shadow:

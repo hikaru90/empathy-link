@@ -49,7 +49,10 @@
 {#if !initialized}
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
-	<div class="">
+<div class="relative z-0">
+	<div style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);" class="absolute left-0 top-20 w-[500px] h-[500px] z-0 transform -translate-x-1/2 -translate-y-1/2"></div>
+</div>
+	<div class="relative z-10">
 		<div
 			class="rounded-t-xl border-b border-black/5 bg-almostwhite px-5 pb-3 pt-4 shadow-2xl shadow-black/10"
 		>
@@ -99,7 +102,7 @@
 					</div>
 					<div class="w-1/6 flex justify-end">
 						<div class="skeumorphic-button rounded-full p-0.5">
-							<CaretRight class="h-4 w-4 rounded-full group-hover:bg-neon group-hover:text-black" />
+							<CaretRight class="h-4 w-4 rounded-full group-hover:bg-neutral-300 group-hover:text-black" />
 						</div>
 					</div>
 				</button>

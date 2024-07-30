@@ -82,61 +82,70 @@
 {#if !initialized}
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
-	<div
-		class="rounded-lg bg-feelings-background text-feelings-foreground shadow-2xl shadow-black/10"
-	>
-		<div class="flex items-center justify-between px-4 pb-2 pt-3">
-			<h2 class="text-md mb-2 font-bold">
-				{$t('default.page.dashboard.feelings.heading')}
-			</h2>
-			<div class="flex items-center gap-2">
-				<Button
-					on:click={() => (displayPositiveFeelings = false)}
-					class="{displayPositiveFeelings === false
-						? 'solid-button'
-						: 'border-button'} h-7 rounded-full px-4 leading-tight transition"
-				>
-					{$t('default.page.dashboard.feelings.negative')}
-				</Button>
-				<Button
-					on:click={() => (displayPositiveFeelings = true)}
-					class="{displayPositiveFeelings === true
-						? 'solid-button'
-						: 'border-button'} h-7 rounded-full px-4 leading-tight"
-				>
-					{$t('default.page.dashboard.feelings.positive')}
-				</Button>
+	<div class="relative">
+		<div
+			style="background: radial-gradient(circle at center, hsl(var(--feelings-background) / 1), transparent 67%);"
+			class="absolute right-0 top-60 z-0 h-[800px] w-[800px] translate-x-1/2 -translate-y-1/2 transform"
+		></div>
+		<div
+			class="relative z-10 rounded-lg bg-feelings-background text-feelings-foreground shadow-2xl shadow-black/10"
+		>
+			<div class="flex items-center justify-between px-4 pb-2 pt-3">
+				<h2 class="text-md mb-2 font-bold">
+					{$t('default.page.dashboard.feelings.heading')}
+				</h2>
+				<div class="flex items-center gap-2">
+					<Button
+						on:click={() => (displayPositiveFeelings = false)}
+						class="{displayPositiveFeelings === false
+							? 'solid-button'
+							: 'border-button'} h-7 rounded-full px-4 leading-tight transition"
+					>
+						{$t('default.page.dashboard.feelings.negative')}
+					</Button>
+					<Button
+						on:click={() => (displayPositiveFeelings = true)}
+						class="{displayPositiveFeelings === true
+							? 'solid-button'
+							: 'border-button'} h-7 rounded-full px-4 leading-tight"
+					>
+						{$t('default.page.dashboard.feelings.positive')}
+					</Button>
+				</div>
 			</div>
-		</div>
-		<div class="flex items-center justify-center">
-			{#if feelings}
-				{#key feelings.length}
-					<Donut {colors} {data} />
-				{/key}
-			{/if}
-		</div>
-		<div class="px-4 pb-3 pt-2">
-			{#if feelings.length === 0}
-				{$t('default.page.dashboard.feelings.empty')}
-			{:else}
-				{#each feelings as feeling, index}
-					{#if displayPositiveFeelings === feeling.feeling.positive}
-						<div
-							class="flex items-center justify-between border-b border-feelings-foreground/20 py-1 last:border-b-0"
-						>
-							<div class="flex items-center gap-4">
-								<div style="background-color: {colors[index]};" class="h-3 w-5 rounded-full"></div>
+			<div class="flex items-center justify-center">
+				{#if feelings}
+					{#key feelings.length}
+						<Donut {colors} {data} />
+					{/key}
+				{/if}
+			</div>
+			<div class="px-4 pb-3 pt-2">
+				{#if feelings.length === 0}
+					{$t('default.page.dashboard.feelings.empty')}
+				{:else}
+					{#each feelings as feeling, index}
+						{#if displayPositiveFeelings === feeling.feeling.positive}
+							<div
+								class="flex items-center justify-between border-b border-feelings-foreground/20 py-1 last:border-b-0"
+							>
+								<div class="flex items-center gap-4">
+									<div
+										style="background-color: {colors[index]};"
+										class="h-3 w-5 rounded-full"
+									></div>
+									<span>
+										{$locale === 'en' ? feeling.feeling.nameEN : feeling.feeling.nameDE}
+									</span>
+								</div>
 								<span>
-									{$locale === 'en' ? feeling.feeling.nameEN : feeling.feeling.nameDE}
+									{feeling.count}
 								</span>
 							</div>
-							<span>
-								{feeling.count}
-							</span>
-						</div>
-					{/if}
-				{/each}
-			{/if}
+						{/if}
+					{/each}
+				{/if}
+			</div>
 		</div>
 	</div>
 {/if}

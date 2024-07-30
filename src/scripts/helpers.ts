@@ -6,6 +6,8 @@ export const serializeNonPOJOs = (obj: object) => {
 	return structuredClone(obj);
 };
 
+export const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export const daysAgo = (date) => {
   const now = new Date();
   const past = new Date(date);

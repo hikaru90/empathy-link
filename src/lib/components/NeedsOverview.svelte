@@ -79,68 +79,77 @@
 {#if !initialized}
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
-	<div class="rounded-lg bg-needs-background text-needs-foreground shadow-2xl shadow-black/10">
-		<div class="flex items-center justify-between px-4 pb-2 pt-3">
-			<h2 class="text-md mb-2 font-bold">
-				{$t('default.page.dashboard.needs.heading')}
-			</h2>
-			<div class="flex items-center gap-2">
-				<Button
-					on:click={() => (displaySelfcenteredNeeds = false)}
-					class="{displaySelfcenteredNeeds === false
-						? 'solid-need-button'
-						: 'border-need-button'} h-7 rounded-full px-4 leading-tight transition"
-				>
-					{$t('default.page.dashboard.needs.community')}
-				</Button>
-				<Button
-					on:click={() => (displaySelfcenteredNeeds = true)}
-					class="{displaySelfcenteredNeeds === true
-						? 'solid-need-button'
-						: 'border-need-button'} h-7 rounded-full px-4 leading-tight"
-				>
-					{$t('default.page.dashboard.needs.selfcentered')}
-				</Button>
+	<div class="relative">
+		<div
+			style="background: radial-gradient(circle at center, hsl(var(--needs-background) / 0.8), transparent 67%);"
+			class="absolute left-0 top-60 z-0 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 transform"
+		></div>
+		<div class="relative z-10 rounded-lg bg-needs-background text-needs-foreground shadow-2xl shadow-black/10">
+			<div class="flex items-center justify-between px-4 pb-2 pt-3">
+				<h2 class="text-md mb-2 font-bold">
+					{$t('default.page.dashboard.needs.heading')}
+				</h2>
+				<div class="flex items-center gap-2">
+					<Button
+						on:click={() => (displaySelfcenteredNeeds = false)}
+						class="{displaySelfcenteredNeeds === false
+							? 'solid-need-button'
+							: 'border-need-button'} h-7 rounded-full px-4 leading-tight transition"
+					>
+						{$t('default.page.dashboard.needs.community')}
+					</Button>
+					<Button
+						on:click={() => (displaySelfcenteredNeeds = true)}
+						class="{displaySelfcenteredNeeds === true
+							? 'solid-need-button'
+							: 'border-need-button'} h-7 rounded-full px-4 leading-tight"
+					>
+						{$t('default.page.dashboard.needs.selfcentered')}
+					</Button>
+				</div>
 			</div>
-		</div>
-		<div class="flex items-center justify-center">
-			{#if needs}
-			{#key needs.length}
-				<Donut {colors} {data} />
-			{/key}
-			{/if}
-		</div>
-		<div class="px-4 pb-3 pt-2">
-			{#if needs.length === 0}
-				{$t('default.page.dashboard.needs.empty')}
-			{:else}
-				{#each needs as need, index}
-					{#if displaySelfcenteredNeeds === need.need.selfcentered}
-						<div
-							class="flex items-center justify-between border-b border-needs-foreground/20 py-1 last:border-b-0"
-						>
-							<div class="flex items-center gap-4">
-								<div style="background-color: {colors[index]};" class="h-3 w-5 rounded-full"></div>
+			<div class="flex items-center justify-center">
+				{#if needs}
+					{#key needs.length}
+						<Donut {colors} {data} />
+					{/key}
+				{/if}
+			</div>
+			<div class="px-4 pb-3 pt-2">
+				{#if needs.length === 0}
+					{$t('default.page.dashboard.needs.empty')}
+				{:else}
+					{#each needs as need, index}
+						{#if displaySelfcenteredNeeds === need.need.selfcentered}
+							<div
+								class="flex items-center justify-between border-b border-needs-foreground/20 py-1 last:border-b-0"
+							>
+								<div class="flex items-center gap-4">
+									<div
+										style="background-color: {colors[index]};"
+										class="h-3 w-5 rounded-full"
+									></div>
+									<span>
+										{$locale === 'en' ? need.need.nameEN : need.need.nameDE}
+									</span>
+								</div>
 								<span>
-									{$locale === 'en' ? need.need.nameEN : need.need.nameDE}
+									{need.count}
 								</span>
 							</div>
-							<span>
-								{need.count}
-							</span>
-						</div>
-					{/if}
-				{/each}
-			{/if}
+						{/if}
+					{/each}
+				{/if}
+			</div>
 		</div>
 	</div>
 {/if}
 
 <style lang="scss">
-	:global(.solid-need-button){
-		@apply bg-needs-foreground/60 hover:bg-needs-foreground border-2 border-needs-foreground/0 hover:border-needs-foreground/60;
+	:global(.solid-need-button) {
+		@apply border-2 border-needs-foreground/0 bg-needs-foreground/60 hover:border-needs-foreground/60 hover:bg-needs-foreground;
 	}
-	:global(.border-need-button){
-		@apply border-2 border-needs-foreground/60 text-needs-foreground/60 hover:border-needs-foreground hover:text-needs-foreground bg-transparent hover:bg-transparent;
+	:global(.border-need-button) {
+		@apply border-2 border-needs-foreground/60 bg-transparent text-needs-foreground/60 hover:border-needs-foreground hover:bg-transparent hover:text-needs-foreground;
 	}
 </style>

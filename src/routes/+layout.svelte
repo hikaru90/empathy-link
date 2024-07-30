@@ -12,7 +12,8 @@
 	import 'simplebar';
 	import 'simplebar/dist/simplebar.css';
 	import ResizeObserver from 'resize-observer-polyfill';
-	if(browser){
+	import { onNavigate } from '$app/navigation';
+	if (browser) {
 		window.ResizeObserver = ResizeObserver;
 	}
 
@@ -27,9 +28,9 @@
 		scroll.set(event.target.scrollTop);
 	};
 	const handleResize = () => {
-		windowWidth.set(window.innerWidth)
-		windowHeight.set(window.innerHeight)
-	}
+		windowWidth.set(window.innerWidth);
+		windowHeight.set(window.innerHeight);
+	};
 
 	onMount(() => {
 		contentReady = true;
@@ -37,6 +38,17 @@
 			document.getElementById('scrollContainer')?.addEventListener('scroll', handleScroll);
 			window?.addEventListener('resize', handleResize);
 		}
+	});
+
+	onNavigate((navigation) => {
+		if (!document.startViewTransition) return;
+
+		return new Promise((resolve) => {
+			document.startViewTransition(async () => {
+				resolve();
+					await navigation.complete;
+			});
+		});
 	});
 
 	onDestroy(() => {
@@ -72,7 +84,7 @@
 				<slot />
 			</div>
 			{#if data.user}
-			<AppMenu />
+				<AppMenu />
 			{/if}
 		{/if}
 	</main>

@@ -39,9 +39,9 @@
 
 	$: shareableLink = `${$page.url.origin}/fights/${$page.params.id}/respond`;
 	$: daysAgoIntl = () => {
-		if(!initialized) return '...'
-		return daysAgo(record.created)
-	}
+		if (!initialized) return '...';
+		return daysAgo(record.created);
+	};
 
 	const fetchData = async () => {
 		record = await pb.collection('fights').getOne($page.params.id, {
@@ -153,9 +153,9 @@
 </script>
 
 {#if !initialized}
-<div class="flex h-full flex-grow items-center justify-center">
-	<Skeleton class="h-[20px] w-[100px] rounded-full" />
-</div>
+	<div class="flex h-full flex-grow items-center justify-center">
+		<Skeleton class="h-[20px] w-[100px] rounded-full" />
+	</div>
 {:else}
 	<div class="flex h-full flex-grow flex-col justify-between bg-background">
 		<div class="flex-grow">
@@ -163,7 +163,7 @@
 
 			<div class="max-container">
 				<div
-					class="-mx-5 flex flex-row items-start justify-between px-5 py-4 md:items-center md:bg-transparent md:pb-6"
+					class="relative z-10 -mx-5 flex flex-row items-start justify-between px-5 py-4 md:items-center md:bg-transparent md:pb-6"
 				>
 					<h1 class="font-heading text-lg font-semibold">
 						{$t('default.page.fight.heading')}
@@ -173,10 +173,12 @@
 						</span>
 					</h1>
 					<div class="flex flex-col">
-						<div class="text-2xs bg-neutral-600 text-neutral-300 mb-0.5 text-center rounded-full py-0.5">
+						<div
+							class="mb-0.5 rounded-full bg-neutral-600 py-0.5 text-center text-2xs text-neutral-300"
+						>
 							{daysAgoIntl(record.created)}
 						</div>
-						
+
 						<div class="text-xs">
 							{$locale === 'en' ? 'on the' : 'am'}
 							{new Intl.DateTimeFormat('de-DE').format(new Date(record.created))}
@@ -186,12 +188,24 @@
 			</div>
 
 			<div class="max-container relative pb-60 pt-10 md:bg-transparent">
-				<div class="relative">
+				<div class="relative z-0">
+					<div
+						style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);"
+						class="absolute left-0 top-20 z-0 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 transform"
+					></div>
+				</div>
+				<div class="relative z-10">
 					<!-- <FightOwnerDisplay {record} /> -->
 					<FightDisplay {record} />
 				</div>
 				{#each responses as response}
-					<div class="relative mt-8">
+					<div class="relative z-0">
+						<div
+							style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);"
+							class="absolute left-96 top-20 z-0 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 transform"
+						></div>
+					</div>
+					<div class="relative z-10 mt-8">
 						<!-- <FightOwnerDisplay record={response} adversary={record.name} /> -->
 						<FightDisplay record={response} adversary={record.name} />
 					</div>
@@ -201,14 +215,17 @@
 			<AppBottomMenu>
 				<div class="relative flex h-auto items-center justify-between">
 					<a href="/dashboard" class="block">
-						<Button decoration="dark-op1" class="flex items-center px-1.5 text-sm bg-neutral-800 text-zinc-200 border-neutral-900">
+						<Button
+							decoration="dark-op1"
+							class="flex items-center border-neutral-900 bg-neutral-800 px-1.5 text-sm text-zinc-200"
+						>
 							<CaretLeft class="h-4 w-4 rounded-full" />
 						</Button>
 					</a>
 					<Button
 						on:click={() => (drawerOpen = true)}
 						decoration="dark-op1"
-						class="flex items-center gap-2 text-sm bg-neutral-800 text-zinc-200 border-neutral-900"
+						class="flex items-center gap-2 border-neutral-900 bg-neutral-800 text-sm text-zinc-200"
 					>
 						{$t('default.menu.share.cta')}
 						<Share1 />

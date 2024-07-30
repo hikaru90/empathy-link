@@ -11,6 +11,7 @@
 	import { goto } from '$app/navigation';
 
 	export let data: PageData;
+	let popoverOpen = false;
 
 	const updateStore = (payload) => {
 		// console.log('updateStore',payload.detail);
@@ -37,9 +38,23 @@
 		<div class="flex-grow">
 			<div class="max-container relative">
 				<div
-					class="mb-8 flex flex-row items-start justify-between py-4 md:items-center md:bg-transparent md:pb-6"
+					class="relative z-10 mb-8 flex flex-row items-center justify-between py-4 md:items-center md:bg-transparent md:pb-6"
 				>
 					<h1 class="font-heading text-lg font-semibold">Dashboard</h1>
+					<button on:click={() => popoverOpen = true}
+						class="mb-0.5 rounded-full bg-neutral-600 py-0.5 text-center text-2xs text-neutral-300 px-2"
+					>
+						{new Intl.DateTimeFormat('de-DE', {
+							month: 'short',
+							day: 'numeric'
+							// year: 'numeric',
+						}).format(new Date($startDate))}
+						- {new Intl.DateTimeFormat('de-DE', {
+							month: 'short',
+							day: 'numeric',
+							year: 'numeric'
+						}).format(new Date($endDate))}
+					</button>
 				</div>
 
 				<div class="mb-10">
@@ -54,8 +69,8 @@
 			</div>
 
 			<AppBottomMenu>
-				<div class="relative md:flex md:justify-center">
-					<DaterangePicker on:rangeChanged={updateStore} class="w-full shadow flex-grow " />
+				<div class="relative md:flex md:justify-center w-full">
+					<DaterangePicker on:rangeChanged={updateStore} bind:popoverOpen={popoverOpen} class="w-full flex-grow shadow " />
 				</div>
 			</AppBottomMenu>
 		</div>

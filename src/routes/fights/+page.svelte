@@ -25,7 +25,7 @@
 		<AppTopMenu />
 		<div class="max-container flex-grow pb-40">
 			<div
-				class="mb-8 flex flex-row items-start justify-between py-4 md:items-center md:bg-transparent md:pb-6"
+				class="relative z-10 mb-8 flex flex-row items-start justify-between py-4 md:items-center md:bg-transparent md:pb-6"
 			>
 				<h1 class="font-heading text-lg font-semibold">{$t('default.page.fight.heading')}</h1>
 			</div>
