@@ -1,17 +1,19 @@
-import { g as get_store_value, c as compute_rest_props, s as subscribe, a as null_to_empty } from "../../../chunks/utils.js";
+import { g as get_store_value, c as compute_rest_props, s as subscribe } from "../../../chunks/utils.js";
 import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute, e as escape, g as escape_attribute_value, v as validate_component, f as each } from "../../../chunks/ssr.js";
-import { c as chunk, t as toWritableStores, g as generateIds, o as overridable, i as isValidIndex, a as createBitAttrs, r as removeUndefined, b as getOptionUpdater, d as createDispatcher, e as Button$1, R as Root, T as Trigger, P as Popover_content, M as Menu } from "../../../chunks/Menu.js";
+import { A as AppTopMenu } from "../../../chunks/AppTopMenu.js";
+import { A as AppBottomMenu } from "../../../chunks/AppBottomMenu.js";
 import { s as setContext, g as getContext, c as createEventDispatcher } from "../../../chunks/lifecycle.js";
 import { CalendarDateTime, CalendarDate, ZonedDateTime, parseZonedDateTime, parseDateTime, parseDate, getLocalTimeZone, getDayOfWeek, DateFormatter, startOfMonth, endOfMonth, isSameMonth, isSameDay, isToday } from "@internationalized/date";
-import { c as cn } from "../../../chunks/page.js";
-import { b as buttonVariants } from "../../../chunks/index5.js";
-import { w as withGet, i as isBrowser, a as isHTMLElement, s as styleToString, o as omit, m as makeElement, b as addMeltEventListener, e as executeCallbacks, c as effect, k as kbd, d as createElHelpers, f as buttonVariants$1 } from "../../../chunks/index3.js";
+import { c as cn, f as flyAndScale } from "../../../chunks/utils2.js";
+import { w as withGet, i as isBrowser, a as isHTMLElement, s as styleToString, c as chunk, t as toWritableStores, o as omit, g as generateIds, b as overridable, m as makeElement, d as addMeltEventListener, e as executeCallbacks, f as effect, k as kbd, h as isValidIndex, j as createElHelpers, l as getCtx$1, n as createBitAttrs, r as removeUndefined, p as getOptionUpdater, q as createDispatcher, u as buttonVariants, D as Dialog_close, v as Dialog } from "../../../chunks/Avatar.svelte_svelte_type_style_lang.js";
 import { w as writable, d as derived } from "../../../chunks/index2.js";
 import { t as tick } from "../../../chunks/scheduler.js";
 import { e as endDate, s as startDate, S as Skeleton } from "../../../chunks/skeleton.js";
 import "clsx";
-import { p as pb } from "../../../chunks/pocketbase.js";
+/* empty css                                                           */
 import { t, a as locale } from "../../../chunks/translations.js";
+import { D as Dialog_title$1, a as Dialog_portal$1, b as Dialog_overlay$1, f as fade, c as Dialog_content$1, C as Cross1, B as Button } from "../../../chunks/Avatar.js";
+import { p as pb } from "../../../chunks/pocketbase.js";
 import "../../../chunks/client.js";
 import { u as user } from "../../../chunks/auth.js";
 import { s as sortByKey, g as generateHslaColors } from "../../../chunks/helpers.js";
@@ -1129,6 +1131,34 @@ function createRangeCalendar(props) {
     ids
   };
 }
+const Dialog_description$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let builder;
+  let $$restProps = compute_rest_props($$props, ["asChild", "id", "el"]);
+  let $description, $$unsubscribe_description;
+  let { asChild = false } = $$props;
+  let { id = void 0 } = $$props;
+  let { el = void 0 } = $$props;
+  const { elements: { description }, ids, getAttrs } = getCtx$1();
+  $$unsubscribe_description = subscribe(description, (value) => $description = value);
+  const attrs = getAttrs("description");
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
+    $$bindings.asChild(asChild);
+  if ($$props.id === void 0 && $$bindings.id && id !== void 0)
+    $$bindings.id(id);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
+    $$bindings.el(el);
+  {
+    if (id) {
+      ids.description.set(id);
+    }
+  }
+  builder = $description;
+  {
+    Object.assign(builder, attrs);
+  }
+  $$unsubscribe_description();
+  return `${asChild ? `${slots.default ? slots.default({ builder }) : ``}` : `<div${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({ builder }) : ``}</div>`}`;
+});
 function getRangeCalendarData() {
   const NAME = "calendar";
   const PARTS = [
@@ -1683,64 +1713,6 @@ const Calendar = create_ssr_component(($$result, $$props, $$bindings, slots) => 
     {}
   )}><path fill-rule="evenodd" clip-rule="evenodd" d="M4.5 1C4.77614 1 5 1.22386 5 1.5V2H10V1.5C10 1.22386 10.2239 1 10.5 1C10.7761 1 11 1.22386 11 1.5V2H12.5C13.3284 2 14 2.67157 14 3.5V12.5C14 13.3284 13.3284 14 12.5 14H2.5C1.67157 14 1 13.3284 1 12.5V3.5C1 2.67157 1.67157 2 2.5 2H4V1.5C4 1.22386 4.22386 1 4.5 1ZM10 3V3.5C10 3.77614 10.2239 4 10.5 4C10.7761 4 11 3.77614 11 3.5V3H12.5C12.7761 3 13 3.22386 13 3.5V5H2V3.5C2 3.22386 2.22386 3 2.5 3H4V3.5C4 3.77614 4.22386 4 4.5 4C4.77614 4 5 3.77614 5 3.5V3H10ZM2 6V12.5C2 12.7761 2.22386 13 2.5 13H12.5C12.7761 13 13 12.7761 13 12.5V6H2ZM7 7.5C7 7.22386 7.22386 7 7.5 7C7.77614 7 8 7.22386 8 7.5C8 7.77614 7.77614 8 7.5 8C7.22386 8 7 7.77614 7 7.5ZM9.5 7C9.22386 7 9 7.22386 9 7.5C9 7.77614 9.22386 8 9.5 8C9.77614 8 10 7.77614 10 7.5C10 7.22386 9.77614 7 9.5 7ZM11 7.5C11 7.22386 11.2239 7 11.5 7C11.7761 7 12 7.22386 12 7.5C12 7.77614 11.7761 8 11.5 8C11.2239 8 11 7.77614 11 7.5ZM11.5 9C11.2239 9 11 9.22386 11 9.5C11 9.77614 11.2239 10 11.5 10C11.7761 10 12 9.77614 12 9.5C12 9.22386 11.7761 9 11.5 9ZM9 9.5C9 9.22386 9.22386 9 9.5 9C9.77614 9 10 9.22386 10 9.5C10 9.77614 9.77614 10 9.5 10C9.22386 10 9 9.77614 9 9.5ZM7.5 9C7.22386 9 7 9.22386 7 9.5C7 9.77614 7.22386 10 7.5 10C7.77614 10 8 9.77614 8 9.5C8 9.22386 7.77614 9 7.5 9ZM5 9.5C5 9.22386 5.22386 9 5.5 9C5.77614 9 6 9.22386 6 9.5C6 9.77614 5.77614 10 5.5 10C5.22386 10 5 9.77614 5 9.5ZM3.5 9C3.22386 9 3 9.22386 3 9.5C3 9.77614 3.22386 10 3.5 10C3.77614 10 4 9.77614 4 9.5C4 9.22386 3.77614 9 3.5 9ZM3 11.5C3 11.2239 3.22386 11 3.5 11C3.77614 11 4 11.2239 4 11.5C4 11.7761 3.77614 12 3.5 12C3.22386 12 3 11.7761 3 11.5ZM5.5 11C5.22386 11 5 11.2239 5 11.5C5 11.7761 5.22386 12 5.5 12C5.77614 12 6 11.7761 6 11.5C6 11.2239 5.77614 11 5.5 11ZM7 11.5C7 11.2239 7.22386 11 7.5 11C7.77614 11 8 11.2239 8 11.5C8 11.7761 7.77614 12 7.5 12C7.22386 12 7 11.7761 7 11.5ZM9.5 11C9.22386 11 9 11.2239 9 11.5C9 11.7761 9.22386 12 9.5 12C9.77614 12 10 11.7761 10 11.5C10 11.2239 9.77614 11 9.5 11Z" fill="currentColor"></path></svg>`} `;
 });
-const css$2 = {
-  code: ".skeumorphic-button.svelte-5cv73o{transition:box-shadow 50ms;box-shadow:var(--skeumorphic-shadow-light)}",
-  map: null
-};
-const Button = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["class", "variant", "size", "builders", "decoration"]);
-  let { class: className = void 0 } = $$props;
-  let { variant = "default" } = $$props;
-  let { size = "default" } = $$props;
-  let { builders = [] } = $$props;
-  let { decoration } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
-  if ($$props.variant === void 0 && $$bindings.variant && variant !== void 0)
-    $$bindings.variant(variant);
-  if ($$props.size === void 0 && $$bindings.size && size !== void 0)
-    $$bindings.size(size);
-  if ($$props.builders === void 0 && $$bindings.builders && builders !== void 0)
-    $$bindings.builders(builders);
-  if ($$props.decoration === void 0 && $$bindings.decoration && decoration !== void 0)
-    $$bindings.decoration(decoration);
-  $$result.css.add(css$2);
-  return `${decoration === "op1" ? `<div class="relative flex items-center gap-[4px] border border-black/10 bg-black/10 p-[2px] dark:bg-black/20 md:rounded"><div class="shadow"><div class="flex items-center justify-center overflow-hidden rounded shadow-inner shadow-white/40 dark:shadow-white/10">${validate_component(Button$1, "ButtonPrimitive.Root").$$render(
-    $$result,
-    Object.assign(
-      {},
-      { builders },
-      {
-        class: "h-[45.4px] rounded-[2px] bg-offwhite px-2 text-black"
-      },
-      { type: "button" },
-      $$restProps
-    ),
-    {},
-    {
-      default: () => {
-        return `<div class="${escape(null_to_empty(cn(buttonVariants({ variant, size, className }), "skeumorphic-button h-[29.4px] rounded-full border-2 border-offwhite bg-offwhite text-black transition duration-700 hover:bg-offwhite")), true) + " svelte-5cv73o"}">${slots.default ? slots.default({}) : ``}</div>`;
-      }
-    }
-  )}</div></div></div>` : `${validate_component(Button$1, "ButtonPrimitive.Root").$$render(
-    $$result,
-    Object.assign(
-      {},
-      { builders },
-      {
-        class: "h-[45.4px] rounded-[2px] bg-offwhite px-2 text-black"
-      },
-      { type: "button" },
-      $$restProps
-    ),
-    {},
-    {
-      default: () => {
-        return `<div class="${escape(null_to_empty(cn(buttonVariants({ variant, size, className }), "skeumorphic-button h-[29.4px] rounded-full border-2 border-offwhite bg-offwhite text-black transition duration-700 hover:bg-offwhite")), true) + " svelte-5cv73o"}">${slots.default ? slots.default({}) : ``}</div>`;
-      }
-    }
-  )}`}`;
-});
 const Range_calendar = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["value", "placeholder", "weekdayFormat", "startValue", "class"]);
   let { value = void 0 } = $$props;
@@ -1848,7 +1820,7 @@ const Range_calendar_cell = create_ssr_component(($$result, $$props, $$bindings,
       {},
       { date },
       {
-        class: cn("relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([data-selected])]:bg-accent first:[&:has([data-selected])]:rounded-l-md last:[&:has([data-selected])]:rounded-r-md [&:has([data-selected][data-outside-month])]:bg-accent/50 [&:has([data-selected][data-selection-end])]:rounded-r-md [&:has([data-selected][data-selection-start])]:rounded-l-md", className)
+        class: cn("w-[14.2857%] relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([data-selected])]:bg-accent first:[&:has([data-selected])]:rounded-l-md last:[&:has([data-selected])]:rounded-r-md [&:has([data-selected][data-outside-month])]:bg-accent/50 [&:has([data-selected][data-selection-end])]:rounded-r-md [&:has([data-selected][data-selection-start])]:rounded-l-md", className)
       },
       $$restProps
     ),
@@ -1879,8 +1851,8 @@ const Range_calendar_day = create_ssr_component(($$result, $$props, $$bindings, 
       { month },
       {
         class: cn(
-          buttonVariants$1({ variant: "ghost" }),
-          "h-8 w-8 p-0 font-normal data-[selected]:opacity-100",
+          buttonVariants({ variant: "ghost" }),
+          "h-8 w-full p-0 font-normal data-[selected]:opacity-100",
           // Today
           "[&[data-today]:not([data-selected])]:bg-accent [&[data-today]:not([data-selected])]:text-accent-foreground",
           // Selection Start
@@ -2030,7 +2002,7 @@ const Range_calendar_head_cell = create_ssr_component(($$result, $$props, $$bind
     Object.assign(
       {},
       {
-        class: cn("w-8 rounded-md text-[0.8rem] font-normal text-muted-foreground", className)
+        class: cn("w-[14.2857%] text-center rounded-md text-[0.8rem] font-normal text-muted-foreground", className)
       },
       $$restProps
     ),
@@ -2052,7 +2024,7 @@ const Range_calendar_next_button = create_ssr_component(($$result, $$props, $$bi
     Object.assign(
       {},
       {
-        class: cn(buttonVariants$1({ variant: "outline" }), "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100", className)
+        class: cn(buttonVariants({ variant: "outline" }), "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100", className)
       },
       $$restProps
     ),
@@ -2122,7 +2094,7 @@ const Range_calendar_prev_button = create_ssr_component(($$result, $$props, $$bi
     Object.assign(
       {},
       {
-        class: cn(buttonVariants$1({ variant: "outline" }), "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100", className)
+        class: cn(buttonVariants({ variant: "outline" }), "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100", className)
       },
       $$restProps
     ),
@@ -2134,18 +2106,167 @@ const Range_calendar_prev_button = create_ssr_component(($$result, $$props, $$bi
     }
   )}`;
 });
+const Dialog_title = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["class"]);
+  let { class: className = void 0 } = $$props;
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  return `${validate_component(Dialog_title$1, "DialogPrimitive.Title").$$render(
+    $$result,
+    Object.assign(
+      {},
+      {
+        class: cn("text-lg font-semibold leading-none tracking-tight", className)
+      },
+      $$restProps
+    ),
+    {},
+    {
+      default: () => {
+        return `${slots.default ? slots.default({}) : ``}`;
+      }
+    }
+  )}`;
+});
+const Dialog_portal = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, []);
+  return `${validate_component(Dialog_portal$1, "DialogPrimitive.Portal").$$render($$result, Object.assign({}, $$restProps), {}, {
+    default: () => {
+      return `${slots.default ? slots.default({}) : ``}`;
+    }
+  })}`;
+});
+const Dialog_header = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["class"]);
+  let { class: className = void 0 } = $$props;
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  return `<div${spread(
+    [
+      {
+        class: escape_attribute_value(cn("flex flex-col space-y-1.5 text-left", className))
+      },
+      escape_object($$restProps)
+    ],
+    {}
+  )}>${slots.default ? slots.default({}) : ``}</div>`;
+});
+const Dialog_overlay = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["class", "transition", "transitionConfig"]);
+  let { class: className = void 0 } = $$props;
+  let { transition = fade } = $$props;
+  let { transitionConfig = { duration: 150 } } = $$props;
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  if ($$props.transition === void 0 && $$bindings.transition && transition !== void 0)
+    $$bindings.transition(transition);
+  if ($$props.transitionConfig === void 0 && $$bindings.transitionConfig && transitionConfig !== void 0)
+    $$bindings.transitionConfig(transitionConfig);
+  return `${validate_component(Dialog_overlay$1, "DialogPrimitive.Overlay").$$render(
+    $$result,
+    Object.assign(
+      {},
+      { transition },
+      { transitionConfig },
+      {
+        class: cn("fixed inset-0 z-[1001] bg-zinc-400/80 backdrop-blur-xl brightness-50", className)
+      },
+      $$restProps
+    ),
+    {},
+    {}
+  )}`;
+});
+const css$3 = {
+  code: '.label.svelte-168kay9{box-shadow:4px 4px 8px 0 rgba(0, 0, 0, 0.4);position:relative;height:1.75rem;width:1.75rem;flex-shrink:0;border-radius:9999px;border-width:1px;--tw-border-opacity:1;border-color:rgb(255 255 255 / var(--tw-border-opacity))}.label.svelte-168kay9:after{content:"";box-shadow:-4px -4px 8px 0 white;display:block;height:100%;width:100%;border-radius:9999px}.icon.svelte-168kay9{position:absolute;left:50%;top:50%;display:flex;height:0.875rem;width:0.875rem;--tw-translate-x:-50%;--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));align-items:center;justify-content:center}',
+  map: null
+};
+const Dialog_content = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["class", "transition", "transitionConfig"]);
+  let { class: className = void 0 } = $$props;
+  let { transition = flyAndScale } = $$props;
+  let { transitionConfig = { duration: 200 } } = $$props;
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  if ($$props.transition === void 0 && $$bindings.transition && transition !== void 0)
+    $$bindings.transition(transition);
+  if ($$props.transitionConfig === void 0 && $$bindings.transitionConfig && transitionConfig !== void 0)
+    $$bindings.transitionConfig(transitionConfig);
+  $$result.css.add(css$3);
+  return `${validate_component(Dialog_portal, "Dialog.Portal").$$render($$result, {}, {}, {
+    default: () => {
+      return `${validate_component(Dialog_overlay, "Dialog.Overlay").$$render($$result, {}, {}, {})} ${validate_component(Dialog_content$1, "DialogPrimitive.Content").$$render(
+        $$result,
+        Object.assign(
+          {},
+          { transition },
+          { transitionConfig },
+          {
+            class: cn("fixed left-[50%] top-[50%] z-[1002] grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border bg-offwhite p-6 shadow-lg sm:rounded-lg md:w-full max-w-[90vw] md:max-w-lg rounded-2xl", className)
+          },
+          $$restProps
+        ),
+        {},
+        {
+          default: () => {
+            return `${slots.default ? slots.default({}) : ``} ${validate_component(Dialog_close, "DialogPrimitive.Close").$$render(
+              $$result,
+              {
+                class: "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+              },
+              {},
+              {
+                default: () => {
+                  return `<div class="label bg-feelings-background svelte-168kay9"><div class="icon fill-feelings-foreground svelte-168kay9"> ${validate_component(Cross1, "Cross1").$$render($$result, { class: "text-red-600" }, {}, {})}</div></div> <span class="sr-only" data-svelte-h="svelte-1pewzs3">Close</span>`;
+                }
+              }
+            )}`;
+          }
+        }
+      )}`;
+    }
+  })}`;
+});
+const Dialog_description = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["class"]);
+  let { class: className = void 0 } = $$props;
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  return `${validate_component(Dialog_description$1, "DialogPrimitive.Description").$$render(
+    $$result,
+    Object.assign(
+      {},
+      {
+        class: cn("text-sm text-muted-foreground", className)
+      },
+      $$restProps
+    ),
+    {},
+    {
+      default: () => {
+        return `${slots.default ? slots.default({}) : ``}`;
+      }
+    }
+  )}`;
+});
+const Root = Dialog;
 const DaterangePicker = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $endDate, $$unsubscribe_endDate;
   let $startDate, $$unsubscribe_startDate;
+  let $t, $$unsubscribe_t;
   $$unsubscribe_endDate = subscribe(endDate, (value2) => $endDate = value2);
   $$unsubscribe_startDate = subscribe(startDate, (value2) => $startDate = value2);
+  $$unsubscribe_t = subscribe(t, (value2) => $t = value2);
   const dispatch = createEventDispatcher();
   const df = new DateFormatter("en-US", { dateStyle: "medium" });
   let { class: className = void 0 } = $$props;
+  let { popoverOpen = false } = $$props;
   let value = { start: $startDate, end: $endDate };
   let startValue = void 0;
   if ($$props.class === void 0 && $$bindings.class && className !== void 0)
     $$bindings.class(className);
+  if ($$props.popoverOpen === void 0 && $$bindings.popoverOpen && popoverOpen !== void 0)
+    $$bindings.popoverOpen(popoverOpen);
   let $$settled;
   let $$rendered;
   let previous_head = $$result.head;
@@ -2156,57 +2277,92 @@ const DaterangePicker = create_ssr_component(($$result, $$props, $$bindings, slo
       if (value?.start, value?.end)
         dispatch("rangeChanged", value);
     }
-    $$rendered = `<div${add_attribute("class", cn(className, "grid gap-2 w-full md:w-[300px] relative"), 0)}>${validate_component(Root, "Popover.Root").$$render($$result, { openFocus: true }, {}, {
-      default: () => {
-        return `${validate_component(Trigger, "Popover.Trigger").$$render($$result, { asChild: true }, {}, {
-          default: ({ builder }) => {
-            return `${validate_component(Button, "Button").$$render(
-              $$result,
-              {
-                class: cn("w-full justify-start text-left font-normal", !value && "text-muted-foreground"),
-                builders: [builder]
-              },
-              {},
-              {
-                default: () => {
-                  return `${validate_component(Calendar, "CalendarIcon").$$render($$result, { class: "mr-2 h-4 w-4" }, {}, {})} ${value && value.start ? `${value.end ? `${escape(df.format(value.start.toDate(getLocalTimeZone())))} - ${escape(df.format(value.end.toDate(getLocalTimeZone())))}` : `${escape(df.format(value.start.toDate(getLocalTimeZone())))}`}` : `${startValue ? `${escape(df.format(startValue.toDate(getLocalTimeZone())))}` : `Pick a date`}`}`;
-                }
-              }
-            )}`;
-          }
-        })} ${validate_component(Popover_content, "Popover.Content").$$render($$result, { class: "p-0 w-auto", align: "start" }, {}, {
-          default: () => {
-            return `${validate_component(Range_calendar, "RangeCalendar").$$render(
-              $$result,
-              {
-                locale: "de",
-                placeholder: value?.start,
-                initialFocus: true,
-                numberOfMonths: 2,
-                value,
-                startValue
-              },
-              {
-                value: ($$value) => {
-                  value = $$value;
-                  $$settled = false;
-                },
-                startValue: ($$value) => {
-                  startValue = $$value;
-                  $$settled = false;
-                }
-              },
-              {}
-            )}`;
-          }
-        })}`;
+    $$rendered = `<div${add_attribute("class", cn(className, "relative grid w-full gap-2"), 0)}> <button>${validate_component(Button, "Button").$$render(
+      $$result,
+      {
+        decoration: "dark-op1",
+        wrapperClass: "w-full",
+        class: cn("w-full justify-start border-neutral-900 bg-neutral-800 text-left font-normal text-zinc-200", !value && "text-muted-foreground")
+      },
+      {},
+      {
+        default: () => {
+          return ` ${validate_component(Calendar, "CalendarIcon").$$render($$result, { class: "mr-2 h-4 w-4" }, {}, {})} ${value && value.start ? `${value.end ? `${escape(df.format(value.start.toDate(getLocalTimeZone())))} - ${escape(df.format(value.end.toDate(getLocalTimeZone())))}` : `${escape(df.format(value.start.toDate(getLocalTimeZone())))}`}` : `${startValue ? `${escape(df.format(startValue.toDate(getLocalTimeZone())))}` : `Pick a date`}`}`;
+        }
       }
-    })}</div>`;
+    )}</button> ${validate_component(Root, "Dialog.Root").$$render(
+      $$result,
+      {
+        preventScroll: false,
+        onOutsideClick: (e) => {
+          setTimeout(
+            () => {
+              popoverOpen = false;
+            },
+            2
+          );
+        },
+        open: popoverOpen
+      },
+      {
+        open: ($$value) => {
+          popoverOpen = $$value;
+          $$settled = false;
+        }
+      },
+      {
+        default: () => {
+          return `${validate_component(Dialog_content, "Dialog.Content").$$render($$result, {}, {}, {
+            default: () => {
+              return `<div class="relative">${validate_component(Dialog_header, "Dialog.Header").$$render($$result, {}, {}, {
+                default: () => {
+                  return `${validate_component(Dialog_title, "Dialog.Title").$$render($$result, { class: "mb-4 max-w-[9em] leading-tight" }, {}, {
+                    default: () => {
+                      return `${escape($t("default.page.dashboard.selectDate"))}`;
+                    }
+                  })} ${validate_component(Dialog_description, "Dialog.Description").$$render($$result, {}, {}, {
+                    default: () => {
+                      return `<div class="-mx-4">${validate_component(Range_calendar, "RangeCalendar").$$render(
+                        $$result,
+                        {
+                          locale: "de",
+                          placeholder: value?.start,
+                          initialFocus: true,
+                          numberOfMonths: 1,
+                          value,
+                          startValue
+                        },
+                        {
+                          value: ($$value) => {
+                            value = $$value;
+                            $$settled = false;
+                          },
+                          startValue: ($$value) => {
+                            startValue = $$value;
+                            $$settled = false;
+                          }
+                        },
+                        {}
+                      )}</div>`;
+                    }
+                  })}`;
+                }
+              })}</div>`;
+            }
+          })}`;
+        }
+      }
+    )}</div>`;
   } while (!$$settled);
   $$unsubscribe_endDate();
   $$unsubscribe_startDate();
+  $$unsubscribe_t();
   return $$rendered;
 });
+const css$2 = {
+  code: ".skeumorphic-button.svelte-5cv73o{transition:box-shadow 50ms;box-shadow:var(--skeumorphic-shadow-light)}",
+  map: null
+};
 const FightOverview = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $user, $$unsubscribe_user;
   let $endDate, $$unsubscribe_endDate;
@@ -2234,6 +2390,7 @@ const FightOverview = create_ssr_component(($$result, $$props, $$bindings, slots
       200
     );
   });
+  $$result.css.add(css$2);
   $$unsubscribe_user();
   $$unsubscribe_endDate();
   $$unsubscribe_startDate();
@@ -2373,12 +2530,54 @@ const NeedsOverview = create_ssr_component(($$result, $$props, $$bindings, slots
 });
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $user, $$unsubscribe_user;
+  let $startDate, $$unsubscribe_startDate;
+  let $endDate, $$unsubscribe_endDate;
   $$unsubscribe_user = subscribe(user, (value) => $user = value);
+  $$unsubscribe_startDate = subscribe(startDate, (value) => $startDate = value);
+  $$unsubscribe_endDate = subscribe(endDate, (value) => $endDate = value);
   let { data } = $$props;
+  let popoverOpen = false;
   if ($$props.data === void 0 && $$bindings.data && data !== void 0)
     $$bindings.data(data);
+  let $$settled;
+  let $$rendered;
+  let previous_head = $$result.head;
+  do {
+    $$settled = true;
+    $$result.head = previous_head;
+    $$rendered = `${$user ? `<div class="flex h-full flex-grow flex-col justify-between pb-60">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="flex-grow"><div class="max-container relative"><div class="relative z-10 mb-8 flex flex-row items-center justify-between py-4 md:items-center md:bg-transparent md:pb-6"><h1 class="font-heading text-lg font-semibold" data-svelte-h="svelte-1xyf527">Dashboard</h1> <button class="mb-0.5 rounded-full bg-neutral-600 py-0.5 text-center text-2xs text-neutral-300 px-2">${escape(new Intl.DateTimeFormat("de-DE", { month: "short", day: "numeric" }).format(
+      new Date($startDate)
+    ))}
+						- ${escape(new Intl.DateTimeFormat(
+      "de-DE",
+      {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      }
+    ).format(new Date($endDate)))}</button></div> <div class="mb-10">${validate_component(FightOverview, "FightOverview").$$render($$result, {}, {}, {})}</div> <div class="mb-10">${validate_component(FeelingsOverview, "FeelingsOverview").$$render($$result, {}, {}, {})}</div> <div class="mb-10">${validate_component(NeedsOverview, "NeedsOverview").$$render($$result, {}, {}, {})}</div></div> ${validate_component(AppBottomMenu, "AppBottomMenu").$$render($$result, {}, {}, {
+      default: () => {
+        return `<div class="relative md:flex md:justify-center w-full">${validate_component(DaterangePicker, "DaterangePicker").$$render(
+          $$result,
+          {
+            class: "w-full flex-grow shadow ",
+            popoverOpen
+          },
+          {
+            popoverOpen: ($$value) => {
+              popoverOpen = $$value;
+              $$settled = false;
+            }
+          },
+          {}
+        )}</div>`;
+      }
+    })}</div></div>` : `Login please`}`;
+  } while (!$$settled);
   $$unsubscribe_user();
-  return `${$user ? `<div class="flex h-full flex-grow flex-col justify-between pb-60"><div class="flex-grow">${validate_component(Menu, "Menu").$$render($$result, {}, {}, {})} <div class="relative md:flex md:justify-center -mt-1"><div class="my-2"><div class="lcd-screen relative flex items-center gap-[4px] border border-black/10 bg-black/10 p-[2px] dark:bg-black/20 md:rounded">${validate_component(DaterangePicker, "DaterangePicker").$$render($$result, { class: "w-full md:w-auto shadow" }, {}, {})}</div></div></div> <div class="max-container relative"><div class="mb-10 flex flex-col items-start justify-between md:flex-row md:items-center border-b border-black/10 -mx-5 px-5 py-1" data-svelte-h="svelte-10sy4w3"><h1 class="font-heading mb-2 text-xl font-semibold">Dashboard</h1></div> <div class="mb-10">${validate_component(FightOverview, "FightOverview").$$render($$result, {}, {}, {})}</div> <div class="mb-10">${validate_component(FeelingsOverview, "FeelingsOverview").$$render($$result, {}, {}, {})}</div> <div class="mb-10">${validate_component(NeedsOverview, "NeedsOverview").$$render($$result, {}, {}, {})}</div></div></div></div>` : `Login please`}`;
+  $$unsubscribe_startDate();
+  $$unsubscribe_endDate();
+  return $$rendered;
 });
 export {
   Page as default

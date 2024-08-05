@@ -1,572 +1,78 @@
+import { c as compute_rest_props } from "./utils.js";
+import { c as create_ssr_component, v as validate_component, f as each, e as escape } from "./ssr.js";
+import "./Avatar.svelte_svelte_type_style_lang.js";
+import { d as Button$1 } from "./Avatar.js";
+import { c as cn } from "./utils2.js";
+import { b as backgroundImage } from "./SparklePill.js";
 import { tv } from "tailwind-variants";
-import { d as derived, w as writable, r as readable } from "./index2.js";
-import { g as get_store_value } from "./utils.js";
-import { o as onMount } from "./ssr2.js";
-import { o as onDestroy } from "./lifecycle.js";
 import "clsx";
-var has = Object.prototype.hasOwnProperty;
-function find(iter, tar, key) {
-  for (key of iter.keys()) {
-    if (dequal(key, tar))
-      return key;
-  }
-}
-function dequal(foo, bar) {
-  var ctor, len, tmp;
-  if (foo === bar)
-    return true;
-  if (foo && bar && (ctor = foo.constructor) === bar.constructor) {
-    if (ctor === Date)
-      return foo.getTime() === bar.getTime();
-    if (ctor === RegExp)
-      return foo.toString() === bar.toString();
-    if (ctor === Array) {
-      if ((len = foo.length) === bar.length) {
-        while (len-- && dequal(foo[len], bar[len]))
-          ;
+const Button = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["class", "variant", "size", "builders"]);
+  let { class: className = void 0 } = $$props;
+  let { variant = "default" } = $$props;
+  let { size = "default" } = $$props;
+  let { builders = [] } = $$props;
+  const positions = [
+    { left: -30, top: -20, scale: 0.4 },
+    { left: 120, top: -10, scale: 0.6 },
+    { left: 40, top: 100, scale: 1 },
+    { left: -20, top: 110, scale: 0.8 },
+    { left: 110, top: 110, scale: 1.2 },
+    { left: 20, top: -60, scale: 1 },
+    { left: 60, top: -40, scale: 0.4 }
+  ];
+  const delays = [
+    "delay-0",
+    "delay-75",
+    "delay-300",
+    "delay-500",
+    "delay-700",
+    "delay-1000",
+    "delay-500"
+  ];
+  const animationTimings = [
+    "animation-duration: 500ms;animation-delay: 0ms;",
+    "animation-duration: 700ms;animation-delay: 75ms;",
+    "animation-duration: 1000ms;animation-delay: 300ms;",
+    "animation-duration: 400ms;animation-delay: 500ms;",
+    "animation-duration: 1500ms;animation-delay: 700ms;",
+    "animation-duration: 2500ms;animation-delay: 200ms;",
+    "animation-duration: 700ms;animation-delay: 75ms;"
+  ];
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  if ($$props.variant === void 0 && $$bindings.variant && variant !== void 0)
+    $$bindings.variant(variant);
+  if ($$props.size === void 0 && $$bindings.size && size !== void 0)
+    $$bindings.size(size);
+  if ($$props.builders === void 0 && $$bindings.builders && builders !== void 0)
+    $$bindings.builders(builders);
+  return `${validate_component(Button$1, "ButtonPrimitive.Root").$$render(
+    $$result,
+    Object.assign(
+      {},
+      { builders },
+      {
+        style: "background-image: url('" + backgroundImage + "'); background-size: 300% 300%;"
+      },
+      {
+        class: cn(buttonVariants({ variant, size, className }), "animate-bg-hover-fast group relative transform scale-100 hover:scale-105 transition ease-in")
+      },
+      { type: "button" },
+      $$restProps
+    ),
+    {},
+    {
+      default: () => {
+        return `<div class="pointer-events-none absolute h-full w-full scale-60 -z-10 transform opacity-0 transition group-hover:scale-100 group-hover:opacity-100 group-hover:delay-300">${each(positions, (star, index) => {
+          return `<div class="${"absolute w-4 scale-0 fill-yellow-700 opacity-0 transition duration-500 group-hover:scale-100 group-hover:opacity-100 dark:fill-yellow-100 " + escape(delays[index], true)}" style="${"left: " + escape(star.left, true) + "%;top: " + escape(star.top, true) + "%;transform: scale(" + escape(star.scale, true) + ")"}"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="${"filter: drop-shadow(0 0 10px rgba(255,255,255,0.6));" + escape(animationTimings[index], true)}" class="-translate-x-50 -translate-y-50 animate-wobble transform"><path d="M16.451.68339c0,11.57088-3.857,15.42784-15.42785,15.42784,11.57088,0,15.42785,3.857,15.42785,15.42784,0-11.57088,3.857-15.42784,15.42785-15.42784C20.308,16.11123,16.451,12.25427,16.451.68339Z"></path></svg> </div>`;
+        })}</div> ${slots.default ? slots.default({}) : ``}`;
       }
-      return len === -1;
     }
-    if (ctor === Set) {
-      if (foo.size !== bar.size) {
-        return false;
-      }
-      for (len of foo) {
-        tmp = len;
-        if (tmp && typeof tmp === "object") {
-          tmp = find(bar, tmp);
-          if (!tmp)
-            return false;
-        }
-        if (!bar.has(tmp))
-          return false;
-      }
-      return true;
-    }
-    if (ctor === Map) {
-      if (foo.size !== bar.size) {
-        return false;
-      }
-      for (len of foo) {
-        tmp = len[0];
-        if (tmp && typeof tmp === "object") {
-          tmp = find(bar, tmp);
-          if (!tmp)
-            return false;
-        }
-        if (!dequal(len[1], bar.get(tmp))) {
-          return false;
-        }
-      }
-      return true;
-    }
-    if (ctor === ArrayBuffer) {
-      foo = new Uint8Array(foo);
-      bar = new Uint8Array(bar);
-    } else if (ctor === DataView) {
-      if ((len = foo.byteLength) === bar.byteLength) {
-        while (len-- && foo.getInt8(len) === bar.getInt8(len))
-          ;
-      }
-      return len === -1;
-    }
-    if (ArrayBuffer.isView(foo)) {
-      if ((len = foo.byteLength) === bar.byteLength) {
-        while (len-- && foo[len] === bar[len])
-          ;
-      }
-      return len === -1;
-    }
-    if (!ctor || typeof foo === "object") {
-      len = 0;
-      for (ctor in foo) {
-        if (has.call(foo, ctor) && ++len && !has.call(bar, ctor))
-          return false;
-        if (!(ctor in bar) || !dequal(foo[ctor], bar[ctor]))
-          return false;
-      }
-      return Object.keys(bar).length === len;
-    }
-  }
-  return foo !== foo && bar !== bar;
-}
-function styleToString(style) {
-  return Object.keys(style).reduce((str, key) => {
-    if (style[key] === void 0)
-      return str;
-    return str + `${key}:${style[key]};`;
-  }, "");
-}
-function disabledAttr(disabled) {
-  return disabled ? true : void 0;
-}
-({
-  type: "hidden",
-  "aria-hidden": true,
-  hidden: true,
-  tabIndex: -1,
-  style: styleToString({
-    position: "absolute",
-    opacity: 0,
-    "pointer-events": "none",
-    margin: 0,
-    transform: "translateX(-100%)"
-  })
+  )}`;
 });
-function portalAttr(portal) {
-  if (portal !== null) {
-    return portal;
-  }
-  return void 0;
-}
-function lightable(value) {
-  function subscribe(run) {
-    run(value);
-    return () => {
-    };
-  }
-  return { subscribe };
-}
-function getElementByMeltId(id) {
-  if (!isBrowser)
-    return null;
-  const el = document.querySelector(`[data-melt-id="${id}"]`);
-  return isHTMLElement(el) ? el : null;
-}
-const hiddenAction = (obj) => {
-  return new Proxy(obj, {
-    get(target, prop, receiver) {
-      return Reflect.get(target, prop, receiver);
-    },
-    ownKeys(target) {
-      return Reflect.ownKeys(target).filter((key) => key !== "action");
-    }
-  });
-};
-const isFunctionWithParams = (fn) => {
-  return typeof fn === "function";
-};
-makeElement("empty");
-function makeElement(name, args) {
-  const { stores, action, returned } = args ?? {};
-  const derivedStore = (() => {
-    if (stores && returned) {
-      return derived(stores, (values) => {
-        const result = returned(values);
-        if (isFunctionWithParams(result)) {
-          const fn = (...args2) => {
-            return hiddenAction({
-              ...result(...args2),
-              [`data-melt-${name}`]: "",
-              action: action ?? noop
-            });
-          };
-          fn.action = action ?? noop;
-          return fn;
-        }
-        return hiddenAction({
-          ...result,
-          [`data-melt-${name}`]: "",
-          action: action ?? noop
-        });
-      });
-    } else {
-      const returnedFn = returned;
-      const result = returnedFn?.();
-      if (isFunctionWithParams(result)) {
-        const resultFn = (...args2) => {
-          return hiddenAction({
-            ...result(...args2),
-            [`data-melt-${name}`]: "",
-            action: action ?? noop
-          });
-        };
-        resultFn.action = action ?? noop;
-        return lightable(resultFn);
-      }
-      return lightable(hiddenAction({
-        ...result,
-        [`data-melt-${name}`]: "",
-        action: action ?? noop
-      }));
-    }
-  })();
-  const actionFn = action ?? (() => {
-  });
-  actionFn.subscribe = derivedStore.subscribe;
-  return actionFn;
-}
-function createElHelpers(prefix) {
-  const name = (part) => part ? `${prefix}-${part}` : prefix;
-  const attribute = (part) => `data-melt-${prefix}${part ? `-${part}` : ""}`;
-  const selector = (part) => `[data-melt-${prefix}${part ? `-${part}` : ""}]`;
-  const getEl = (part) => document.querySelector(selector(part));
-  return {
-    name,
-    attribute,
-    selector,
-    getEl
-  };
-}
-const isBrowser = typeof document !== "undefined";
-const isFunction = (v) => typeof v === "function";
-function isElement(element) {
-  return element instanceof Element;
-}
-function isHTMLElement(element) {
-  return element instanceof HTMLElement;
-}
-function isHTMLInputElement(element) {
-  return element instanceof HTMLInputElement;
-}
-function isHTMLLabelElement(element) {
-  return element instanceof HTMLLabelElement;
-}
-function isHTMLButtonElement(element) {
-  return element instanceof HTMLButtonElement;
-}
-function isElementDisabled(element) {
-  const ariaDisabled = element.getAttribute("aria-disabled");
-  const disabled = element.getAttribute("disabled");
-  const dataDisabled = element.hasAttribute("data-disabled");
-  if (ariaDisabled === "true" || disabled !== null || dataDisabled) {
-    return true;
-  }
-  return false;
-}
-function isObject(value) {
-  return value !== null && typeof value === "object";
-}
-function isReadable(value) {
-  return isObject(value) && "subscribe" in value;
-}
-function executeCallbacks(...callbacks) {
-  return (...args) => {
-    for (const callback of callbacks) {
-      if (typeof callback === "function") {
-        callback(...args);
-      }
-    }
-  };
-}
-function noop() {
-}
-function addEventListener(target, event, handler, options) {
-  const events = Array.isArray(event) ? event : [event];
-  events.forEach((_event) => target.addEventListener(_event, handler, options));
-  return () => {
-    events.forEach((_event) => target.removeEventListener(_event, handler, options));
-  };
-}
-function addMeltEventListener(target, event, handler, options) {
-  const events = Array.isArray(event) ? event : [event];
-  if (typeof handler === "function") {
-    const handlerWithMelt = withMelt((_event) => handler(_event));
-    events.forEach((_event) => target.addEventListener(_event, handlerWithMelt, options));
-    return () => {
-      events.forEach((_event) => target.removeEventListener(_event, handlerWithMelt, options));
-    };
-  }
-  return () => noop();
-}
-function dispatchMeltEvent(originalEvent) {
-  const node = originalEvent.currentTarget;
-  if (!isHTMLElement(node))
-    return null;
-  const customMeltEvent = new CustomEvent(`m-${originalEvent.type}`, {
-    detail: {
-      originalEvent
-    },
-    cancelable: true
-  });
-  node.dispatchEvent(customMeltEvent);
-  return customMeltEvent;
-}
-function withMelt(handler) {
-  return (event) => {
-    const customEvent = dispatchMeltEvent(event);
-    if (customEvent?.defaultPrevented)
-      return;
-    return handler(event);
-  };
-}
-function omit(obj, ...keys) {
-  const result = {};
-  for (const key of Object.keys(obj)) {
-    if (!keys.includes(key)) {
-      result[key] = obj[key];
-    }
-  }
-  return result;
-}
-function stripValues(inputObject, toStrip, recursive) {
-  return Object.fromEntries(Object.entries(inputObject).filter(([_, value]) => !dequal(value, toStrip)));
-}
-function removeUndefined(obj) {
-  const result = {};
-  for (const key in obj) {
-    const value = obj[key];
-    if (value !== void 0) {
-      result[key] = value;
-    }
-  }
-  return result;
-}
-function withGet(store) {
-  return {
-    ...store,
-    get: () => get_store_value(store)
-  };
-}
-withGet.writable = function(initial) {
-  const internal = writable(initial);
-  let value = initial;
-  return {
-    subscribe: internal.subscribe,
-    set(newValue) {
-      internal.set(newValue);
-      value = newValue;
-    },
-    update(updater) {
-      const newValue = updater(value);
-      internal.set(newValue);
-      value = newValue;
-    },
-    get() {
-      return value;
-    }
-  };
-};
-withGet.derived = function(stores, fn) {
-  const subscribers = /* @__PURE__ */ new Map();
-  const get = () => {
-    const values = Array.isArray(stores) ? stores.map((store) => store.get()) : stores.get();
-    return fn(values);
-  };
-  const subscribe = (subscriber) => {
-    const unsubscribers = [];
-    const storesArr = Array.isArray(stores) ? stores : [stores];
-    storesArr.forEach((store) => {
-      unsubscribers.push(store.subscribe(() => {
-        subscriber(get());
-      }));
-    });
-    subscriber(get());
-    subscribers.set(subscriber, unsubscribers);
-    return () => {
-      const unsubscribers2 = subscribers.get(subscriber);
-      if (unsubscribers2) {
-        for (const unsubscribe of unsubscribers2) {
-          unsubscribe();
-        }
-      }
-      subscribers.delete(subscriber);
-    };
-  };
-  return {
-    get,
-    subscribe
-  };
-};
-const kbd = {
-  ALT: "Alt",
-  ARROW_DOWN: "ArrowDown",
-  ARROW_LEFT: "ArrowLeft",
-  ARROW_RIGHT: "ArrowRight",
-  ARROW_UP: "ArrowUp",
-  BACKSPACE: "Backspace",
-  CAPS_LOCK: "CapsLock",
-  CONTROL: "Control",
-  DELETE: "Delete",
-  END: "End",
-  ENTER: "Enter",
-  ESCAPE: "Escape",
-  F1: "F1",
-  F10: "F10",
-  F11: "F11",
-  F12: "F12",
-  F2: "F2",
-  F3: "F3",
-  F4: "F4",
-  F5: "F5",
-  F6: "F6",
-  F7: "F7",
-  F8: "F8",
-  F9: "F9",
-  HOME: "Home",
-  META: "Meta",
-  PAGE_DOWN: "PageDown",
-  PAGE_UP: "PageUp",
-  SHIFT: "Shift",
-  SPACE: " ",
-  TAB: "Tab",
-  CTRL: "Control",
-  ASTERISK: "*",
-  A: "a",
-  P: "p"
-};
-const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
-const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
-const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
-const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
-const safeOnMount = (fn) => {
-  try {
-    onMount(fn);
-  } catch {
-    return fn;
-  }
-};
-const safeOnDestroy = (fn) => {
-  try {
-    onDestroy(fn);
-  } catch {
-    return fn;
-  }
-};
-function effect(stores, fn) {
-  let cb = void 0;
-  const destroy = derived(stores, (stores2) => {
-    cb?.();
-    cb = fn(stores2);
-  }).subscribe(noop);
-  const unsub = () => {
-    destroy();
-    cb?.();
-  };
-  safeOnDestroy(unsub);
-  return unsub;
-}
-readable(void 0, (set) => {
-  function clicked(event) {
-    set(event);
-    set(void 0);
-  }
-  const unsubscribe = addEventListener(document, "pointerup", clicked, {
-    passive: false,
-    capture: true
-  });
-  return unsubscribe;
-});
-const documentEscapeKeyStore = readable(void 0, (set) => {
-  function keydown(event) {
-    if (event && event.key === kbd.ESCAPE) {
-      set(event);
-    }
-    set(void 0);
-  }
-  const unsubscribe = addEventListener(document, "keydown", keydown, {
-    passive: false
-  });
-  return unsubscribe;
-});
-const useEscapeKeydown = (node, config = {}) => {
-  let unsub = noop;
-  function update(config2 = {}) {
-    unsub();
-    const options = { enabled: true, ...config2 };
-    const enabled = isReadable(options.enabled) ? options.enabled : readable(options.enabled);
-    unsub = executeCallbacks(
-      // Handle escape keydowns
-      documentEscapeKeyStore.subscribe((e) => {
-        if (!e || !get_store_value(enabled))
-          return;
-        const target = e.target;
-        if (!isHTMLElement(target) || target.closest("[data-escapee]") !== node) {
-          return;
-        }
-        e.preventDefault();
-        if (options.ignore) {
-          if (isFunction(options.ignore)) {
-            if (options.ignore(e))
-              return;
-          } else if (Array.isArray(options.ignore)) {
-            if (options.ignore.length > 0 && options.ignore.some((ignoreEl) => {
-              return ignoreEl && target === ignoreEl;
-            }))
-              return;
-          }
-        }
-        options.handler?.(e);
-      }),
-      effect(enabled, ($enabled) => {
-        if ($enabled) {
-          node.dataset.escapee = "";
-        } else {
-          delete node.dataset.escapee;
-        }
-      })
-    );
-  }
-  update(config);
-  return {
-    update,
-    destroy() {
-      node.removeAttribute("data-escapee");
-      unsub();
-    }
-  };
-};
-function toReadableStores(properties) {
-  const result = {};
-  Object.keys(properties).forEach((key) => {
-    const propertyKey = key;
-    const value = properties[propertyKey];
-    if (isReadable(value)) {
-      result[propertyKey] = withGet(value);
-    } else {
-      result[propertyKey] = withGet(readable(value));
-    }
-  });
-  return result;
-}
-const defaults = {
-  prefix: "",
-  disabled: readable(false),
-  required: readable(false),
-  name: readable(void 0)
-};
-function createHiddenInput(props) {
-  const withDefaults = {
-    ...defaults,
-    ...removeUndefined(props)
-  };
-  const { name: elName } = createElHelpers(withDefaults.prefix);
-  const { value, name, disabled, required } = toReadableStores(omit(withDefaults, "prefix"));
-  const nameStore = name;
-  const hiddenInput = makeElement(elName("hidden-input"), {
-    stores: [value, nameStore, disabled, required],
-    returned: ([$value, $name, $disabled, $required]) => {
-      return {
-        name: $name,
-        value: $value?.toString(),
-        "aria-hidden": "true",
-        hidden: true,
-        disabled: $disabled,
-        required: $required,
-        tabIndex: -1,
-        style: styleToString({
-          position: "absolute",
-          opacity: 0,
-          "pointer-events": "none",
-          margin: 0,
-          transform: "translateX(-100%)"
-        })
-      };
-    },
-    action: (node) => {
-      const unsub = value.subscribe((newValue) => {
-        node.value = newValue;
-        node.dispatchEvent(new Event("change", { bubbles: true }));
-      });
-      return {
-        destroy: unsub
-      };
-    }
-  });
-  return hiddenInput;
-}
 const buttonVariants = tv({
-  base: "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  base: "inline-flex items-center justify-center rounded-md text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
   variants: {
     variant: {
       default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
@@ -589,35 +95,5 @@ const buttonVariants = tv({
   }
 });
 export {
-  safeOnMount as A,
-  isHTMLInputElement as B,
-  portalAttr as C,
-  FIRST_LAST_KEYS as F,
-  SELECTION_KEYS as S,
-  isHTMLElement as a,
-  addMeltEventListener as b,
-  effect as c,
-  createElHelpers as d,
-  executeCallbacks as e,
-  buttonVariants as f,
-  disabledAttr as g,
-  dequal as h,
-  isBrowser as i,
-  getElementByMeltId as j,
-  kbd as k,
-  isElement as l,
-  makeElement as m,
-  noop as n,
-  omit as o,
-  isHTMLLabelElement as p,
-  isFunction as q,
-  addEventListener as r,
-  styleToString as s,
-  isObject as t,
-  useEscapeKeydown as u,
-  stripValues as v,
-  withGet as w,
-  isHTMLButtonElement as x,
-  isElementDisabled as y,
-  createHiddenInput as z
+  Button as B
 };

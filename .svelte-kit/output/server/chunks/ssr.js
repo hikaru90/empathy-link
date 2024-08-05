@@ -1,5 +1,5 @@
 import { a as current_component, b as set_current_component } from "./lifecycle.js";
-import { r as run_all, b as blank_object } from "./utils.js";
+import { r as run_all, d as blank_object } from "./utils.js";
 function ensure_array_like(array_like_or_iterator) {
   return array_like_or_iterator?.length !== void 0 ? array_like_or_iterator : Array.from(array_like_or_iterator);
 }
