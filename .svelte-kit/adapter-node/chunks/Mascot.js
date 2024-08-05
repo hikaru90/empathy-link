@@ -1,11 +1,12 @@
 import { tv } from "tailwind-variants";
-import "./index3.js";
+import "./Avatar.svelte_svelte_type_style_lang.js";
 import "clsx";
 import { c as compute_rest_props, s as subscribe } from "./utils.js";
 import { c as createEventDispatcher } from "./lifecycle.js";
 import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object, a as add_attribute, e as escape, v as validate_component, f as each } from "./ssr.js";
 import { t } from "./translations.js";
-import { B as Button } from "./Menu.js";
+import { B as Button } from "./Avatar.js";
+import { C as CaretLeft } from "./CaretLeft.js";
 import { b as backgroundImage } from "./SparklePill.js";
 const ArrowRight = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["color", "size"]);
@@ -65,30 +66,33 @@ const FormStepper = create_ssr_component(($$result, $$props, $$bindings, slots) 
     $$bindings.primaryButtonClass(primaryButtonClass);
   $$result.css.add(css$2);
   $$unsubscribe_t();
-  return `<div class="${"flex justify-between gap-1 pb-4 pt-8 " + escape(className, true)}"><div class="${escape(step > 1 ? "opacity-100 max-w-60" : "opacity-0 max-w-0", true) + " group relative transform overflow-visible active:translate-y-1 transition-all"}">${validate_component(Button, "Button").$$render(
+  return `<div class="${"flex justify-between " + escape(className, true)}"><div class="${escape(step > 1 ? "max-w-60 opacity-100" : "max-w-0 opacity-0", true) + " group relative transform overflow-visible"}">${validate_component(Button, "Button").$$render(
     $$result,
     {
-      class: "light-button group " + primaryButtonClass + " hover:" + primaryButtonClass + " relative z-10 m-[1px] flex w-[calc(100%-2px)] items-center justify-between py-6 font-bold text-foreground dark:border-x dark:border-t dark:border-white/5"
+      decoration: "dark-op1",
+      class: "flex items-center border-neutral-900 bg-neutral-800 px-1.5 text-sm text-zinc-200"
     },
     {},
     {
       default: () => {
-        return `${escape($t("default.page.fights.form.general.prev"))}`;
+        return `${validate_component(CaretLeft, "CaretLeft").$$render($$result, { class: "h-4 w-4 rounded-full" }, {}, {})}`;
       }
     }
-  )} <div class="pointer-events-none absolute left-1/2 top-1 z-0 block h-full w-full -translate-x-1/2 transform rounded-md border border-black/10 bg-black/10 group-active:top-0 dark:border-white/20 dark:bg-black/30"></div></div> <div class="group relative flex-grow transform overflow-visible active:translate-y-1">${validate_component(Button, "Button").$$render(
+  )}</div> ${validate_component(Button, "Button").$$render(
     $$result,
     {
       type: "submit",
-      class: "light-button group " + primaryButtonClass + " hover:" + primaryButtonClass + " relative z-10 m-[1px] flex w-[calc(100%-2px)] items-center justify-between py-6 font-bold text-foreground dark:border-x dark:border-t dark:border-white/5"
+      decoration: "dark-op1",
+      wrapperClass: "w-full",
+      class: "flex w-full items-center gap-2 border-neutral-900 bg-neutral-800 text-sm text-zinc-200"
     },
     {},
     {
       default: () => {
-        return `${escape($t("default.page.fights.form.general.next"))} ${validate_component(ArrowRight$1, "ArrowRight").$$render($$result, { class: "h-3 w-3" }, {}, {})}`;
+        return ` ${escape($t("default.page.fights.form.general.next"))} ${validate_component(ArrowRight$1, "ArrowRight").$$render($$result, { class: "h-3 w-3" }, {}, {})}`;
       }
     }
-  )} <div class="pointer-events-none absolute left-1/2 top-1 z-0 block h-full w-full -translate-x-1/2 transform rounded-md border border-black/10 bg-black/10 group-active:top-0 dark:border-white/20 dark:bg-black/30"></div></div> </div>`;
+  )} </div>`;
 });
 const css$1 = {
   code: ".skeumorphic-button.svelte-1oqfzpf{transition:box-shadow 50ms;box-shadow:var(--skeumorphic-shadow)}",
@@ -106,8 +110,8 @@ const FormStepDisplay = create_ssr_component(($$result, $$props, $$bindings, slo
   if ($$props.stepBackground === void 0 && $$bindings.stepBackground && stepBackground !== void 0)
     $$bindings.stepBackground(stepBackground);
   $$result.css.add(css$1);
-  return `<div class="relative -mx-5 md:flex md:justify-center"><div class="my-2"><div class="lcd-screen relative flex items-center gap-[4px] border border-black/10 bg-black/5 p-[2px] dark:bg-black/20 md:rounded"> ${each(steps, (entry, index) => {
-    return `${!entry.hidden ? `<button type="button" class="${"group " + escape(`bg-${stepBackground}-background`, true) + " flex-grow rounded-[2px] shadow transition duration-700 svelte-1oqfzpf"}"><div class="flex items-center justify-center overflow-hidden rounded-[2px] p-2 shadow-inner shadow-white/40 dark:shadow-white/10"><div class="${"skeumorphic-button " + escape(`bg-${entry.slug}-background text-${entry.slug}-foreground`, true) + " rounded-full border-2 " + escape(`border-${stepBackground}-background`, true) + " transition duration-700 svelte-1oqfzpf"}"><div class="${"flex items-center rounded-full border border-black/5 p-1 " + escape(step === index + 1 ? "px-2" : "", true) + " group-hover:bg-white/40 dark:group-hover:bg-white/10 transition duration-200"}"><div class="${"flex h-4 w-4 scale-110 items-center justify-center " + escape(`fill-${entry.slug}-foreground`, true) + " svelte-1oqfzpf"}"><!-- HTML_TAG_START -->${entry.icon}<!-- HTML_TAG_END --></div> <div class="${"max-h-0 max-w-0 scale-0 transform text-sm " + escape(
+  return `<div class="${"sticky top-0 z-10 -mx-5 md:flex md:justify-center " + escape(`bg-${stepBackground}-background`, true) + " transition duration-700 svelte-1oqfzpf"}"><div class="md:my-4"><div class="lcd-screen relative flex items-center gap-[4px] border border-black/10 bg-black/5 p-[2px] dark:bg-black/20 md:rounded"> ${each(steps, (entry, index) => {
+    return `${!entry.hidden ? `<button type="button" class="${"group " + escape(`bg-${stepBackground}-background`, true) + " flex-grow rounded-[2px] shadow transition duration-700 svelte-1oqfzpf"}"><div class="flex items-center justify-center overflow-hidden rounded-[2px] p-2 shadow-inner shadow-white/20 dark:shadow-white/10"><div class="${"skeumorphic-button " + escape(`bg-${entry.slug}-background text-${entry.slug}-foreground`, true) + " rounded-full border-2 " + escape(`border-${stepBackground}-background`, true) + " transition duration-700 svelte-1oqfzpf"}"><div class="${"flex items-center rounded-full border border-black/5 p-1 " + escape(step === index + 1 ? "px-2" : "", true) + " group-hover:bg-white/40 dark:group-hover:bg-white/10 transition duration-200"}"><div class="${"flex h-4 w-4 scale-110 items-center justify-center " + escape(`fill-${entry.slug}-foreground`, true) + " svelte-1oqfzpf"}"><!-- HTML_TAG_START -->${entry.icon}<!-- HTML_TAG_END --></div> <div class="${"max-h-0 max-w-0 scale-0 transform text-sm " + escape(
       step === index + 1 ? "opacity-1 ml-1 mr-1 max-h-4 max-w-[300px] scale-100 transition-all delay-200" : "max-w-0 scale-0 opacity-0",
       true
     )}"><span class="-mt-[2px] block">${escape(entry.name)}</span> </div></div> </div></div> </button>` : ``}`;

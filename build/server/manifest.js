@@ -7,22 +7,22 @@ function __memo(fn) {
 return {
 	appDir: "_app",
 	appPath: "_app",
-	assets: new Set(["connector.svg","favicon.png","feelings.js","hero/1phone.png","hero/1phone_lit.png","hero/2phone.png","hero/2phone_lit.png","hero/icon1.png","hero/icon1_lit.png","hero/icon2.png","hero/icon2_lit.png","hero/icon3.png","hero/icon3_lit.png","hero/icon4.png","hero/icon4_lit.png","hero.bin","hero.gltf","holo3.jpg","Image_0.png","needs.js","phone-icons-inverted.svg","phone-icons.svg","phone-lens.jpg","phone_frontal.png","screenshot-dashboard.png","screenshot-fight2.png"]),
+	assets: new Set(["connector.svg","favicon.png","feelings.js","hero/2phone.png","hero/2phone_lit.png","hero/bak/1phone.png","hero/bak/1phone_lit.png","hero/bak/2phone.png","hero/bak/2phone_lit.png","hero/bak/icon1.png","hero/bak/icon1_lit.png","hero/bak/icon2.png","hero/bak/icon2_lit.png","hero/bak/icon3.png","hero/bak/icon3_lit.png","hero/bak/icon4.png","hero/bak/icon4_lit.png","hero/icon1.png","hero/icon1_lit.png","hero/icon2.png","hero/icon2_lit.png","hero/icon3.png","hero/icon3_lit.png","hero/icon4.png","hero/icon4_lit.png","hero/phone_mobile.png","hero.bin","hero.gltf","holo3.jpg","Image_0.png","inverted-border.svg","needs.js","phone-icons-inverted.svg","phone-icons.svg","phone-lens.jpg","phone_frontal.png","screenshot-dashboard.png","screenshot-fight2.png"]),
 	mimeTypes: {".svg":"image/svg+xml",".png":"image/png",".js":"text/javascript",".bin":"application/octet-stream",".gltf":"model/gltf+json",".jpg":"image/jpeg"},
 	_: {
-		client: {"start":"_app/immutable/entry/start.B6gAwXPe.js","app":"_app/immutable/entry/app.mpH67K40.js","imports":["_app/immutable/entry/start.B6gAwXPe.js","_app/immutable/chunks/entry.DV9I5Wjp.js","_app/immutable/chunks/scheduler.CKu2orG_.js","_app/immutable/entry/app.mpH67K40.js","_app/immutable/chunks/preload-helper.D6kgxu3v.js","_app/immutable/chunks/scheduler.CKu2orG_.js","_app/immutable/chunks/index.DXc6nQ0s.js"],"stylesheets":[],"fonts":[],"uses_env_dynamic_public":false},
+		client: {"start":"_app/immutable/entry/start.B2mh1wZW.js","app":"_app/immutable/entry/app.OWHkh9s9.js","imports":["_app/immutable/entry/start.B2mh1wZW.js","_app/immutable/chunks/entry.CEh8OOCl.js","_app/immutable/chunks/scheduler.gWKEXFbz.js","_app/immutable/entry/app.OWHkh9s9.js","_app/immutable/chunks/preload-helper.D6kgxu3v.js","_app/immutable/chunks/scheduler.gWKEXFbz.js","_app/immutable/chunks/index.CG0cexN_.js"],"stylesheets":[],"fonts":[],"uses_env_dynamic_public":false},
 		nodes: [
-			__memo(() => import('./chunks/0-CsUqke1f.js')),
-			__memo(() => import('./chunks/1-CgUgp-UD.js')),
-			__memo(() => import('./chunks/2-Cc7jyoTc.js')),
-			__memo(() => import('./chunks/3-qlSp7xbf.js')),
-			__memo(() => import('./chunks/4---0ZPcY6.js')),
-			__memo(() => import('./chunks/5-Jgwtu2Yp.js')),
-			__memo(() => import('./chunks/6-BTmRS5p7.js')),
-			__memo(() => import('./chunks/7-HF1on1pq.js')),
-			__memo(() => import('./chunks/8-Cjd0bR5X.js')),
-			__memo(() => import('./chunks/9-DaB5NVJz.js')),
-			__memo(() => import('./chunks/10-CFzC6kAS.js'))
+			__memo(() => import('./chunks/0-D19cyZvb.js')),
+			__memo(() => import('./chunks/1-BZupqEI2.js')),
+			__memo(() => import('./chunks/2-gtv147Bc.js')),
+			__memo(() => import('./chunks/3-BaGPzpmS.js')),
+			__memo(() => import('./chunks/4-C58HXnl1.js')),
+			__memo(() => import('./chunks/5-DZTbJ6xT.js')),
+			__memo(() => import('./chunks/6-Dbluu3le.js')),
+			__memo(() => import('./chunks/7-GOuSnG5F.js')),
+			__memo(() => import('./chunks/8-DXCsFgwL.js')),
+			__memo(() => import('./chunks/9-CvEg4Fc3.js')),
+			__memo(() => import('./chunks/10-sV01_u26.js'))
 		],
 		routes: [
 			{
@@ -65,7 +65,7 @@ return {
 				pattern: /^\/auth\/logout\/?$/,
 				params: [],
 				page: null,
-				endpoint: __memo(() => import('./chunks/_server.ts-FztfAxac.js'))
+				endpoint: __memo(() => import('./chunks/_server.ts-CsJOcJ5V.js'))
 			},
 			{
 				id: "/auth/register",

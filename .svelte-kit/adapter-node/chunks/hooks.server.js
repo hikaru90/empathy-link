@@ -1,5 +1,5 @@
 import "./translations.js";
-import { b as serializeNonPOJOs } from "./helpers.js";
+import { c as serializeNonPOJOs } from "./helpers.js";
 import { p as pb } from "./pocketbase.js";
 const handle = async ({ event, resolve }) => {
   console.log("hooks server handle");

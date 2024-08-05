@@ -1,13 +1,15 @@
 import { c as compute_rest_props, s as subscribe, g as get_store_value } from "../../../../chunks/utils.js";
-import { t as toWritableStores, o as overridable, h as handleRovingFocus, a as createBitAttrs, r as removeUndefined, b as getOptionUpdater, f as arraysAreEqual, d as createDispatcher, j as globals, M as Menu } from "../../../../chunks/Menu.js";
+import { h as handleRovingFocus, e as arraysAreEqual, g as globals } from "../../../../chunks/Avatar.js";
 import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute, v as validate_component, g as escape_attribute_value, e as escape, f as each } from "../../../../chunks/ssr.js";
-import { F as Form_field, C as Control, a as Form_label, I as Input, b as Form_field_errors } from "../../../../chunks/input.js";
-import { o as omit, m as makeElement, g as disabledAttr, a as isHTMLElement, e as executeCallbacks, b as addMeltEventListener, d as createElHelpers, n as noop, k as kbd } from "../../../../chunks/index3.js";
+import { A as AppTopMenu } from "../../../../chunks/AppTopMenu.js";
+import { A as AppBottomMenu } from "../../../../chunks/AppBottomMenu.js";
+import { F as Form_field, C as Control, a as Form_label, I as Input, b as Form_field_errors } from "../../../../chunks/index4.js";
+import { t as toWritableStores, o as omit, b as overridable, m as makeElement, x as disabledAttr, a as isHTMLElement, e as executeCallbacks, d as addMeltEventListener, j as createElHelpers, y as noop, k as kbd, n as createBitAttrs, r as removeUndefined, p as getOptionUpdater, q as createDispatcher } from "../../../../chunks/Avatar.svelte_svelte_type_style_lang.js";
 import { s as setContext, g as getContext } from "../../../../chunks/lifecycle.js";
 import { d as derived, w as writable } from "../../../../chunks/index2.js";
 import "clsx";
 import { t as toggleVariants, F as FormStepDisplay, M as Mascot, a as FormStepper } from "../../../../chunks/Mascot.js";
-import { c as cn } from "../../../../chunks/page.js";
+import { c as cn } from "../../../../chunks/utils2.js";
 import "../../../../chunks/client.js";
 import { s as superForm } from "../../../../chunks/memoize.js";
 import { d as defaults$1 } from "../../../../chunks/defaults.js";
@@ -431,7 +433,7 @@ const Textarea = create_ssr_component(($$result, $$props, $$bindings, slots) => 
 });
 const { Object: Object_1 } = globals;
 const css = {
-  code: ".form-content{height:15rem;flex-grow:1;overflow-y:auto;overflow-x:hidden;padding-left:1px;padding-right:1px;--mask:linear-gradient(\n  	to bottom,\n  	rgba(0, 0, 0, 0) 0,\n  	rgba(0, 0, 0, 1) 3%,\n  	rgba(0, 0, 0, 1) 97%,\n  	rgba(0, 0, 0, 0) 100%\n  );-webkit-mask:var(--mask);mask:var(--mask)\n}.form-label{margin-bottom:0.5rem;margin-top:1rem;display:block;width:100%;padding-bottom:0.5rem;font-size:1.25rem;line-height:1.75rem;font-weight:700;line-height:1.25\n}.form-label:not([data-fs-error]):is(.dark *){--tw-text-opacity:1;color:hsl(var(--foreground) / var(--tw-text-opacity))\n}",
+  code: ".form-label{margin-bottom:0.5rem;margin-top:1rem;display:block;width:100%;padding-bottom:0.5rem;font-size:1.25rem;line-height:1.75rem;font-weight:700;line-height:1.25\n}.form-label:not([data-fs-error]):is(.dark *){--tw-text-opacity:1;color:hsl(var(--foreground) / var(--tw-text-opacity))\n}",
   map: null
 };
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -560,7 +562,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     $$settled = true;
     $$result.head = previous_head;
     options.validators = steps[step - 1];
-    $$rendered = ` <div class="${"flex flex-grow flex-col justify-between transition duration-700 " + escape(`bg-${stepConstructor[step - 1].slug}-background`, true)}"><div class="max-container relative flex h-dvh flex-grow flex-col">${validate_component(Menu, "Menu").$$render($$result, {}, {}, {})} <form class="-mt-1 flex h-full flex-grow flex-col pb-[74px]">${!formSubmitted && !formSuccess ? `${validate_component(FormStepDisplay, "FormStepDisplay").$$render(
+    $$rendered = ` <div class="${"flex flex-grow flex-col justify-between transition duration-700 " + escape(`bg-${stepConstructor[step - 1].slug}-background`, true)}">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="max-container relative flex flex-grow flex-col pb-40"><form class="-mt-1 flex h-full flex-grow flex-col pb-[74px]">${!formSubmitted && !formSuccess ? `${validate_component(FormStepDisplay, "FormStepDisplay").$$render(
       $$result,
       {
         step,
@@ -569,7 +571,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       },
       {},
       {}
-    )} ${validate_component(Mascot, "Mascot").$$render(
+    )}` : ``} <div class="relative z-0">${validate_component(Mascot, "Mascot").$$render(
       $$result,
       {
         step,
@@ -577,7 +579,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       },
       {},
       {}
-    )}` : ``} ${step === 1 ? `<div data-simplebar class="form-content">${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "name" }, {}, {
+    )} ${step === 1 ? `<div class="form-content">${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "name" }, {}, {
       default: () => {
         return `${validate_component(Control, "Form.Control").$$render($$result, {}, {}, {
           default: ({ attrs }) => {
@@ -599,7 +601,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
           }
         })}  ${validate_component(Form_field_errors, "Form.FieldErrors").$$render($$result, {}, {}, {})}`;
       }
-    })}</div>` : `${step === 2 ? `<div data-simplebar class="form-content">${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "observation" }, {}, {
+    })}</div>` : `${step === 2 ? `<div class="form-content">${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "observation" }, {}, {
       default: () => {
         return `${validate_component(Control, "Form.Control").$$render($$result, {}, {}, {
           default: ({ attrs }) => {
@@ -621,7 +623,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
           }
         })}  ${validate_component(Form_field_errors, "Form.FieldErrors").$$render($$result, {}, {}, {})}`;
       }
-    })}</div>` : `${step === 3 ? `<div data-simplebar class="form-content">${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "feelings" }, {}, {
+    })}</div>` : `${step === 3 ? `<div class="form-content">${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "feelings" }, {}, {
       default: () => {
         return `${validate_component(Control, "Form.Control").$$render($$result, {}, {}, {
           default: ({ attrs }) => {
@@ -668,7 +670,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
           }
         })}  ${validate_component(Form_field_errors, "Form.FieldErrors").$$render($$result, {}, {}, {})}`;
       }
-    })}</div>` : `${step === 4 ? `<div data-simplebar class="form-content">${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "needs" }, {}, {
+    })}</div>` : `${step === 4 ? `<div class="form-content">${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "needs" }, {}, {
       default: () => {
         return `${validate_component(Control, "Form.Control").$$render($$result, {}, {}, {
           default: ({ attrs }) => {
@@ -713,7 +715,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
           }
         })}  ${validate_component(Form_field_errors, "Form.FieldErrors").$$render($$result, {}, {}, {})}`;
       }
-    })}</div>` : `${!formSubmitted ? `<div data-simplebar class="form-content">${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "request" }, {}, {
+    })}</div>` : `${!formSubmitted ? `<div class="form-content">${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "request" }, {}, {
       default: () => {
         return `${validate_component(Control, "Form.Control").$$render($$result, {}, {}, {
           default: ({ attrs }) => {
@@ -735,16 +737,20 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
           }
         })}  ${validate_component(Form_field_errors, "Form.FieldErrors").$$render($$result, {}, {}, {})}`;
       }
-    })}</div>` : `${formSuccess ? `Success` : `Error in Submit`}`}`}`}`}`} ${!formSubmitted && !formSuccess ? `${validate_component(FormStepper, "FormStepper").$$render(
-      $$result,
-      {
-        step,
-        primaryButtonClass: `bg-${stepConstructor[step - 1].slug}-background`,
-        class: "flex-shrink-0"
-      },
-      {},
-      {}
-    )}` : ``}</form></div> </div>`;
+    })}</div>` : `${formSuccess ? `Success` : `Error in Submit`}`}`}`}`}`} ${!formSubmitted && !formSuccess ? `${validate_component(AppBottomMenu, "AppBottomMenu").$$render($$result, {}, {}, {
+      default: () => {
+        return `${validate_component(FormStepper, "FormStepper").$$render(
+          $$result,
+          {
+            step,
+            primaryButtonClass: `bg-${stepConstructor[step - 1].slug}-background`,
+            class: "flex-shrink-0"
+          },
+          {},
+          {}
+        )}`;
+      }
+    })}` : ``}</div></form></div> </div>`;
   } while (!$$settled);
   $$unsubscribe_formData();
   $$unsubscribe_user();

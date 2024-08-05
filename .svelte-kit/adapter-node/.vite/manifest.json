@@ -8,16 +8,85 @@
       "_internal.js"
     ]
   },
+  "_AppBottomMenu.js": {
+    "file": "chunks/AppBottomMenu.js",
+    "name": "AppBottomMenu",
+    "imports": [
+      "_utils.js",
+      "_ssr.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
+      "_page.js",
+      "_translations.js",
+      "_client.js",
+      "_auth.js"
+    ]
+  },
+  "_AppTopMenu.js": {
+    "file": "chunks/AppTopMenu.js",
+    "name": "AppTopMenu",
+    "imports": [
+      "_utils.js",
+      "_ssr.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
+      "_page.js",
+      "_translations.js",
+      "_Avatar.js",
+      "_auth.js",
+      "_client.js"
+    ]
+  },
+  "_Avatar.js": {
+    "file": "chunks/Avatar.js",
+    "name": "Avatar",
+    "imports": [
+      "_ssr.js",
+      "_SparklePill.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
+      "_utils.js",
+      "_lifecycle.js",
+      "_client.js",
+      "_translations.js",
+      "_utils2.js",
+      "_index2.js",
+      "_page.js",
+      "_scheduler.js",
+      "_helpers.js"
+    ]
+  },
+  "_Avatar.svelte_svelte_type_style_lang.js": {
+    "file": "chunks/Avatar.svelte_svelte_type_style_lang.js",
+    "name": "Avatar.svelte_svelte_type_style_lang",
+    "imports": [
+      "_index2.js",
+      "_utils.js",
+      "_ssr2.js",
+      "_lifecycle.js",
+      "_ssr.js",
+      "_scheduler.js"
+    ],
+    "css": [
+      "_app/immutable/assets/Avatar.Btwqd2bw.css"
+    ]
+  },
+  "_CaretLeft.js": {
+    "file": "chunks/CaretLeft.js",
+    "name": "CaretLeft",
+    "imports": [
+      "_utils.js",
+      "_ssr.js"
+    ]
+  },
   "_Mascot.js": {
     "file": "chunks/Mascot.js",
     "name": "Mascot",
     "imports": [
-      "_index3.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
       "_utils.js",
       "_lifecycle.js",
       "_ssr.js",
       "_translations.js",
-      "_Menu.js",
+      "_Avatar.js",
+      "_CaretLeft.js",
       "_SparklePill.js"
     ],
     "css": [
@@ -30,16 +99,17 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_index3.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
       "_page.js",
       "_translations.js",
-      "_index2.js",
-      "_lifecycle.js",
-      "_scheduler.js",
+      "_Avatar.js",
       "_helpers.js",
-      "_SparklePill.js",
+      "_auth.js",
+      "_lifecycle.js",
+      "_index2.js",
+      "_scheduler.js",
       "_client.js",
-      "_auth.js"
+      "_utils2.js"
     ]
   },
   "_SparklePill.js": {
@@ -47,7 +117,7 @@
     "name": "SparklePill",
     "imports": [
       "_ssr.js",
-      "_page.js"
+      "_utils2.js"
     ],
     "assets": [
       "_app/immutable/assets/holo3.CNY6rpg_.jpg"
@@ -83,6 +153,10 @@
     "file": "chunks/defaults.js",
     "name": "defaults"
   },
+  "_dialog-content.svelte_svelte_type_style_lang.js": {
+    "file": "_app/immutable/assets/dialog-content.CiZ0nAqS.css",
+    "src": "_dialog-content.svelte_svelte_type_style_lang.js"
+  },
   "_exports.js": {
     "file": "chunks/exports.js",
     "name": "exports"
@@ -93,13 +167,16 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_index3.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
       "_Menu.js"
     ]
   },
   "_helpers.js": {
     "file": "chunks/helpers.js",
-    "name": "helpers"
+    "name": "helpers",
+    "imports": [
+      "_translations.js"
+    ]
   },
   "_icon-steps.js": {
     "file": "chunks/icon-steps.js",
@@ -120,10 +197,12 @@
     "file": "chunks/index3.js",
     "name": "index",
     "imports": [
-      "_index2.js",
       "_utils.js",
-      "_ssr2.js",
-      "_lifecycle.js"
+      "_ssr.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
+      "_Avatar.js",
+      "_utils2.js",
+      "_SparklePill.js"
     ]
   },
   "_index4.js": {
@@ -132,33 +211,11 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_index3.js",
-      "_Menu.js",
-      "_page.js",
-      "_SparklePill.js"
-    ]
-  },
-  "_index5.js": {
-    "file": "chunks/index5.js",
-    "name": "index",
-    "imports": [
-      "_index3.js"
-    ],
-    "css": [
-      "_app/immutable/assets/index.L5X4MdG3.css"
-    ]
-  },
-  "_input.js": {
-    "file": "chunks/input.js",
-    "name": "input",
-    "imports": [
-      "_utils.js",
-      "_ssr.js",
-      "_Menu.js",
-      "_page.js",
+      "_utils2.js",
+      "_Avatar.js",
       "_index2.js",
       "_lifecycle.js",
-      "_index3.js"
+      "_Avatar.svelte_svelte_type_style_lang.js"
     ]
   },
   "_internal.js": {
@@ -239,7 +296,7 @@
       "_index2.js",
       "_utils.js",
       "_ssr.js",
-      "_page.js"
+      "_utils2.js"
     ]
   },
   "_ssr.js": {
@@ -288,6 +345,10 @@
   },
   "_utils.js": {
     "file": "chunks/utils.js",
+    "name": "utils"
+  },
+  "_utils2.js": {
+    "file": "chunks/utils2.js",
     "name": "utils"
   },
   "_zod.js": {
@@ -433,7 +494,7 @@
       "_client.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.nXGs4_kz.css"
+      "_app/immutable/assets/_layout.CoYKLUkw.css"
     ],
     "assets": [
       "_app/immutable/assets/InterTight-Regular.B24KQxRX.eot",
@@ -470,19 +531,20 @@
     "isEntry": true,
     "imports": [
       "_ssr.js",
-      "_index3.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
       "_page.js",
       "_Menu.js",
       "_utils.js",
-      "_lifecycle.js",
       "_translations.js",
-      "_index4.js",
+      "_index3.js",
       "_SparklePill.js",
       "_icon-steps.js",
-      "_client.js"
+      "_client.js",
+      "_lifecycle.js",
+      "_utils2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DueXxshu.css"
+      "_app/immutable/assets/_page.CbADzicT.css"
     ]
   },
   "src/routes/api/mails/send/+server.ts": {
@@ -537,14 +599,14 @@
       "_ssr.js",
       "_Menu.js",
       "_index.js",
-      "_input.js",
+      "_index4.js",
       "_schema.js",
       "_client.js",
       "_memoize.js",
       "_zod.js",
       "_translations.js",
       "_Toaster.svelte_svelte_type_style_lang.js",
-      "_index3.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
       "_form-button.js"
     ]
   },
@@ -582,7 +644,7 @@
       "_utils.js",
       "_ssr.js",
       "_Menu.js",
-      "_input.js",
+      "_index4.js",
       "_schema.js",
       "_client.js",
       "_memoize.js",
@@ -590,7 +652,7 @@
       "_zod.js",
       "_translations.js",
       "_Toaster.svelte_svelte_type_style_lang.js",
-      "_index3.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
       "_form-button.js"
     ]
   },
@@ -602,22 +664,24 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_Menu.js",
+      "_AppTopMenu.js",
+      "_AppBottomMenu.js",
       "_lifecycle.js",
-      "_page.js",
-      "_index5.js",
-      "_index3.js",
+      "_utils2.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
       "_index2.js",
       "_scheduler.js",
       "_skeleton.js",
-      "_pocketbase.js",
       "_translations.js",
+      "_Avatar.js",
+      "_pocketbase.js",
       "_client.js",
       "_auth.js",
       "_helpers.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.BWSLbKuZ.css"
+      "_app/immutable/assets/_page.Bv80PTpw.css",
+      "_app/immutable/assets/dialog-content.CiZ0nAqS.css"
     ]
   },
   "src/routes/fights/+page.svelte": {
@@ -629,17 +693,24 @@
       "_utils.js",
       "_ssr.js",
       "_skeleton.js",
-      "_index3.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
       "_pocketbase.js",
       "_translations.js",
       "_client.js",
       "_auth.js",
-      "_Menu.js",
+      "_helpers.js",
+      "_AppTopMenu.js",
+      "_AppBottomMenu.js",
       "_index.js",
       "_schema.js",
       "_memoize.js",
       "_Toaster.svelte_svelte_type_style_lang.js",
-      "_index4.js"
+      "_index3.js",
+      "_Avatar.js",
+      "_CaretLeft.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.Cc8VDaJ_.css"
     ]
   },
   "src/routes/fights/[id]/+page.server.ts": {
@@ -657,9 +728,9 @@
       "_utils.js",
       "_lifecycle.js",
       "_ssr.js",
-      "_index3.js",
-      "_page.js",
       "_translations.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
+      "_page.js",
       "_client.js",
       "_auth.js",
       "_stores.js",
@@ -668,13 +739,13 @@
       "_index.js",
       "_zod.js",
       "_pocketbase.js",
-      "_index5.js",
       "_skeleton.js",
       "_root.svelte_svelte_type_style_lang.js",
       "_Toaster.svelte_svelte_type_style_lang.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DXoPMDRy.css"
+      "_app/immutable/assets/_page.D0_bWKBs.css",
+      "_app/immutable/assets/dialog-content.CiZ0nAqS.css"
     ]
   },
   "src/routes/fights/[id]/respond/+page.server.ts": {
@@ -692,12 +763,12 @@
       "_utils.js",
       "_ssr.js",
       "_stores.js",
-      "_index3.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
       "_root.svelte_svelte_type_style_lang.js",
       "_lifecycle.js",
       "_index2.js",
-      "_Menu.js",
       "_scheduler.js",
+      "_Menu.js",
       "_Mascot.js",
       "_memoize.js",
       "_defaults.js",
@@ -706,7 +777,8 @@
       "_zod.js",
       "_icon-steps.js",
       "_pocketbase.js",
-      "_page.js"
+      "_Avatar.js",
+      "_utils2.js"
     ],
     "css": [
       "_app/immutable/assets/_page.Bddb2Kvx.css"
@@ -719,14 +791,16 @@
     "isEntry": true,
     "imports": [
       "_utils.js",
-      "_Menu.js",
+      "_Avatar.js",
       "_ssr.js",
-      "_input.js",
-      "_index3.js",
+      "_AppTopMenu.js",
+      "_AppBottomMenu.js",
+      "_index4.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
       "_lifecycle.js",
       "_index2.js",
       "_Mascot.js",
-      "_page.js",
+      "_utils2.js",
       "_client.js",
       "_memoize.js",
       "_defaults.js",
@@ -738,7 +812,7 @@
       "_auth.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.BiYJgpXq.css"
+      "_app/immutable/assets/_page.CvIOBNHG.css"
     ]
   },
   "src/routes/selfempathy/+page.svelte": {
@@ -748,9 +822,9 @@
     "isEntry": true,
     "imports": [
       "_ssr.js",
-      "_Menu.js",
+      "_AppBottomMenu.js",
       "_index.js",
-      "_index3.js",
+      "_Avatar.svelte_svelte_type_style_lang.js",
       "_schema.js",
       "_client.js",
       "_memoize.js",

@@ -1,99 +1,352 @@
-import { c as compute_rest_props } from "./utils.js";
-import { c as create_ssr_component, v as validate_component, f as each, e as escape } from "./ssr.js";
-import "./index3.js";
-import { e as Button$1 } from "./Menu.js";
-import { c as cn } from "./page.js";
-import { b as backgroundImage } from "./SparklePill.js";
-import { tv } from "tailwind-variants";
+import { c as compute_rest_props, s as subscribe, n as noop } from "./utils.js";
+import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object, a as add_attribute, f as each, e as escape, v as validate_component } from "./ssr.js";
+import { c as cn } from "./utils2.js";
+import { L as Label } from "./Avatar.js";
+import { w as writable } from "./index2.js";
+import { h as hasContext, g as getContext, s as setContext } from "./lifecycle.js";
+import { z as nanoid } from "./Avatar.svelte_svelte_type_style_lang.js";
 import "clsx";
-const Button = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["class", "variant", "size", "builders"]);
+const Input = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["class", "value", "readonly"]);
   let { class: className = void 0 } = $$props;
-  let { variant = "default" } = $$props;
-  let { size = "default" } = $$props;
-  let { builders = [] } = $$props;
-  const positions = [
-    { left: -30, top: -20, scale: 0.4 },
-    { left: 120, top: -10, scale: 0.6 },
-    { left: 40, top: 100, scale: 1 },
-    { left: -20, top: 110, scale: 0.8 },
-    { left: 110, top: 110, scale: 1.2 },
-    { left: 20, top: -60, scale: 1 },
-    { left: 60, top: -40, scale: 0.4 }
-  ];
-  const delays = [
-    "delay-0",
-    "delay-75",
-    "delay-300",
-    "delay-500",
-    "delay-700",
-    "delay-1000",
-    "delay-500"
-  ];
-  const animationTimings = [
-    "animation-duration: 500ms;animation-delay: 0ms;",
-    "animation-duration: 700ms;animation-delay: 75ms;",
-    "animation-duration: 1000ms;animation-delay: 300ms;",
-    "animation-duration: 400ms;animation-delay: 500ms;",
-    "animation-duration: 1500ms;animation-delay: 700ms;",
-    "animation-duration: 2500ms;animation-delay: 200ms;",
-    "animation-duration: 700ms;animation-delay: 75ms;"
-  ];
+  let { value = void 0 } = $$props;
+  let { readonly = void 0 } = $$props;
   if ($$props.class === void 0 && $$bindings.class && className !== void 0)
     $$bindings.class(className);
-  if ($$props.variant === void 0 && $$bindings.variant && variant !== void 0)
-    $$bindings.variant(variant);
-  if ($$props.size === void 0 && $$bindings.size && size !== void 0)
-    $$bindings.size(size);
-  if ($$props.builders === void 0 && $$bindings.builders && builders !== void 0)
-    $$bindings.builders(builders);
-  return `${validate_component(Button$1, "ButtonPrimitive.Root").$$render(
+  if ($$props.value === void 0 && $$bindings.value && value !== void 0)
+    $$bindings.value(value);
+  if ($$props.readonly === void 0 && $$bindings.readonly && readonly !== void 0)
+    $$bindings.readonly(readonly);
+  return `<input${spread(
+    [
+      {
+        class: escape_attribute_value(cn("flex h-9 w-full rounded-md border border-input bg-black/5 dark:bg-black/20 border-black/10 dark:border-white/5 px-3 py-1 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50", className))
+      },
+      { readonly: readonly || null },
+      escape_object($$restProps)
+    ],
+    {}
+  )}${add_attribute("value", value, 0)}>`;
+});
+const FORM_FIELD = Symbol("FORM_FIELD_CTX");
+function setFormField(props) {
+  setContext(FORM_FIELD, props);
+  return props;
+}
+function getFormField() {
+  if (!hasContext(FORM_FIELD)) {
+    ctxError("Form.Field");
+  }
+  return getContext(FORM_FIELD);
+}
+const FORM_CONTROL = Symbol("FORM_CONTROL_CTX");
+function setFormControl(props) {
+  setContext(FORM_CONTROL, props);
+  return props;
+}
+function getFormControl() {
+  if (!hasContext(FORM_CONTROL)) {
+    ctxError("<Control />");
+  }
+  return getContext(FORM_CONTROL);
+}
+function ctxError(ctx) {
+  throw new Error(`Unable to find \`${ctx}\` context. Did you forget to wrap the component in a \`${ctx}\`?`);
+}
+function getAriaDescribedBy({ fieldErrorsId = void 0, descriptionId = void 0, errors }) {
+  let describedBy = "";
+  if (descriptionId) {
+    describedBy += descriptionId + " ";
+  }
+  if (errors.length && fieldErrorsId) {
+    describedBy += fieldErrorsId;
+  }
+  return describedBy ? describedBy.trim() : void 0;
+}
+function getAriaRequired(constraints) {
+  if (!("required" in constraints))
+    return void 0;
+  return constraints.required ? "true" : void 0;
+}
+function getAriaInvalid(errors) {
+  return errors && errors.length ? "true" : void 0;
+}
+function getDataFsError(errors) {
+  return errors && errors.length ? "" : void 0;
+}
+function generateId() {
+  return nanoid(5);
+}
+function extractErrorArray(errors) {
+  if (Array.isArray(errors))
+    return errors;
+  if (typeof errors === "object" && "_errors" in errors) {
+    if (errors._errors !== void 0)
+      return errors._errors;
+  }
+  return [];
+}
+function getValueAtPath(path, obj) {
+  const keys = path.split(/[[\].]/).filter(Boolean);
+  let value = obj;
+  for (const key of keys) {
+    if (typeof value !== "object" || value === null) {
+      return void 0;
+    }
+    value = value[key];
+  }
+  return value;
+}
+const Field = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let formErrors;
+  let formConstraints;
+  let formTainted;
+  let formData;
+  let $formTainted, $$unsubscribe_formTainted = noop, $$subscribe_formTainted = () => ($$unsubscribe_formTainted(), $$unsubscribe_formTainted = subscribe(formTainted, ($$value) => $formTainted = $$value), formTainted);
+  let $formConstraints, $$unsubscribe_formConstraints = noop, $$subscribe_formConstraints = () => ($$unsubscribe_formConstraints(), $$unsubscribe_formConstraints = subscribe(formConstraints, ($$value) => $formConstraints = $$value), formConstraints);
+  let $formErrors, $$unsubscribe_formErrors = noop, $$subscribe_formErrors = () => ($$unsubscribe_formErrors(), $$unsubscribe_formErrors = subscribe(formErrors, ($$value) => $formErrors = $$value), formErrors);
+  let $formData, $$unsubscribe_formData = noop, $$subscribe_formData = () => ($$unsubscribe_formData(), $$unsubscribe_formData = subscribe(formData, ($$value) => $formData = $$value), formData);
+  let $errors, $$unsubscribe_errors;
+  let $tainted, $$unsubscribe_tainted;
+  let { form } = $$props;
+  let { name } = $$props;
+  const field = {
+    name: writable(name),
+    errors: writable([]),
+    constraints: writable({}),
+    tainted: writable(false),
+    fieldErrorsId: writable(),
+    descriptionId: writable(),
+    form
+  };
+  const { tainted, errors } = field;
+  $$unsubscribe_tainted = subscribe(tainted, (value) => $tainted = value);
+  $$unsubscribe_errors = subscribe(errors, (value) => $errors = value);
+  setFormField(field);
+  if ($$props.form === void 0 && $$bindings.form && form !== void 0)
+    $$bindings.form(form);
+  if ($$props.name === void 0 && $$bindings.name && name !== void 0)
+    $$bindings.name(name);
+  $$subscribe_formErrors({ errors: formErrors, constraints: formConstraints, tainted: formTainted, form: formData } = form, $$subscribe_formConstraints(), $$subscribe_formTainted(), $$subscribe_formData());
+  {
+    field.name.set(name);
+  }
+  {
+    field.errors.set(extractErrorArray(getValueAtPath(name, $formErrors)));
+  }
+  {
+    field.constraints.set(getValueAtPath(name, $formConstraints) ?? {});
+  }
+  {
+    field.tainted.set($formTainted ? getValueAtPath(name, $formTainted) === true : false);
+  }
+  $$unsubscribe_formTainted();
+  $$unsubscribe_formConstraints();
+  $$unsubscribe_formErrors();
+  $$unsubscribe_formData();
+  $$unsubscribe_errors();
+  $$unsubscribe_tainted();
+  return ` ${slots.default ? slots.default({
+    value: $formData[name],
+    errors: $errors,
+    tainted: $tainted,
+    constraints: $formConstraints[name]
+  }) : ``}`;
+});
+const Control$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let errorAttr;
+  let attrs;
+  let labelAttrs;
+  let $idStore, $$unsubscribe_idStore;
+  let $constraints, $$unsubscribe_constraints;
+  let $errors, $$unsubscribe_errors;
+  let $descriptionId, $$unsubscribe_descriptionId;
+  let $fieldErrorsId, $$unsubscribe_fieldErrorsId;
+  let $name, $$unsubscribe_name;
+  let { id = generateId() } = $$props;
+  const { name, fieldErrorsId, descriptionId, errors, constraints } = getFormField();
+  $$unsubscribe_name = subscribe(name, (value) => $name = value);
+  $$unsubscribe_fieldErrorsId = subscribe(fieldErrorsId, (value) => $fieldErrorsId = value);
+  $$unsubscribe_descriptionId = subscribe(descriptionId, (value) => $descriptionId = value);
+  $$unsubscribe_errors = subscribe(errors, (value) => $errors = value);
+  $$unsubscribe_constraints = subscribe(constraints, (value) => $constraints = value);
+  const controlContext = {
+    id: writable(id),
+    attrs: writable(),
+    labelAttrs: writable()
+  };
+  const { id: idStore } = controlContext;
+  $$unsubscribe_idStore = subscribe(idStore, (value) => $idStore = value);
+  setFormControl(controlContext);
+  if ($$props.id === void 0 && $$bindings.id && id !== void 0)
+    $$bindings.id(id);
+  {
+    controlContext.id.set(id);
+  }
+  errorAttr = getDataFsError($errors);
+  attrs = {
+    name: $name,
+    id: $idStore,
+    "data-fs-error": errorAttr,
+    "aria-describedby": getAriaDescribedBy({
+      fieldErrorsId: $fieldErrorsId,
+      descriptionId: $descriptionId,
+      errors: $errors
+    }),
+    "aria-invalid": getAriaInvalid($errors),
+    "aria-required": getAriaRequired($constraints),
+    "data-fs-control": ""
+  };
+  labelAttrs = {
+    for: $idStore,
+    "data-fs-label": "",
+    "data-fs-error": errorAttr
+  };
+  {
+    controlContext.attrs.set(attrs);
+  }
+  {
+    controlContext.labelAttrs.set(labelAttrs);
+  }
+  $$unsubscribe_idStore();
+  $$unsubscribe_constraints();
+  $$unsubscribe_errors();
+  $$unsubscribe_descriptionId();
+  $$unsubscribe_fieldErrorsId();
+  $$unsubscribe_name();
+  return ` ${slots.default ? slots.default({ attrs }) : ``}`;
+});
+const Field_errors = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let errorAttr;
+  let fieldErrorsAttrs;
+  let errorAttrs;
+  let $$restProps = compute_rest_props($$props, ["id", "asChild", "el"]);
+  let $fieldErrorsId, $$unsubscribe_fieldErrorsId;
+  let $errors, $$unsubscribe_errors;
+  const { fieldErrorsId, errors } = getFormField();
+  $$unsubscribe_fieldErrorsId = subscribe(fieldErrorsId, (value) => $fieldErrorsId = value);
+  $$unsubscribe_errors = subscribe(errors, (value) => $errors = value);
+  let { id = generateId() } = $$props;
+  let { asChild = false } = $$props;
+  let { el = void 0 } = $$props;
+  if ($$props.id === void 0 && $$bindings.id && id !== void 0)
+    $$bindings.id(id);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
+    $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
+    $$bindings.el(el);
+  errorAttr = getDataFsError($errors);
+  {
+    fieldErrorsId.set(id);
+  }
+  fieldErrorsAttrs = {
+    id: $fieldErrorsId,
+    "data-fs-error": errorAttr,
+    "data-fs-field-errors": "",
+    "aria-live": "assertive",
+    ...$$restProps
+  };
+  errorAttrs = {
+    "data-fs-field-error": "",
+    "data-fs-error": errorAttr
+  };
+  $$unsubscribe_fieldErrorsId();
+  $$unsubscribe_errors();
+  return ` ${asChild ? `${slots.default ? slots.default({
+    errors: $errors,
+    fieldErrorsAttrs,
+    errorAttrs
+  }) : ``}` : `<div${spread([escape_object(fieldErrorsAttrs)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({
+    errors: $errors,
+    fieldErrorsAttrs,
+    errorAttrs
+  }) : ` ${each($errors, (error) => {
+    return `<div${spread([escape_object(errorAttrs)], {})}>${escape(error)}</div>`;
+  })} `}</div>`}`;
+});
+const Form_label = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["class"]);
+  let $labelAttrs, $$unsubscribe_labelAttrs;
+  let { class: className = void 0 } = $$props;
+  const { labelAttrs } = getFormControl();
+  $$unsubscribe_labelAttrs = subscribe(labelAttrs, (value) => $labelAttrs = value);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  $$unsubscribe_labelAttrs();
+  return `${validate_component(Label, "Label").$$render(
     $$result,
     Object.assign(
       {},
-      { builders },
+      $labelAttrs,
       {
-        style: "background-image: url('" + backgroundImage + "'); background-size: 300% 300%;"
+        class: cn("data-[fs-error]:text-destructive", className)
       },
-      {
-        class: cn(buttonVariants({ variant, size, className }), "animate-bg-hover-fast group relative transform scale-100 hover:scale-105 transition ease-in")
-      },
-      { type: "button" },
       $$restProps
     ),
     {},
     {
       default: () => {
-        return `<div class="pointer-events-none absolute h-full w-full scale-60 -z-10 transform opacity-0 transition group-hover:scale-100 group-hover:opacity-100 group-hover:delay-300">${each(positions, (star, index) => {
-          return `<div class="${"absolute w-4 scale-0 fill-yellow-700 opacity-0 transition duration-500 group-hover:scale-100 group-hover:opacity-100 dark:fill-yellow-100 " + escape(delays[index], true)}" style="${"left: " + escape(star.left, true) + "%;top: " + escape(star.top, true) + "%;transform: scale(" + escape(star.scale, true) + ")"}"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="${"filter: drop-shadow(0 0 10px rgba(255,255,255,0.6));" + escape(animationTimings[index], true)}" class="-translate-x-50 -translate-y-50 animate-wobble transform"><path d="M16.451.68339c0,11.57088-3.857,15.42784-15.42785,15.42784,11.57088,0,15.42785,3.857,15.42785,15.42784,0-11.57088,3.857-15.42784,15.42785-15.42784C20.308,16.11123,16.451,12.25427,16.451.68339Z"></path></svg> </div>`;
-        })}</div> ${slots.default ? slots.default({}) : ``}`;
+        return `${slots.default ? slots.default({ labelAttrs }) : ``}`;
       }
     }
   )}`;
 });
-const buttonVariants = tv({
-  base: "inline-flex items-center justify-center rounded-md text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
-  variants: {
-    variant: {
-      default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-      destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-      outline: "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-      secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-      ghost: "hover:bg-accent hover:text-accent-foreground",
-      link: "text-primary underline-offset-4 hover:underline"
-    },
-    size: {
-      default: "h-9 px-4 py-2",
-      sm: "h-8 rounded-md px-3 text-xs",
-      lg: "h-10 rounded-md px-8",
-      icon: "h-9 w-9"
+const Form_field_errors = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["class", "errorClasses"]);
+  let { class: className = void 0 } = $$props;
+  let { errorClasses = void 0 } = $$props;
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  if ($$props.errorClasses === void 0 && $$bindings.errorClasses && errorClasses !== void 0)
+    $$bindings.errorClasses(errorClasses);
+  return `${validate_component(Field_errors, "FormPrimitive.FieldErrors").$$render(
+    $$result,
+    Object.assign(
+      {},
+      {
+        class: cn("text-[0.8rem] font-medium text-destructive bg-red-200 rounded !mb-4", className)
+      },
+      $$restProps
+    ),
+    {},
+    {
+      default: ({ errors, fieldErrorsAttrs, errorAttrs }) => {
+        return `${slots.default ? slots.default({ errors, fieldErrorsAttrs, errorAttrs }) : ` ${each(errors, (error) => {
+          return `<div${spread(
+            [
+              escape_object(errorAttrs),
+              {
+                class: escape_attribute_value(cn("px-2 py-1 border border-red-600/10", errorClasses))
+              }
+            ],
+            {}
+          )}>${escape(error)}</div>`;
+        })} `}`;
+      }
     }
-  },
-  defaultVariants: {
-    variant: "default",
-    size: "default"
-  }
+  )}`;
 });
+const Form_field = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let { form } = $$props;
+  let { name } = $$props;
+  let { class: className = void 0 } = $$props;
+  if ($$props.form === void 0 && $$bindings.form && form !== void 0)
+    $$bindings.form(form);
+  if ($$props.name === void 0 && $$bindings.name && name !== void 0)
+    $$bindings.name(name);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  return `${validate_component(Field, "FormPrimitive.Field").$$render($$result, { form, name }, {}, {
+    default: ({ constraints, errors, tainted, value }) => {
+      return `<div${add_attribute("class", cn("space-y-2", className), 0)}>${slots.default ? slots.default({ constraints, errors, tainted, value }) : ``}</div>`;
+    }
+  })}`;
+});
+const Control = Control$1;
 export {
-  Button as B
+  Control as C,
+  Form_field as F,
+  Input as I,
+  Form_label as a,
+  Form_field_errors as b
 };

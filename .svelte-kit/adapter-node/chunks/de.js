@@ -1,7 +1,10 @@
 const menu = {
   profile: {
     account: "Mein Account",
-    logout: "Ausloggen"
+    logout: "Ausloggen",
+    sheet: {
+      header: "Profil"
+    }
   },
   bar: {
     home: "Dashboard",
@@ -127,8 +130,10 @@ const page = {
     }
   },
   dashboard: {
+    selectDate: "Zeitraum wählen",
     fights: {
       tableCaption: "Streit",
+      endReached: "Ende erreicht",
       table: {
         id: "Id",
         partner: "Streitpartner",
@@ -152,6 +157,7 @@ const page = {
   },
   fight: {
     heading: "Streit",
+    title: "Übersicht",
     card: {
       observation: "Beobachtung",
       feelings: "Gefühle",

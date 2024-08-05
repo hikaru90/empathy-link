@@ -453,7 +453,7 @@ const Layout = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   if ($$props.data === void 0 && $$bindings.data && data !== void 0)
     $$bindings.data(data);
   $$result.css.add(css);
-  return `<main id="scrollContainer" class="flex flex-grow flex-col overflow-x-hidden bg-offwhite">${`<div class="flex items-center justify-center py-60">${validate_component(SparklePill, "SparklePill").$$render(
+  return `<main id="scrollContainer" class="flex flex-grow flex-col overflow-x-hidden bg-background">${`<div class="flex items-center justify-center py-60">${validate_component(SparklePill, "SparklePill").$$render(
     $$result,
     {
       fast: true,

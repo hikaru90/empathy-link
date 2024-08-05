@@ -2,7 +2,7 @@ import { w as writable } from "./index2.js";
 import { CalendarDate } from "@internationalized/date";
 import { c as compute_rest_props } from "./utils.js";
 import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object } from "./ssr.js";
-import { c as cn } from "./page.js";
+import { c as cn } from "./utils2.js";
 const todayDate = /* @__PURE__ */ new Date();
 console.log("todayDate", todayDate);
 let startDate = writable(

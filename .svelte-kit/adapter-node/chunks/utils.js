@@ -1,5 +1,6 @@
 function noop() {
 }
+const identity = (x) => x;
 function run(fn) {
   return fn();
 }
@@ -41,13 +42,23 @@ function compute_rest_props(props, keys) {
 function null_to_empty(value) {
   return value == null ? "" : value;
 }
+function split_css_unit(value) {
+  const split = typeof value === "string" && value.match(/^\s*(-?[\d.]+)([^\s]*)\s*$/);
+  return split ? [parseFloat(split[1]), split[2] || "px"] : [
+    /** @type {number} */
+    value,
+    "px"
+  ];
+}
 export {
-  null_to_empty as a,
-  blank_object as b,
+  split_css_unit as a,
+  null_to_empty as b,
   compute_rest_props as c,
-  safe_not_equal as d,
+  blank_object as d,
+  safe_not_equal as e,
+  is_function as f,
   get_store_value as g,
-  is_function as i,
+  identity as i,
   noop as n,
   run_all as r,
   subscribe as s
