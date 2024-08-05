@@ -8,8 +8,8 @@
 	const dispatch = createEventDispatcher();
 </script>
 
-<div class="relative -mx-5 md:flex md:justify-center">
-	<div class="my-2">
+<div class="sticky top-0 z-10 -mx-5 md:flex md:justify-center {`bg-${stepBackground}-background`} transition duration-700">
+	<div class="md:my-4">
 		<div
 			class="lcd-screen relative flex items-center gap-[4px] border border-black/10 bg-black/5 p-[2px] dark:bg-black/20 md:rounded"
 		>
@@ -22,7 +22,7 @@
 					class="group {`bg-${stepBackground}-background`} flex-grow rounded-[2px] shadow transition duration-700"
 				>
 					<div
-						class="flex items-center justify-center overflow-hidden rounded-[2px] p-2 shadow-inner shadow-white/40 dark:shadow-white/10"
+						class="flex items-center justify-center overflow-hidden rounded-[2px] p-2 shadow-inner shadow-white/20 dark:shadow-white/10"
 					>
 						<div
 							class="skeumorphic-button {`bg-${entry.slug}-background text-${entry.slug}-foreground`} rounded-full border-2 {`border-${stepBackground}-background`} transition duration-700"

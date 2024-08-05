@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { createEventDispatcher } from 'svelte';
 	import { t } from '$lib/translations';
 	import { ArrowRight } from 'radix-icons-svelte';
+	import { CaretLeft } from 'radix-icons-svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -18,34 +19,33 @@
 	};
 </script>
 
-<div class="flex justify-between gap-1 pb-4 pt-8 {className}">
+<div class="flex justify-between {className}">
 	<div
 		class="{step > 1
-			? 'opacity-100 max-w-60'
-			: 'opacity-0 max-w-0'} group relative transform overflow-visible active:translate-y-1 transition-all"
+			? 'max-w-60 opacity-100'
+			: 'max-w-0 opacity-0'} group relative transform overflow-visible"
 	>
 		<Button
 			on:click={toPrev}
-			class="light-button group {primaryButtonClass} hover:{primaryButtonClass} relative z-10 m-[1px] flex w-[calc(100%-2px)] items-center justify-between py-6 font-bold text-foreground dark:border-x dark:border-t dark:border-white/5"
+			decoration="dark-op1"
+			class="flex items-center border-neutral-900 bg-neutral-800 px-1.5 text-sm text-zinc-200"
 		>
-			{$t('default.page.fights.form.general.prev')}
+			<CaretLeft class="h-4 w-4 rounded-full" />
 		</Button>
-		<div
-			class="pointer-events-none absolute left-1/2 top-1 z-0 block h-full w-full -translate-x-1/2 transform rounded-md border border-black/10 bg-black/10 group-active:top-0 dark:border-white/20 dark:bg-black/30"
-		></div>
 	</div>
-	<div class="group relative flex-grow transform overflow-visible active:translate-y-1">
-		<Button
+	<Button
+		type="submit"
+		decoration="dark-op1"
+		wrapperClass="w-full"
+		class="flex w-full items-center gap-2 border-neutral-900 bg-neutral-800 text-sm text-zinc-200"
+	>
+		<!-- <Button
 			type="submit"
 			class="light-button group {primaryButtonClass} hover:{primaryButtonClass} relative z-10 m-[1px] flex w-[calc(100%-2px)] items-center justify-between py-6 font-bold text-foreground dark:border-x dark:border-t dark:border-white/5"
-		>
-			{$t('default.page.fights.form.general.next')}
-			<ArrowRight class="h-3 w-3" />
-		</Button>
-		<div
-			class="pointer-events-none absolute left-1/2 top-1 z-0 block h-full w-full -translate-x-1/2 transform rounded-md border border-black/10 bg-black/10 group-active:top-0 dark:border-white/20 dark:bg-black/30"
-		></div>
-	</div>
+		> -->
+		{$t('default.page.fights.form.general.next')}
+		<ArrowRight class="h-3 w-3" />
+	</Button>
 </div>
 
 <style lang="scss">
