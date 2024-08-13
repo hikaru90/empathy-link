@@ -2,42 +2,99 @@ import { browser } from '$app/environment';
 import { t, locale } from '$lib/translations';
 import { get } from 'svelte/store';
 
+export const getScrollbarWidth = () => {
+	const scrollDiv = document.createElement('div');
+
+	// Apply styles to ensure it has a scrollbar
+	scrollDiv.style.visibility = 'hidden';
+	scrollDiv.style.overflow = 'scroll'; // Force a scrollbar
+	scrollDiv.style.position = 'absolute'; // Remove from document flow
+	scrollDiv.style.top = '-9999px'; // Position off-screen
+
+	// Add a child div inside the scrollDiv
+	scrollDiv.style.width = '100px';
+	scrollDiv.style.height = '100px';
+	document.body.appendChild(scrollDiv);
+
+	const scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+
+	// Remove the div after measuring
+	document.body.removeChild(scrollDiv);
+
+	return scrollbarWidth;
+}
+
+const animateScrollTo = (container, to, duration) => {
+	var start = container.scrollTop;
+	var change = to - start;
+	var startTime = performance.now();
+
+	console.log('start',start);
+	console.log('change',change);
+
+	function updateScrollPosition(currentTime) {
+		var elapsed = currentTime - startTime;
+		var progress = elapsed / duration;
+
+		container.scrollTop = start + change * easeInOutQuad(progress);
+
+		if (elapsed < duration) {
+			requestAnimationFrame(updateScrollPosition);
+		}
+	}
+
+	const easeInOutQuad = (t) => {
+		return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+	};
+
+	requestAnimationFrame(updateScrollPosition);
+};
+export const scrollToElement = (containerId, element, duration) => {
+	var container = document.getElementById(containerId);
+	if (!container || !element) return;
+	const to = element.getBoundingClientRect().top;
+	console.log('to',to);
+	// const containerY = container.scrollTop;
+	// const windowY = window.scrollY;
+	animateScrollTo(container, to, duration || 1000);
+};
+
 export const serializeNonPOJOs = (obj: object) => {
 	return structuredClone(obj);
 };
 
-export const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const daysAgo = (date) => {
-  const now = new Date();
-  const past = new Date(date);
+	const now = new Date();
+	const past = new Date(date);
 
-  // Calculate the difference in milliseconds
-  const diffInMilliseconds = now - past;
+	// Calculate the difference in milliseconds
+	const diffInMilliseconds = now - past;
 
-  // Convert milliseconds to days
-  const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+	// Convert milliseconds to days
+	const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
 
-console.log('daysAgo', get(locale));
+	console.log('daysAgo', get(locale));
 
-	if(get(locale) === 'en'){
+	if (get(locale) === 'en') {
 		if (diffInDays === 0) {
-			return "today";
+			return 'today';
 		} else if (diffInDays === 1) {
-			return "1 day ago";
+			return '1 day ago';
 		} else {
 			return `${diffInDays} days ago`;
 		}
-	}else{
+	} else {
 		if (diffInDays === 0) {
-			return "heute";
+			return 'heute';
 		} else if (diffInDays === 1) {
-			return "vor einem Tag";
+			return 'vor einem Tag';
 		} else {
 			return `vor ${diffInDays} Tagen`;
 		}
 	}
-}
+};
 
 export const copyToClipboard = (text) => {
 	const input = document.createElement('input');
@@ -75,7 +132,7 @@ export const generateHslaColors = (hue, saturation, lightness, length) => {
 		// Add the color to the array
 		colors.push(hslaColor);
 	}
-	
+
 	colors.reverse();
 	return colors;
 };

@@ -40,11 +40,11 @@
 	// });
 </script>
 
-<div class="pt-20 lg:-mb-20 lg:pt-32">
+<div class="relative z-10 pt-20 lg:-mb-20 lg:pt-32">
 	<h1 class="mb-10 max-w-[14em] font-display text-4xl md:text-5xl font-semibold leading-[106%] lg:text-7xl">
 		{$t('default.page.home.hero')}
 	</h1>
-	<a href="/auth/login">
+	<a href="/app/auth/login">
 		<SparkleButton
 			class="px-3 py-5 font-bold text-black shadow-lg dark:shadow-gray-300/30 lg:px-6 lg:py-7 lg:text-lg"
 		>
@@ -53,7 +53,7 @@
 	</a>
 </div>
 
-<div class="py-4 -mx-[40%] -mb-48 md:-mb-[20%] md:-mx-[10%]">
+<div class="relative z-0 py-4 -mx-[40%] -mb-48 md:-mb-[20%] md:-mx-[10%]">
 	<div id="animation" class="relative w-full lg:mb-40">
 		<div
 			style="border-radius: {animationWidth / 75}px;"

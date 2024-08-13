@@ -14,42 +14,64 @@
 	"/api/populateNeeds": [
 		"src/routes/api/populateNeeds/+server.ts"
 	],
-	"/auth/login": [
-		"src/routes/auth/login/+page.server.ts",
+	"/app": [
+		"src/routes/app/+layout.ts",
+		"src/routes/app/+layout.server.ts",
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/auth/logout": [
-		"src/routes/auth/logout/+server.ts"
-	],
-	"/auth/register": [
-		"src/routes/auth/register/+page.server.ts",
+	"/app/auth/login": [
+		"src/routes/app/auth/login/+page.server.ts",
+		"src/routes/app/+layout.ts",
+		"src/routes/app/+layout.server.ts",
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/dashboard": [
+	"/app/auth/logout": [
+		"src/routes/app/auth/logout/+server.ts"
+	],
+	"/app/auth/register": [
+		"src/routes/app/auth/register/+page.server.ts",
+		"src/routes/app/+layout.ts",
+		"src/routes/app/+layout.server.ts",
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/fights": [
+	"/app/dashboard": [
+		"src/routes/app/+layout.ts",
+		"src/routes/app/+layout.server.ts",
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/fights/create": [
+	"/app/fights": [
+		"src/routes/app/+layout.ts",
+		"src/routes/app/+layout.server.ts",
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/fights/[id]": [
-		"src/routes/fights/[id]/+page.server.ts",
+	"/app/fights/create": [
+		"src/routes/app/+layout.ts",
+		"src/routes/app/+layout.server.ts",
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/fights/[id]/respond": [
-		"src/routes/fights/[id]/respond/+page.server.ts",
+	"/app/fights/[id]": [
+		"src/routes/app/fights/[id]/+page.server.ts",
+		"src/routes/app/+layout.ts",
+		"src/routes/app/+layout.server.ts",
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],
-	"/selfempathy": [
+	"/app/fights/[id]/respond": [
+		"src/routes/app/fights/[id]/respond/+page.server.ts",
+		"src/routes/app/+layout.ts",
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/app/selfempathy": [
+		"src/routes/app/+layout.ts",
+		"src/routes/app/+layout.server.ts",
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	]

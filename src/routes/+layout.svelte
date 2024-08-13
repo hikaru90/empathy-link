@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
 	import { t, initialized } from '$lib/translations';
-	import '../app.pcss';
+	import '$src/app.pcss';
 	import { ModeWatcher } from 'mode-watcher';
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { blur } from 'svelte/transition';
@@ -13,6 +13,7 @@
 	import 'simplebar/dist/simplebar.css';
 	import ResizeObserver from 'resize-observer-polyfill';
 	import { onNavigate } from '$app/navigation';
+	import { getScrollbarWidth } from '$scripts/helpers'
 	if (browser) {
 		window.ResizeObserver = ResizeObserver;
 	}
@@ -28,11 +29,13 @@
 		scroll.set(event.target.scrollTop);
 	};
 	const handleResize = () => {
-		windowWidth.set(window.innerWidth);
+		const scrollbarWidth:number = getScrollbarWidth()
+		windowWidth.set(window.innerWidth - scrollbarWidth);
 		windowHeight.set(window.innerHeight);
 	};
 
 	onMount(() => {
+		handleResize()
 		contentReady = true;
 		if (browser) {
 			document.getElementById('scrollContainer')?.addEventListener('scroll', handleScroll);
@@ -83,9 +86,9 @@
 				<ModeWatcher />
 				<slot />
 			</div>
-			{#if data.user}
+			<!-- {#if data.user}
 				<AppMenu />
-			{/if}
+			{/if} -->
 		{/if}
 	</main>
 {/key}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
-	import { formSchema, type FormSchema } from '$routes/auth/login/schema';
+	import { formSchema, type FormSchema } from '$routes/app/auth/login/schema';
 	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { t } from '$lib/translations';
@@ -48,7 +48,7 @@
 				<Form.FieldErrors />
 			</Form.Field>
 			<div class="flex items-center justify-between">
-				<Button variant="ghost" on:click={() => goto('/auth/login')}
+				<Button variant="ghost" on:click={() => goto('/app/auth/login')}
 					>{$t('default.page.login.cta')}</Button
 				>
 				<Form.Button>{$t('default.page.register.cta')}</Form.Button>

@@ -67,7 +67,7 @@
 
 	const gotoFight = (id) => {
 		console.log('gotoFight');
-		goto(`/fights/${id}`);
+		goto(`/app/fights/${id}`);
 	};
 
 	onMount(async () => {

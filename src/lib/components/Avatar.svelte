@@ -83,7 +83,7 @@
 					<Button builders={[builder]} type="submit">Save changes</Button>
 				</Sheet.Close> -->
 
-				<form action="/auth/logout" method="POST" class="w-full">
+				<form action="/app/auth/logout" method="POST" class="w-full">
 					<button type="submit" class="w-full">
 						<Button wrapperClass="w-full"
 							decoration="floating-op1"

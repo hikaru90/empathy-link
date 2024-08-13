@@ -2,7 +2,7 @@
 	import { redirect } from '@sveltejs/kit';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
-	import { formSchema, type FormSchema } from '$routes/auth/login/schema';
+	import { formSchema, type FormSchema } from '$routes/app/auth/login/schema';
 	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { t } from '$lib/translations';
@@ -23,7 +23,6 @@
 			if (result.type === 'failure') toast.error($t('default.page.login.toasts.error'));
 			if (result.type === 'success') {
 				toast.success($t('default.page.login.toasts.success'));
-				// redirect(302, '/dashboard');
 			}
 		}
 		// onUpdated: ({ form: f }) => {
@@ -58,7 +57,7 @@
 		<Form.FieldErrors />
 	</Form.Field>
   <div class="flex items-center justify-between">
-		<Button variant="ghost" on:click={() => goto('/auth/register')}>{$t('default.page.register.cta')}</Button>
+		<Button variant="ghost" on:click={() => goto('/app/auth/register')}>{$t('default.page.register.cta')}</Button>
     <Form.Button>{$t('default.page.login.cta')}</Form.Button>
   </div>
 </form>

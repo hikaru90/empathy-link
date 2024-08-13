@@ -1,20 +1,20 @@
 {
-  "menu": {
-    "profile": {
-      "account": "Mein Account",
-      "logout": "Ausloggen",
+	"menu": {
+		"profile": {
+			"account": "Mein Account",
+			"logout": "Ausloggen",
 			"sheet": {
 				"header": "Profil"
 			}
-    },
-    "bar": {
-      "home": "Dashboard",
-      "selfempathy": "Selbstempathie",
-      "fights": "Streit",
-      "feedback": "Feedback",
-      "learn": "Lernen"
-    },
-    "soon": "bald",
+		},
+		"bar": {
+			"home": "Dashboard",
+			"selfempathy": "Selbstempathie",
+			"fights": "Streit",
+			"feedback": "Feedback",
+			"learn": "Lernen"
+		},
+		"soon": "bald",
 		"share": {
 			"cta": "Teilen",
 			"copyLink": "Link kopieren",
@@ -23,12 +23,20 @@
 			"mailLinkConfirmation": "Link erfolgreich verschickt",
 			"mailLinkError": "Fehler beim versenden des Links",
 			"mailDialogText": "Mit wem möchtest Du streiten?"
+		},
+		"sections": {
+			"the4steps": "Die 4 Schritte",
+			"modules": "Module",
+			"selfempathy": "Selbstempathie",
+			"fight": "Streit",
+			"feedback": "Feedback",
+			"learn": "Lernen"
 		}
-  },
+	},
 	"page": {
 		"respond": {
-      "explanationTitle": "Erklärung",
-      "explanation": "Ein Empathie-Link ist ein digitales Kommunikationstool, das Empathie, ehrlichen Ausdruck und gegenseitiges Verständnis betont. Es konzentriert sich darauf, Gefühle und Bedürfnisse ohne Bewertung oder Schuldzuweisung zu identifizieren und auszudrücken, mit dem Ziel, mitfühlende Verbindungen herzustellen und Konflikte friedlich zu lösen.",
+			"explanationTitle": "Erklärung",
+			"explanation": "Ein Empathie-Link ist ein digitales Kommunikationstool, das Empathie, ehrlichen Ausdruck und gegenseitiges Verständnis betont. Es konzentriert sich darauf, Gefühle und Bedürfnisse ohne Bewertung oder Schuldzuweisung zu identifizieren und auszudrücken, mit dem Ziel, mitfühlende Verbindungen herzustellen und Konflikte friedlich zu lösen.",
 			"steps": {
 				"greeting": {
 					"heading": "hat Dir einen Empathie-Link geschickt",
@@ -36,7 +44,7 @@
 					"question": "Fühlst Du Dich bereit ihn zu öffnen?"
 				},
 				"disclaimer": {
-					"heading":"Denk daran",
+					"heading": "Denk daran",
 					"description": "Die Sachen die Du gleich liest, haben nichts mit Dir zu tun."
 				},
 				"breathe": {
@@ -58,39 +66,39 @@
 					"heading": "Du hast jetzt die Möglichkeit zu antworten"
 				}
 			}
-    },
+		},
 		"home": {
 			"title": "Startseite",
 			"nav": "Start",
 			"hero": "Verbinde Dich trotz Stress und Hektik mit den Menschen, die Dir wichtig sind.",
 			"cta": "Verbinde Dich",
 			"components": {
-        "the4steps": {
-          "heading": "In 4 Schritten mit Dir selbst und anderen in Verbindung  kommen",
-          "steps": {
-            "observation": {
-              "heading": "Beobachten",
-              "text": "Beschreibe objektiv, was du wahrnimmst, ohne zu bewerten oder zu urteilen."
-            },
-            "feelings": {
-              "heading": "Fühlen",
-              "text": "Teile mit, welche Emotionen durch die Beobachtung ausgelöst wurden."
-            },
-            "needs": {
-              "heading": "Bedürfnisse erkennen",
-              "text": "Erkläre, welche Bedürfnisse hinter deinen Gefühlen stehen."
-            },
-            "request": {
-              "heading": "Bitten",
-              "text": "Formuliere eine klare, konkrete Bitte, um deine Bedürfnisse zu erfüllen."
-            }
-          },
+				"the4steps": {
+					"heading": "In 4 Schritten mit Dir selbst und anderen in Verbindung  kommen",
+					"steps": {
+						"observation": {
+							"heading": "Beobachten",
+							"text": "Beschreibe objektiv, was du wahrnimmst, ohne zu bewerten oder zu urteilen."
+						},
+						"feelings": {
+							"heading": "Fühlen",
+							"text": "Teile mit, welche Emotionen durch die Beobachtung ausgelöst wurden."
+						},
+						"needs": {
+							"heading": "Bedürfnisse erkennen",
+							"text": "Erkläre, welche Bedürfnisse hinter deinen Gefühlen stehen."
+						},
+						"request": {
+							"heading": "Bitten",
+							"text": "Formuliere eine klare, konkrete Bitte, um deine Bedürfnisse zu erfüllen."
+						}
+					},
 					"cta": {
 						"link": "#",
 						"target": "_self",
 						"text": "Mehr über die 4 Schritte erfahren"
 					}
-        },
+				},
 				"modules": {
 					"heading": "4 App-Module für mehr Achtsamkeit",
 					"modules": {
@@ -100,76 +108,84 @@
 						"learn": "Lernen"
 					}
 				},
-        "selfempathy": {
-          "heading": "Selbstempathie",
-          "description": "Jeder ist sich selbst der Nächste. Deshalb ist es wichtig sich darüber bewusst zu werden was man denkt, fühlt, braucht und will. Anhand der 4 Schritte kannst Du Dir in regelmäßigen abständen Selbstempathie geben und Veränderungen über die Zeit tracken."
-        },
+				"selfempathy": {
+					"heading": "Selbstempathie",
+					"description": "Jeder ist sich selbst der Nächste. Deshalb ist es wichtig sich darüber bewusst zu werden was man denkt, fühlt, braucht und will. Anhand der 4 Schritte kannst Du Dir in regelmäßigen abständen Selbstempathie geben und Veränderungen über die Zeit tracken."
+				},
 				"fight": {
-          "heading": "Streit, aber richtig",
-          "description": "",
+					"heading": "Streit, aber richtig",
+					"description": "",
 					"steps": {
-            "observation": "Beobachtung",
-            "feelings": "Gefühle",
-            "needs": "Bedürfnisse",
-            "request": "Bitte"
-          }
-        },
+						"observation": "Beobachtung",
+						"feelings": "Gefühle",
+						"needs": "Bedürfnisse",
+						"request": "Bitte"
+					}
+				},
 				"feedback": {
-          "heading": "Feedback",
-          "description": "Feedback zielt selten darauf ab zwischenmenschliche Bindungen wirklich zu stärken. Gerade im beruflichen Kontext ist es oft schwer sich aufrichtiges und Feedback zu geben. Doch durch die Einhaltung der 4 Schritte, gelingt auch dieses Kunststück.",
+					"heading": "Feedback",
+					"description": "Feedback zielt selten darauf ab zwischenmenschliche Bindungen wirklich zu stärken. Gerade im beruflichen Kontext ist es oft schwer sich aufrichtiges und Feedback zu geben. Doch durch die Einhaltung der 4 Schritte, gelingt auch dieses Kunststück.",
 					"steps": {
-            "observation": "Feedback geben, das auf der Wirklichkeit beruht",
-            "feelings": "Ehrliche Botschaften für eine echte Verbindung",
-            "needs": "Stärkere Beziehungen durch das Teilen von Bedürfnissen",
-            "request": "Bessere Performance durch lösungsorientierte Bitten"
-          }
-        },
+						"observation": "Feedback geben, das auf der Wirklichkeit beruht",
+						"feelings": "Ehrliche Botschaften für eine echte Verbindung",
+						"needs": "Stärkere Beziehungen durch das Teilen von Bedürfnissen",
+						"request": "Bessere Performance durch lösungsorientierte Bitten"
+					}
+				},
 				"learn": {
-          "heading": "Lernen",
-          "description": "Empathie-Link beruht auf der Gewaltfreien Kommunikation nach Marshall Rosenberg. Mit ihr kann man sich ungelogen ein Leben lang beschäftigen. Deshalb lohnt es sich umso mehr, stets dazuzulernen. Im Lernbereich der App werden — ansonsten nur oberflächlich angeschnittene — Konzepte erklärt."
-        }
-      }
+					"heading": "Lernen",
+					"description": "Empathie-Link beruht auf der Gewaltfreien Kommunikation nach Marshall Rosenberg. Mit ihr kann man sich ungelogen ein Leben lang beschäftigen. Deshalb lohnt es sich umso mehr, stets dazuzulernen. Im Lernbereich der App werden — ansonsten nur oberflächlich angeschnittene — Konzepte erklärt."
+				}
+			}
 		},
 		"dashboard": {
 			"selectDate": "Zeitraum wählen",
-      "fights": {
-        "tableCaption": "Streit",
+			"fights": {
+				"tableCaption": "Streit",
 				"endReached": "Ende erreicht",
 				"table": {
-          "id": "Id",
-          "partner": "Streitpartner",
-          "date": "Datum",
-          "opened": "Geöffnet",
-          "round": "Runde"
-        }
-      },
+					"id": "Id",
+					"partner": "Streitpartner",
+					"date": "Datum",
+					"opened": "Geöffnet",
+					"round": "Runde"
+				}
+			},
 			"feelings": {
-				"heading":"Gefühle",
+				"heading": "Gefühle",
 				"positive": "positiv",
-        "negative": "negativ",
+				"negative": "negativ",
 				"empty": "Keine Gefühle"
 			},
 			"needs": {
-				"heading":"Bedürfnisse",
+				"heading": "Bedürfnisse",
 				"selfcentered": "ich",
-        "community": "gemeinschaft",
+				"community": "gemeinschaft",
 				"empty": "Keine Bedürfnisse"
 			}
-    },
+		},
 		"fight": {
-      "heading": "Streit",
+			"heading": "Streit",
 			"title": "Übersicht",
 			"card": {
 				"observation": "Beobachtung",
 				"feelings": "Gefühle",
 				"needs": "Bedürfnisse",
 				"request": "Bitte"
+			},
+			"create": {
+				"info": "Ich habe zuerst ein paar allgemeine Fragen zu Deinem Streit.",
+				"observation": "Beschreibe was passiert ist. Ohne zu werten. Und ohne Unterstellungen oder Übertreibungen.",
+				"feelings": "Wie hast Du Dich dabei gefühlt?",
+				"needs": "Welche Bedürfnisse stecken dahinter?",
+				"request": "Um diesen Konflikt gut zu lösen, ist es wichtig, dass Du Dich verstanden fühlst. Ich werde Deine*n Streitpartner*in Bitten wiederzugeben was er/sie verstanden hat. \nMöchtest Du noch um etwas anderes bitten?",
+				"success": "Geschafft. Du kannst den Streitlink nun gerne mit Deinem oder Deiner Streitpartner*in teilen."
 			}
-    },
+		},
 		"fights": {
-      "create": "Fang einen Streit an",
+			"create": "Fang einen Streit an",
 			"loadMore": "Mehr laden",
-			"form":{
+			"form": {
 				"general": {
 					"prev": "zurück",
 					"next": "Weiter",
@@ -178,21 +194,22 @@
 						"observation": "Beobachtung",
 						"feelings": "Gefühle",
 						"needs": "Bedürfnisse",
-						"request": "Bitte"
+						"request": "Bitte",
+						"success": "Erfolg"
 					},
 					"badFeelings": "Negative Gefühle",
-          "goodFeelings": "Positive Gefühle",
-          "positiveNeeds": "Wenn unsere Bedürfnisse erfüllt sind",
-          "negativeNeeds": "Wenn unsere Bedürfnisse nicht erfüllt sind"
+					"goodFeelings": "Positive Gefühle",
+					"positiveNeeds": "Wenn unsere Bedürfnisse erfüllt sind",
+					"negativeNeeds": "Wenn unsere Bedürfnisse nicht erfüllt sind"
 				},
 				"name": {
-          "label": "Wie heißt die Person, mit der Du Dich streiten möchtest?",
-          "tooShortError": "Der Name muss mindestens 3 Zeichen lang sein"
-        },
+					"label": "Wie heißt die Person, mit der Du Dich streiten möchtest?",
+					"tooShortError": "Der Name muss mindestens 3 Zeichen lang sein"
+				},
 				"observation": {
-          "label": "Was hast Du beobachtet?",
-          "tooShortError": "Deine Beobachtung sollte mindestens 10 Zeichen lang sein"
-        },
+					"label": "Was hast Du beobachtet?",
+					"tooShortError": "Deine Beobachtung sollte mindestens 10 Zeichen lang sein"
+				},
 				"feelings": {
 					"label": "Wie fühlst Du Dich?",
 					"tooFewError": "Du solltest mindestens ein Gefühl auswählen"
@@ -201,14 +218,14 @@
 					"label": "Welche Bedürfnisse stecken dahinter?",
 					"tooFewError": "Du solltest mindestens ein Bedürfnis auswählen"
 				},
-        "request": {
+				"request": {
 					"label": "Was ist Deine Bitte?",
 					"tooFewError": "Deine Bitte sollte mindestens 10 Zeichen lang sein"
 				}
-      }
-    },
+			}
+		},
 		"login": {
-      "heading": "Login",
+			"heading": "Login",
 			"form": {
 				"email": {
 					"label": "E-Mail",
@@ -229,7 +246,7 @@
 			}
 		},
 		"register": {
-      "heading": "Registrieren",
+			"heading": "Registrieren",
 			"form": {
 				"email": {
 					"label": "E-Mail",

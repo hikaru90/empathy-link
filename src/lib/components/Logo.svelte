@@ -9,7 +9,9 @@
   <div class="hide">
     Empathy
   </div>
-  <SparklePill class="shadow-md dark:shadow-gray-200/30" />
+  <div>
+    <SparklePill class="shadow-md dark:shadow-gray-200/30" />
+  </div>
   <div class="hide">
     Link
   </div>
@@ -17,7 +19,9 @@
 {:else}
 <div class="font-sans font-semibold flex items-center gap-1 text-xl">
   Empathy
-  <SparklePill class="shadow-md dark:shadow-gray-200/30" />
+  <div>
+    <SparklePill class="shadow-md dark:shadow-gray-200/30" />
+  </div>
   Link
 </div>
 {/if}

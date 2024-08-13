@@ -31,6 +31,7 @@ const config = {
 			$locales: "src/locales",
 			$scripts: "src/scripts",
 			$store: "src/store",
+			$src: "src",
 		},
 	},
 

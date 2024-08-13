@@ -109,7 +109,7 @@
 						<Avatar />
 					</div>
 				{:else}
-					<Button on:click={() => goto('/auth/login')} variant="outline">
+					<Button on:click={() => goto('/app/auth/login')} variant="outline">
 						{$t('default.page.login.heading')}
 					</Button>
 				{/if}

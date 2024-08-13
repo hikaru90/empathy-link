@@ -18,35 +18,35 @@
 		{
 			slug: 'home',
 			name: get(t)('default.menu.bar.home'),
-			path: '/dashboard',
+			path: '/app/dashboard',
 			icon: IconFolder,
 			available: true
 		},
 		{
 			slug: 'selfempathy',
 			name: get(t)('default.menu.bar.selfempathy'),
-			path: '/selfempathy',
+			path: '/app/selfempathy',
 			icon: IconSelf,
 			available: false
 		},
 		{
 			slug: 'fights',
 			name: get(t)('default.menu.bar.fights'),
-			path: '/fights',
+			path: '/app/fights',
 			icon: IconFight,
 			available: true
 		},
 		{
 			slug: 'feedback',
 			name: get(t)('default.menu.bar.feedback'),
-			path: '/feedback',
+			path: '/app/feedback',
 			icon: IconFeedback,
 			available: false
 		},
 		{
 			slug: 'learn',
 			name: get(t)('default.menu.bar.learn'),
-			path: '/learn',
+			path: '/app/learn',
 			icon: IconLearn,
 			available: false
 		}
