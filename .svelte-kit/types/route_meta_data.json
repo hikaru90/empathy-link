@@ -5,6 +5,9 @@
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],
+	"/api/ai/checkForJudgement": [
+		"src/routes/api/ai/checkForJudgement/+server.ts"
+	],
 	"/api/mails/send": [
 		"src/routes/api/mails/send/+server.ts"
 	],

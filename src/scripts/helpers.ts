@@ -124,7 +124,8 @@ export const generateHslaColors = (hue, saturation, lightness, length) => {
 
 	for (let i = 1; i < length + 1; i++) {
 		// Calculate the opacity value
-		const opacity = i / (length - 1);
+		let opacity = i / (length - 1);
+		if(length===1) opacity = 1
 
 		// Create the HSLA color string
 		const hslaColor = `hsla(${hue}, ${saturation}%, ${lightness}%, ${opacity})`;
@@ -134,6 +135,7 @@ export const generateHslaColors = (hue, saturation, lightness, length) => {
 	}
 
 	colors.reverse();
+	console.log('colors',colors);
 	return colors;
 };
 

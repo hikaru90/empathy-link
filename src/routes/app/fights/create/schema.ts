@@ -3,7 +3,8 @@ import { t, locale } from '$lib/translations';
 import { get } from 'svelte/store';
 
 export const schemaStep1 = z.object({
-	name: z.string().min(3, { message: get(t)('default.page.fights.form.name.tooShortError') })
+	name: z.string().min(3, { message: get(t)('default.page.fights.form.name.tooShortError') }),
+	title: z.string().min(3, { message: get(t)('default.page.fights.form.title.tooShortError') })
 });
 export const schemaStep2 = schemaStep1.extend({
 	observation: z.string().min(10, { message: get(t)('default.page.fights.form.observation.tooShortError') })

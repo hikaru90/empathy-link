@@ -1,47 +1,99 @@
 <script lang="ts">
+	import { ChevronUp, ChevronDown } from 'radix-icons-svelte';
 	import backgroundImage from '$assets/images/holo3.jpg';
 	import { t, locale } from '$lib/translations';
-  import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
 	export let step: number;
 	export let stepName: string;
+	let speechBubbleIndex = 0;
 
-  $: speechBubbleContent = $t(`default.page.fight.create.${stepName}`);
-  let speechBubbleElement: HTMLElement;
-  let typingTimeoutId: number;
-  $: {
-    if (speechBubbleElement) {
-      typeText(speechBubbleElement, speechBubbleContent, 30); // Adjust speed as needed
-    }
-  }
+	$: speechBubbleContent = [$t(`default.page.fight.create.${stepName}`)];
+	let speechBubbleElement: HTMLElement;
+	let typingTimeoutId: number;
+	$: {
+		if (speechBubbleElement) {
+			typeText(speechBubbleElement, speechBubbleContent[speechBubbleIndex], 30); // Adjust speed as needed
+		}
+	}
 
-  const typeText = (element: HTMLElement, text: string, speed: number) => {
-    let index = 0;
-    element.innerHTML = ''; // Clear the element content before starting
+	const typeText = (element: HTMLElement, text: string, speed: number) => {
+		console.log('typeText');
+		let index = 0;
+		element.innerHTML = ''; // Clear the element content before starting
 
-    // Clear any existing timeout before starting a new one
-    if (typingTimeoutId) {
-      clearTimeout(typingTimeoutId);
-    }
+		// Pre-set the height to avoid layout shift
+		const tempElement = document.createElement('div');
 
-    function type() {
-      if (index < text.length) {
-        element.innerHTML += text.charAt(index);
-        index++;
-        typingTimeoutId = setTimeout(type, speed);
-      }
-    }
-    type();
-  };
+		tempElement.style.visibility = 'hidden';
+		tempElement.style.position = 'absolute';
+		tempElement.style.width = `${element.clientWidth}px`;
+		tempElement.style.color = 'red';
+		tempElement.style.whiteSpace = 'pre-wrap'; // Ensure white-space wrapping matches the element
+		tempElement.innerText = text;
+		element.appendChild(tempElement);
+		const targetHeight = tempElement.clientHeight;
+		element.style.height = `${targetHeight}px`; // Set the target height
 
-  onDestroy(() => {
-    if (typingTimeoutId) {
-      clearTimeout(typingTimeoutId);
-    }
-  });
+		element.removeChild(tempElement);
+
+		// Clear any existing timeout before starting a new one
+		if (typingTimeoutId) {
+			clearTimeout(typingTimeoutId);
+		}
+
+		function type() {
+			if (index < text.length) {
+				element.innerHTML += text.charAt(index);
+				index++;
+				typingTimeoutId = setTimeout(type, speed);
+			}
+		}
+		type();
+	};
+
+	const addSpeechBubbleText = (text: string = 'Hi') => {
+		speechBubbleContent = [speechBubbleContent[0], text];
+		speechBubbleIndex = 1;
+	};
+
+	const checkJudgement = async () => {
+		try {
+			const judgementRes = await fetch('/api/ai/checkForJudgement', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					text: 'Du hast mich angeschrien als ich mir ein Brötchen holen wollte. Das war gar nicht okay.',
+					lang: $locale
+				})
+			});
+			const res = await judgementRes.json();
+			const answer = res.result;
+			addSpeechBubbleText(answer)
+		} catch (err) {
+			console.error('error in getting judgement', err);
+		}
+	};
+
+	const decreaseIndex = () => {
+		console.log('decreaseIndex');
+		if (speechBubbleIndex > 0) speechBubbleIndex--;
+	};
+	const increaseIndex = () => {
+		console.log('increaseIndex');
+		if (speechBubbleContent.length > 1 && speechBubbleIndex === 0) speechBubbleIndex++;
+	};
+
+	onDestroy(() => {
+		if (typingTimeoutId) {
+			clearTimeout(typingTimeoutId);
+		}
+	});
 </script>
 
-<div class="flex items-start gap-2 mt-4">
+<div class="mt-4 flex items-start gap-2">
 	<div class="relative left-0 right-0 flex h-12 flex-shrink-0 justify-center gap-1">
 		<div
 			style="background-image: url('{backgroundImage}'); background-size: 300% 100%"
@@ -58,17 +110,34 @@
 			</div>
 		</div>
 	</div>
-  <div class="flex flex-grow">
-    <div class="triangle size-3 bg-white flex-shrink-0"></div>
-    <div bind:this={speechBubbleElement} class="flex-grow bg-white text-sm leading-tight px-2 pt-1 pb-2 rounded-tl-0 rounded-b rounded-tr">
-    </div>
-  </div>
+	<div class="flex flex-grow">
+		<div class="triangle size-3 flex-shrink-0 bg-white"></div>
+		<div
+			class="rounded-tl-0 relative flex flex-grow rounded-b rounded-tr bg-white px-2 pb-2 pt-1 text-sm leading-tight"
+		>
+			<div id="speechBubble" bind:this={speechBubbleElement} class="w-full"></div>
+			<div class="flex justify-end text-2xs">
+				<div class="flex flex-col items-center">
+					<button on:click={() => decreaseIndex()}>
+						<ChevronUp class="-my-1 w-3" />
+					</button>
+					{speechBubbleIndex+1}/{speechBubbleContent.length}
+					<button on:click={() => increaseIndex()}>
+						<ChevronDown on:click={() => increaseIndex()} class="-my-1 w-3" />
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
+<button on:click={() => checkJudgement()}>Check Judgement</button>
+<!-- <button on:click={() => addSpeechBubbleText()}>Add Text</button> -->
+
 <style lang="scss">
-  .triangle{
-    clip-path: polygon(0 0,100% 0,100% 100%);
-  }
+	.triangle {
+		clip-path: polygon(0 0, 100% 0, 100% 100%);
+	}
 	.mouth {
 		animation: mouth 10s infinite;
 	}

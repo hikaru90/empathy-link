@@ -206,6 +206,10 @@
 					"label": "Wie heißt die Person, mit der Du Dich streiten möchtest?",
 					"tooShortError": "Der Name muss mindestens 3 Zeichen lang sein"
 				},
+				"title": {
+					"label": "Welchen Titel würdest Du dem Streit geben?",
+					"tooShortError": "Der Titel muss mindestens 3 Zeichen lang sein"
+				},
 				"observation": {
 					"label": "Was hast Du beobachtet?",
 					"tooShortError": "Deine Beobachtung sollte mindestens 10 Zeichen lang sein"

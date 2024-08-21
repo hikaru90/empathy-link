@@ -29,6 +29,7 @@ declare module '$env/static/private' {
 	export const HOST: string;
 	export const PORT: string;
 	export const PRIVATE_BREVO_API_KEY: string;
+	export const PRIVATE_GEMINI_API_KEY: string;
 	export const ALLUSERSPROFILE: string;
 	export const APPDATA: string;
 	export const ChocolateyInstall: string;
@@ -42,7 +43,7 @@ declare module '$env/static/private' {
 	export const CUDA_PATH: string;
 	export const CUDA_PATH_V11_2: string;
 	export const DriverData: string;
-	export const EFC_8456: string;
+	export const EFC_15912: string;
 	export const FPS_BROWSER_APP_PROFILE_STRING: string;
 	export const FPS_BROWSER_USER_PROFILE_STRING: string;
 	export const GDAL_DATA: string;
@@ -77,6 +78,7 @@ declare module '$env/static/private' {
 	export const npm_package_dependencies_clsx: string;
 	export const npm_package_dependencies_formsnap: string;
 	export const npm_package_dependencies_mode_watcher: string;
+	export const npm_package_dependencies_openai: string;
 	export const npm_package_dependencies_radix_icons_svelte: string;
 	export const npm_package_dependencies_resize_observer_polyfill: string;
 	export const npm_package_dependencies_simplebar: string;
@@ -84,6 +86,9 @@ declare module '$env/static/private' {
 	export const npm_package_dependencies_tailwind_merge: string;
 	export const npm_package_dependencies_tailwind_variants: string;
 	export const npm_package_dependencies_vaul_svelte: string;
+	export const npm_package_dependencies__azure_identity: string;
+	export const npm_package_dependencies__azure_openai: string;
+	export const npm_package_dependencies__google_generative_ai: string;
 	export const npm_package_dependencies__internationalized_date: string;
 	export const npm_package_dependencies__internationalized_number: string;
 	export const npm_package_devDependencies_autoprefixer: string;
@@ -217,6 +222,7 @@ declare module '$env/dynamic/private' {
 		HOST: string;
 		PORT: string;
 		PRIVATE_BREVO_API_KEY: string;
+		PRIVATE_GEMINI_API_KEY: string;
 		ALLUSERSPROFILE: string;
 		APPDATA: string;
 		ChocolateyInstall: string;
@@ -230,7 +236,7 @@ declare module '$env/dynamic/private' {
 		CUDA_PATH: string;
 		CUDA_PATH_V11_2: string;
 		DriverData: string;
-		EFC_8456: string;
+		EFC_15912: string;
 		FPS_BROWSER_APP_PROFILE_STRING: string;
 		FPS_BROWSER_USER_PROFILE_STRING: string;
 		GDAL_DATA: string;
@@ -265,6 +271,7 @@ declare module '$env/dynamic/private' {
 		npm_package_dependencies_clsx: string;
 		npm_package_dependencies_formsnap: string;
 		npm_package_dependencies_mode_watcher: string;
+		npm_package_dependencies_openai: string;
 		npm_package_dependencies_radix_icons_svelte: string;
 		npm_package_dependencies_resize_observer_polyfill: string;
 		npm_package_dependencies_simplebar: string;
@@ -272,6 +279,9 @@ declare module '$env/dynamic/private' {
 		npm_package_dependencies_tailwind_merge: string;
 		npm_package_dependencies_tailwind_variants: string;
 		npm_package_dependencies_vaul_svelte: string;
+		npm_package_dependencies__azure_identity: string;
+		npm_package_dependencies__azure_openai: string;
+		npm_package_dependencies__google_generative_ai: string;
 		npm_package_dependencies__internationalized_date: string;
 		npm_package_dependencies__internationalized_number: string;
 		npm_package_devDependencies_autoprefixer: string;

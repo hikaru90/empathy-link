@@ -40,6 +40,7 @@
 		);
 		feelings = sortByKey(unsortedFeelings, 'count');
 
+		console.log('feelings.length',feelings.length);
 		colors = generateHslaColors(1, 100, 56, feelings.length);
 
 		console.log('feelings', feelings);

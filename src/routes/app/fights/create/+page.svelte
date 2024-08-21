@@ -244,7 +244,7 @@
 	});
 
 	//todo: remove
-	// step = 6;
+	step = 2;
 </script>
 
 <!-- {#if $message}
@@ -281,6 +281,16 @@
 										>{$t('default.page.fights.form.name.label')}</Form.Label
 									>
 									<Input {...attrs} bind:value={$formData.name} />
+								</Form.Control>
+								<!-- <Form.Description>This is your public display name.</Form.Description> -->
+								<Form.FieldErrors />
+							</Form.Field>
+							<Form.Field {form} name="title">
+								<Form.Control let:attrs>
+									<Form.Label class="form-label "
+										>{$t('default.page.fights.form.title.label')}</Form.Label
+									>
+									<Input {...attrs} bind:value={$formData.title} />
 								</Form.Control>
 								<!-- <Form.Description>This is your public display name.</Form.Description> -->
 								<Form.FieldErrors />
