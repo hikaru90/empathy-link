@@ -1,28 +1,57 @@
 import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { HarmBlockThreshold, HarmCategory, GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(PRIVATE_GEMINI_API_KEY);
 
 export const POST = async ({ request }) => {
   const { text, lang } = await request.json();
 
+  const model = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash",
+    systemInstruction: "you are an expert that is trained to identify if an observation contains a judgement based on nonviolent communication principles. You receive texts and answer if the observation contains a jugement or not. if it does, make a suggestion that doesn't. please make sure that the text really has to contain a judgment for you to point it out. If the prompt is in german, please answer in german.",
+  });
+
+  const safetySettings = [
+    {
+      category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+  ];
+
+  const generationConfig = {
+    temperature: 0,
+    topP: 0.95,
+    topK: 64,
+    maxOutputTokens: 8192,
+    responseMimeType: "text/plain",
+  };
+
   console.log('text', text);
   console.log('lang', lang);
 
-  const dePromt = `Enthält der folgende Text basierend auf der gewaltfreien Kommunikation nach Marshall Rosenberg ein Urteil? Wenn ja, antworte "Deine Beobachtung enthält ein Urteil." und benenne das Urteil so knapp wie möglich.\n\nText: "${text}"`
-  const enPromt = `Does the following text contain any judgments according to Nonviolent Communication (NVC) principles? Please answer "Your observation contains a judgement." and point out the judgement as short as possible.\n\nText: "${text}"`
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const chatSession = model.startChat({
+      generationConfig,
+      safetySettings,
+      history: [
+      ],
+    });
 
-    const result = await model.generateContent(lang === 'en' ? enPromt : dePromt);
-    console.log('result',result);
-    console.log('typeof result',typeof result);
+    const result = await chatSession.sendMessage(text);
+
+    // const result = await model.generateContent(lang === 'en' ? enPromt : dePromt);
+    console.log('result', result);
+    console.log('typeof result', typeof result);
     const response = result.response;
-    const text = response.text();
+    const resText = response.text();
     console.log(text);
 
-    return new Response(JSON.stringify({result: text}), {
+    return new Response(JSON.stringify({ result: resText }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
@@ -31,9 +60,9 @@ export const POST = async ({ request }) => {
   } catch (error) {
     console.error('Error checking for judgment:', error);
     return new Response(
-      JSON.stringify({ error: 'Failed to check for judgment.' }),
+      JSON.stringify({ error: 'Failed to check for judgment.', result: lang === 'en' ? 'Your observation might contain a judgement. Please make sure to keep to the facts and be as neutral as possible.' : 'DeinBeobachtung enthält wahrscheinlich ein Urteil. Sei bitte so objektiv wie möglich bei der Beschreibung der Situation.' }),
       {
-        status: 500,
+        status: 200,
         headers: {
           'Content-Type': 'application/json',
         },

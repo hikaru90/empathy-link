@@ -32,6 +32,7 @@
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
 	let feelings = [];
 	let needs = [];
+	let checkJudgement;
 
 	const steps = [
 		zod(schemaStep1),
@@ -43,7 +44,12 @@
 	let step = 1;
 	let formSubmitted = false;
 	let formSuccess = false;
+	let checkForJudgement = false;
+	let judgementCount = 0;
 
+	$: () => {
+		if(step===2) checkForJudgement = true
+	}
 	$: options.validators = steps[step - 1];
 
 	const handleSubmit = async () => {
@@ -60,7 +66,6 @@
 			formSubmitted = true;
 		}
 	};
-
 	const checkSingleValidationStep = async (step: number) => {
 		const validations = [schemaStep1, schemaStep2, schemaStep3, schemaStep4, lastStep];
 		const constraints = Object.keys(zod(validations[step - 1]).constraints);
@@ -78,13 +83,27 @@
 		return true;
 	};
 	const checkValidation = async () => {
-		const validationResult = await validateForm($formData, lastStep);
+		const validationResult = await validateForm(lastStep);
 		if (!validationResult.valid) {
 			errors.set(validationResult.errors);
 			return false;
 		}
 		return true;
 	};
+	const validateObservation = async () => {
+		const validationResult = await validateForm(lastStep);
+		const observationError = validationResult.errors.observation
+		if (observationError) {
+			errors.set(validationResult.errors);
+			return false;
+		}
+		disableJudgementCheck()
+		return true;
+	}
+	const disableJudgementCheck = () => {
+		checkJudgement($formData.observation)
+		checkForJudgement = false
+	}
 
 	const form = superForm(data, {
 		// SPA: true,
@@ -271,7 +290,7 @@
 				/>
 				{/if}
 				<div class="relative z-0">
-				<Mascot {step} stepName={stepConstructor[step - 1].slug} />
+				<Mascot {step} bind:checkJudgement={checkJudgement} stepName={stepConstructor[step - 1].slug} />
 				{#key step}
 					{#if step === 1}
 						<div class="form-content">
@@ -303,7 +322,7 @@
 									<Form.Label class="form-label"
 										>{$t('default.page.fights.form.observation.label')}</Form.Label
 									>
-									<Textarea {...attrs} bind:value={$formData.observation} class="min-h-60" />
+									<Textarea {...attrs} on:input={() => checkForJudgement = true} bind:value={$formData.observation} class="min-h-60" />
 								</Form.Control>
 								<!-- <Form.Description>This is your public display name.</Form.Description> -->
 								<Form.FieldErrors />
@@ -437,6 +456,9 @@
 					<AppBottomMenu>
 						<FormStepper
 							{step}
+							{checkForJudgement}
+							on:validateObservation={validateObservation}
+							on:disableJudgementCheck={disableJudgementCheck}
 							on:toPrev={decreaseStep}
 							primaryButtonClass={`bg-${stepConstructor[step - 1].slug}-background`}
 							class="flex-shrink-0"

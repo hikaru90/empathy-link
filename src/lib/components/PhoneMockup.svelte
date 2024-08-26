@@ -19,9 +19,9 @@
           09:46
         </span>
         <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 sm:w-20 h-5 sm:h-6 bg-black rounded-full flex items-center justify-end px-[4px] pt-[2px]">
-          <img src="phone-lens.jpg" alt="Phone Lens" class="w-4 h-4 rounded-full">
+          <img src="/phone-lens.jpg" alt="Phone Lens" class="w-4 h-4 rounded-full">
         </div>
-        <img src="{ inverted ? 'phone-icons-inverted.svg' : 'phone-icons.svg' }" alt="Phone Icons" class="h-1.5 sm:h-2">
+        <img src="{ inverted ? '/phone-icons-inverted.svg' : '/phone-icons.svg' }" alt="Phone Icons" class="h-1.5 sm:h-2">
       </div>
     </div>
   </div>

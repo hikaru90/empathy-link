@@ -186,6 +186,7 @@
 				"general": {
 					"prev": "back",
 					"next": "Next",
+					"checkJudgement": "Check for judgement",
 					"steps": {
 						"info": "Informations",
 						"observation": "Observation",

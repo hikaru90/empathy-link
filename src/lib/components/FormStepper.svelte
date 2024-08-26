@@ -8,6 +8,7 @@
 	const dispatch = createEventDispatcher();
 
 	export let step: number;
+	export let checkForJudgement: boolean;
 
 	let className: string | undefined = undefined;
 	export { className as class };
@@ -17,6 +18,12 @@
 		console.log('toPrev');
 		dispatch('toPrev');
 	};
+
+	const handleJudgementCheck = () => {
+		dispatch('validateObservation')
+		// dispatch('disableJudgementCheck')
+	}
+
 </script>
 
 <div class="flex justify-between {className}">
@@ -33,6 +40,20 @@
 			<CaretLeft class="h-4 w-4 rounded-full" />
 		</Button>
 	</div>
+	{#if checkForJudgement}
+	<Button on:click={handleJudgementCheck}
+		decoration="dark-op1"
+		wrapperClass="w-full"
+		class="flex w-full items-center gap-2 border-neutral-900 bg-neutral-800 text-sm text-zinc-200"
+	>
+		<!-- <Button
+			type="submit"
+			class="light-button group {primaryButtonClass} hover:{primaryButtonClass} relative z-10 m-[1px] flex w-[calc(100%-2px)] items-center justify-between py-6 font-bold text-foreground dark:border-x dark:border-t dark:border-white/5"
+		> -->
+		{$t('default.page.fights.form.general.checkJudgement')}
+		<ArrowRight class="h-3 w-3" />
+	</Button>
+	{:else}
 	<Button
 		type="submit"
 		decoration="dark-op1"
@@ -46,6 +67,7 @@
 		{$t('default.page.fights.form.general.next')}
 		<ArrowRight class="h-3 w-3" />
 	</Button>
+	{/if}
 </div>
 
 <style lang="scss">

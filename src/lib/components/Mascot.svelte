@@ -7,17 +7,21 @@
 	export let step: number;
 	export let stepName: string;
 	let speechBubbleIndex = 0;
+	let thinking = false
 
 	$: speechBubbleContent = [$t(`default.page.fight.create.${stepName}`)];
 	let speechBubbleElement: HTMLElement;
 	let typingTimeoutId: number;
+	$: step, speechBubbleIndex = 0;
 	$: {
 		if (speechBubbleElement) {
+			console.log('inside if speechBubbleElement');
 			typeText(speechBubbleElement, speechBubbleContent[speechBubbleIndex], 30); // Adjust speed as needed
 		}
 	}
 
 	const typeText = (element: HTMLElement, text: string, speed: number) => {
+		try{
 		console.log('typeText');
 		let index = 0;
 		element.innerHTML = ''; // Clear the element content before starting
@@ -50,6 +54,9 @@
 			}
 		}
 		type();
+	}catch(err){
+		console.error('error typing text', err);
+	}
 	};
 
 	const addSpeechBubbleText = (text: string = 'Hi') => {
@@ -57,7 +64,8 @@
 		speechBubbleIndex = 1;
 	};
 
-	const checkJudgement = async () => {
+	export const checkJudgement = async (judgement:string) => {
+		thinking = true
 		try {
 			const judgementRes = await fetch('/api/ai/checkForJudgement', {
 				method: 'POST',
@@ -65,13 +73,14 @@
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					text: 'Du hast mich angeschrien als ich mir ein Brötchen holen wollte. Das war gar nicht okay.',
+					text: judgement,
 					lang: $locale
 				})
 			});
 			const res = await judgementRes.json();
+			thinking = false
 			const answer = res.result;
-			addSpeechBubbleText(answer)
+			addSpeechBubbleText(answer);
 		} catch (err) {
 			console.error('error in getting judgement', err);
 		}
@@ -113,25 +122,36 @@
 	<div class="flex flex-grow">
 		<div class="triangle size-3 flex-shrink-0 bg-white"></div>
 		<div
-			class="rounded-tl-0 relative flex flex-grow rounded-b rounded-tr bg-white px-2 pb-2 pt-1 text-sm leading-tight"
+			class="rounded-tl-0 relative flex flex-grow rounded-b rounded-tr bg-white px-2 pb-2 pt-1 text-sm leading-tight gap-2"
 		>
+		{#if thinking}
+		<div id="speechBubble" class="w-full">
+			...
+		</div>
+		{:else}
 			<div id="speechBubble" bind:this={speechBubbleElement} class="w-full"></div>
+			{/if}
+			{#if speechBubbleContent.length > 1}
 			<div class="flex justify-end text-2xs">
-				<div class="flex flex-col items-center">
-					<button on:click={() => decreaseIndex()}>
-						<ChevronUp class="-my-1 w-3" />
+				<div class="-mr-1 flex flex-col items-center gap-0.5">
+					<button on:click={() => decreaseIndex()} class="chevron">
+						<ChevronUp class="size-2.5" />
 					</button>
-					{speechBubbleIndex+1}/{speechBubbleContent.length}
-					<button on:click={() => increaseIndex()}>
-						<ChevronDown on:click={() => increaseIndex()} class="-my-1 w-3" />
+					<!-- <div class="flex size-4 flex-shrink-0 items-center justify-center py-1">
+						{speechBubbleIndex + 1}/{speechBubbleContent.length}
+					</div> -->
+					<button on:click={() => increaseIndex()} class="chevron">
+						<ChevronDown class="size-2.5" />
 					</button>
 				</div>
 			</div>
+			{/if}
 		</div>
 	</div>
 </div>
 
-<button on:click={() => checkJudgement()}>Check Judgement</button>
+<!-- <button on:click={() => checkJudgement()}>Check Judgement</button> -->
+
 <!-- <button on:click={() => addSpeechBubbleText()}>Add Text</button> -->
 
 <style lang="scss">
@@ -140,6 +160,9 @@
 	}
 	.mouth {
 		animation: mouth 10s infinite;
+	}
+	.chevron{
+		@apply size-4 rounded shadow flex items-center justify-center;
 	}
 
 	@keyframes mouth {
