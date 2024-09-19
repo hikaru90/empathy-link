@@ -61,6 +61,15 @@
 				},
 				"ownerRequest": {
 					"heading": "requested the following"
+				},
+				"pause": {
+					"heading": "You now have the opportunity to respond"
+				},
+				"success": {
+					"heading": "Done"
+				},
+				"error": {
+					"heading": "Unfortunately, an error occurred while submitting the response. Please try again. If the problem persists, please contact us at support@empathie-link.de"
 				}
 			}
 		},
@@ -176,7 +185,8 @@
 				"feelings": "How did you feel about it?",
 				"needs": "What needs are behind this?",
 				"request": "To resolve this conflict well, it's important that you feel understood. I will ask your conflict partner to repeat what they have understood. Do you want to ask for anything else?",
-				"success": "Done. You can now share the conflict link with your conflict partner."
+				"success": "Done. You can now share the conflict link with your conflict partner.",
+				"error": "Unfortunately, an error occurred while creating the fight. Please try again. If the problem persists, please contact us at support@empathie-link.de"
 			}
 		},
 		"fights": {
@@ -186,6 +196,8 @@
 				"general": {
 					"prev": "back",
 					"next": "Next",
+					"yes": "Yes",
+					"knowledge": "I know",
 					"checkJudgement": "Check for judgement",
 					"steps": {
 						"info": "Informations",

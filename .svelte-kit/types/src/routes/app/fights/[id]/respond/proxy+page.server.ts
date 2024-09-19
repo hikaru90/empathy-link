@@ -1,10 +1,11 @@
+// @ts-nocheck
 import type { PageServerLoad } from './$types';
 import { pb } from '$scripts/pocketbase';
 import { error } from '@sveltejs/kit';
 
 export const prerender = false;
 
-export const load: PageServerLoad = async ({ params, locals }) => {
+export const load = async ({ params, locals }: Parameters<PageServerLoad>[0]) => {
 	const { id } = params;
 
 	try {

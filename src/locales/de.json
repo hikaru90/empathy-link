@@ -64,6 +64,12 @@
 				},
 				"pause": {
 					"heading": "Du hast jetzt die Möglichkeit zu antworten"
+				},
+				"success": {
+					"heading": "Geschafft"
+				},
+				"error": {
+					"heading": "Leider ist bei der Antwort ein Fehler aufgetreten. Bitte versuche es nochmal. Falls das Problem weiterhin bestehen sollte, kontaktiere uns unter support@empathie-link.de"
 				}
 			}
 		},
@@ -179,7 +185,8 @@
 				"feelings": "Wie hast Du Dich dabei gefühlt?",
 				"needs": "Welche Bedürfnisse stecken dahinter?",
 				"request": "Um diesen Konflikt gut zu lösen, ist es wichtig, dass Du Dich verstanden fühlst. Ich werde Deine*n Streitpartner*in Bitten wiederzugeben was er/sie verstanden hat. \nMöchtest Du noch um etwas anderes bitten?",
-				"success": "Geschafft. Du kannst den Streitlink nun gerne mit Deinem oder Deiner Streitpartner*in teilen."
+				"success": "Geschafft. Du kannst den Streitlink nun gerne mit Deinem oder Deiner Streitpartner*in teilen.",
+				"error": "Leider ist bei der Erstellung des Streits ein Fehler aufgetreten. Bitte versuche es nochmal. Falls das Problem weiterhin bestehen sollte, kontaktiere uns unter support@empathie-link.de"
 			}
 		},
 		"fights": {
@@ -189,6 +196,8 @@
 				"general": {
 					"prev": "zurück",
 					"next": "Weiter",
+					"yes": "Ja",
+					"knowledge": "Ich weiß",
 					"checkJudgement": "Beobachtung überprüfen",
 					"steps": {
 						"info": "Infos",

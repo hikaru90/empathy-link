@@ -11,7 +11,7 @@
 	let speechBubbleIndex = 0;
 	let thinking = false
 
-	$: speechBubbleContent = step === 6 && !formSuccess ? speechBubbleContentArray.find(el => el.step === 6)!.errorContent : speechBubbleContentArray.find(el => el.step === step)!.content
+	$: speechBubbleContent = step === 13 && !formSuccess ? speechBubbleContentArray.find(el => el.step === 13)!.errorContent : speechBubbleContentArray.find(el => el.step === step)!.content
 	
 	
 	let speechBubbleElement: HTMLElement;

@@ -98,7 +98,7 @@
 								{record.responses?.length + 1}
 							</div>
 						</div>
-						<div  class="w-1/3 overflow-hidden mr-2">
+						<div  class="input-fade-right w-1/3 overflow-hidden mr-2 whitespace-nowrap ">
 							{record.name}
 						</div>
 						<div class="w-1/4">

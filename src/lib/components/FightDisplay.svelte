@@ -4,7 +4,9 @@
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import IconSteps from '$assets/icons/icon-steps.svg?raw';
 	import { locale } from '$lib/translations';
+	import { Check } from 'radix-icons-svelte';
 	import { user } from '$store/auth';
+	import { json } from '@sveltejs/kit';
 
 	export let record;
 	// export let adversary;
@@ -24,12 +26,18 @@
 	];
 </script>
 
-<div class="{$user.id === record.owner ? 'justify-start' : 'justify-end'} mb-3 flex">
+<div class="{$user.id === record.owner ? 'justify-start' : 'justify-end'} mb-3 flex items-center gap-2">
 	<div class="rounded-full bg-neutral-400 bg-opacity-50 px-3 py-1 text-xs text-black">
 		{$user.id === record.owner ? $user.firstName : record.expand.fight.name} — {new Date(
 			record.created
 		).toLocaleDateString('de-DE')}
 	</div>
+	{#if $user.id === record.owner && record.opened}
+			<div class="rounded-full bg-green-600 px-1 py-[2px] text-2xs text-green-300 flex items-center">
+				<Check />
+				<Check class="-ml-2" />
+			</div>
+		{/if}
 </div>
 
 <div

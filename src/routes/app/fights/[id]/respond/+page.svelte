@@ -1,4 +1,6 @@
 <script lang="ts">
+	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
+	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
 	import * as Drawer from '$lib/components/ui/drawer';
@@ -6,7 +8,7 @@
 	import * as Form from '$lib/components/ui/form';
 	import * as ToggleGroup from '$lib/components/ui/toggle-group';
 	import { type SuperValidated, type Infer, defaults, superForm } from 'sveltekit-superforms';
-	import FormStepper from '$lib/components/FormStepper.svelte';
+	import ResponseFormStepper from '$lib/components/ResponseFormStepper.svelte';
 	import FormStepDisplay from '$lib/components/FormStepDisplay.svelte';
 	import { t, locale } from '$lib/translations';
 	import { get } from 'svelte/store';
@@ -34,15 +36,15 @@
 	import { onMount } from 'svelte';
 	import { serializeNonPOJOs, groupBy } from '$scripts/helpers';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import Mascot from '$lib/components/Mascot.svelte';
-	import {
-		Cross1,
-	} from 'radix-icons-svelte';
+	import ResponseMascot from '$lib/components/ResponseMascot.svelte';
+	import { Cross1, QuestionMarkCircled } from 'radix-icons-svelte';
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
 	let feelings = [];
 	let needs = [];
 	let fight = undefined;
+	let checkJudgement;
+	let speechBubbleContentArray: object[] = [{ step: 1, content: [''] }];
 
 	const steps = [
 		zod(schemaStep1),
@@ -61,14 +63,19 @@
 	let step = 1;
 	let formSubmitted = false;
 	let formSuccess = false;
+	let checkForJudgement = false;
 	let drawerOpen = false;
 
+	$: () => {
+		console.log('check step', step);
+		if (step === 9) checkForJudgement = true;
+	};
 	$: options.validators = steps[step - 1];
 
 	const handleSubmit = async () => {
 		try {
 			let data = $formData;
-			data.fight = fight.id
+			data.fight = fight.id;
 			// data.owner = $user.id;
 			console.log('submit form', data);
 			const record = await pb.collection('responses').create(data);
@@ -104,6 +111,20 @@
 			return false;
 		}
 		return true;
+	};
+	const validateObservation = async () => {
+		const validationResult = await validateForm(lastStep);
+		const observationError = validationResult.errors.observation;
+		if (observationError) {
+			errors.set(validationResult.errors);
+			return false;
+		}
+		disableJudgementCheck();
+		return true;
+	};
+	const disableJudgementCheck = () => {
+		checkJudgement($formData.observation);
+		checkForJudgement = false;
 	};
 
 	const form = superForm(data, {
@@ -310,10 +331,61 @@
 		await initFeelings();
 		await initNeeds();
 		await initFight();
+
+		speechBubbleContentArray = [
+			{
+				step: 1,
+				content: [
+					`${fight.expand.owner.firstName} ${$t('default.page.respond.steps.greeting.heading')}. ${$t('default.page.respond.steps.greeting.question')}`
+				]
+			},
+			{
+				step: 2,
+				content: [
+					`${$t('default.page.respond.steps.disclaimer.heading')}: ${$t('default.page.respond.steps.disclaimer.description')}`
+				]
+			},
+			{ step: 3, content: [`${$t('default.page.respond.steps.breathe.heading')}`] },
+			{
+				step: 4,
+				content: [
+					`${fight.expand.owner.firstName} ${$t('default.page.respond.steps.ownerObservation.heading')}`
+				]
+			},
+			{
+				step: 5,
+				content: [
+					`${fight.expand.owner.firstName} ${$t('default.page.respond.steps.ownerFeelings.heading')}`
+				]
+			},
+			{
+				step: 6,
+				content: [
+					`${fight.expand.owner.firstName} ${$t('default.page.respond.steps.ownerNeeds.heading')}`
+				]
+			},
+			{
+				step: 7,
+				content: [
+					`${fight.expand.owner.firstName} ${$t('default.page.respond.steps.ownerRequest.heading')}`
+				]
+			},
+			{ step: 8, content: [$t('default.page.respond.steps.pause.heading')] },
+			{ step: 9, content: [$t('default.page.fight.create.observation')] },
+			{ step: 10, content: [$t('default.page.fight.create.feelings')] },
+			{ step: 11, content: [$t('default.page.fight.create.needs')] },
+			{ step: 12, content: [$t('default.page.fight.create.request')] },
+			{
+				step: 13,
+				content: [$t('default.page.respond.steps.success')],
+				errorContent: [$t('default.page.respond.steps.error')]
+			}
+		];
+
 	});
 
 	//todo: remove
-	step = 4;
+	step = 1;
 </script>
 
 <!-- {#if $message}
@@ -321,12 +393,11 @@
 		{$message}
 	</div>
 {/if} -->
-
 <div
 	class="flex flex-grow flex-col justify-between transition duration-700 {`bg-${stepConstructor[step - 1].slug}-background`}"
 >
-	<div class="max-container relative flex h-dvh flex-grow flex-col">
-		<Menu />
+	<AppTopMenu />
+	<div class="max-container relative flex h-[calc(100dvh-100px)] flex-grow flex-col">
 		<form
 			on:submit|preventDefault
 			use:enhance
@@ -341,36 +412,35 @@
 						stepBackground={stepConstructor[step - 1].slug}
 					/>
 				{/if}
-				<Mascot {step} stepName={stepConstructor[step - 1].slug} />
+				<ResponseMascot
+					{speechBubbleContentArray}
+					{step}
+					bind:checkJudgement
+					stepName={stepConstructor[step - 1].slug}
+					{formSuccess}
+				/>
 			{/if}
 			{#if fight}
 				{#key step}
 					{#if step === 1}
-						<div class="form-content flex flex-col justify-between items-center pt-10 pb-1 text-center">
+						<div
+							class="form-content flex flex-col items-center justify-between pb-1 pt-10 text-center"
+						>
 							<div></div>
-							<div class="flex flex-col gap-4 max-w-[18em]">
-								<div>
-									{fight.expand.owner.firstName}
-									{$t('default.page.respond.steps.greeting.heading')}
-								</div>
-								<div class="flex justify-center">
-									<Button on:click={() => (drawerOpen = true)} class="bg-white/40 text-black"
-										>{$t('default.page.respond.steps.greeting.explanationCta')}</Button
-										>
-									</div>
-								</div>
-								<div class="max-w-[18em]">{$t('default.page.respond.steps.greeting.question')}</div>
+							<Button
+								on:click={() => (drawerOpen = true)}
+								variant="ghost"
+								class="mb-6 flex w-full items-center justify-start gap-2 text-black"
+								><QuestionMarkCircled />
+								{$t('default.page.respond.steps.greeting.explanationCta')}</Button
+							>
 						</div>
 					{:else if step === 2}
-						<div class="form-content flex flex-col justify-center items-center text-center">
-							<div class="flex flex-col gap-4 text-center max-w-[18em]">
-								{$t('default.page.respond.steps.disclaimer.heading')} —<br />
-								{$t('default.page.respond.steps.disclaimer.description')}
-							</div>
+						<div class="form-content flex flex-col items-center justify-center text-center">
 						</div>
 					{:else if step === 3}
 						<div class="form-content flex items-center justify-center">
-							<div class="flex flex-col text-center relative">
+							<div class="relative flex flex-col text-center">
 								<span class="relative z-10 -mb-2">
 									{$t('default.page.respond.steps.breathe.heading')}
 								</span>
@@ -384,7 +454,7 @@
 								{fight.expand.owner.firstName}
 								{$t('default.page.respond.steps.ownerObservation.heading')}
 							</div>
-							<div class="bg-white/10 px-4 py-3 rounded shadow-xl">
+							<div class="rounded bg-white/10 px-4 py-3 shadow-xl">
 								{fight.observation}
 							</div>
 						</div>
@@ -394,44 +464,44 @@
 								{fight.expand.owner.firstName}
 								{$t('default.page.respond.steps.ownerFeelings.heading')}
 							</div>
-							<div class="flex items-center flex-wrap gap-2">
+							<div class="flex flex-wrap items-center gap-2">
 								{#each fight.expand.feelings as feeling}
-								<div class="bg-white/20 shadow-lg px-4 py-2 rounded-md">
-									{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
-								</div>
+									<div class="rounded-md bg-white/20 px-4 py-2 shadow-lg">
+										{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
+									</div>
 								{/each}
 							</div>
 						</div>
 					{:else if step === 6}
-					<div data-simplebar class="form-content">
-						<div class="form-label pt-10">
-							{fight.expand.owner.firstName}
-							{$t('default.page.respond.steps.ownerNeeds.heading')}
-						</div>
-						<div class="flex items-center flex-wrap gap-2">
-							{#each fight.expand.needs as need}
-							<div class="bg-white/10 shadow-lg px-4 py-2 rounded-md">
-								{$locale === 'de' ? need.nameDE : need.nameEN}
+						<div data-simplebar class="form-content">
+							<div class="form-label pt-10">
+								{fight.expand.owner.firstName}
+								{$t('default.page.respond.steps.ownerNeeds.heading')}
 							</div>
-							{/each}
+							<div class="flex flex-wrap items-center gap-2">
+								{#each fight.expand.needs as need}
+									<div class="rounded-md bg-white/10 px-4 py-2 shadow-lg">
+										{$locale === 'de' ? need.nameDE : need.nameEN}
+									</div>
+								{/each}
+							</div>
 						</div>
-					</div>
 					{:else if step === 7}
-					<div data-simplebar class="form-content">
-						<div class="form-label pt-10">
-							{fight.expand.owner.firstName}
-							{$t('default.page.respond.steps.ownerRequest.heading')}
+						<div data-simplebar class="form-content">
+							<div class="form-label pt-10">
+								{fight.expand.owner.firstName}
+								{$t('default.page.respond.steps.ownerRequest.heading')}
+							</div>
+							<div class="rounded bg-white/10 px-4 py-3 shadow-xl">
+								{fight.request}
+							</div>
 						</div>
-						<div class="bg-white/10 px-4 py-3 rounded shadow-xl">
-							{fight.request}
-						</div>
-					</div>
 					{:else if step === 8}
-					<div class="form-content flex items-center justify-center">
-						<div class="flex flex-col gap-4 text-center max-w-[18em]">
-							{$t('default.page.respond.steps.pause.heading')}
+						<div class="form-content flex items-center justify-center">
+							<div class="flex max-w-[18em] flex-col gap-4 text-center">
+								{$t('default.page.respond.steps.pause.heading')}
+							</div>
 						</div>
-					</div>
 					{:else if step === 9}
 						<div data-simplebar class="form-content">
 							<Form.Field {form} name="observation">
@@ -439,7 +509,12 @@
 									<Form.Label class="form-label"
 										>{$t('default.page.fights.form.observation.label')}</Form.Label
 									>
-									<Textarea {...attrs} bind:value={$formData.observation} class="min-h-60" />
+									<Textarea
+										{...attrs}
+										on:input={() => (checkForJudgement = true)}
+										bind:value={$formData.observation}
+										class="min-h-60"
+									/>
 								</Form.Control>
 								<!-- <Form.Description>This is your public display name.</Form.Description> -->
 								<Form.FieldErrors />
@@ -563,19 +638,24 @@
 							</Form.Field>
 						</div>
 					{:else if formSuccess}
-						Success
+						{$t('default.page.respond.steps.success')}
 					{:else}
-						Error in Submit
+						{$t('default.page.respond.steps.error')}
 					{/if}
 				{/key}
 			{/if}
 			{#if !formSubmitted && !formSuccess}
-				<FormStepper
-					{step}
-					on:toPrev={decreaseStep}
-					primaryButtonClass={`bg-${stepConstructor[step - 1].slug}-background`}
-					class="flex-shrink-0"
-				/>
+				<AppBottomMenu>
+					<ResponseFormStepper
+						{step}
+						{checkForJudgement}
+						on:validateObservation={validateObservation}
+						on:disableJudgementCheck={disableJudgementCheck}
+						on:toPrev={decreaseStep}
+						primaryButtonClass={`bg-${stepConstructor[step - 1].slug}-background`}
+						class="flex-shrink-0"
+					/>
+				</AppBottomMenu>
 			{/if}
 		</form>
 	</div>
@@ -598,7 +678,7 @@
 
 <style lang="scss">
 	:global(.form-content) {
-		@apply h-60 flex-grow overflow-y-auto overflow-x-hidden px-[1px];
+		@apply mb-16 flex-grow overflow-y-auto overflow-x-hidden px-[1px];
 		--mask: linear-gradient(
 			to bottom,
 			rgba(0, 0, 0, 0) 0,
@@ -616,30 +696,30 @@
 		}
 	}
 
-	.breathe{
+	.breathe {
 		animation: breathe 5s infinite alternate forwards;
-		&:after{
+		&:after {
 			content: '';
-			@apply absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/80 w-72 h-72 rounded-full -z-10;
+			@apply absolute left-1/2 top-1/2 -z-10 h-72 w-72 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white/80;
 		}
 	}
-	.breathe2{
+	.breathe2 {
 		animation: breathe 5s ease-in-out infinite alternate forwards;
 		animation-delay: 1s;
-		&:after{
+		&:after {
 			content: '';
-			@apply absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white w-40 h-40 rounded-full -z-10;
+			@apply absolute left-1/2 top-1/2 -z-10 h-40 w-40 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white;
 		}
 	}
 
-	@keyframes breathe{
-		0%{
+	@keyframes breathe {
+		0% {
 			transform: scale(0.2);
-			opacity:0;
+			opacity: 0;
 		}
-		100%{
+		100% {
 			transform: scale(1);
-			opacity:0.8;
+			opacity: 0.8;
 		}
 	}
 </style>

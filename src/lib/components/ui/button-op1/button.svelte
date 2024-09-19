@@ -30,7 +30,7 @@
 			>
 				<ButtonPrimitive.Root
 					{builders}
-					class="h-[45.4px] rounded-[2px] bg-offwhite px-2 text-black"
+					class="h-[45.4px] rounded-[2px] px-2 text-black"
 					type="button"
 					{...$$restProps}
 					on:click
@@ -96,7 +96,7 @@
 {:else}
 	<ButtonPrimitive.Root
 		{builders}
-		class="h-[45.4px] rounded-[2px] bg-offwhite px-2 text-black"
+		class="h-[45.4px] rounded-[2px] px-2 text-black"
 		type="button"
 		{...$$restProps}
 		on:click

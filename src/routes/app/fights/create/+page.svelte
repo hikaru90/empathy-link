@@ -28,6 +28,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import Mascot from '$lib/components/Mascot.svelte';
 	import { user } from '$store/auth';
+	import Share from '$lib/components/Share.svelte';
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
 	let feelings = [];
@@ -45,12 +46,25 @@
 	let formSubmitted = false;
 	let formSuccess = false;
 	let checkForJudgement = false;
-	let judgementCount = 0;
+	let id: string;
 
 	$: () => {
-		if(step===2) checkForJudgement = true
-	}
+		if (step === 2) checkForJudgement = true;
+	};
 	$: options.validators = steps[step - 1];
+
+	const speechBubbleContentArray = [
+		{ step: 1, content: [$t('default.page.fight.create.info')] },
+		{ step: 2, content: [$t('default.page.fight.create.observation')] },
+		{ step: 3, content: [$t('default.page.fight.create.feelings')] },
+		{ step: 4, content: [$t('default.page.fight.create.needs')] },
+		{ step: 5, content: [$t('default.page.fight.create.request')] },
+		{
+			step: 6,
+			content: [$t('default.page.fight.create.success')],
+			errorContent: [$t('default.page.fight.create.error')]
+		}
+	];
 
 	const handleSubmit = async () => {
 		try {
@@ -58,6 +72,7 @@
 			data.owner = $user.id;
 			console.log('submit form', data);
 			const record = await pb.collection('fights').create(data);
+			id = record.id;
 			formSuccess = true;
 			formSubmitted = true;
 		} catch (err) {
@@ -92,18 +107,18 @@
 	};
 	const validateObservation = async () => {
 		const validationResult = await validateForm(lastStep);
-		const observationError = validationResult.errors.observation
+		const observationError = validationResult.errors.observation;
 		if (observationError) {
 			errors.set(validationResult.errors);
 			return false;
 		}
-		disableJudgementCheck()
+		disableJudgementCheck();
 		return true;
-	}
+	};
 	const disableJudgementCheck = () => {
-		checkJudgement($formData.observation)
-		checkForJudgement = false
-	}
+		checkJudgement($formData.observation);
+		checkForJudgement = false;
+	};
 
 	const form = superForm(data, {
 		// SPA: true,
@@ -116,10 +131,9 @@
 			// Make a manual client-side validation, since we have cancelled
 			if (await checkValidation()) {
 				if (step == steps.length) {
-					handleSubmit()
-					step++
-				}
-				else step++;
+					handleSubmit();
+					step++;
+				} else step++;
 			}
 		},
 		async onUpdated({ form }) {
@@ -148,38 +162,44 @@
 			slug: 'info',
 			name: get(t)('default.page.fights.form.general.steps.info'),
 			icon: IconFolder,
-			invertedTextColor: false
+			invertedTextColor: false,
+			hidden: false
 		},
 		{
 			slug: 'observation',
 			name: get(t)('default.page.fights.form.general.steps.observation'),
 			icon: IconEye,
-			invertedTextColor: true
+			invertedTextColor: true,
+			hidden: false
 		},
 		{
 			slug: 'feelings',
 			name: get(t)('default.page.fights.form.general.steps.feelings'),
 			icon: IconHeart,
-			invertedTextColor: false
+			invertedTextColor: false,
+			hidden: false
 		},
 		{
 			slug: 'needs',
 			name: get(t)('default.page.fights.form.general.steps.needs'),
 			icon: IconSwirl,
-			invertedTextColor: false
+			invertedTextColor: false,
+			hidden: false
 		},
 		{
 			slug: 'request',
 			name: get(t)('default.page.fights.form.general.steps.request'),
 			icon: IconSteps,
-			invertedTextColor: false
+			invertedTextColor: false,
+			hidden: false
 		},
 		{
 			slug: 'success',
 			name: get(t)('default.page.fights.form.general.steps.success'),
 			icon: IconSteps,
-			invertedTextColor: false
-		},
+			invertedTextColor: false,
+			hidden: true
+		}
 	];
 	t.subscribe((value) => {
 		const newSteps = stepConstructor.map((entry) => {
@@ -263,7 +283,9 @@
 	});
 
 	//todo: remove
-	step = 2;
+	// step = 6;
+	// formSubmitted = true;
+	// formSuccess = true;
 </script>
 
 <!-- {#if $message}
@@ -271,6 +293,7 @@
 		{$message}
 	</div>
 {/if} -->
+
 <div
 	class="flex flex-grow flex-col justify-between transition duration-700 {`bg-${stepConstructor[step - 1].slug}-background`}"
 >
@@ -288,9 +311,15 @@
 					steps={stepConstructor}
 					stepBackground={stepConstructor[step - 1].slug}
 				/>
-				{/if}
-				<div class="relative z-0">
-				<Mascot {step} bind:checkJudgement={checkJudgement} stepName={stepConstructor[step - 1].slug} />
+			{/if}
+			<div class="relative z-0">
+				<Mascot
+					{speechBubbleContentArray}
+					{step}
+					bind:checkJudgement
+					stepName={stepConstructor[step - 1].slug}
+					{formSuccess}
+				/>
 				{#key step}
 					{#if step === 1}
 						<div class="form-content">
@@ -322,7 +351,12 @@
 									<Form.Label class="form-label"
 										>{$t('default.page.fights.form.observation.label')}</Form.Label
 									>
-									<Textarea {...attrs} on:input={() => checkForJudgement = true} bind:value={$formData.observation} class="min-h-60" />
+									<Textarea
+										{...attrs}
+										on:input={() => (checkForJudgement = true)}
+										bind:value={$formData.observation}
+										class="min-h-60"
+									/>
 								</Form.Control>
 								<!-- <Form.Description>This is your public display name.</Form.Description> -->
 								<Form.FieldErrors />
@@ -446,9 +480,9 @@
 							</Form.Field>
 						</div>
 					{:else if formSuccess}
-						Success
+						<div></div>
 					{:else}
-						Error in Submit
+						<div></div>
 					{/if}
 				{/key}
 
@@ -463,6 +497,10 @@
 							primaryButtonClass={`bg-${stepConstructor[step - 1].slug}-background`}
 							class="flex-shrink-0"
 						/>
+					</AppBottomMenu>
+				{:else}
+					<AppBottomMenu>
+						<Share {id} />
 					</AppBottomMenu>
 				{/if}
 			</div>

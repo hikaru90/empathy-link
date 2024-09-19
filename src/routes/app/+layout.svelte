@@ -13,7 +13,7 @@
 	import 'simplebar/dist/simplebar.css';
 	import ResizeObserver from 'resize-observer-polyfill';
 	import { onNavigate } from '$app/navigation';
-	import { getScrollbarWidth } from '$scripts/helpers'
+	import { getScrollbarWidth } from '$scripts/helpers';
 	if (browser) {
 		window.ResizeObserver = ResizeObserver;
 	}
@@ -28,15 +28,15 @@
 	const handleScroll = (event) => {
 		scroll.set(event.target.scrollTop);
 	};
-	
+
 	const handleResize = () => {
-		const scrollbarWidth:number = getScrollbarWidth()
+		const scrollbarWidth: number = getScrollbarWidth();
 		windowWidth.set(window.innerWidth - scrollbarWidth);
 		windowHeight.set(window.innerHeight);
 	};
 
 	onMount(() => {
-		handleResize()
+		handleResize();
 		contentReady = true;
 		if (browser) {
 			document.getElementById('scrollContainer')?.addEventListener('scroll', handleScroll);
@@ -50,7 +50,7 @@
 		return new Promise((resolve) => {
 			document.startViewTransition(async () => {
 				resolve();
-					await navigation.complete;
+				await navigation.complete;
 			});
 		});
 	});
@@ -87,9 +87,8 @@
 				<ModeWatcher />
 				<slot />
 			</div>
-			{#if data.user}
-				<AppMenu />
-			{/if}
+
+			<AppMenu user={data.user} />
 		{/if}
 	</main>
 {/key}
