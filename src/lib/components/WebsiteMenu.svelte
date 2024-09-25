@@ -17,11 +17,12 @@
 	import { setCookie, scrollToElement } from '$scripts/helpers';
 	import { goto } from '$app/navigation';
 	import { debounce } from '$scripts/helpers';
-	import { scroll, windowHeight, windowWidth } from '$store/page';
+	import { scroll, windowHeight, windowWidth, backgroundColor, currentSection } from '$store/page';
+	import backgroundImage from '$assets/images/holo3.jpg';
 
-	let navbarHeight = 96;
-	let scrollValue = 0;
-	let scrollingUp = false;
+	let lastScrollValue = 0;
+	let menuIsVisible = true;
+	const scrollThreshold = 50;
 	let scrollbarOffset = 16;
 
 	const langs = [
@@ -70,23 +71,26 @@
 
 	const scrollToTarget = (target) => {
 		const targetDiv = document.getElementById(target);
-		scrollToElement('scrollContainer', targetDiv, 400);
+		scrollToElement(targetDiv, 400);
 	};
 
-	const handleScroll = (value) => {
-		if (value > scrollValue) {
-			// scrollingUp = false;
-			scrollValue = value;
+	const handleScroll = (value: number) => {
+		if($windowWidth > 768){
 			return;
 		}
-		// scrollingUp = true;
-		scrollValue = value;
+		console.log('scrollValue', value, 'lastScrollValue', lastScrollValue);
+		if (value > lastScrollValue) {
+			menuIsVisible = false;
+		} else {
+			menuIsVisible = true;
+		}
+		lastScrollValue = value;
 	};
-	scroll.subscribe((value) => {
-		debounce(handleScroll(value), 300);
-	});
 
-	onMount(() => {});
+	onMount(() => {
+		const unsubscribe = scroll.subscribe((value) => handleScroll(value));
+		return unsubscribe;
+	});
 
 	function handleMenuItemClick(item) {
 		console.log('Clicked:', item);
@@ -94,25 +98,25 @@
 </script>
 
 <div
-	bind:clientHeight={navbarHeight}
 	style="width:{$windowWidth}px;"
-	class="fixed left-0 top-0 z-[100] border-b border-black/20 bg-offwhite shadow-xl shadow-offwhite/20"
+	class="fixed left-0 top-0 z-[100]"
 >
-	<div class="{!scrollingUp ? 'max-h-96' : 'max-h-0'} overflow-hidden transition-all">
-		<nav
-			class="flex items-center justify-between {$scroll > 5
-				? 'bg-offwhite/10 backdrop-blur-2xl'
-				: ''}  px-5 py-2 transition-all"
+	<div class="{menuIsVisible ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} {$scroll > 5 ? 'shadow-xl shadow-black/5 delay-150' : ''} overflow-hidden transition-all">
+		<nav class="{$scroll > 5 ? $backgroundColor : 'bg-transparent'} flex items-center justify-between px-5 py-2 transition-all duration-500"
 		>
 			<a href="/" class="w-1 overflow-visible">
 				<div>
 					<Logo />
 				</div>
 			</a>
-			<div class="hidden md:flex items-center gap-6">
+			<div class="hidden items-center gap-7 md:flex">
 				{#each menuItems() as item}
-					<button on:click={scrollToTarget(item.target)} class="">
-						{item.label}
+					<button on:click={scrollToTarget(item.target)} class="group relative">
+						<div class="absolute -left-3 -right-3 -top-1 -bottom-1 rounded-md transition-opacity group-hover:opacity-100 opacity-0 bg-white/30 z-0 shadow"></div>
+						<div class="{item.target === $currentSection ? 'opacity-100' : 'opacity-0'} absolute -left-3 -right-3 -top-1 -bottom-1 rounded-md transition-opacity duration-300 shadow-inner shadow-black/20 bg-black/5"></div>
+						<div class="relative z-10">
+							{item.label}
+						</div>
 					</button>
 				{/each}
 			</div>

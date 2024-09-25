@@ -2,16 +2,16 @@
 @import 'animations.scss';
 
 :global(html){
-  overflow:hidden;
-  overscroll-behavior: none;
+  // overflow:hidden;
+  // overscroll-behavior: none;
 }
 
 :global(html, body) {
-  @apply h-full w-full;
+  // @apply h-full w-full;
   scrollbar-gutter: auto;
 }
 :global(body){
-  @apply flex flex-col;
+  // @apply flex flex-col;
 }
 :global(.max-container) {
   @apply mx-auto w-full max-w-[1200px] px-5;

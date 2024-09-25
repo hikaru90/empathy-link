@@ -7,38 +7,51 @@
 	import { Toaster } from '$lib/components/ui/sonner';
 	import AppMenu from '$lib/components/AppMenu.svelte';
 	import { onDestroy, onMount } from 'svelte';
-	import { scroll, windowHeight, windowWidth } from '$store/page';
+	import { scroll, windowHeight, windowWidth, backgroundColor } from '$store/page';
 	import { browser } from '$app/environment';
 	import 'simplebar';
 	import 'simplebar/dist/simplebar.css';
 	import ResizeObserver from 'resize-observer-polyfill';
 	import { onNavigate } from '$app/navigation';
-	import { getScrollbarWidth } from '$scripts/helpers'
+	import { getScrollbarWidth } from '$scripts/helpers';
 	if (browser) {
 		window.ResizeObserver = ResizeObserver;
 	}
 
 	export let data;
 	let contentReady = false;
+	let lastKnownScrollPosition = 0;
+	let ticking = false;
 
 	console.log('+layout.svelte - user:', data.user);
 
 	const animationDuration = 400;
 
-	const handleScroll = (event) => {
-		scroll.set(event.target.scrollTop);
+	const handleScroll = (value) => {
+		scroll.set(value);
 	};
 	const handleResize = () => {
-		const scrollbarWidth:number = getScrollbarWidth()
+		const scrollbarWidth: number = getScrollbarWidth();
 		windowWidth.set(window.innerWidth - scrollbarWidth);
 		windowHeight.set(window.innerHeight);
 	};
 
 	onMount(() => {
-		handleResize()
+		handleResize();
 		contentReady = true;
 		if (browser) {
-			document.getElementById('scrollContainer')?.addEventListener('scroll', handleScroll);
+			document.addEventListener('scroll', (event) => {
+				lastKnownScrollPosition = window.scrollY;
+
+				if (!ticking) {
+					window.requestAnimationFrame(() => {
+						handleScroll(lastKnownScrollPosition);
+						ticking = false;
+					});
+
+					ticking = true;
+				}
+			});
 			window?.addEventListener('resize', handleResize);
 		}
 	});
@@ -49,14 +62,14 @@
 		return new Promise((resolve) => {
 			document.startViewTransition(async () => {
 				resolve();
-					await navigation.complete;
+				await navigation.complete;
 			});
 		});
 	});
 
 	onDestroy(() => {
 		if (browser) {
-			document.getElementById('scrollContainer')?.removeEventListener('scroll', handleScroll);
+			document.removeEventListener('scroll', handleScroll);
 			window?.removeEventListener('resize', handleResize);
 		}
 	});
@@ -67,7 +80,7 @@
 		id="scrollContainer"
 		in:blur={{ duration: animationDuration, delay: animationDuration }}
 		out:blur={{ duration: animationDuration }}
-		class="flex flex-grow flex-col overflow-x-hidden bg-background"
+		class="{$backgroundColor} flex flex-grow flex-col overflow-x-hidden transition duration-500"
 	>
 		{#if !contentReady}
 			<div

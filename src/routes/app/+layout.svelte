@@ -64,33 +64,26 @@
 </script>
 
 {#key data.url}
-	<main
-		id="scrollContainer"
-		in:blur={{ duration: animationDuration, delay: animationDuration }}
-		out:blur={{ duration: animationDuration }}
-		class="flex flex-grow flex-col overflow-x-hidden bg-background"
-	>
-		{#if !contentReady}
-			<div
-				in:blur={{ duration: animationDuration, delay: animationDuration }}
-				out:blur={{ duration: animationDuration }}
-				class="flex items-center justify-center py-60"
-			>
-				<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
-			</div>
-		{:else}
-			<div
-				in:blur={{ duration: animationDuration, delay: animationDuration }}
-				out:blur={{ duration: animationDuration }}
-				class="flex flex-grow flex-col"
-			>
-				<ModeWatcher />
-				<slot />
-			</div>
+	{#if !contentReady}
+		<div
+			in:blur={{ duration: animationDuration, delay: animationDuration }}
+			out:blur={{ duration: animationDuration }}
+			class="flex items-center justify-center py-60"
+		>
+			<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
+		</div>
+	{:else}
+		<div
+			in:blur={{ duration: animationDuration, delay: animationDuration }}
+			out:blur={{ duration: animationDuration }}
+			class="app/layout"
+		>
+			<ModeWatcher />
+			<slot />
+		</div>
 
-			<AppMenu user={data.user} />
-		{/if}
-	</main>
+		<AppMenu user={data.user} />
+	{/if}
 {/key}
 <Toaster />
 

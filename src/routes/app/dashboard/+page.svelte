@@ -33,7 +33,7 @@
 </script>
 
 {#if $user}
-	<div class="flex h-full flex-grow flex-col justify-between pb-60">
+	<div class="app/dashboard/page">
 		<AppTopMenu />
 		<div class="flex-grow">
 			<div class="max-container relative">

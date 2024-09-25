@@ -12,36 +12,12 @@
 		animationWidth = window?.document?.getElementById('animation')?.getBoundingClientRect()?.width;
 		console.log('animationWidth', animationWidth);
 	};
-
-	let zoomWidth = 10
-	let zoomBottom = 0
-	let zoomTop = 0
-
-	// windowWidth.subscribe((windowWidth) => {
-	// 	scroll.subscribe((scroll) => {
-	// 		if(windowWidth >= 768){
-	// 			zoomWidth = 10
-	// 			zoomBottom = 0
-	// 			zoomTop = 0
-	// 		}else{
-	// 			zoomWidth = 140
-	// 			zoomBottom = 80
-	// 			zoomTop = (scroll/20) + 0
-	// 		}
-	// 	});
-	// })
-
-	// onMount(() => {
-	// 	window.addEventListener('resize', handleResize);
-	// 	animationWidth = window?.document?.getElementById('animation')?.getBoundingClientRect()?.width;
-	// });
-	// onDestroy(() => {
-	// 	window.removeEventListener('resize', handleResize);
-	// });
 </script>
 
 <div class="relative z-10 pt-20 lg:-mb-20 lg:pt-32">
-	<h1 class="mb-10 max-w-[14em] font-display text-4xl md:text-5xl font-semibold leading-[106%] lg:text-7xl">
+	<h1
+		class="mb-10 max-w-[14em] font-display text-4xl font-semibold leading-[106%] md:text-5xl lg:text-7xl"
+	>
 		{$t('default.page.home.hero')}
 	</h1>
 	<a href="/app/auth/login">
@@ -51,9 +27,17 @@
 			{$t('default.page.home.cta')}
 		</SparkleButton>
 	</a>
+	<div class="mt-20 flex items-center">
+		<div class="size-52 rounded-full bg-offwhite/40"></div>
+		<div class="-ml-16 size-52 rounded-full bg-offwhite"></div>
+		<div
+			style="background-image: url('/women.jpg')"
+			class="-ml-16 h-52 w-[600px] rounded-full bg-offwhite bg-cover bg-center"
+		></div>
+	</div>
 </div>
 
-<div class="relative z-0 py-4 -mx-[40%] -mb-48 md:-mb-[20%] md:-mx-[10%]">
+<!-- <div class="relative z-0 py-4 -mx-[40%] -mb-48 md:-mb-[20%] md:-mx-[10%]">
 	<div id="animation" class="relative w-full lg:mb-40">
 		<div
 			style="border-radius: {animationWidth / 75}px;"
@@ -93,7 +77,7 @@
 			class="animate-icon3-pulse absolute left-0 top-0 hidden h-full w-full md:block"
 		/>
 	</div>
-</div>
+</div> -->
 
 <style lang="scss">
 	:global(.animate-icon4-pulse) {
