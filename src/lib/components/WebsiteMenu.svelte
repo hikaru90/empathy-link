@@ -102,17 +102,17 @@
 	class="fixed left-0 top-0 z-[100]"
 >
 	<div class="{menuIsVisible ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} {$scroll > 5 ? 'shadow-xl shadow-black/5 delay-150' : ''} overflow-hidden transition-all">
-		<nav class="{$scroll > 5 ? $backgroundColor : 'bg-transparent'} flex items-center justify-between px-5 py-2 transition-all duration-500"
+		<nav class="{$scroll > 5 ? $backgroundColor : 'bg-white'} flex items-center justify-between px-5 py-2 lg:py-3 transition-all duration-500"
 		>
 			<a href="/" class="w-1 overflow-visible">
 				<div>
 					<Logo />
 				</div>
 			</a>
-			<div class="hidden items-center gap-7 md:flex">
+			<div class="hidden items-center gap-7 lg:flex">
 				{#each menuItems() as item}
 					<button on:click={scrollToTarget(item.target)} class="group relative">
-						<div class="absolute -left-3 -right-3 -top-1 -bottom-1 rounded-md transition-opacity group-hover:opacity-100 opacity-0 bg-white/30 z-0 shadow"></div>
+						<div class="absolute -left-3 -right-3 -top-1 -bottom-1 rounded-md transition-opacity group-hover:opacity-100 opacity-0 bg-white/30 z-0 shadow-md shadow-x"></div>
 						<div class="{item.target === $currentSection ? 'opacity-100' : 'opacity-0'} absolute -left-3 -right-3 -top-1 -bottom-1 rounded-md transition-opacity duration-300 shadow-inner shadow-black/20 bg-black/5"></div>
 						<div class="relative z-10">
 							{item.label}

@@ -69,14 +69,14 @@
 		</p>
 	</div>
 
-	<div class="relative flex flex-row flex-wrap justify-center -mx-3">
+	<div class="relative flex flex-row flex-wrap justify-center items-stretch -mx-3">
 		{#each tableRows as card}
 			<div class="group relative p-3 text-sm w-full md:w-1/4 md:max-w-[460px]">
 				<div
 					class="absolute left-full -ml-3 top-1/2 hidden h-1 w-6 -translate-y-1/2 transform bg-black/90 md:block group-last:md:hidden"
 				></div>
 
-				<div class="group relative h-40 shadow-xl p-6 bg-white rounded-3xl">
+				<div class="group relative h-full shadow-xl p-6 bg-white rounded-3xl hyphens-auto">
 					<div>
 						<div class="skeumorphic-button mb-8 h-9 w-9 rounded-full bg-offwhite p-0.5">
 							<div

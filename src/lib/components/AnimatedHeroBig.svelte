@@ -5,6 +5,7 @@
 	import HeroAnimation from '$lib/components/HeroAnimation.svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import { scroll, windowWidth } from '$store/page';
+	import MockupHero from '$lib/components/MockupHero.svelte';
 
 	let animationWidth = 1000;
 
@@ -14,7 +15,7 @@
 	};
 </script>
 
-<div class="relative z-10 pt-20 lg:-mb-20 lg:pt-32">
+<div class="relative z-10 pt-20 lg:-mb-20 md:pt-32">
 	<h1
 		class="mb-10 max-w-[14em] font-display text-4xl font-semibold leading-[106%] md:text-5xl lg:text-7xl"
 	>
@@ -22,62 +23,21 @@
 	</h1>
 	<a href="/app/auth/login">
 		<SparkleButton
-			class="px-3 py-5 font-bold text-black shadow-lg dark:shadow-gray-300/30 lg:px-6 lg:py-7 lg:text-lg"
+			class="px-3 py-5 font-bold text-black shadow-lg rounded-lg dark:shadow-gray-300/30 lg:px-6 lg:py-7 lg:text-lg"
 		>
 			{$t('default.page.home.cta')}
 		</SparkleButton>
 	</a>
-	<div class="mt-20 flex items-center">
-		<div class="size-52 rounded-full bg-offwhite/40"></div>
-		<div class="-ml-16 size-52 rounded-full bg-offwhite"></div>
+	<div class="mt-20 flex items-center -mx-5 md:mx-0">
+		<div class="hidden md:block md:size-32 lg:size-40 rounded-full bg-offwhite/40"></div>
+		<div class="hidden md:block -ml-16 md:size-32 lg:size-40 rounded-full bg-offwhite"></div>
 		<div
 			style="background-image: url('/women.jpg')"
-			class="-ml-16 h-52 w-[600px] rounded-full bg-offwhite bg-cover bg-center"
+			class="md:-ml-16 h-52 md:h-32 lg:h-40 w-full md:w-[300px] lg:w-[500px] md:rounded-full bg-offwhite bg-cover bg-right md:bg-center"
 		></div>
 	</div>
+	<MockupHero class="absolute top-64 md:top-72 lg:top-80 -right-4 lg:right-0 w-40 md:w-60 lg:w-96" />
 </div>
-
-<!-- <div class="relative z-0 py-4 -mx-[40%] -mb-48 md:-mb-[20%] md:-mx-[10%]">
-	<div id="animation" class="relative w-full lg:mb-40">
-		<div
-			style="border-radius: {animationWidth / 75}px;"
-			class="absolute left-[45.05%] top-[15.5%] z-[60] h-[48.8%] w-[9.9%] skew-y-[32deg] transform overflow-hidden"
-		>
-			<HeroAnimation />
-		</div>
-		<img src="hero/phone_mobile.png" alt="" class="relative z-40 block w-full md:hidden" />
-		<img src="hero/2phone.png" alt="" class="relative z-40 hidden w-full md:block" />
-		<img
-			src="hero/2phone_lit.png"
-			alt=""
-			class="animate-phone-pulse absolute left-0 top-0 z-50 hidden h-full w-full md:block"
-		/>
-		<img src="hero/icon1.png" alt="" class="absolute left-0 top-0 hidden h-full w-full md:block" />
-		<img
-			src="hero/icon1_lit.png"
-			alt=""
-			class="animate-icon1-pulse absolute left-0 top-0 hidden h-full w-full md:block"
-		/>
-		<img src="hero/icon2.png" alt="" class="absolute left-0 top-0 hidden h-full w-full md:block" />
-		<img
-			src="hero/icon2_lit.png"
-			alt=""
-			class="animate-icon2-pulse absolute left-0 top-0 hidden h-full w-full md:block"
-		/>
-		<img src="hero/icon4.png" alt="" class="absolute left-0 top-0 hidden h-full w-full md:block" />
-		<img
-			src="hero/icon4_lit.png"
-			alt=""
-			class="animate-icon4-pulse absolute left-0 top-0 hidden h-full w-full md:block"
-		/>
-		<img src="hero/icon3.png" alt="" class="absolute left-0 top-0 hidden h-full w-full md:block" />
-		<img
-			src="hero/icon3_lit.png"
-			alt=""
-			class="animate-icon3-pulse absolute left-0 top-0 hidden h-full w-full md:block"
-		/>
-	</div>
-</div> -->
 
 <style lang="scss">
 	:global(.animate-icon4-pulse) {

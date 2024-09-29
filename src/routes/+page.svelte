@@ -74,7 +74,7 @@ onMount(() => {
 				<AnimatedHeroBig />
 			</div>
 		</div>
-		<div class="max-container pb-40 relative z-10 mt-40 xl:mt-96">
+		<div class="max-container pb-40 relative z-10 mt-40 xl:mt-80">
 			<div id="stepsTarget"></div>
 			<The4Steps />
 

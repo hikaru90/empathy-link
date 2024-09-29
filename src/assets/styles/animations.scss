@@ -43,3 +43,20 @@
     opacity:1;
   }
 }
+
+
+:global(.float){
+  animation-name: float;
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+}
+@keyframes float{
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-10px);
+  }
+}

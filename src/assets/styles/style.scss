@@ -14,7 +14,7 @@
   // @apply flex flex-col;
 }
 :global(.max-container) {
-  @apply mx-auto w-full max-w-[1200px] px-5;
+  @apply mx-auto w-full max-w-[1200px] px-5 md:px-16;
 }
 
 :global(.input-fade-right) {
