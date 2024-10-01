@@ -1,10 +1,10 @@
 import { c as compute_rest_props, s as subscribe, g as get_store_value, a as null_to_empty } from "../../chunks/utils.js";
-import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object, a as add_attribute, v as validate_component, e as escape, f as each } from "../../chunks/ssr.js";
-import { R as Root, T as Trigger, C as Close } from "../../chunks/Avatar.svelte_svelte_type_style_lang.js";
+import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object, a as add_attribute, v as validate_component, f as each, e as escape } from "../../chunks/ssr.js";
+import { R as Root, C as Close } from "../../chunks/Avatar.svelte_svelte_type_style_lang.js";
 import { b as backgroundColor, w as windowWidth, d as derivedMode, s as scroll, c as currentSection, a as windowHeight } from "../../chunks/page.js";
 import { t, l as locale } from "../../chunks/translations.js";
 import "clsx";
-import { S as Sheet_content, a as Sheet_header, b as Sheet_title, C as Cross1, L as Logo } from "../../chunks/sheet-title.js";
+import { S as Sheet_content, a as Sheet_header, C as Cross1, L as Logo } from "../../chunks/sheet-header.js";
 import "../../chunks/client.js";
 import "../../chunks/auth.js";
 import { B as Button } from "../../chunks/button.js";
@@ -66,56 +66,64 @@ const css$8 = {
 };
 const WebsiteHamburgerMenu = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $backgroundColor, $$unsubscribe_backgroundColor;
-  let $t, $$unsubscribe_t;
   $$unsubscribe_backgroundColor = subscribe(backgroundColor, (value) => $backgroundColor = value);
-  $$unsubscribe_t = subscribe(t, (value) => $t = value);
   let { menuItems } = $$props;
+  let dialogOpen = false;
   if ($$props.menuItems === void 0 && $$bindings.menuItems && menuItems !== void 0)
     $$bindings.menuItems(menuItems);
   $$result.css.add(css$8);
-  $$unsubscribe_backgroundColor();
-  $$unsubscribe_t();
-  return `${validate_component(Root, "Sheet.Root").$$render($$result, {}, {}, {
-    default: () => {
-      return `${validate_component(Trigger, "Sheet.Trigger").$$render($$result, {}, {}, {
+  let $$settled;
+  let $$rendered;
+  let previous_head = $$result.head;
+  do {
+    $$settled = true;
+    $$result.head = previous_head;
+    $$rendered = `${validate_component(Root, "Sheet.Root").$$render(
+      $$result,
+      { open: dialogOpen },
+      {
+        open: ($$value) => {
+          dialogOpen = $$value;
+          $$settled = false;
+        }
+      },
+      {
         default: () => {
-          return `${slots.default ? slots.default({}) : ``}`;
-        }
-      })} ${validate_component(Sheet_content, "Sheet.Content").$$render(
-        $$result,
-        {
-          class: $backgroundColor + " z-[1003] flex flex-col"
-        },
-        {},
-        {
-          default: () => {
-            return `${validate_component(Sheet_header, "Sheet.Header").$$render(
-              $$result,
-              {
-                class: "flex flex-row items-center justify-between border-b border-black/10 px-5 py-3.5"
-              },
-              {},
-              {
-                default: () => {
-                  return `${validate_component(Sheet_title, "Sheet.Title").$$render($$result, { class: "pt-0.5" }, {}, {
+          return `<button class="flex items-center">${validate_component(HamburgerMenu$1, "HamburgerMenu").$$render($$result, { class: "size-6" }, {}, {})}</button> ${validate_component(Sheet_content, "Sheet.Content").$$render(
+            $$result,
+            {
+              class: $backgroundColor + " z-[1003] flex flex-col"
+            },
+            {},
+            {
+              default: () => {
+                return `${validate_component(Sheet_header, "Sheet.Header").$$render(
+                  $$result,
+                  {
+                    class: "flex flex-row items-center justify-between border-b border-black/10 px-5 py-3.5"
+                  },
+                  {},
+                  {
                     default: () => {
-                      return `${escape($t("default.menu.profile.sheet.header"))}`;
+                      return `<div></div>  ${validate_component(Close, "Sheet.Close").$$render($$result, { class: "!m-0" }, {}, {
+                        default: () => {
+                          return `<div class="label bg-feelings-background svelte-1e8s3fy"><div class="icon flex items-center justify-center fill-feelings-foreground svelte-1e8s3fy"> ${validate_component(Cross1, "Cross1").$$render($$result, { class: "text-red-600" }, {}, {})}</div></div>`;
+                        }
+                      })}`;
                     }
-                  })} ${validate_component(Close, "Sheet.Close").$$render($$result, { class: "!m-0" }, {}, {
-                    default: () => {
-                      return `<div class="label bg-feelings-background svelte-1e8s3fy"><div class="icon flex items-center justify-center fill-feelings-foreground svelte-1e8s3fy"> ${validate_component(Cross1, "Cross1").$$render($$result, { class: "text-red-600" }, {}, {})}</div></div>`;
-                    }
-                  })}`;
-                }
+                  }
+                )} <div class="p-5 flex flex-col gap-2 items-start">${each(menuItems, (item) => {
+                  return `<button class="font-bold text-lg">${escape(item.label)}</button>`;
+                })}</div>`;
               }
-            )}`;
-          }
+            }
+          )}`;
         }
-      )} <div>${each(menuItems, (item) => {
-        return `<div>${escape(item.label)}</div>`;
-      })}</div>`;
-    }
-  })}`;
+      }
+    )}`;
+  } while (!$$settled);
+  $$unsubscribe_backgroundColor();
+  return $$rendered;
 });
 const WebsiteMenu = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let menuItems;
@@ -166,20 +174,16 @@ const WebsiteMenu = create_ssr_component(($$result, $$props, $$bindings, slots) 
   return `<div style="${"width:" + escape($windowWidth, true) + "px;"}" class="fixed left-0 top-0 z-[100]"><div class="${escape(
     "max-h-96 opacity-100",
     true
-  ) + " " + escape($scroll > 5 ? "shadow-xl shadow-black/5 delay-150" : "", true) + " overflow-hidden transition-all"}"><nav class="${escape($scroll > 5 ? $backgroundColor : "bg-white", true) + " flex items-center justify-between px-5 py-2 lg:py-3 transition-all duration-500"}"><a href="/" class="w-1 overflow-visible"><div>${validate_component(Logo, "Logo").$$render($$result, {}, {}, {})}</div></a> <div class="hidden items-center gap-7 lg:flex">${each(menuItems(), (item) => {
-    return `<button class="group relative"><div class="absolute -left-3 -right-3 -top-1 -bottom-1 rounded-md transition-opacity group-hover:opacity-100 opacity-0 bg-white/30 z-0 shadow-md shadow-x"></div> <div class="${escape(
+  ) + " " + escape($scroll > 5 ? "shadow-xl shadow-black/5 delay-150" : "", true) + " overflow-hidden transition-all"}"><nav class="${escape($scroll > 5 ? $backgroundColor : "bg-white", true) + " flex items-center justify-between px-5 py-2 transition-all duration-500 lg:py-3"}"><a href="/" class="w-1 overflow-visible"><div>${validate_component(Logo, "Logo").$$render($$result, {}, {}, {})}</div></a> <div class="hidden items-center gap-7 lg:flex">${each(menuItems(), (item) => {
+    return `<button class="group relative"><div class="shadow-x absolute -bottom-1 -left-3 -right-3 -top-1 z-0 rounded-md bg-white/30 opacity-0 shadow-md transition-opacity group-hover:opacity-100"></div> <div class="${escape(
       item.target === $currentSection ? "opacity-100" : "opacity-0",
       true
-    ) + " absolute -left-3 -right-3 -top-1 -bottom-1 rounded-md transition-opacity duration-300 shadow-inner shadow-black/20 bg-black/5"}"></div> <div class="relative z-10">${escape(item.label)}</div> </button>`;
+    ) + " absolute -bottom-1 -left-3 -right-3 -top-1 rounded-md bg-black/5 shadow-inner shadow-black/20 transition-opacity duration-300"}"></div> <div class="relative z-10">${escape(item.label)}</div> </button>`;
   })}</div> <div class="flex w-1 items-center justify-end gap-4">${validate_component(Button, "Button").$$render($$result, { variant: "outline" }, {}, {
     default: () => {
       return `${escape($t("default.page.login.heading"))}`;
     }
-  })} <div class="lg:hidden">${validate_component(WebsiteHamburgerMenu, "WebsiteHamburgerMenu").$$render($$result, { menuItems }, {}, {
-    default: () => {
-      return `${validate_component(HamburgerMenu$1, "HamburgerMenu").$$render($$result, { class: "size-6" }, {}, {})}`;
-    }
-  })}</div></div></nav></div> ${slots.submenu ? slots.submenu({}) : ``}</div>`;
+  })} <div class="lg:hidden">${validate_component(WebsiteHamburgerMenu, "WebsiteHamburgerMenu").$$render($$result, { menuItems: menuItems() }, {}, {})}</div></div></nav></div> ${slots.submenu ? slots.submenu({}) : ``}</div>`;
 });
 const css$7 = {
   code: ".step.svelte-11drj4t{display:flex;align-items:center;justify-content:center;border-radius:1.6em;padding:0.3em;--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}:root{--duration:6s}.heart.svelte-11drj4t{animation:svelte-11drj4t-heart}.step5.svelte-11drj4t{animation:svelte-11drj4t-step5}.step4.svelte-11drj4t{animation:svelte-11drj4t-step4}.step3.svelte-11drj4t{animation:svelte-11drj4t-step3}.step2.svelte-11drj4t{animation:svelte-11drj4t-step2}.step1.svelte-11drj4t{animation:svelte-11drj4t-step1}.step1.svelte-11drj4t,.step2.svelte-11drj4t,.step3.svelte-11drj4t,.step4.svelte-11drj4t,.step5.svelte-11drj4t,.heart.svelte-11drj4t{animation-duration:var(--duration);animation-iteration-count:infinite;animation-fill-mode:forwards;animation-timing-function:ease-out}@keyframes svelte-11drj4t-heart{0%,65%{opacity:0;transform:scale(0)}75%,90%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(0)}}@keyframes svelte-11drj4t-step5{0%,27.5%{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity));opacity:0;transform:scale(0)}35%{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity));opacity:1;transform:scale(1)}40%{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity))}40.1%{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity))}50%{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity))}55%{opacity:0}100%{opacity:0}}@keyframes svelte-11drj4t-step4{0%,22.5%{transform:scale(0);opacity:0}30%{transform:scale(1);opacity:1}50%{transform:scale(1);opacity:1}55%,100%{transform:scale(0);opacity:0}}@keyframes svelte-11drj4t-step3{0%,17.5%{transform:scale(0);opacity:0}25%{transform:scale(1);opacity:1}50%{transform:scale(1);opacity:1}55%,100%{transform:scale(0);opacity:0}}@keyframes svelte-11drj4t-step2{0%,12.5%{transform:scale(0);opacity:0}20%{transform:scale(1);opacity:1}50%{transform:scale(1);opacity:1}55%,100%{transform:scale(0);opacity:0}}@keyframes svelte-11drj4t-step1{0%,10%{transform:scale(0);opacity:0}15%{transform:scale(1);opacity:1}50%{transform:scale(1);opacity:1}55%,100%{transform:scale(0);opacity:0}}.pop-in.svelte-11drj4t{animation:svelte-11drj4t-popIn;animation-duration:var(--duration);animation-iteration-count:infinite;animation-fill-mode:forwards}@keyframes svelte-11drj4t-popIn{0%{opacity:0;transform:translate(0, 0)}10%{opacity:1;transform:translate(0, 8em)}15%{opacity:0;transform:translate(0, 8em)}55%{opacity:0}65%{opacity:1}70%{opacity:0}100%{opacity:0;transform:translate(0, 8em)}}",
