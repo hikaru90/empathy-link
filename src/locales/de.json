@@ -240,6 +240,7 @@
 		},
 		"login": {
 			"heading": "Login",
+			"text": "Jetzt anmelden",
 			"form": {
 				"email": {
 					"label": "E-Mail",

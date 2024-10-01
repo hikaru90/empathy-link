@@ -4,8 +4,9 @@ import { c as cn } from "./utils2.js";
 import { L as Label } from "./Avatar.js";
 import { w as writable } from "./index2.js";
 import { h as hasContext, g as getContext, s as setContext } from "./lifecycle.js";
-import { z as nanoid } from "./Avatar.svelte_svelte_type_style_lang.js";
+import { n as nanoid } from "./Avatar.svelte_svelte_type_style_lang.js";
 import "clsx";
+import "./page.js";
 const Input = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class", "value", "readonly"]);
   let { class: className = void 0 } = $$props;

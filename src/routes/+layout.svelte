@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t, initialized } from '$lib/translations';
+	import { t, initialized, locale } from '$lib/translations';
 	import '$src/app.pcss';
 	import { ModeWatcher } from 'mode-watcher';
 	import SparklePill from '$lib/components/SparklePill.svelte';
@@ -7,7 +7,7 @@
 	import { Toaster } from '$lib/components/ui/sonner';
 	import AppMenu from '$lib/components/AppMenu.svelte';
 	import { onDestroy, onMount } from 'svelte';
-	import { scroll, windowHeight, windowWidth, backgroundColor } from '$store/page';
+	import { scroll, windowHeight, windowWidth } from '$store/page';
 	import { browser } from '$app/environment';
 	import 'simplebar';
 	import 'simplebar/dist/simplebar.css';
@@ -54,7 +54,21 @@
 			});
 			window?.addEventListener('resize', handleResize);
 		}
+		setLangAttribute();
 	});
+
+	function setLangAttribute() {
+		if (browser) {
+			const currentLocale = $locale;
+			document.documentElement.lang = currentLocale;
+		}
+	}
+
+	$: {
+		if (browser) {
+			setLangAttribute();
+		}
+	}
 
 	onNavigate((navigation) => {
 		if (!document.startViewTransition) return;
@@ -80,7 +94,7 @@
 		id="scrollContainer"
 		in:blur={{ duration: animationDuration, delay: animationDuration }}
 		out:blur={{ duration: animationDuration }}
-		class="{$backgroundColor} flex flex-grow flex-col overflow-x-hidden transition duration-500"
+		class="overflow-x-hidden"
 	>
 		{#if !contentReady}
 			<div

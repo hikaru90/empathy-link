@@ -1,86 +1,20 @@
-import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object, a as add_attribute, e as escape, v as validate_component, f as each } from "./ssr.js";
-import { S as SparklePill } from "./SparklePill.js";
-import { a as isHTMLElement$1, i as isBrowser, E as sleep, w as withGet, J as wrapArray, K as getElementByMeltId, H as isElement$1, L as isHTMLLabelElement, y as noop, M as usePortal, N as createFocusTrap, O as useModal, P as useEscapeKeydown, e as executeCallbacks, m as makeElement, d as addMeltEventListener, b as overridable, t as toWritableStores, o as omit, j as createElHelpers, g as generateIds, Q as dequal, R as isObject, S as stripValues, x as disabledAttr, k as kbd, T as isHTMLButtonElement, U as last, V as FIRST_LAST_KEYS, W as isElementDisabled, X as back, Y as forward, Z as prev, _ as next, s as styleToString, f as effect, G as getPortalDestination, $ as generateId, a0 as createHiddenInput, B as safeOnMount, I as removeScroll, a1 as isHTMLInputElement, a2 as toggle, l as getCtx$2, n as createBitAttrs, q as createDispatcher, r as removeUndefined, p as getOptionUpdater, a3 as buttonVariants, a4 as sheetTransitions, a5 as sheetVariants, a6 as Root$1, a7 as Trigger, a8 as Close } from "./Avatar.svelte_svelte_type_style_lang.js";
-import { i as identity, a as split_css_unit, c as compute_rest_props, g as get_store_value, s as subscribe, b as null_to_empty } from "./utils.js";
+import { g as get_store_value, c as compute_rest_props, s as subscribe, a as null_to_empty } from "./utils.js";
+import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute, e as escape, g as escape_attribute_value, v as validate_component, f as each } from "./ssr.js";
+import { q as isHTMLElement$1, i as isBrowser, t as withGet, v as getElementByMeltId, n as isElement$1, x as isHTMLLabelElement, r as noop, y as useEscapeKeydown, h as executeCallbacks, m as makeElement, j as addMeltEventListener, o as omit, l as createElHelpers, z as dequal, A as isObject, B as stripValues, u as disabledAttr, k as kbd, C as isHTMLButtonElement, F as FIRST_LAST_KEYS, D as isElementDisabled, f as styleToString, g as effect, E as createHiddenInput, e as safeOnMount, G as isHTMLInputElement, H as buttonVariants, d as derivedMode } from "./page.js";
+import { i as is_void, B as Button$1, s as scale, S as Sheet_content, a as Sheet_header, C as Cross1 } from "./sheet-header.js";
 import { g as getContext, s as setContext } from "./lifecycle.js";
 import "clsx";
 import "./client.js";
-import { t, a as locale } from "./translations.js";
-import { a as cubicOut, c as cn, f as flyAndScale } from "./utils2.js";
+import { t, l as locale } from "./translations.js";
+import { s as sleep, w as wrapArray, u as usePortal, p as createFocusTrap, q as useModal, o as overridable, t as toWritableStores, g as generateIds, v as last, x as back, y as forward, z as prev, A as next, a as getPortalDestination, B as generateId, r as removeScroll, E as toggle, k as getCtx$2, c as createBitAttrs, e as createDispatcher, b as removeUndefined, d as getOptionUpdater, R as Root$1, T as Trigger, C as Close } from "./Avatar.svelte_svelte_type_style_lang.js";
+import { c as cn, f as flyAndScale } from "./utils2.js";
 import { d as derived, w as writable, a as readonly } from "./index2.js";
-import { d as derivedMode } from "./page.js";
 import { t as tick } from "./scheduler.js";
-import { a as setCookie } from "./helpers.js";
+import { s as setCookie } from "./helpers.js";
 const globals = typeof window !== "undefined" ? window : typeof globalThis !== "undefined" ? globalThis : (
   // @ts-ignore Node typings have this
   global
 );
-const void_element_names = /^(?:area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)$/;
-function is_void(name2) {
-  return void_element_names.test(name2) || name2.toLowerCase() === "!doctype";
-}
-function fade(node, { delay = 0, duration = 400, easing = identity } = {}) {
-  const o = +getComputedStyle(node).opacity;
-  return {
-    delay,
-    duration,
-    easing,
-    css: (t2) => `opacity: ${t2 * o}`
-  };
-}
-function fly(node, { delay = 0, duration = 400, easing = cubicOut, x = 0, y = 0, opacity = 0 } = {}) {
-  const style = getComputedStyle(node);
-  const target_opacity = +style.opacity;
-  const transform = style.transform === "none" ? "" : style.transform;
-  const od = target_opacity * (1 - opacity);
-  const [xValue, xUnit] = split_css_unit(x);
-  const [yValue, yUnit] = split_css_unit(y);
-  return {
-    delay,
-    duration,
-    easing,
-    css: (t2, u) => `
-			transform: ${transform} translate(${(1 - t2) * xValue}${xUnit}, ${(1 - t2) * yValue}${yUnit});
-			opacity: ${target_opacity - od * u}`
-  };
-}
-function scale(node, { delay = 0, duration = 400, easing = cubicOut, start = 0, opacity = 0 } = {}) {
-  const style = getComputedStyle(node);
-  const target_opacity = +style.opacity;
-  const transform = style.transform === "none" ? "" : style.transform;
-  const sd = 1 - start;
-  const od = target_opacity * (1 - opacity);
-  return {
-    delay,
-    duration,
-    easing,
-    css: (_t, u) => `
-			transform: ${transform} scale(${1 - sd * u});
-			opacity: ${target_opacity - od * u}
-		`
-  };
-}
-const Person = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["color", "size"]);
-  let { color = "currentColor" } = $$props;
-  let { size: size2 = 15 } = $$props;
-  if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-    $$bindings.color(color);
-  if ($$props.size === void 0 && $$bindings.size && size2 !== void 0)
-    $$bindings.size(size2);
-  return `<svg${spread(
-    [
-      { width: escape_attribute_value(size2) },
-      { height: escape_attribute_value(size2) },
-      { viewBox: "0 0 15 15" },
-      { fill: "none" },
-      { xmlns: "http://www.w3.org/2000/svg" },
-      escape_object($$restProps)
-    ],
-    {}
-  )}><path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 0.875C5.49797 0.875 3.875 2.49797 3.875 4.5C3.875 6.15288 4.98124 7.54738 6.49373 7.98351C5.2997 8.12901 4.27557 8.55134 3.50407 9.31167C2.52216 10.2794 2.02502 11.72 2.02502 13.5999C2.02502 13.8623 2.23769 14.0749 2.50002 14.0749C2.76236 14.0749 2.97502 13.8623 2.97502 13.5999C2.97502 11.8799 3.42786 10.7206 4.17091 9.9883C4.91536 9.25463 6.02674 8.87499 7.49995 8.87499C8.97317 8.87499 10.0846 9.25463 10.8291 9.98831C11.5721 10.7206 12.025 11.8799 12.025 13.5999C12.025 13.8623 12.2376 14.0749 12.5 14.0749C12.7623 14.075 12.975 13.8623 12.975 13.6C12.975 11.72 12.4778 10.2794 11.4959 9.31166C10.7244 8.55135 9.70025 8.12903 8.50625 7.98352C10.0187 7.5474 11.125 6.15289 11.125 4.5C11.125 2.49797 9.50203 0.875 7.5 0.875ZM4.825 4.5C4.825 3.02264 6.02264 1.825 7.5 1.825C8.97736 1.825 10.175 3.02264 10.175 4.5C10.175 5.97736 8.97736 7.175 7.5 7.175C6.02264 7.175 4.825 5.97736 4.825 4.5Z"${add_attribute("fill", color, 0)}></path></svg>`;
-});
-const Person$1 = Person;
 function arraysAreEqual(arr1, arr2) {
   if (arr1.length !== arr2.length) {
     return false;
@@ -904,7 +838,7 @@ function isOverflowElement(element) {
     overflowX,
     overflowY,
     display
-  } = getComputedStyle$1(element);
+  } = getComputedStyle(element);
   return /auto|scroll|overlay|hidden|clip/.test(overflow + overflowY + overflowX) && !["inline", "contents"].includes(display);
 }
 function isTableElement(element) {
@@ -912,7 +846,7 @@ function isTableElement(element) {
 }
 function isContainingBlock(element) {
   const webkit = isWebKit();
-  const css2 = getComputedStyle$1(element);
+  const css2 = getComputedStyle(element);
   return css2.transform !== "none" || css2.perspective !== "none" || (css2.containerType ? css2.containerType !== "normal" : false) || !webkit && (css2.backdropFilter ? css2.backdropFilter !== "none" : false) || !webkit && (css2.filter ? css2.filter !== "none" : false) || ["transform", "perspective", "filter"].some((value) => (css2.willChange || "").includes(value)) || ["paint", "layout", "strict", "content"].some((value) => (css2.contain || "").includes(value));
 }
 function getContainingBlock(element) {
@@ -934,7 +868,7 @@ function isWebKit() {
 function isLastTraversableNode(node) {
   return ["html", "body", "#document"].includes(getNodeName(node));
 }
-function getComputedStyle$1(element) {
+function getComputedStyle(element) {
   return getWindow(element).getComputedStyle(element);
 }
 function getNodeScroll(element) {
@@ -989,7 +923,7 @@ function getOverflowAncestors(node, list, traverseIframes) {
   return list.concat(scrollableAncestor, getOverflowAncestors(scrollableAncestor, [], traverseIframes));
 }
 function getCssDimensions(element) {
-  const css2 = getComputedStyle$1(element);
+  const css2 = getComputedStyle(element);
   let width = parseFloat(css2.width) || 0;
   let height = parseFloat(css2.height) || 0;
   const hasOffset = isHTMLElement(element);
@@ -1085,7 +1019,7 @@ function getBoundingClientRect(element, includeScale, isFixedStrategy, offsetPar
     while (currentIFrame && offsetParent && offsetWin !== currentWin) {
       const iframeScale = getScale(currentIFrame);
       const iframeRect = currentIFrame.getBoundingClientRect();
-      const css2 = getComputedStyle$1(currentIFrame);
+      const css2 = getComputedStyle(currentIFrame);
       const left = iframeRect.left + (currentIFrame.clientLeft + parseFloat(css2.paddingLeft)) * iframeScale.x;
       const top = iframeRect.top + (currentIFrame.clientTop + parseFloat(css2.paddingTop)) * iframeScale.y;
       x *= iframeScale.x;
@@ -1167,7 +1101,7 @@ function getDocumentRect(element) {
   const height = max(html.scrollHeight, html.clientHeight, body.scrollHeight, body.clientHeight);
   let x = -scroll.scrollLeft + getWindowScrollBarX(element);
   const y = -scroll.scrollTop;
-  if (getComputedStyle$1(body).direction === "rtl") {
+  if (getComputedStyle(body).direction === "rtl") {
     x += max(html.clientWidth, body.clientWidth) - width;
   }
   return {
@@ -1240,7 +1174,7 @@ function hasFixedPositionAncestor(element, stopNode) {
   if (parentNode === stopNode || !isElement(parentNode) || isLastTraversableNode(parentNode)) {
     return false;
   }
-  return getComputedStyle$1(parentNode).position === "fixed" || hasFixedPositionAncestor(parentNode, stopNode);
+  return getComputedStyle(parentNode).position === "fixed" || hasFixedPositionAncestor(parentNode, stopNode);
 }
 function getClippingElementAncestors(element, cache) {
   const cachedResult = cache.get(element);
@@ -1249,10 +1183,10 @@ function getClippingElementAncestors(element, cache) {
   }
   let result = getOverflowAncestors(element, [], false).filter((el) => isElement(el) && getNodeName(el) !== "body");
   let currentContainingBlockComputedStyle = null;
-  const elementIsFixed = getComputedStyle$1(element).position === "fixed";
+  const elementIsFixed = getComputedStyle(element).position === "fixed";
   let currentNode = elementIsFixed ? getParentNode(element) : element;
   while (isElement(currentNode) && !isLastTraversableNode(currentNode)) {
-    const computedStyle = getComputedStyle$1(currentNode);
+    const computedStyle = getComputedStyle(currentNode);
     const currentNodeIsContaining = isContainingBlock(currentNode);
     if (!currentNodeIsContaining && computedStyle.position === "fixed") {
       currentContainingBlockComputedStyle = null;
@@ -1335,7 +1269,7 @@ function getRectRelativeToOffsetParent(element, offsetParent, strategy) {
   };
 }
 function getTrueOffsetParent(element, polyfill) {
-  if (!isHTMLElement(element) || getComputedStyle$1(element).position === "fixed") {
+  if (!isHTMLElement(element) || getComputedStyle(element).position === "fixed") {
     return null;
   }
   if (polyfill) {
@@ -1349,10 +1283,10 @@ function getOffsetParent(element, polyfill) {
     return window2;
   }
   let offsetParent = getTrueOffsetParent(element, polyfill);
-  while (offsetParent && isTableElement(offsetParent) && getComputedStyle$1(offsetParent).position === "static") {
+  while (offsetParent && isTableElement(offsetParent) && getComputedStyle(offsetParent).position === "static") {
     offsetParent = getTrueOffsetParent(offsetParent, polyfill);
   }
-  if (offsetParent && (getNodeName(offsetParent) === "html" || getNodeName(offsetParent) === "body" && getComputedStyle$1(offsetParent).position === "static" && !isContainingBlock(offsetParent))) {
+  if (offsetParent && (getNodeName(offsetParent) === "html" || getNodeName(offsetParent) === "body" && getComputedStyle(offsetParent).position === "static" && !isContainingBlock(offsetParent))) {
     return window2;
   }
   return offsetParent || getContainingBlock(element) || window2;
@@ -1370,7 +1304,7 @@ const getElementRects = async function(data) {
   };
 };
 function isRTL(element) {
-  return getComputedStyle$1(element).direction === "rtl";
+  return getComputedStyle(element).direction === "rtl";
 }
 const platform = {
   convertOffsetParentRelativeRectToViewportRelativeRect,
@@ -2295,61 +2229,6 @@ function createSwitch(props) {
     options
   };
 }
-function getAttrs(builders) {
-  const attrs = {};
-  builders.forEach((builder) => {
-    Object.keys(builder).forEach((key) => {
-      if (key !== "action") {
-        attrs[key] = builder[key];
-      }
-    });
-  });
-  return attrs;
-}
-const Button$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["href", "type", "builders", "el"]);
-  let { href = void 0 } = $$props;
-  let { type = void 0 } = $$props;
-  let { builders = [] } = $$props;
-  let { el = void 0 } = $$props;
-  const attrs = { "data-button-root": "" };
-  if ($$props.href === void 0 && $$bindings.href && href !== void 0)
-    $$bindings.href(href);
-  if ($$props.type === void 0 && $$bindings.type && type !== void 0)
-    $$bindings.type(type);
-  if ($$props.builders === void 0 && $$bindings.builders && builders !== void 0)
-    $$bindings.builders(builders);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
-  return `${builders && builders.length ? ` ${((tag) => {
-    return tag ? `<${href ? "a" : "button"}${spread(
-      [
-        {
-          type: escape_attribute_value(href ? void 0 : type)
-        },
-        { href: escape_attribute_value(href) },
-        { tabindex: "0" },
-        escape_object(getAttrs(builders)),
-        escape_object($$restProps),
-        escape_object(attrs)
-      ],
-      {}
-    )}${add_attribute("this", el, 0)}>${is_void(tag) ? "" : `${slots.default ? slots.default({}) : ``}`}${is_void(tag) ? "" : `</${tag}>`}` : "";
-  })(href ? "a" : "button")}` : ` ${((tag) => {
-    return tag ? `<${href ? "a" : "button"}${spread(
-      [
-        {
-          type: escape_attribute_value(href ? void 0 : type)
-        },
-        { href: escape_attribute_value(href) },
-        { tabindex: "0" },
-        escape_object($$restProps),
-        escape_object(attrs)
-      ],
-      {}
-    )}>${is_void(tag) ? "" : `${slots.default ? slots.default({}) : ``}`}${is_void(tag) ? "" : `</${tag}>`}` : "";
-  })(href ? "a" : "button")}`}`;
-});
 function getPositioningUpdater(store) {
   return (props = {}) => {
     return updatePositioning$1(store, props);
@@ -2402,9 +2281,9 @@ const Dialog_title = create_ssr_component(($$result, $$props, $$bindings, slots)
   let { asChild = false } = $$props;
   let { id = void 0 } = $$props;
   let { el = void 0 } = $$props;
-  const { elements: { title }, ids, getAttrs: getAttrs2 } = getCtx$2();
+  const { elements: { title }, ids, getAttrs } = getCtx$2();
   $$unsubscribe_title = subscribe(title, (value) => $title = value);
-  const attrs = getAttrs2("title");
+  const attrs = getAttrs("title");
   if ($$props.level === void 0 && $$bindings.level && level !== void 0)
     $$bindings.level(level);
   if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
@@ -2427,142 +2306,13 @@ const Dialog_title = create_ssr_component(($$result, $$props, $$bindings, slots)
     return tag ? `<${level}${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}>${is_void(tag) ? "" : `${slots.default ? slots.default({ builder }) : ``}`}${is_void(tag) ? "" : `</${tag}>`}` : "";
   })(level)}`}`;
 });
-const Dialog_portal = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let builder;
-  let $$restProps = compute_rest_props($$props, ["asChild", "el"]);
-  let $portalled, $$unsubscribe_portalled;
-  let { asChild = false } = $$props;
-  let { el = void 0 } = $$props;
-  const { elements: { portalled }, getAttrs: getAttrs2 } = getCtx$2();
-  $$unsubscribe_portalled = subscribe(portalled, (value) => $portalled = value);
-  const attrs = getAttrs2("portal");
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
-  builder = $portalled;
-  {
-    Object.assign(builder, attrs);
-  }
-  $$unsubscribe_portalled();
-  return `${asChild ? `${slots.default ? slots.default({ builder }) : ``}` : `<div${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({ builder }) : ``}</div>`}`;
-});
-const Dialog_content = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let builder;
-  let $$restProps = compute_rest_props($$props, [
-    "transition",
-    "transitionConfig",
-    "inTransition",
-    "inTransitionConfig",
-    "outTransition",
-    "outTransitionConfig",
-    "asChild",
-    "id",
-    "el"
-  ]);
-  let $content, $$unsubscribe_content;
-  let $open, $$unsubscribe_open;
-  let { transition = void 0 } = $$props;
-  let { transitionConfig = void 0 } = $$props;
-  let { inTransition = void 0 } = $$props;
-  let { inTransitionConfig = void 0 } = $$props;
-  let { outTransition = void 0 } = $$props;
-  let { outTransitionConfig = void 0 } = $$props;
-  let { asChild = false } = $$props;
-  let { id = void 0 } = $$props;
-  let { el = void 0 } = $$props;
-  const { elements: { content }, states: { open }, ids, getAttrs: getAttrs2 } = getCtx$2();
-  $$unsubscribe_content = subscribe(content, (value) => $content = value);
-  $$unsubscribe_open = subscribe(open, (value) => $open = value);
-  const attrs = getAttrs2("content");
-  if ($$props.transition === void 0 && $$bindings.transition && transition !== void 0)
-    $$bindings.transition(transition);
-  if ($$props.transitionConfig === void 0 && $$bindings.transitionConfig && transitionConfig !== void 0)
-    $$bindings.transitionConfig(transitionConfig);
-  if ($$props.inTransition === void 0 && $$bindings.inTransition && inTransition !== void 0)
-    $$bindings.inTransition(inTransition);
-  if ($$props.inTransitionConfig === void 0 && $$bindings.inTransitionConfig && inTransitionConfig !== void 0)
-    $$bindings.inTransitionConfig(inTransitionConfig);
-  if ($$props.outTransition === void 0 && $$bindings.outTransition && outTransition !== void 0)
-    $$bindings.outTransition(outTransition);
-  if ($$props.outTransitionConfig === void 0 && $$bindings.outTransitionConfig && outTransitionConfig !== void 0)
-    $$bindings.outTransitionConfig(outTransitionConfig);
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.id === void 0 && $$bindings.id && id !== void 0)
-    $$bindings.id(id);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
-  {
-    if (id) {
-      ids.content.set(id);
-    }
-  }
-  builder = $content;
-  {
-    Object.assign(builder, attrs);
-  }
-  $$unsubscribe_content();
-  $$unsubscribe_open();
-  return `${asChild && $open ? `${slots.default ? slots.default({ builder }) : ``}` : `${transition && $open ? `<div${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({ builder }) : ``}</div>` : `${inTransition && outTransition && $open ? `<div${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({ builder }) : ``}</div>` : `${inTransition && $open ? `<div${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({ builder }) : ``}</div>` : `${outTransition && $open ? `<div${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({ builder }) : ``}</div>` : `${$open ? `<div${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({ builder }) : ``}</div>` : ``}`}`}`}`}`}`;
-});
-const Dialog_overlay = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let builder;
-  let $$restProps = compute_rest_props($$props, [
-    "transition",
-    "transitionConfig",
-    "inTransition",
-    "inTransitionConfig",
-    "outTransition",
-    "outTransitionConfig",
-    "asChild",
-    "el"
-  ]);
-  let $overlay, $$unsubscribe_overlay;
-  let $open, $$unsubscribe_open;
-  let { transition = void 0 } = $$props;
-  let { transitionConfig = void 0 } = $$props;
-  let { inTransition = void 0 } = $$props;
-  let { inTransitionConfig = void 0 } = $$props;
-  let { outTransition = void 0 } = $$props;
-  let { outTransitionConfig = void 0 } = $$props;
-  let { asChild = false } = $$props;
-  let { el = void 0 } = $$props;
-  const { elements: { overlay }, states: { open }, getAttrs: getAttrs2 } = getCtx$2();
-  $$unsubscribe_overlay = subscribe(overlay, (value) => $overlay = value);
-  $$unsubscribe_open = subscribe(open, (value) => $open = value);
-  const attrs = getAttrs2("overlay");
-  if ($$props.transition === void 0 && $$bindings.transition && transition !== void 0)
-    $$bindings.transition(transition);
-  if ($$props.transitionConfig === void 0 && $$bindings.transitionConfig && transitionConfig !== void 0)
-    $$bindings.transitionConfig(transitionConfig);
-  if ($$props.inTransition === void 0 && $$bindings.inTransition && inTransition !== void 0)
-    $$bindings.inTransition(inTransition);
-  if ($$props.inTransitionConfig === void 0 && $$bindings.inTransitionConfig && inTransitionConfig !== void 0)
-    $$bindings.inTransitionConfig(inTransitionConfig);
-  if ($$props.outTransition === void 0 && $$bindings.outTransition && outTransition !== void 0)
-    $$bindings.outTransition(outTransition);
-  if ($$props.outTransitionConfig === void 0 && $$bindings.outTransitionConfig && outTransitionConfig !== void 0)
-    $$bindings.outTransitionConfig(outTransitionConfig);
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
-  builder = $overlay;
-  {
-    Object.assign(builder, attrs);
-  }
-  $$unsubscribe_overlay();
-  $$unsubscribe_open();
-  return `${asChild && $open ? `${slots.default ? slots.default({ builder }) : ``}` : `${transition && $open ? ` <div${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}></div>` : `${inTransition && outTransition && $open ? ` <div${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}></div>` : `${inTransition && $open ? ` <div${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}></div>` : `${outTransition && $open ? ` <div${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}></div>` : `${$open ? ` <div${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}></div>` : ``}`}`}`}`}`}`;
-});
 function getLabelData() {
   const NAME = "label";
   const PARTS = ["root"];
-  const getAttrs2 = createBitAttrs(NAME, PARTS);
+  const getAttrs = createBitAttrs(NAME, PARTS);
   return {
     NAME,
-    getAttrs: getAttrs2
+    getAttrs
   };
 }
 const Label$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -2574,8 +2324,8 @@ const Label$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   const { elements: { root } } = createLabel();
   $$unsubscribe_root = subscribe(root, (value) => $root = value);
   createDispatcher();
-  const { getAttrs: getAttrs2 } = getLabelData();
-  const attrs = getAttrs2("root");
+  const { getAttrs } = getLabelData();
+  const attrs = getAttrs("root");
   if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
     $$bindings.asChild(asChild);
   if ($$props.el === void 0 && $$bindings.el && el !== void 0)
@@ -2615,10 +2365,10 @@ function getCtx$1() {
 }
 function setCtx$1(props) {
   const { NAME, PARTS } = getSelectData();
-  const getAttrs2 = createBitAttrs(NAME, PARTS);
+  const getAttrs = createBitAttrs(NAME, PARTS);
   const select = {
     ...createSelect({ ...removeUndefined(props), forceVisible: true }),
-    getAttrs: getAttrs2
+    getAttrs
   };
   setContext(NAME, select);
   return {
@@ -2634,12 +2384,12 @@ function setItemCtx(value) {
 }
 function getItemIndicator() {
   const { ITEM_NAME } = getSelectData();
-  const { helpers: { isSelected }, getAttrs: getAttrs2 } = getCtx$1();
+  const { helpers: { isSelected }, getAttrs } = getCtx$1();
   const value = getContext(ITEM_NAME);
   return {
     value,
     isSelected,
-    getAttrs: getAttrs2
+    getAttrs
   };
 }
 function updatePositioning(props) {
@@ -2831,11 +2581,11 @@ const Select_content$1 = create_ssr_component(($$result, $$props, $$bindings, sl
   let { strategy = "absolute" } = $$props;
   let { overlap = false } = $$props;
   let { el = void 0 } = $$props;
-  const { elements: { menu }, states: { open }, ids, getAttrs: getAttrs2 } = getCtx$1();
+  const { elements: { menu }, states: { open }, ids, getAttrs } = getCtx$1();
   $$unsubscribe_menu = subscribe(menu, (value) => $menu = value);
   $$unsubscribe_open = subscribe(open, (value) => $open = value);
   createDispatcher();
-  const attrs = getAttrs2("content");
+  const attrs = getAttrs("content");
   if ($$props.transition === void 0 && $$bindings.transition && transition !== void 0)
     $$bindings.transition(transition);
   if ($$props.transitionConfig === void 0 && $$bindings.transitionConfig && transitionConfig !== void 0)
@@ -2914,7 +2664,7 @@ const Select_input = create_ssr_component(($$result, $$props, $$bindings, slots)
   let $disabled, $$unsubscribe_disabled;
   let { asChild = false } = $$props;
   let { el = void 0 } = $$props;
-  const { elements: { hiddenInput }, options: { disabled }, getAttrs: getAttrs2 } = getCtx$1();
+  const { elements: { hiddenInput }, options: { disabled }, getAttrs } = getCtx$1();
   $$unsubscribe_hiddenInput = subscribe(hiddenInput, (value) => $hiddenInput = value);
   $$unsubscribe_disabled = subscribe(disabled, (value) => $disabled = value);
   if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
@@ -2922,7 +2672,7 @@ const Select_input = create_ssr_component(($$result, $$props, $$bindings, slots)
   if ($$props.el === void 0 && $$bindings.el && el !== void 0)
     $$bindings.el(el);
   attrs = {
-    ...getAttrs2("input"),
+    ...getAttrs("input"),
     disabled: $disabled ? true : void 0
   };
   builder = $hiddenInput;
@@ -2944,11 +2694,11 @@ const Select_item$1 = create_ssr_component(($$result, $$props, $$bindings, slots
   let { label = void 0 } = $$props;
   let { asChild = false } = $$props;
   let { el = void 0 } = $$props;
-  const { elements: { option: item }, helpers: { isSelected: isSelectedStore }, getAttrs: getAttrs2 } = setItemCtx(value);
+  const { elements: { option: item }, helpers: { isSelected: isSelectedStore }, getAttrs } = setItemCtx(value);
   $$unsubscribe_item = subscribe(item, (value2) => $item = value2);
   $$unsubscribe_isSelectedStore = subscribe(isSelectedStore, (value2) => $isSelectedStore = value2);
   createDispatcher();
-  const attrs = getAttrs2("item");
+  const attrs = getAttrs("item");
   if ($$props.value === void 0 && $$bindings.value && value !== void 0)
     $$bindings.value(value);
   if ($$props.disabled === void 0 && $$bindings.disabled && disabled !== void 0)
@@ -2973,9 +2723,9 @@ const Select_item_indicator = create_ssr_component(($$result, $$props, $$binding
   let $isSelected, $$unsubscribe_isSelected;
   let { asChild = false } = $$props;
   let { el = void 0 } = $$props;
-  const { isSelected, value, getAttrs: getAttrs2 } = getItemIndicator();
+  const { isSelected, value, getAttrs } = getItemIndicator();
   $$unsubscribe_isSelected = subscribe(isSelected, (value2) => $isSelected = value2);
-  const attrs = getAttrs2("indicator");
+  const attrs = getAttrs("indicator");
   if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
     $$bindings.asChild(asChild);
   if ($$props.el === void 0 && $$bindings.el && el !== void 0)
@@ -2990,10 +2740,10 @@ const Select_trigger$1 = create_ssr_component(($$result, $$props, $$bindings, sl
   let { asChild = false } = $$props;
   let { id = void 0 } = $$props;
   let { el = void 0 } = $$props;
-  const { elements: { trigger }, ids, getAttrs: getAttrs2 } = getCtx$1();
+  const { elements: { trigger }, ids, getAttrs } = getCtx$1();
   $$unsubscribe_trigger = subscribe(trigger, (value) => $trigger = value);
   createDispatcher();
-  const attrs = getAttrs2("trigger");
+  const attrs = getAttrs("trigger");
   if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
     $$bindings.asChild(asChild);
   if ($$props.id === void 0 && $$bindings.id && id !== void 0)
@@ -3019,9 +2769,9 @@ const Select_value = create_ssr_component(($$result, $$props, $$bindings, slots)
   let { placeholder = "" } = $$props;
   let { asChild = false } = $$props;
   let { el = void 0 } = $$props;
-  const { states: { selectedLabel }, getAttrs: getAttrs2 } = getCtx$1();
+  const { states: { selectedLabel }, getAttrs } = getCtx$1();
   $$unsubscribe_selectedLabel = subscribe(selectedLabel, (value) => $selectedLabel = value);
-  const attrs = getAttrs2("value");
+  const attrs = getAttrs("value");
   if ($$props.placeholder === void 0 && $$bindings.placeholder && placeholder !== void 0)
     $$bindings.placeholder(placeholder);
   if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
@@ -3051,8 +2801,8 @@ function getSwitchData() {
 }
 function setCtx(props) {
   const { NAME, PARTS } = getSwitchData();
-  const getAttrs2 = createBitAttrs(NAME, PARTS);
-  const Switch2 = { ...createSwitch(removeUndefined(props)), getAttrs: getAttrs2 };
+  const getAttrs = createBitAttrs(NAME, PARTS);
+  const Switch2 = { ...createSwitch(removeUndefined(props)), getAttrs };
   setContext(NAME, Switch2);
   return {
     ...Switch2,
@@ -3127,7 +2877,7 @@ const Switch$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => 
   let { asChild = false } = $$props;
   let { inputAttrs = void 0 } = $$props;
   let { el = void 0 } = $$props;
-  const { elements: { root }, states: { checked: localChecked }, updateOption, getAttrs: getAttrs2 } = setCtx({
+  const { elements: { root }, states: { checked: localChecked }, updateOption, getAttrs } = setCtx({
     disabled,
     name: name2,
     value,
@@ -3178,7 +2928,7 @@ const Switch$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => 
   }
   builder = $root;
   attrs = {
-    ...getAttrs2("root"),
+    ...getAttrs("root"),
     "data-checked": checked ? "" : void 0
   };
   {
@@ -3193,19 +2943,123 @@ const Switch_thumb = create_ssr_component(($$result, $$props, $$bindings, slots)
   let $checked, $$unsubscribe_checked;
   let { asChild = false } = $$props;
   let { el = void 0 } = $$props;
-  const { states: { checked }, getAttrs: getAttrs2 } = getCtx();
+  const { states: { checked }, getAttrs } = getCtx();
   $$unsubscribe_checked = subscribe(checked, (value) => $checked = value);
   if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
     $$bindings.asChild(asChild);
   if ($$props.el === void 0 && $$bindings.el && el !== void 0)
     $$bindings.el(el);
   attrs = {
-    ...getAttrs2("thumb"),
+    ...getAttrs("thumb"),
     "data-state": $checked ? "checked" : "unchecked",
     "data-checked": $checked ? "" : void 0
   };
   $$unsubscribe_checked();
   return `${asChild ? `${slots.default ? slots.default({ attrs, checked: $checked }) : ``}` : `<span${spread([escape_object($$restProps), escape_object(attrs)], {})}${add_attribute("this", el, 0)}></span>`}`;
+});
+const Person = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["color", "size"]);
+  let { color = "currentColor" } = $$props;
+  let { size: size2 = 15 } = $$props;
+  if ($$props.color === void 0 && $$bindings.color && color !== void 0)
+    $$bindings.color(color);
+  if ($$props.size === void 0 && $$bindings.size && size2 !== void 0)
+    $$bindings.size(size2);
+  return `<svg${spread(
+    [
+      { width: escape_attribute_value(size2) },
+      { height: escape_attribute_value(size2) },
+      { viewBox: "0 0 15 15" },
+      { fill: "none" },
+      { xmlns: "http://www.w3.org/2000/svg" },
+      escape_object($$restProps)
+    ],
+    {}
+  )}><path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 0.875C5.49797 0.875 3.875 2.49797 3.875 4.5C3.875 6.15288 4.98124 7.54738 6.49373 7.98351C5.2997 8.12901 4.27557 8.55134 3.50407 9.31167C2.52216 10.2794 2.02502 11.72 2.02502 13.5999C2.02502 13.8623 2.23769 14.0749 2.50002 14.0749C2.76236 14.0749 2.97502 13.8623 2.97502 13.5999C2.97502 11.8799 3.42786 10.7206 4.17091 9.9883C4.91536 9.25463 6.02674 8.87499 7.49995 8.87499C8.97317 8.87499 10.0846 9.25463 10.8291 9.98831C11.5721 10.7206 12.025 11.8799 12.025 13.5999C12.025 13.8623 12.2376 14.0749 12.5 14.0749C12.7623 14.075 12.975 13.8623 12.975 13.6C12.975 11.72 12.4778 10.2794 11.4959 9.31166C10.7244 8.55135 9.70025 8.12903 8.50625 7.98352C10.0187 7.5474 11.125 6.15289 11.125 4.5C11.125 2.49797 9.50203 0.875 7.5 0.875ZM4.825 4.5C4.825 3.02264 6.02264 1.825 7.5 1.825C8.97736 1.825 10.175 3.02264 10.175 4.5C10.175 5.97736 8.97736 7.175 7.5 7.175C6.02264 7.175 4.825 5.97736 4.825 4.5Z"${add_attribute("fill", color, 0)}></path></svg>`;
+});
+const Person$1 = Person;
+const css$1 = {
+  code: ".skeumorphic-button.svelte-8i710s{transition:box-shadow 50ms;box-shadow:inset 0 0 8px 0 rgba(0, 0, 0, 0.2), var(--skeumorphic-shadow-light)}.skeumorphic-button-dark.svelte-8i710s{transition:box-shadow 50ms;box-shadow:inset 0 0 8px 0 rgba(0, 0, 0, 0.2), var(--skeumorphic-shadow)}.skeumorphic-button-no-inner-shadow.svelte-8i710s{transition:box-shadow 50ms;box-shadow:var(--skeumorphic-shadow-light)}",
+  map: null
+};
+const Button = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, [
+    "class",
+    "variant",
+    "size",
+    "builders",
+    "decoration",
+    "wrapperClass",
+    "noInnerShadow"
+  ]);
+  let { class: className = void 0 } = $$props;
+  let { variant = "default" } = $$props;
+  let { size: size2 = "default" } = $$props;
+  let { builders = [] } = $$props;
+  let { decoration = "default" } = $$props;
+  let { wrapperClass } = $$props;
+  let { noInnerShadow = false } = $$props;
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  if ($$props.variant === void 0 && $$bindings.variant && variant !== void 0)
+    $$bindings.variant(variant);
+  if ($$props.size === void 0 && $$bindings.size && size2 !== void 0)
+    $$bindings.size(size2);
+  if ($$props.builders === void 0 && $$bindings.builders && builders !== void 0)
+    $$bindings.builders(builders);
+  if ($$props.decoration === void 0 && $$bindings.decoration && decoration !== void 0)
+    $$bindings.decoration(decoration);
+  if ($$props.wrapperClass === void 0 && $$bindings.wrapperClass && wrapperClass !== void 0)
+    $$bindings.wrapperClass(wrapperClass);
+  if ($$props.noInnerShadow === void 0 && $$bindings.noInnerShadow && noInnerShadow !== void 0)
+    $$bindings.noInnerShadow(noInnerShadow);
+  $$result.css.add(css$1);
+  return `${decoration === "op1" ? `<div class="${escape(null_to_empty(cn("relative flex items-center gap-[4px] border border-black/10 bg-black/10 p-[2px] dark:bg-black/20 md:rounded", wrapperClass)), true) + " svelte-8i710s"}"><div class="shadow"><div class="flex items-center justify-center overflow-hidden rounded shadow-inner shadow-white/40 dark:shadow-white/10">${validate_component(Button$1, "ButtonPrimitive.Root").$$render(
+    $$result,
+    Object.assign(
+      {},
+      { builders },
+      {
+        class: "h-[45.4px] rounded-[2px] px-2 text-black"
+      },
+      { type: "button" },
+      $$restProps
+    ),
+    {},
+    {
+      default: () => {
+        return `<div class="${escape(null_to_empty(cn(buttonVariants({ variant, size: size2, className }), "skeumorphic-button h-[29.4px] rounded-full border-2 border-offwhite bg-offwhite text-black transition duration-700 hover:bg-offwhite")), true) + " svelte-8i710s"}">${slots.default ? slots.default({}) : ``}</div>`;
+      }
+    }
+  )}</div></div></div>` : `${decoration === "dark-op1" ? `<div class="${escape(null_to_empty(cn("relative flex items-center gap-[4px]", wrapperClass)), true) + " svelte-8i710s"}"><div class="flex w-full items-center justify-center">${validate_component(Button$1, "ButtonPrimitive.Root").$$render($$result, Object.assign({}, { builders }, { class: "p-1.5 w-full" }, { type: "button" }, $$restProps), {}, {
+    default: () => {
+      return `<div class="${escape(null_to_empty(cn(buttonVariants({ variant, size: size2, className }), "skeumorphic-button-dark h-[29.4px] w-full rounded-full border-2 transition duration-700")), true) + " svelte-8i710s"}">${slots.default ? slots.default({}) : ``}</div>`;
+    }
+  })}</div></div>` : `${decoration === "floating-op1" ? `<div class="${escape(null_to_empty(cn("relative flex items-center gap-[4px]", wrapperClass)), true) + " svelte-8i710s"}"><div class="flex w-full flex-grow items-center justify-center">${validate_component(Button$1, "ButtonPrimitive.Root").$$render($$result, Object.assign({}, { builders }, { class: "w-full p-1.5" }, { type: "button" }, $$restProps), {}, {
+    default: () => {
+      return `<div class="${escape(
+        null_to_empty(cn(buttonVariants({ variant, size: size2, className }), "h-[29.4px] rounded-full border-2 transition duration-700", noInnerShadow ? "skeumorphic-button-no-inner-shadow" : "skeumorphic-button")),
+        true
+      ) + " svelte-8i710s"}">${slots.default ? slots.default({}) : ``}</div>`;
+    }
+  })}</div></div>` : `${validate_component(Button$1, "ButtonPrimitive.Root").$$render(
+    $$result,
+    Object.assign(
+      {},
+      { builders },
+      {
+        class: "h-[45.4px] rounded-[2px] px-2 text-black"
+      },
+      { type: "button" },
+      $$restProps
+    ),
+    {},
+    {
+      default: () => {
+        return `<div class="${escape(null_to_empty(cn(buttonVariants({ variant, size: size2, className }), "skeumorphic-button h-[29.4px] rounded-full border-2 border-offwhite bg-offwhite text-black transition duration-700 hover:bg-offwhite")), true) + " svelte-8i710s"}">${slots.default ? slots.default({}) : ``}</div>`;
+      }
+    }
+  )}`}`}`}`;
 });
 const Check = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["size", "role", "color", "ariaLabel", "withEvents"]);
@@ -3418,164 +3272,6 @@ const Select_trigger = create_ssr_component(($$result, $$props, $$bindings, slot
 const Root = Select;
 const Input = Select_input;
 const Value = Select_value;
-const css$2 = {
-  code: ".hide.svelte-1qs6j7g{animation:svelte-1qs6j7g-hide 400ms 2000ms forwards ease-out}@keyframes svelte-1qs6j7g-hide{0%{max-width:10rem;overflow:hidden;opacity:1}80%{max-width:0px;overflow:hidden;opacity:1}100%{max-width:0px;overflow:hidden;opacity:0}}",
-  map: null
-};
-const Logo = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let { simplified = false } = $$props;
-  if ($$props.simplified === void 0 && $$bindings.simplified && simplified !== void 0)
-    $$bindings.simplified(simplified);
-  $$result.css.add(css$2);
-  return `${simplified ? `<div class="font-sans font-semibold flex items-center gap-1 text-xl"><div class="hide svelte-1qs6j7g" data-svelte-h="svelte-1wuy7ld">Empathy</div> ${validate_component(SparklePill, "SparklePill").$$render(
-    $$result,
-    {
-      class: "shadow-md dark:shadow-gray-200/30"
-    },
-    {},
-    {}
-  )} <div class="hide svelte-1qs6j7g" data-svelte-h="svelte-1x1vvqj">Link</div></div>` : `<div class="font-sans font-semibold flex items-center gap-1 text-xl">Empathy
-  ${validate_component(SparklePill, "SparklePill").$$render(
-    $$result,
-    {
-      class: "shadow-md dark:shadow-gray-200/30"
-    },
-    {},
-    {}
-  )}
-  Link</div>`}`;
-});
-const css$1 = {
-  code: ".skeumorphic-button.svelte-8i710s{transition:box-shadow 50ms;box-shadow:inset 0 0 8px 0 rgba(0, 0, 0, 0.2), var(--skeumorphic-shadow-light)}.skeumorphic-button-dark.svelte-8i710s{transition:box-shadow 50ms;box-shadow:inset 0 0 8px 0 rgba(0, 0, 0, 0.2), var(--skeumorphic-shadow)}.skeumorphic-button-no-inner-shadow.svelte-8i710s{transition:box-shadow 50ms;box-shadow:var(--skeumorphic-shadow-light)}",
-  map: null
-};
-const Button = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, [
-    "class",
-    "variant",
-    "size",
-    "builders",
-    "decoration",
-    "wrapperClass",
-    "noInnerShadow"
-  ]);
-  let { class: className = void 0 } = $$props;
-  let { variant = "default" } = $$props;
-  let { size: size2 = "default" } = $$props;
-  let { builders = [] } = $$props;
-  let { decoration = "default" } = $$props;
-  let { wrapperClass } = $$props;
-  let { noInnerShadow = false } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
-  if ($$props.variant === void 0 && $$bindings.variant && variant !== void 0)
-    $$bindings.variant(variant);
-  if ($$props.size === void 0 && $$bindings.size && size2 !== void 0)
-    $$bindings.size(size2);
-  if ($$props.builders === void 0 && $$bindings.builders && builders !== void 0)
-    $$bindings.builders(builders);
-  if ($$props.decoration === void 0 && $$bindings.decoration && decoration !== void 0)
-    $$bindings.decoration(decoration);
-  if ($$props.wrapperClass === void 0 && $$bindings.wrapperClass && wrapperClass !== void 0)
-    $$bindings.wrapperClass(wrapperClass);
-  if ($$props.noInnerShadow === void 0 && $$bindings.noInnerShadow && noInnerShadow !== void 0)
-    $$bindings.noInnerShadow(noInnerShadow);
-  $$result.css.add(css$1);
-  return `${decoration === "op1" ? `<div class="${escape(null_to_empty(cn("relative flex items-center gap-[4px] border border-black/10 bg-black/10 p-[2px] dark:bg-black/20 md:rounded", wrapperClass)), true) + " svelte-8i710s"}"><div class="shadow"><div class="flex items-center justify-center overflow-hidden rounded shadow-inner shadow-white/40 dark:shadow-white/10">${validate_component(Button$1, "ButtonPrimitive.Root").$$render(
-    $$result,
-    Object.assign(
-      {},
-      { builders },
-      {
-        class: "h-[45.4px] rounded-[2px] bg-offwhite px-2 text-black"
-      },
-      { type: "button" },
-      $$restProps
-    ),
-    {},
-    {
-      default: () => {
-        return `<div class="${escape(null_to_empty(cn(buttonVariants({ variant, size: size2, className }), "skeumorphic-button h-[29.4px] rounded-full border-2 border-offwhite bg-offwhite text-black transition duration-700 hover:bg-offwhite")), true) + " svelte-8i710s"}">${slots.default ? slots.default({}) : ``}</div>`;
-      }
-    }
-  )}</div></div></div>` : `${decoration === "dark-op1" ? `<div class="${escape(null_to_empty(cn("relative flex items-center gap-[4px]", wrapperClass)), true) + " svelte-8i710s"}"><div class="flex w-full items-center justify-center">${validate_component(Button$1, "ButtonPrimitive.Root").$$render($$result, Object.assign({}, { builders }, { class: "p-1.5 w-full" }, { type: "button" }, $$restProps), {}, {
-    default: () => {
-      return `<div class="${escape(null_to_empty(cn(buttonVariants({ variant, size: size2, className }), "skeumorphic-button-dark h-[29.4px] w-full rounded-full border-2 transition duration-700")), true) + " svelte-8i710s"}">${slots.default ? slots.default({}) : ``}</div>`;
-    }
-  })}</div></div>` : `${decoration === "floating-op1" ? `<div class="${escape(null_to_empty(cn("relative flex items-center gap-[4px]", wrapperClass)), true) + " svelte-8i710s"}"><div class="flex w-full flex-grow items-center justify-center">${validate_component(Button$1, "ButtonPrimitive.Root").$$render($$result, Object.assign({}, { builders }, { class: "w-full p-1.5" }, { type: "button" }, $$restProps), {}, {
-    default: () => {
-      return `<div class="${escape(
-        null_to_empty(cn(buttonVariants({ variant, size: size2, className }), "h-[29.4px] rounded-full border-2 transition duration-700", noInnerShadow ? "skeumorphic-button-no-inner-shadow" : "skeumorphic-button")),
-        true
-      ) + " svelte-8i710s"}">${slots.default ? slots.default({}) : ``}</div>`;
-    }
-  })}</div></div>` : `${validate_component(Button$1, "ButtonPrimitive.Root").$$render(
-    $$result,
-    Object.assign(
-      {},
-      { builders },
-      {
-        class: "h-[45.4px] rounded-[2px] bg-offwhite px-2 text-black"
-      },
-      { type: "button" },
-      $$restProps
-    ),
-    {},
-    {
-      default: () => {
-        return `<div class="${escape(null_to_empty(cn(buttonVariants({ variant, size: size2, className }), "skeumorphic-button h-[29.4px] rounded-full border-2 border-offwhite bg-offwhite text-black transition duration-700 hover:bg-offwhite")), true) + " svelte-8i710s"}">${slots.default ? slots.default({}) : ``}</div>`;
-      }
-    }
-  )}`}`}`}`;
-});
-const Cross1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["size", "role", "color", "ariaLabel", "withEvents"]);
-  const ctx = getContext("iconCtx") ?? {};
-  let { size: size2 = ctx.size || "24" } = $$props;
-  let { role = ctx.role || "img" } = $$props;
-  let { color = ctx.color || "currentColor" } = $$props;
-  let { ariaLabel = "cross 1," } = $$props;
-  let { withEvents = false } = $$props;
-  if ($$props.size === void 0 && $$bindings.size && size2 !== void 0)
-    $$bindings.size(size2);
-  if ($$props.role === void 0 && $$bindings.role && role !== void 0)
-    $$bindings.role(role);
-  if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-    $$bindings.color(color);
-  if ($$props.ariaLabel === void 0 && $$bindings.ariaLabel && ariaLabel !== void 0)
-    $$bindings.ariaLabel(ariaLabel);
-  if ($$props.withEvents === void 0 && $$bindings.withEvents && withEvents !== void 0)
-    $$bindings.withEvents(withEvents);
-  return `${withEvents ? `<svg${spread(
-    [
-      { width: escape_attribute_value(size2) },
-      { height: escape_attribute_value(size2) },
-      escape_object($$restProps),
-      { role: escape_attribute_value(role) },
-      {
-        "aria-label": escape_attribute_value(ariaLabel)
-      },
-      { viewBox: "0 0 15 15" },
-      { fill: escape_attribute_value(color) },
-      { xmlns: "http://www.w3.org/2000/svg" }
-    ],
-    {}
-  )}><path fill-rule="evenodd" clip-rule="evenodd" d="M12.8536 2.85355C13.0488 2.65829 13.0488 2.34171 12.8536 2.14645C12.6583 1.95118 12.3417 1.95118 12.1464 2.14645L7.5 6.79289L2.85355 2.14645C2.65829 1.95118 2.34171 1.95118 2.14645 2.14645C1.95118 2.34171 1.95118 2.65829 2.14645 2.85355L6.79289 7.5L2.14645 12.1464C1.95118 12.3417 1.95118 12.6583 2.14645 12.8536C2.34171 13.0488 2.65829 13.0488 2.85355 12.8536L7.5 8.20711L12.1464 12.8536C12.3417 13.0488 12.6583 13.0488 12.8536 12.8536C13.0488 12.6583 13.0488 12.3417 12.8536 12.1464L8.20711 7.5L12.8536 2.85355Z" fill="currentColor"></path></svg>` : `<svg${spread(
-    [
-      { width: escape_attribute_value(size2) },
-      { height: escape_attribute_value(size2) },
-      escape_object($$restProps),
-      { role: escape_attribute_value(role) },
-      {
-        "aria-label": escape_attribute_value(ariaLabel)
-      },
-      { viewBox: "0 0 15 15" },
-      { fill: escape_attribute_value(color) },
-      { xmlns: "http://www.w3.org/2000/svg" }
-    ],
-    {}
-  )}><path fill-rule="evenodd" clip-rule="evenodd" d="M12.8536 2.85355C13.0488 2.65829 13.0488 2.34171 12.8536 2.14645C12.6583 1.95118 12.3417 1.95118 12.1464 2.14645L7.5 6.79289L2.85355 2.14645C2.65829 1.95118 2.34171 1.95118 2.14645 2.14645C1.95118 2.34171 1.95118 2.65829 2.14645 2.85355L6.79289 7.5L2.14645 12.1464C1.95118 12.3417 1.95118 12.6583 2.14645 12.8536C2.34171 13.0488 2.65829 13.0488 2.85355 12.8536L7.5 8.20711L12.1464 12.8536C12.3417 13.0488 12.6583 13.0488 12.8536 12.8536C13.0488 12.6583 13.0488 12.3417 12.8536 12.1464L8.20711 7.5L12.8536 2.85355Z" fill="currentColor"></path></svg>`} `;
-});
 const Exit = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["size", "role", "color", "ariaLabel", "withEvents"]);
   const ctx = getContext("iconCtx") ?? {};
@@ -3623,110 +3319,6 @@ const Exit = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     ],
     {}
   )}><path fill-rule="evenodd" clip-rule="evenodd" d="M3 1C2.44771 1 2 1.44772 2 2V13C2 13.5523 2.44772 14 3 14H10.5C10.7761 14 11 13.7761 11 13.5C11 13.2239 10.7761 13 10.5 13H3V2L10.5 2C10.7761 2 11 1.77614 11 1.5C11 1.22386 10.7761 1 10.5 1H3ZM12.6036 4.89645C12.4083 4.70118 12.0917 4.70118 11.8964 4.89645C11.7012 5.09171 11.7012 5.40829 11.8964 5.60355L13.2929 7H6.5C6.22386 7 6 7.22386 6 7.5C6 7.77614 6.22386 8 6.5 8H13.2929L11.8964 9.39645C11.7012 9.59171 11.7012 9.90829 11.8964 10.1036C12.0917 10.2988 12.4083 10.2988 12.6036 10.1036L14.8536 7.85355C15.0488 7.65829 15.0488 7.34171 14.8536 7.14645L12.6036 4.89645Z" fill="currentColor"></path></svg>`} `;
-});
-const Sheet_portal = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["class"]);
-  let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
-  return `${validate_component(Dialog_portal, "SheetPrimitive.Portal").$$render($$result, Object.assign({}, { class: cn(className) }, $$restProps), {}, {
-    default: () => {
-      return `${slots.default ? slots.default({}) : ``}`;
-    }
-  })}`;
-});
-const Sheet_overlay = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["class", "transition", "transitionConfig"]);
-  let { class: className = void 0 } = $$props;
-  let { transition = fade } = $$props;
-  let { transitionConfig = { duration: 150 } } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
-  if ($$props.transition === void 0 && $$bindings.transition && transition !== void 0)
-    $$bindings.transition(transition);
-  if ($$props.transitionConfig === void 0 && $$bindings.transitionConfig && transitionConfig !== void 0)
-    $$bindings.transitionConfig(transitionConfig);
-  return `${validate_component(Dialog_overlay, "SheetPrimitive.Overlay").$$render(
-    $$result,
-    Object.assign(
-      {},
-      { transition },
-      { transitionConfig },
-      {
-        class: cn("fixed inset-0 z-[1002] backdrop-blur-lg backdrop-brightness-[0.3]", className)
-      },
-      $$restProps
-    ),
-    {},
-    {}
-  )}`;
-});
-const Sheet_content = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, [
-    "class",
-    "side",
-    "inTransition",
-    "inTransitionConfig",
-    "outTransition",
-    "outTransitionConfig"
-  ]);
-  let { class: className = void 0 } = $$props;
-  let { side = "right" } = $$props;
-  let { inTransition = fly } = $$props;
-  let { inTransitionConfig = sheetTransitions[side ?? "right"].in } = $$props;
-  let { outTransition = fly } = $$props;
-  let { outTransitionConfig = sheetTransitions[side ?? "right"].out } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
-  if ($$props.side === void 0 && $$bindings.side && side !== void 0)
-    $$bindings.side(side);
-  if ($$props.inTransition === void 0 && $$bindings.inTransition && inTransition !== void 0)
-    $$bindings.inTransition(inTransition);
-  if ($$props.inTransitionConfig === void 0 && $$bindings.inTransitionConfig && inTransitionConfig !== void 0)
-    $$bindings.inTransitionConfig(inTransitionConfig);
-  if ($$props.outTransition === void 0 && $$bindings.outTransition && outTransition !== void 0)
-    $$bindings.outTransition(outTransition);
-  if ($$props.outTransitionConfig === void 0 && $$bindings.outTransitionConfig && outTransitionConfig !== void 0)
-    $$bindings.outTransitionConfig(outTransitionConfig);
-  return `${validate_component(Sheet_portal, "SheetPortal").$$render($$result, {}, {}, {
-    default: () => {
-      return `${validate_component(Sheet_overlay, "SheetOverlay").$$render($$result, {}, {}, {})} ${validate_component(Dialog_content, "SheetPrimitive.Content").$$render(
-        $$result,
-        Object.assign(
-          {},
-          { inTransition },
-          { inTransitionConfig },
-          { outTransition },
-          { outTransitionConfig },
-          {
-            class: cn(sheetVariants({ side }), className)
-          },
-          $$restProps
-        ),
-        {},
-        {
-          default: () => {
-            return `${slots.default ? slots.default({}) : ``}`;
-          }
-        }
-      )}`;
-    }
-  })}`;
-});
-const Sheet_header = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["class"]);
-  let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
-  return `<div${spread(
-    [
-      {
-        class: escape_attribute_value(cn("flex flex-col space-y-2 text-left justify-start items-start", className))
-      },
-      escape_object($$restProps)
-    ],
-    {}
-  )}>${slots.default ? slots.default({}) : ``}</div>`;
 });
 const Sheet_footer = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
@@ -3953,7 +3545,7 @@ const Avatar_1 = create_ssr_component(($$result, $$props, $$bindings, slots) => 
                 }
               })}</div></div> ${validate_component(Sheet_footer, "Sheet.Footer").$$render($$result, { class: "w-full" }, {}, {
                 default: () => {
-                  return ` <form action="/auth/logout" method="POST" class="w-full"><button type="submit" class="w-full">${validate_component(Button, "Button").$$render(
+                  return ` <form action="/app/auth/logout" method="POST" class="w-full"><button type="submit" class="w-full">${validate_component(Button, "Button").$$render(
                     $$result,
                     {
                       wrapperClass: "w-full",
@@ -3983,27 +3575,19 @@ const Avatar_1 = create_ssr_component(($$result, $$props, $$bindings, slots) => 
 export {
   Avatar_1 as A,
   Button as B,
-  Cross1 as C,
   Dialog_title as D,
   Input as I,
   Label as L,
   Root as R,
   Select_trigger as S,
   Value as V,
-  Dialog_portal as a,
-  Dialog_overlay as b,
-  Dialog_content as c,
-  Button$1 as d,
+  Select_content as a,
+  Select_item as b,
+  Switch as c,
+  derivedVisible as d,
   arraysAreEqual as e,
-  fade as f,
-  globals as g,
+  globals as f,
+  getPositioningUpdater as g,
   handleRovingFocus as h,
-  Logo as i,
-  is_void as j,
-  derivedVisible as k,
-  getPositioningUpdater as l,
-  Select_content as m,
-  Select_item as n,
-  Switch as o,
   usePopper as u
 };

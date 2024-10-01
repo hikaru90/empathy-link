@@ -1,20 +1,40 @@
-import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object, a as add_attribute, e as escape, v as validate_component, f as each } from "../../chunks/ssr.js";
-import "../../chunks/Avatar.svelte_svelte_type_style_lang.js";
-import "../../chunks/page.js";
-import { B as Button$1, M as Menu } from "../../chunks/Menu.js";
-import { c as compute_rest_props, g as get_store_value, s as subscribe } from "../../chunks/utils.js";
-import { t, a as locale } from "../../chunks/translations.js";
-import { B as Button } from "../../chunks/index3.js";
+import { c as compute_rest_props, s as subscribe, g as get_store_value, a as null_to_empty } from "../../chunks/utils.js";
+import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object, a as add_attribute, v as validate_component, e as escape, f as each } from "../../chunks/ssr.js";
+import { R as Root, T as Trigger, C as Close } from "../../chunks/Avatar.svelte_svelte_type_style_lang.js";
+import { b as backgroundColor, w as windowWidth, d as derivedMode, s as scroll, c as currentSection, a as windowHeight } from "../../chunks/page.js";
+import { t, l as locale } from "../../chunks/translations.js";
+import "clsx";
+import { S as Sheet_content, a as Sheet_header, b as Sheet_title, C as Cross1, L as Logo } from "../../chunks/sheet-title.js";
+import "../../chunks/client.js";
+import "../../chunks/auth.js";
+import { B as Button } from "../../chunks/button.js";
+import { B as Button$1 } from "../../chunks/index3.js";
+import { c as cn } from "../../chunks/utils2.js";
 import { b as backgroundImage } from "../../chunks/SparklePill.js";
 import { I as IconFolder, a as IconEye, b as IconHeart, c as IconSwirl, d as IconSteps } from "../../chunks/icon-steps.js";
-import "../../chunks/client.js";
-import "clsx";
+import { P as PaperPlane } from "../../chunks/PaperPlane.js";
 import { g as getContext } from "../../chunks/lifecycle.js";
-import { c as cn } from "../../chunks/utils2.js";
-const IconSelf = '<?xml version="1.0" encoding="UTF-8"?>\n<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24.18 24.18">\n  <defs>\n    <style>\n      .cls-1 {\n        stroke-width: 0px;\n      }\n    </style>\n  </defs>\n  <g id="finger-print-outline">\n    <path class="cls-1" d="M17.53,4.78c-.08,0-.15-.02-.22-.06-3.23-1.82-7.18-1.82-10.41,0-.23.12-.51.04-.63-.19,0,0,0,0,0-.01-.12-.23-.04-.52.19-.66,3.5-1.97,7.78-1.98,11.29,0,.23.13.32.42.2.65-.07.17-.23.27-.41.28ZM4.15,9.88c-.1,0-.19-.03-.27-.09-.21-.16-.26-.46-.11-.68.89-1.33,2.1-2.42,3.51-3.17,3.02-1.57,6.62-1.58,9.64-.01,1.41.75,2.61,1.83,3.5,3.15.15.22.1.52-.11.68-.2.15-.49.11-.64-.09,0,0-.01-.02-.02-.02-.81-1.19-1.9-2.17-3.17-2.85-2.76-1.43-6.03-1.42-8.79.01-1.28.69-2.37,1.67-3.18,2.87-.07.13-.21.21-.37.2h0ZM10,21.59c-.13,0-.24-.05-.33-.15-.76-.75-1.4-1.61-1.88-2.56-.67-1.3-1.01-2.75-.98-4.21,0-2.92,2.37-5.29,5.29-5.29,2.92,0,5.29,2.37,5.29,5.29,0,.26-.21.47-.47.47s-.47-.21-.47-.47c-.05-2.41-2.04-4.32-4.45-4.26-2.33.05-4.21,1.93-4.26,4.26-.02,1.3.27,2.58.87,3.74.45.87,1.03,1.66,1.73,2.35.18.2.18.49,0,.69-.09.09-.21.14-.34.15ZM16.7,19.79c-1.03.03-2.05-.28-2.9-.86-1.39-.97-2.22-2.56-2.22-4.26-.01-.26.19-.48.45-.49s.48.19.49.45c0,.01,0,.03,0,.04,0,1.38.68,2.67,1.81,3.45.7.48,1.53.72,2.38.69.33,0,.65-.04.97-.1.25-.04.5.13.54.38,0,0,0,.01,0,.02.05.26-.12.51-.38.56-.37.07-.75.11-1.13.12h0ZM14.82,21.79s-.08,0-.12-.02c-3.24-.83-5.51-3.75-5.51-7.1,0-1.59,1.29-2.88,2.88-2.88,1.59,0,2.88,1.29,2.88,2.88.02,1.07.91,1.92,1.99,1.9,1.04-.02,1.88-.86,1.9-1.9-.04-3.7-3.08-6.67-6.78-6.63-2.65,0-5.06,1.52-6.18,3.91-.38.86-.57,1.78-.55,2.72,0,1.19.21,2.38.63,3.5.1.25-.02.52-.27.62,0,0,0,0,0,0-.24.09-.5-.03-.59-.26,0,0,0-.01,0-.02-.45-1.23-.68-2.53-.68-3.84-.02-1.08.2-2.15.64-3.15,1.8-3.87,6.4-5.55,10.27-3.74,2.68,1.25,4.42,3.92,4.47,6.88,0,1.59-1.29,2.88-2.88,2.88s-2.88-1.29-2.88-2.88c-.03-1.07-.93-1.92-2.01-1.88-1.03.03-1.85.86-1.88,1.88-.01,1.63.62,3.2,1.75,4.38.83.88,1.89,1.5,3.06,1.8.25.08.4.34.33.59-.04.21-.22.36-.44.37h0Z"/>\n  </g>\n</svg>';
-const IconFight = '<?xml version="1.0" encoding="UTF-8"?>\n<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24.18 24.18">\n  <defs>\n    <style>\n      .cls-1 {\n        stroke-width: 0px;\n      }\n    </style>\n  </defs>\n  <g id="Gruppe_159" data-name="Gruppe 159">\n    <g id="flash-outline">\n      <path class="cls-1" d="M9.97,19.34s-.09,0-.13-.01c-.31-.07-.51-.38-.44-.69l.98-5.4h-3.84c-.19,0-.37-.11-.45-.28s-.06-.38.06-.53L13.76,3.02h0c.13-.15.38-.25.56-.21.32.06.53.36.47.68l-.99,5.42h3.84c.19,0,.37.11.45.28s.06.38-.06.53l-7.6,9.4c-.09.12-.3.22-.45.22ZM10.39,18.8v.03s0-.02,0-.03ZM7.59,12.23h3.39c.15,0,.29.07.38.18.1.11.13.26.11.41l-.8,4.4,5.92-7.32h-3.39c-.15,0-.29-.07-.38-.18-.09-.11-.13-.26-.11-.41l.81-4.4-5.92,7.32ZM14.15,3.33h0,0Z"/>\n    </g>\n  </g>\n</svg>';
-const IconFeedback = '<?xml version="1.0" encoding="UTF-8"?>\n<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24.18 24.18">\n  <defs>\n    <style>\n      .cls-1 {\n        stroke-width: 0px;\n      }\n    </style>\n  </defs>\n  <g id="Pfad_52" data-name="Pfad 52">\n    <path class="cls-1" d="M12.49,20.75c-.3,0-.55-.25-.55-.55v-8.1H3.84c-.3,0-.55-.25-.55-.55s.25-.55.55-.55h8.1v-3.29c0-2.42,1.97-4.39,4.39-4.39s4.39,1.97,4.39,4.39-1.97,4.39-4.39,4.39h-3.29v8.1c0,.3-.25.55-.55.55ZM13.04,11h3.29c1.82,0,3.29-1.48,3.29-3.29s-1.48-3.29-3.29-3.29-3.29,1.48-3.29,3.29v3.29Z"/>\n  </g>\n  <g id="Pfad_53" data-name="Pfad 53">\n    <path class="cls-1" d="M6.73,14.93c-.13,0-.26-.05-.35-.15l-2.88-2.88c-.2-.2-.2-.51,0-.71l2.88-2.88c.2-.2.51-.2.71,0s.2.51,0,.71l-2.53,2.53,2.53,2.53c.2.2.2.51,0,.71-.1.1-.23.15-.35.15Z"/>\n  </g>\n</svg>';
-const IconLearn = '<?xml version="1.0" encoding="UTF-8"?>\n<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24.18 24.18">\n  <defs>\n    <style>\n      .cls-1 {\n        stroke-width: 0px;\n      }\n    </style>\n  </defs>\n  <g id="Pfad_62" data-name="Pfad 62">\n    <path class="cls-1" d="M18.21,17.39h.78c.23,0,.42-.19.42-.42V4.03c0-.23-.19-.42-.42-.42H6.65c-1.05,0-1.89.86-1.89,1.91v13.17s0,.06,0,.09c.1,1.02.96,1.8,1.99,1.8h12.24c.23,0,.42-.19.42-.42s-.19-.42-.42-.42h-.76c-.64-.01-1.16-.54-1.14-1.19.01-.62.5-1.12,1.12-1.14h0ZM5.61,5.51c0-.58.46-1.05,1.04-1.06h11.91v12.09h-.36l-11.45.04c-.41,0-.81.14-1.14.38V5.51ZM6.76,19.73c-.63.02-1.16-.48-1.18-1.11-.02-.63.48-1.16,1.11-1.18.02,0,.05,0,.07,0l9.78-.05c-.25.33-.39.74-.39,1.16,0,.42.14.83.39,1.17H6.76Z"/>\n  </g>\n</svg>';
+const HamburgerMenu = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["color", "size"]);
+  let { color = "currentColor" } = $$props;
+  let { size = 15 } = $$props;
+  if ($$props.color === void 0 && $$bindings.color && color !== void 0)
+    $$bindings.color(color);
+  if ($$props.size === void 0 && $$bindings.size && size !== void 0)
+    $$bindings.size(size);
+  return `<svg${spread(
+    [
+      { width: escape_attribute_value(size) },
+      { height: escape_attribute_value(size) },
+      { viewBox: "0 0 15 15" },
+      { fill: "none" },
+      { xmlns: "http://www.w3.org/2000/svg" },
+      escape_object($$restProps)
+    ],
+    {}
+  )}><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 3C1.22386 3 1 3.22386 1 3.5C1 3.77614 1.22386 4 1.5 4H13.5C13.7761 4 14 3.77614 14 3.5C14 3.22386 13.7761 3 13.5 3H1.5ZM1 7.5C1 7.22386 1.22386 7 1.5 7H13.5C13.7761 7 14 7.22386 14 7.5C14 7.77614 13.7761 8 13.5 8H1.5C1.22386 8 1 7.77614 1 7.5ZM1 11.5C1 11.2239 1.22386 11 1.5 11H13.5C13.7761 11 14 11.2239 14 11.5C14 11.7761 13.7761 12 13.5 12H1.5C1.22386 12 1 11.7761 1 11.5Z"${add_attribute("fill", color, 0)}></path></svg>`;
+});
+const HamburgerMenu$1 = HamburgerMenu;
 const HeartFilled = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["color", "size"]);
   let { color = "currentColor" } = $$props;
@@ -36,29 +56,133 @@ const HeartFilled = create_ssr_component(($$result, $$props, $$bindings, slots) 
   )}><path fill-rule="evenodd" clip-rule="evenodd" d="M1.35248 4.90532C1.35248 2.94498 2.936 1.35248 4.89346 1.35248C6.25769 1.35248 6.86058 1.92336 7.50002 2.93545C8.13946 1.92336 8.74235 1.35248 10.1066 1.35248C12.064 1.35248 13.6476 2.94498 13.6476 4.90532C13.6476 6.74041 12.6013 8.50508 11.4008 9.96927C10.2636 11.3562 8.92194 12.5508 8.00601 13.3664C7.94645 13.4194 7.88869 13.4709 7.83291 13.5206C7.64324 13.6899 7.3568 13.6899 7.16713 13.5206C7.11135 13.4709 7.05359 13.4194 6.99403 13.3664C6.0781 12.5508 4.73641 11.3562 3.59926 9.96927C2.39872 8.50508 1.35248 6.74041 1.35248 4.90532Z"${add_attribute("fill", color, 0)}></path></svg>`;
 });
 const HeartFilled$1 = HeartFilled;
-const PaperPlane = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["color", "size"]);
-  let { color = "currentColor" } = $$props;
-  let { size = 15 } = $$props;
-  if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-    $$bindings.color(color);
-  if ($$props.size === void 0 && $$bindings.size && size !== void 0)
-    $$bindings.size(size);
-  return `<svg${spread(
-    [
-      { width: escape_attribute_value(size) },
-      { height: escape_attribute_value(size) },
-      { viewBox: "0 0 15 15" },
-      { fill: "none" },
-      { xmlns: "http://www.w3.org/2000/svg" },
-      escape_object($$restProps)
-    ],
-    {}
-  )}><path fill-rule="evenodd" clip-rule="evenodd" d="M1.20308 1.04312C1.00481 0.954998 0.772341 1.0048 0.627577 1.16641C0.482813 1.32802 0.458794 1.56455 0.568117 1.75196L3.92115 7.50002L0.568117 13.2481C0.458794 13.4355 0.482813 13.672 0.627577 13.8336C0.772341 13.9952 1.00481 14.045 1.20308 13.9569L14.7031 7.95693C14.8836 7.87668 15 7.69762 15 7.50002C15 7.30243 14.8836 7.12337 14.7031 7.04312L1.20308 1.04312ZM4.84553 7.10002L2.21234 2.586L13.2689 7.50002L2.21234 12.414L4.84552 7.90002H9C9.22092 7.90002 9.4 7.72094 9.4 7.50002C9.4 7.27911 9.22092 7.10002 9 7.10002H4.84553Z"${add_attribute("fill", color, 0)}></path></svg>`;
+const IconSelf = '<?xml version="1.0" encoding="UTF-8"?>\n<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24.18 24.18">\n  <defs>\n    <style>\n      .cls-1 {\n        stroke-width: 0px;\n      }\n    </style>\n  </defs>\n  <g id="finger-print-outline">\n    <path class="cls-1" d="M17.53,4.78c-.08,0-.15-.02-.22-.06-3.23-1.82-7.18-1.82-10.41,0-.23.12-.51.04-.63-.19,0,0,0,0,0-.01-.12-.23-.04-.52.19-.66,3.5-1.97,7.78-1.98,11.29,0,.23.13.32.42.2.65-.07.17-.23.27-.41.28ZM4.15,9.88c-.1,0-.19-.03-.27-.09-.21-.16-.26-.46-.11-.68.89-1.33,2.1-2.42,3.51-3.17,3.02-1.57,6.62-1.58,9.64-.01,1.41.75,2.61,1.83,3.5,3.15.15.22.1.52-.11.68-.2.15-.49.11-.64-.09,0,0-.01-.02-.02-.02-.81-1.19-1.9-2.17-3.17-2.85-2.76-1.43-6.03-1.42-8.79.01-1.28.69-2.37,1.67-3.18,2.87-.07.13-.21.21-.37.2h0ZM10,21.59c-.13,0-.24-.05-.33-.15-.76-.75-1.4-1.61-1.88-2.56-.67-1.3-1.01-2.75-.98-4.21,0-2.92,2.37-5.29,5.29-5.29,2.92,0,5.29,2.37,5.29,5.29,0,.26-.21.47-.47.47s-.47-.21-.47-.47c-.05-2.41-2.04-4.32-4.45-4.26-2.33.05-4.21,1.93-4.26,4.26-.02,1.3.27,2.58.87,3.74.45.87,1.03,1.66,1.73,2.35.18.2.18.49,0,.69-.09.09-.21.14-.34.15ZM16.7,19.79c-1.03.03-2.05-.28-2.9-.86-1.39-.97-2.22-2.56-2.22-4.26-.01-.26.19-.48.45-.49s.48.19.49.45c0,.01,0,.03,0,.04,0,1.38.68,2.67,1.81,3.45.7.48,1.53.72,2.38.69.33,0,.65-.04.97-.1.25-.04.5.13.54.38,0,0,0,.01,0,.02.05.26-.12.51-.38.56-.37.07-.75.11-1.13.12h0ZM14.82,21.79s-.08,0-.12-.02c-3.24-.83-5.51-3.75-5.51-7.1,0-1.59,1.29-2.88,2.88-2.88,1.59,0,2.88,1.29,2.88,2.88.02,1.07.91,1.92,1.99,1.9,1.04-.02,1.88-.86,1.9-1.9-.04-3.7-3.08-6.67-6.78-6.63-2.65,0-5.06,1.52-6.18,3.91-.38.86-.57,1.78-.55,2.72,0,1.19.21,2.38.63,3.5.1.25-.02.52-.27.62,0,0,0,0,0,0-.24.09-.5-.03-.59-.26,0,0,0-.01,0-.02-.45-1.23-.68-2.53-.68-3.84-.02-1.08.2-2.15.64-3.15,1.8-3.87,6.4-5.55,10.27-3.74,2.68,1.25,4.42,3.92,4.47,6.88,0,1.59-1.29,2.88-2.88,2.88s-2.88-1.29-2.88-2.88c-.03-1.07-.93-1.92-2.01-1.88-1.03.03-1.85.86-1.88,1.88-.01,1.63.62,3.2,1.75,4.38.83.88,1.89,1.5,3.06,1.8.25.08.4.34.33.59-.04.21-.22.36-.44.37h0Z"/>\n  </g>\n</svg>';
+const IconFight = '<?xml version="1.0" encoding="UTF-8"?>\n<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24.18 24.18">\n  <defs>\n    <style>\n      .cls-1 {\n        stroke-width: 0px;\n      }\n    </style>\n  </defs>\n  <g id="Gruppe_159" data-name="Gruppe 159">\n    <g id="flash-outline">\n      <path class="cls-1" d="M9.97,19.34s-.09,0-.13-.01c-.31-.07-.51-.38-.44-.69l.98-5.4h-3.84c-.19,0-.37-.11-.45-.28s-.06-.38.06-.53L13.76,3.02h0c.13-.15.38-.25.56-.21.32.06.53.36.47.68l-.99,5.42h3.84c.19,0,.37.11.45.28s.06.38-.06.53l-7.6,9.4c-.09.12-.3.22-.45.22ZM10.39,18.8v.03s0-.02,0-.03ZM7.59,12.23h3.39c.15,0,.29.07.38.18.1.11.13.26.11.41l-.8,4.4,5.92-7.32h-3.39c-.15,0-.29-.07-.38-.18-.09-.11-.13-.26-.11-.41l.81-4.4-5.92,7.32ZM14.15,3.33h0,0Z"/>\n    </g>\n  </g>\n</svg>';
+const IconFeedback = '<?xml version="1.0" encoding="UTF-8"?>\n<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24.18 24.18">\n  <defs>\n    <style>\n      .cls-1 {\n        stroke-width: 0px;\n      }\n    </style>\n  </defs>\n  <g id="Pfad_52" data-name="Pfad 52">\n    <path class="cls-1" d="M12.49,20.75c-.3,0-.55-.25-.55-.55v-8.1H3.84c-.3,0-.55-.25-.55-.55s.25-.55.55-.55h8.1v-3.29c0-2.42,1.97-4.39,4.39-4.39s4.39,1.97,4.39,4.39-1.97,4.39-4.39,4.39h-3.29v8.1c0,.3-.25.55-.55.55ZM13.04,11h3.29c1.82,0,3.29-1.48,3.29-3.29s-1.48-3.29-3.29-3.29-3.29,1.48-3.29,3.29v3.29Z"/>\n  </g>\n  <g id="Pfad_53" data-name="Pfad 53">\n    <path class="cls-1" d="M6.73,14.93c-.13,0-.26-.05-.35-.15l-2.88-2.88c-.2-.2-.2-.51,0-.71l2.88-2.88c.2-.2.51-.2.71,0s.2.51,0,.71l-2.53,2.53,2.53,2.53c.2.2.2.51,0,.71-.1.1-.23.15-.35.15Z"/>\n  </g>\n</svg>';
+const IconLearn = '<?xml version="1.0" encoding="UTF-8"?>\n<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24.18 24.18">\n  <defs>\n    <style>\n      .cls-1 {\n        stroke-width: 0px;\n      }\n    </style>\n  </defs>\n  <g id="Pfad_62" data-name="Pfad 62">\n    <path class="cls-1" d="M18.21,17.39h.78c.23,0,.42-.19.42-.42V4.03c0-.23-.19-.42-.42-.42H6.65c-1.05,0-1.89.86-1.89,1.91v13.17s0,.06,0,.09c.1,1.02.96,1.8,1.99,1.8h12.24c.23,0,.42-.19.42-.42s-.19-.42-.42-.42h-.76c-.64-.01-1.16-.54-1.14-1.19.01-.62.5-1.12,1.12-1.14h0ZM5.61,5.51c0-.58.46-1.05,1.04-1.06h11.91v12.09h-.36l-11.45.04c-.41,0-.81.14-1.14.38V5.51ZM6.76,19.73c-.63.02-1.16-.48-1.18-1.11-.02-.63.48-1.16,1.11-1.18.02,0,.05,0,.07,0l9.78-.05c-.25.33-.39.74-.39,1.16,0,.42.14.83.39,1.17H6.76Z"/>\n  </g>\n</svg>';
+const css$8 = {
+  code: '.label.svelte-1e8s3fy{box-shadow:0 0 8px 0 rgba(74, 0, 0, 0.3) inset, 4px 4px 8px 0 rgba(0, 0, 0, 0.4);position:relative;height:1.75rem;width:1.75rem;flex-shrink:0;border-radius:9999px;border-width:2px;--tw-border-opacity:1;border-color:hsl(var(--offwhite) / var(--tw-border-opacity))}.label.svelte-1e8s3fy:after{content:"";box-shadow:-4px -4px 8px 0 white;display:block;height:100%;width:100%;border-radius:9999px}.icon.svelte-1e8s3fy{position:absolute;left:50%;top:50%;height:0.875rem;width:0.875rem;--tw-translate-x:-50%;--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}',
+  map: null
+};
+const WebsiteHamburgerMenu = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $backgroundColor, $$unsubscribe_backgroundColor;
+  let $t, $$unsubscribe_t;
+  $$unsubscribe_backgroundColor = subscribe(backgroundColor, (value) => $backgroundColor = value);
+  $$unsubscribe_t = subscribe(t, (value) => $t = value);
+  let { menuItems } = $$props;
+  if ($$props.menuItems === void 0 && $$bindings.menuItems && menuItems !== void 0)
+    $$bindings.menuItems(menuItems);
+  $$result.css.add(css$8);
+  $$unsubscribe_backgroundColor();
+  $$unsubscribe_t();
+  return `${validate_component(Root, "Sheet.Root").$$render($$result, {}, {}, {
+    default: () => {
+      return `${validate_component(Trigger, "Sheet.Trigger").$$render($$result, {}, {}, {
+        default: () => {
+          return `${slots.default ? slots.default({}) : ``}`;
+        }
+      })} ${validate_component(Sheet_content, "Sheet.Content").$$render(
+        $$result,
+        {
+          class: $backgroundColor + " z-[1003] flex flex-col"
+        },
+        {},
+        {
+          default: () => {
+            return `${validate_component(Sheet_header, "Sheet.Header").$$render(
+              $$result,
+              {
+                class: "flex flex-row items-center justify-between border-b border-black/10 px-5 py-3.5"
+              },
+              {},
+              {
+                default: () => {
+                  return `${validate_component(Sheet_title, "Sheet.Title").$$render($$result, { class: "pt-0.5" }, {}, {
+                    default: () => {
+                      return `${escape($t("default.menu.profile.sheet.header"))}`;
+                    }
+                  })} ${validate_component(Close, "Sheet.Close").$$render($$result, { class: "!m-0" }, {}, {
+                    default: () => {
+                      return `<div class="label bg-feelings-background svelte-1e8s3fy"><div class="icon flex items-center justify-center fill-feelings-foreground svelte-1e8s3fy"> ${validate_component(Cross1, "Cross1").$$render($$result, { class: "text-red-600" }, {}, {})}</div></div>`;
+                    }
+                  })}`;
+                }
+              }
+            )}`;
+          }
+        }
+      )} <div>${each(menuItems, (item) => {
+        return `<div>${escape(item.label)}</div>`;
+      })}</div>`;
+    }
+  })}`;
 });
-const PaperPlane$1 = PaperPlane;
-const css$6 = {
-  code: ":root{--duration:6s}.heart.svelte-gmmaq7{animation:svelte-gmmaq7-heart}.step5.svelte-gmmaq7{animation:svelte-gmmaq7-step5}.step4.svelte-gmmaq7{animation:svelte-gmmaq7-step4}.step3.svelte-gmmaq7{animation:svelte-gmmaq7-step3}.step2.svelte-gmmaq7{animation:svelte-gmmaq7-step2}.step1.svelte-gmmaq7{animation:svelte-gmmaq7-step1}.step1.svelte-gmmaq7,.step2.svelte-gmmaq7,.step3.svelte-gmmaq7,.step4.svelte-gmmaq7,.step5.svelte-gmmaq7,.heart.svelte-gmmaq7{animation-duration:var(--duration);animation-iteration-count:infinite;animation-fill-mode:forwards;animation-timing-function:ease-out}@keyframes svelte-gmmaq7-heart{0%,65%{opacity:0;transform:scale(0)}75%,90%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(0)}}@keyframes svelte-gmmaq7-step5{0%,27.5%{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity));opacity:0;transform:scale(0)}35%{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity));opacity:1;transform:scale(1)}40%{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity))}40.1%{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity))}50%{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity))}55%{opacity:0}100%{opacity:0}}@keyframes svelte-gmmaq7-step4{0%,22.5%{transform:scale(0);opacity:0}30%{transform:scale(1);opacity:1}50%{transform:scale(1);opacity:1}55%,100%{transform:scale(0);opacity:0}}@keyframes svelte-gmmaq7-step3{0%,17.5%{transform:scale(0);opacity:0}25%{transform:scale(1);opacity:1}50%{transform:scale(1);opacity:1}55%,100%{transform:scale(0);opacity:0}}@keyframes svelte-gmmaq7-step2{0%,12.5%{transform:scale(0);opacity:0}20%{transform:scale(1);opacity:1}50%{transform:scale(1);opacity:1}55%,100%{transform:scale(0);opacity:0}}@keyframes svelte-gmmaq7-step1{0%,10%{transform:scale(0);opacity:0}15%{transform:scale(1);opacity:1}50%{transform:scale(1);opacity:1}55%,100%{transform:scale(0);opacity:0}}.pop-in.svelte-gmmaq7{animation:svelte-gmmaq7-popIn;animation-duration:var(--duration);animation-iteration-count:infinite;animation-fill-mode:forwards}@keyframes svelte-gmmaq7-popIn{0%{opacity:0;transform:translate(0, 0)}10%{opacity:1;transform:translate(0, 8em)}15%{opacity:0;transform:translate(0, 8em)}55%{opacity:0}65%{opacity:1}70%{opacity:0}100%{opacity:0;transform:translate(0, 8em)}}",
+const WebsiteMenu = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let menuItems;
+  let $windowWidth, $$unsubscribe_windowWidth;
+  let $t, $$unsubscribe_t;
+  let $$unsubscribe_mode;
+  let $scroll, $$unsubscribe_scroll;
+  let $backgroundColor, $$unsubscribe_backgroundColor;
+  let $currentSection, $$unsubscribe_currentSection;
+  $$unsubscribe_windowWidth = subscribe(windowWidth, (value) => $windowWidth = value);
+  $$unsubscribe_t = subscribe(t, (value) => $t = value);
+  $$unsubscribe_mode = subscribe(derivedMode, (value) => value);
+  $$unsubscribe_scroll = subscribe(scroll, (value) => $scroll = value);
+  $$unsubscribe_backgroundColor = subscribe(backgroundColor, (value) => $backgroundColor = value);
+  $$unsubscribe_currentSection = subscribe(currentSection, (value) => $currentSection = value);
+  menuItems = () => [
+    {
+      label: $t("default.menu.sections.the4steps"),
+      target: "stepsTarget"
+    },
+    {
+      label: $t("default.menu.sections.modules"),
+      target: "modulesTarget"
+    },
+    {
+      label: $t("default.menu.sections.selfempathy"),
+      target: "selfempathyTarget"
+    },
+    {
+      label: $t("default.menu.sections.fight"),
+      target: "fightTarget"
+    },
+    {
+      label: $t("default.menu.sections.feedback"),
+      target: "feedbackTarget"
+    },
+    {
+      label: $t("default.menu.sections.learn"),
+      target: "learnTarget"
+    }
+  ];
+  $$unsubscribe_windowWidth();
+  $$unsubscribe_t();
+  $$unsubscribe_mode();
+  $$unsubscribe_scroll();
+  $$unsubscribe_backgroundColor();
+  $$unsubscribe_currentSection();
+  return `<div style="${"width:" + escape($windowWidth, true) + "px;"}" class="fixed left-0 top-0 z-[100]"><div class="${escape(
+    "max-h-96 opacity-100",
+    true
+  ) + " " + escape($scroll > 5 ? "shadow-xl shadow-black/5 delay-150" : "", true) + " overflow-hidden transition-all"}"><nav class="${escape($scroll > 5 ? $backgroundColor : "bg-white", true) + " flex items-center justify-between px-5 py-2 lg:py-3 transition-all duration-500"}"><a href="/" class="w-1 overflow-visible"><div>${validate_component(Logo, "Logo").$$render($$result, {}, {}, {})}</div></a> <div class="hidden items-center gap-7 lg:flex">${each(menuItems(), (item) => {
+    return `<button class="group relative"><div class="absolute -left-3 -right-3 -top-1 -bottom-1 rounded-md transition-opacity group-hover:opacity-100 opacity-0 bg-white/30 z-0 shadow-md shadow-x"></div> <div class="${escape(
+      item.target === $currentSection ? "opacity-100" : "opacity-0",
+      true
+    ) + " absolute -left-3 -right-3 -top-1 -bottom-1 rounded-md transition-opacity duration-300 shadow-inner shadow-black/20 bg-black/5"}"></div> <div class="relative z-10">${escape(item.label)}</div> </button>`;
+  })}</div> <div class="flex w-1 items-center justify-end gap-4">${validate_component(Button, "Button").$$render($$result, { variant: "outline" }, {}, {
+    default: () => {
+      return `${escape($t("default.page.login.heading"))}`;
+    }
+  })} <div class="lg:hidden">${validate_component(WebsiteHamburgerMenu, "WebsiteHamburgerMenu").$$render($$result, { menuItems }, {}, {
+    default: () => {
+      return `${validate_component(HamburgerMenu$1, "HamburgerMenu").$$render($$result, { class: "size-6" }, {}, {})}`;
+    }
+  })}</div></div></nav></div> ${slots.submenu ? slots.submenu({}) : ``}</div>`;
+});
+const css$7 = {
+  code: ".step.svelte-11drj4t{display:flex;align-items:center;justify-content:center;border-radius:1.6em;padding:0.3em;--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}:root{--duration:6s}.heart.svelte-11drj4t{animation:svelte-11drj4t-heart}.step5.svelte-11drj4t{animation:svelte-11drj4t-step5}.step4.svelte-11drj4t{animation:svelte-11drj4t-step4}.step3.svelte-11drj4t{animation:svelte-11drj4t-step3}.step2.svelte-11drj4t{animation:svelte-11drj4t-step2}.step1.svelte-11drj4t{animation:svelte-11drj4t-step1}.step1.svelte-11drj4t,.step2.svelte-11drj4t,.step3.svelte-11drj4t,.step4.svelte-11drj4t,.step5.svelte-11drj4t,.heart.svelte-11drj4t{animation-duration:var(--duration);animation-iteration-count:infinite;animation-fill-mode:forwards;animation-timing-function:ease-out}@keyframes svelte-11drj4t-heart{0%,65%{opacity:0;transform:scale(0)}75%,90%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(0)}}@keyframes svelte-11drj4t-step5{0%,27.5%{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity));opacity:0;transform:scale(0)}35%{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity));opacity:1;transform:scale(1)}40%{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity))}40.1%{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity))}50%{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity))}55%{opacity:0}100%{opacity:0}}@keyframes svelte-11drj4t-step4{0%,22.5%{transform:scale(0);opacity:0}30%{transform:scale(1);opacity:1}50%{transform:scale(1);opacity:1}55%,100%{transform:scale(0);opacity:0}}@keyframes svelte-11drj4t-step3{0%,17.5%{transform:scale(0);opacity:0}25%{transform:scale(1);opacity:1}50%{transform:scale(1);opacity:1}55%,100%{transform:scale(0);opacity:0}}@keyframes svelte-11drj4t-step2{0%,12.5%{transform:scale(0);opacity:0}20%{transform:scale(1);opacity:1}50%{transform:scale(1);opacity:1}55%,100%{transform:scale(0);opacity:0}}@keyframes svelte-11drj4t-step1{0%,10%{transform:scale(0);opacity:0}15%{transform:scale(1);opacity:1}50%{transform:scale(1);opacity:1}55%,100%{transform:scale(0);opacity:0}}.pop-in.svelte-11drj4t{animation:svelte-11drj4t-popIn;animation-duration:var(--duration);animation-iteration-count:infinite;animation-fill-mode:forwards}@keyframes svelte-11drj4t-popIn{0%{opacity:0;transform:translate(0, 0)}10%{opacity:1;transform:translate(0, 8em)}15%{opacity:0;transform:translate(0, 8em)}55%{opacity:0}65%{opacity:1}70%{opacity:0}100%{opacity:0;transform:translate(0, 8em)}}",
   map: null
 };
 const HeroAnimation = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -66,35 +190,35 @@ const HeroAnimation = create_ssr_component(($$result, $$props, $$bindings, slots
     {
       slug: "home",
       name: get_store_value(t)("default.menu.bar.home"),
-      path: "/dashboard",
+      path: "/app/dashboard",
       icon: IconFolder,
       available: true
     },
     {
       slug: "selfempathy",
       name: get_store_value(t)("default.menu.bar.selfempathy"),
-      path: "/selfempathy",
+      path: "/app/selfempathy",
       icon: IconSelf,
       available: false
     },
     {
       slug: "fights",
       name: get_store_value(t)("default.menu.bar.fights"),
-      path: "/fights",
+      path: "/app/fights",
       icon: IconFight,
       available: true
     },
     {
       slug: "feedback",
       name: get_store_value(t)("default.menu.bar.feedback"),
-      path: "/feedback",
+      path: "/app/feedback",
       icon: IconFeedback,
       available: false
     },
     {
       slug: "learn",
       name: get_store_value(t)("default.menu.bar.learn"),
-      path: "/learn",
+      path: "/app/learn",
       icon: IconLearn,
       available: false
     }
@@ -107,10 +231,21 @@ const HeroAnimation = create_ssr_component(($$result, $$props, $$bindings, slots
     });
     menuItems = [...newMenuItems];
   });
-  $$result.css.add(css$6);
-  return `<div class="relative h-full w-full bg-slate-800 p-2 sm:p-3 text-[8px] sm:text-base"><div class="absolute left-1/2 top-1.5 sm:top-3 transform -translate-x-1/2 -translate-y-1/2 w-5 sm:w-14 h-1.5 sm:h-4 bg-black rounded-full flex items-center justify-end px-[4px] pt-[2px]" data-svelte-h="svelte-o4dwok"><img src="phone-lens.jpg" alt="Phone Lens" class="w-1 h-1 sm:w-3 sm:h-3 rounded-full"></div> <div class="pop-in svelte-gmmaq7" data-svelte-h="svelte-cc3p9f"><div class="flex items-center justify-center"><div style="${"background-image: url('" + escape(backgroundImage, true) + "'); background-size: 300% 100%"}" class="animate-bg-fast flex h-1 w-2 sm:h-3 sm:w-6 flex-col items-center justify-center rounded-md"></div></div></div> <div class="relative flex h-full flex-col justify-between sm:pb-[50px]"><div class="flex flex-col gap-px sm:gap-1"><div class="step1 flex items-center justify-center rounded-sm bg-observation-background p-[0.3em] shadow-lg svelte-gmmaq7"><div class="w-[2em] fill-observation-foreground"><!-- HTML_TAG_START -->${IconEye}<!-- HTML_TAG_END --></div></div> <div class="step2 flex items-center justify-center rounded-sm bg-feelings-background p-[0.3em] shadow-lg svelte-gmmaq7"><div class="w-[2em] fill-feelings-foreground"><!-- HTML_TAG_START -->${IconHeart}<!-- HTML_TAG_END --></div></div> <div class="step3 flex items-center justify-center rounded-sm bg-needs-background p-[0.3em] shadow-lg svelte-gmmaq7"><div class="w-[2em] fill-needs-foreground"><!-- HTML_TAG_START -->${IconSwirl}<!-- HTML_TAG_END --></div></div> <div class="step4 flex items-center justify-center rounded-sm bg-request-background p-[0.3em] shadow-lg svelte-gmmaq7"><div class="w-[2em] fill-request-foreground"><!-- HTML_TAG_START -->${IconSteps}<!-- HTML_TAG_END --></div></div></div> <div class="step5 flex items-center justify-center rounded p-[0.2em] shadow-lg svelte-gmmaq7"><div class="flex w-full items-center justify-between fill-observation-foreground"><div class="h-[0.5em] w-[3em] rounded bg-slate-600"></div> ${validate_component(PaperPlane$1, "PaperPlane").$$render($$result, { class: "text-slate-500" }, {}, {})}</div></div> <div class="absolute w-full h-full flex items-center justify-center pb-16"><div class="heart svelte-gmmaq7">${validate_component(HeartFilled$1, "HeartFilled").$$render($$result, { class: "w-[4em] h-[4em] text-red-400" }, {}, {})}</div></div></div> <div class="fixed bottom-0 left-0 z-40 w-full bg-black px-1 sm:px-2 pb-1 sm:pb-4 pt-1 text-gray-200"><div class="absolute left-0 top-0 h-[0.5px] w-full -translate-y-full transform bg-black"></div> <div class="flex items-center justify-around">${each(menuItems, (item) => {
-    return `<div class="relative flex flex-col items-center justify-center"><a${add_attribute("href", item.path, 0)} class="flex flex-col items-center justify-center"><div class="h-1.5 w-1.5 sm:h-3 sm:w-3 fill-white"><!-- HTML_TAG_START -->${item.icon}<!-- HTML_TAG_END --> </div></a> </div>`;
+  $$result.css.add(css$7);
+  return `<div class="relative h-full w-full p-[1.2em]"><div class="pop-in svelte-11drj4t" data-svelte-h="svelte-1igc2am"><div class="flex items-center justify-center"><div style="${"background-image: url('" + escape(backgroundImage, true) + "'); background-size: 300% 100%"}" class="animate-bg-fast flex h-[1em] w-[2em] flex-col items-center justify-center rounded-full shadow-lg"></div></div></div> <div class="relative flex h-full flex-col justify-between pb-[3.6em]"><div class="flex flex-col gap-px sm:gap-[0.5em]"><div class="step step1 bg-observation-background svelte-11drj4t"><div class="w-[2em] fill-observation-foreground"><!-- HTML_TAG_START -->${IconEye}<!-- HTML_TAG_END --></div></div> <div class="step step2 bg-feelings-background svelte-11drj4t"><div class="w-[2em] fill-feelings-foreground"><!-- HTML_TAG_START -->${IconHeart}<!-- HTML_TAG_END --></div></div> <div class="step step3 bg-needs-background svelte-11drj4t"><div class="w-[2em] fill-needs-foreground"><!-- HTML_TAG_START -->${IconSwirl}<!-- HTML_TAG_END --></div></div> <div class="step step4 bg-request-background svelte-11drj4t"><div class="w-[2em] fill-request-foreground"><!-- HTML_TAG_START -->${IconSteps}<!-- HTML_TAG_END --></div></div></div> <div class="step5 flex items-center justify-center rounded-full p-[1em] shadow-lg svelte-11drj4t"><div class="flex w-full items-center justify-between fill-observation-foreground"><div class="h-[0.5em] w-[3em] rounded bg-slate-600"></div> ${validate_component(PaperPlane, "PaperPlane").$$render($$result, { class: "text-slate-500" }, {}, {})}</div></div> <div class="absolute flex h-full w-full items-center justify-center pb-[3em]"><div class="heart svelte-11drj4t">${validate_component(HeartFilled$1, "HeartFilled").$$render($$result, { class: "size-[5em] text-red-400" }, {}, {})}</div></div></div> <div class="fixed bottom-0 left-0 z-40 w-full rounded-b-[1em] bg-black px-[0.5em] py-[0.5em] text-gray-200"><div class="" data-svelte-h="svelte-1e4u1hl"><img src="/inverted-border.svg" alt="" class="absolute left-[0.01em] top-[0.02em] w-[1.6em] -translate-y-full transform"> <img src="/inverted-border.svg" alt="" class="absolute right-[0.13em] top-[0em] w-[1.6em] -translate-y-full -rotate-90 transform"></div> <div class="flex items-center justify-around">${each(menuItems, (item) => {
+    return `<div class="relative flex flex-col items-center justify-center"><a${add_attribute("href", item.path, 0)} class="flex flex-col items-center justify-center"><div class="size-[1.4em] fill-white"><!-- HTML_TAG_START -->${item.icon}<!-- HTML_TAG_END --> </div></a> </div>`;
   })}</div></div> </div>`;
+});
+const css$6 = {
+  code: ".screen-container.svelte-1g7h3w5{perspective:283em;perspective-origin:109% 131%}.screen.svelte-1g7h3w5{transform:translate(-53%, -52%) rotateY(-31deg) rotateX(20deg) rotateZ(-1deg)}",
+  map: null
+};
+const MockupHero = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let { class: className = void 0 } = $$props;
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  $$result.css.add(css$6);
+  return `<div class="text-[7px] md:text-[12px] lg:text-[16px]"><div class="${escape(null_to_empty(cn("relative screen-container float", className)), true) + " svelte-1g7h3w5"}"><img src="iphone_mockup.png" alt="" class="relative z-10"> <div class="screen bg-offwhite absolute top-1/2 left-1/2 w-[59%] h-[100%] rounded-[2em] overflow-hidden svelte-1g7h3w5">${validate_component(HeroAnimation, "HeroAnimation").$$render($$result, {}, {}, {})}</div></div> </div>`;
 });
 const css$5 = {
   code: ".animate-icon4-pulse{animation-name:svelte-1aoqqap-phonePulse;animation-duration:4s;animation-delay:400ms;animation-timing-function:ease-in-out;animation-direction:alternate;animation-iteration-count:infinite}.animate-icon3-pulse{animation-name:svelte-1aoqqap-phonePulse;animation-duration:4s;animation-timing-function:ease-in-out;animation-direction:alternate;animation-iteration-count:infinite}.animate-icon2-pulse{animation-name:svelte-1aoqqap-phonePulse;animation-duration:3s;animation-timing-function:ease-in-out;animation-direction:alternate;animation-iteration-count:infinite}.animate-icon1-pulse{animation-name:svelte-1aoqqap-phonePulse;animation-duration:2s;animation-timing-function:ease-in-out;animation-direction:alternate;animation-iteration-count:infinite}.animate-phone-pulse{animation-name:svelte-1aoqqap-phonePulse;animation-duration:1s;animation-timing-function:ease-in-out;animation-direction:alternate;animation-iteration-count:infinite}@keyframes svelte-1aoqqap-phonePulse{0%{opacity:0}100%{opacity:1}}",
@@ -119,13 +254,12 @@ const css$5 = {
 const AnimatedHeroBig = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $t, $$unsubscribe_t;
   $$unsubscribe_t = subscribe(t, (value) => $t = value);
-  let animationWidth = 1e3;
   $$result.css.add(css$5);
   $$unsubscribe_t();
-  return `<div class="pt-20 lg:-mb-20 lg:pt-32"><h1 class="mb-10 max-w-[14em] font-display text-4xl md:text-5xl font-semibold leading-[106%] lg:text-7xl">${escape($t("default.page.home.hero"))}</h1> <a href="/auth/login">${validate_component(Button, "SparkleButton").$$render(
+  return `<div class="relative z-10 flex h-svh flex-col pt-20 md:pt-32"><div class="flex-grow flex flex-col justify-center"><h1 class="mb-10 max-w-[14em] font-display text-4xl font-semibold leading-[106%] md:text-5xl lg:text-7xl">${escape($t("default.page.home.hero"))}</h1> <a href="/app/auth/login">${validate_component(Button$1, "SparkleButton").$$render(
     $$result,
     {
-      class: "px-3 py-5 font-bold text-black shadow-lg dark:shadow-gray-300/30 lg:px-6 lg:py-7 lg:text-lg"
+      class: "rounded-lg px-3 py-5 font-bold text-black shadow-lg dark:shadow-gray-300/30 lg:px-6 lg:py-7 lg:text-lg"
     },
     {},
     {
@@ -133,7 +267,14 @@ const AnimatedHeroBig = create_ssr_component(($$result, $$props, $$bindings, slo
         return `${escape($t("default.page.home.cta"))}`;
       }
     }
-  )}</a></div> <div class="py-4 -mx-[40%] -mb-48 md:-mb-[20%] md:-mx-[10%]"><div id="animation" class="relative w-full lg:mb-40"><div style="${"border-radius: " + escape(animationWidth / 75, true) + "px;"}" class="absolute left-[45.05%] top-[15.5%] z-[60] h-[48.8%] w-[9.9%] skew-y-[32deg] transform overflow-hidden">${validate_component(HeroAnimation, "HeroAnimation").$$render($$result, {}, {}, {})}</div> <img src="hero/phone_mobile.png" alt="" class="relative z-40 block w-full md:hidden"> <img src="hero/2phone.png" alt="" class="relative z-40 hidden w-full md:block"> <img src="hero/2phone_lit.png" alt="" class="animate-phone-pulse absolute left-0 top-0 z-50 hidden h-full w-full md:block"> <img src="hero/icon1.png" alt="" class="absolute left-0 top-0 hidden h-full w-full md:block"> <img src="hero/icon1_lit.png" alt="" class="animate-icon1-pulse absolute left-0 top-0 hidden h-full w-full md:block"> <img src="hero/icon2.png" alt="" class="absolute left-0 top-0 hidden h-full w-full md:block"> <img src="hero/icon2_lit.png" alt="" class="animate-icon2-pulse absolute left-0 top-0 hidden h-full w-full md:block"> <img src="hero/icon4.png" alt="" class="absolute left-0 top-0 hidden h-full w-full md:block"> <img src="hero/icon4_lit.png" alt="" class="animate-icon4-pulse absolute left-0 top-0 hidden h-full w-full md:block"> <img src="hero/icon3.png" alt="" class="absolute left-0 top-0 hidden h-full w-full md:block"> <img src="hero/icon3_lit.png" alt="" class="animate-icon3-pulse absolute left-0 top-0 hidden h-full w-full md:block"></div> </div>`;
+  )}</a></div> <div class="relative md:mb-32 lg:mb-60"><div class="-mx-5 mt-20 flex items-center md:mx-0" data-svelte-h="svelte-g0vdpm"><div class="hidden rounded-full bg-offwhite/40 md:block md:size-32 lg:size-40"></div> <div class="-ml-16 hidden rounded-full bg-offwhite md:block md:size-32 lg:size-40"></div> <div style="background-image: url('/women.jpg')" class="h-52 w-full bg-offwhite bg-cover bg-right md:-ml-16 md:h-32 md:w-[300px] md:rounded-full md:bg-center lg:h-40 lg:w-[500px]"></div></div> ${validate_component(MockupHero, "MockupHero").$$render(
+    $$result,
+    {
+      class: "absolute -right-4 top-0 w-40 md:w-60 lg:right-0 lg:w-96 -mt-20"
+    },
+    {},
+    {}
+  )}</div> </div>`;
 });
 const Plus = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["size", "role", "color", "ariaLabel", "withEvents"]);
@@ -223,9 +364,9 @@ const The4Steps = create_ssr_component(($$result, $$props, $$bindings, slots) =>
     }
   ];
   $$unsubscribe_t();
-  return `<div class="flex flex-col items-center mb-40 pt-12 md:pt-0"><h2 class="mb-16 md:mb:20 max-w-[13em] text-center font-display text-3xl md:text-4xl font-semibold lg:text-5xl">${escape($t("default.page.home.components.the4steps.heading"))}</h2> <div class="relative mb-16 md:mb:20"><div class="hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" data-svelte-h="svelte-ztm4yv"><img src="/connector.svg" alt="connector" class="w-28"></div> <div class="-m-4 flex flex-wrap items-stretch justify-center">${each(cards, (card) => {
-    return `<div class="group relative h-64 md:h-72 w-full px-4 py-3 md:py-4 md:w-1/2 md:max-w-[460px]"><div class="absolute left-full top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-first:md:block"></div> <div class="absolute left-0 top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-last:md:block"></div> <div class="flex h-full flex-col justify-between rounded-3xl bg-white p-5 md:p-6 lg:p-8 shadow-lg"><div><div class="skeumorphic-button mb-2 md:mb-3 lg:mb-4 h-9 w-9 rounded-full bg-offwhite p-0.5 svelte-5cv73o"><div class="${"bg-" + escape(card.backgroundColor, true) + " fill-" + escape(card.color, true) + " flex items-center justify-center rounded-full p-1 shadow-inner svelte-5cv73o"}"><!-- HTML_TAG_START -->${card.icon}<!-- HTML_TAG_END --> </div></div> <h3 class="mb-6 font-display text-xl font-semibold md:text-2xl">${escape(card.heading)} </h3></div> <div class="flex"><p class="">${escape(card.text)}</p> <div class="flex items-end"><div class="ml-2 lg:ml-10 flex w-6 h-6 lg:h-8 lg:w-8 flex-shrink-0 items-center justify-center rounded-full bg-black text-offwhite shadow-md">${validate_component(Plus, "IconPlus").$$render($$result, {}, {}, {})} </div></div> </div></div> </div>`;
-  })}</div></div> <div class="flex items-center justify-center">${validate_component(Button$1, "Button").$$render(
+  return `<div class="flex flex-col items-center mb-40 pt-12 md:pt-0"><h2 class="mb-16 md:mb:20 max-w-[13em] text-center font-display text-3xl md:text-4xl font-semibold lg:text-5xl">${escape($t("default.page.home.components.the4steps.heading"))}</h2> <div class="relative mb-16 md:mb:20"><div class="hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" data-svelte-h="svelte-ztm4yv"><img src="/connector.svg" alt="connector" class="w-28"></div> <div class="md:-m-4 flex flex-wrap items-stretch justify-center">${each(cards, (card) => {
+    return `<div class="group relative h-52 md:h-72 w-full px-4 py-3 md:py-4 md:w-1/2 md:max-w-[460px]"><div class="absolute left-full top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-first:md:block"></div> <div class="absolute left-0 top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-last:md:block"></div> <div class="flex h-full flex-col justify-between rounded-3xl bg-white p-5 md:p-6 lg:p-8 shadow-lg"><div class="flex flex-row md:flex-col gap-4 items-center md:items-start"><div class="skeumorphic-button h-9 w-9 rounded-full bg-offwhite p-0.5 svelte-5cv73o"><div class="${"bg-" + escape(card.backgroundColor, true) + " fill-" + escape(card.color, true) + " flex items-center justify-center rounded-full p-1 shadow-inner svelte-5cv73o"}"><!-- HTML_TAG_START -->${card.icon}<!-- HTML_TAG_END --> </div></div> <h3 class="md:mb-6 font-display text-xl font-semibold md:text-2xl">${escape(card.heading)} </h3></div> <div class="flex"><p class="">${escape(card.text)}</p> <div class="flex items-end"><div class="ml-2 lg:ml-10 flex w-6 h-6 lg:h-8 lg:w-8 flex-shrink-0 items-center justify-center rounded-full bg-black text-offwhite shadow-md">${validate_component(Plus, "IconPlus").$$render($$result, {}, {}, {})} </div></div> </div></div> </div>`;
+  })}</div></div> <div class="flex items-center justify-center">${validate_component(Button, "Button").$$render(
     $$result,
     {
       variant: "outline",
@@ -270,7 +411,7 @@ const Modules = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   $$unsubscribe_t();
   $$unsubscribe_locale();
   return `<div class="mb-40 flex flex-col items-center"><h2 class="mb-16 md:mb:20 max-w-[19em] text-center font-display text-2xl font-semibold lg:text-4xl">${escape($t("default.page.home.components.modules.heading"))}</h2> <div class="relative"><div class="relative flex flex-row flex-wrap justify-center gap-4">${each(modules, (module) => {
-    return `<div class="group relative flex items-center justify-center rounded-[36px] bg-white p-3 md:p-4 lg:p-6 text-sm shadow-xl md:w-auto"><div class="absolute left-full top-1/2 hidden h-1 w-4 -translate-y-1/2 transform bg-black/90 md:block group-last:md:hidden"></div> <div class="flex size-[100px] md:size-[120px] lg:size-[140px] flex-shrink-0 flex-col items-center justify-between rounded-3xl bg-black p-2 lg:p-4 text-offwhite shadow-xl"><div></div> <div class="flex w-16 h-16 lg:h-20 lg:w-20 flex-shrink-0 items-center justify-center rounded-full fill-offwhite/90 p-1 shadow-inner"><!-- HTML_TAG_START -->${module.icon}<!-- HTML_TAG_END --></div> <div class="relative">${module.delayed ? `<div class="absolute right-4 top-0.5 -translate-y-full translate-x-full transform rounded-full bg-red-500 px-2 py-0.5 text-xs">${escape($locale == "en" ? "soon" : "bald")} </div>` : ``} <span class="text-[10px] md:text-xs">${escape(module.heading)}</span> </div></div> </div>`;
+    return `<div class="group relative flex items-center justify-center rounded-[36px] bg-white p-3 lg:p-6 text-sm shadow-xl md:w-auto"><div class="absolute left-full top-1/2 hidden h-1 w-4 -translate-y-1/2 transform bg-black/90 md:block group-last:md:hidden"></div> <div class="flex size-[100px] md:size-[120px] lg:size-[140px] flex-shrink-0 flex-col items-center justify-between rounded-3xl bg-black p-2 lg:p-4 text-offwhite shadow-xl"><div></div> <div class="flex w-16 h-16 lg:h-20 lg:w-20 flex-shrink-0 items-center justify-center rounded-full fill-offwhite/90 p-1 shadow-inner"><!-- HTML_TAG_START -->${module.icon}<!-- HTML_TAG_END --></div> <div class="relative">${module.delayed ? `<div class="absolute right-4 top-0.5 -translate-y-full translate-x-full transform rounded-full bg-red-500 px-2 py-0.5 text-xs">${escape($locale == "en" ? "soon" : "bald")} </div>` : ``} <span class="text-[10px] md:text-xs">${escape(module.heading)}</span> </div></div> </div>`;
   })}</div></div> </div>`;
 });
 const PhoneMockup = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -286,9 +427,9 @@ const PhoneMockup = create_ssr_component(($$result, $$props, $$bindings, slots) 
     $$bindings.color(color);
   if ($$props.inverted === void 0 && $$bindings.inverted && inverted !== void 0)
     $$bindings.inverted(inverted);
-  return `<div${add_attribute("class", cn("flex items-center justify-center relative", className), 0)}><img src="phone_frontal.png" alt="Phone Mockup" class=""> <div class="bg-black bg-contain bg-bottom bg-no-repeat absolute w-[calc(100%-20px)] h-[calc(100%-20px)] rounded-[35px] transform translate-y-1px z-0 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)]"></div> <div style="${"background-image: url('" + escape(mockup, true) + "')"}" class="${"bg-contain bg-bottom bg-no-repeat absolute w-[calc(100%-30px)] h-[calc(100%-30px)] " + escape(color, true) + " rounded-[26px] sm:rounded-[30px] md:rounded-[35px] transform translate-y-1px"}"><div class="relative"><div class="absolute top-0 left-0 z-10 w-full flex items-center justify-between px-6 py-3"><span class="${"text-[9px] font-bold " + escape(inverted ? "text-white" : "text-black", true)}">09:46</span> <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 sm:w-20 h-5 sm:h-6 bg-black rounded-full flex items-center justify-end px-[4px] pt-[2px]" data-svelte-h="svelte-1er9dk7"><img src="phone-lens.jpg" alt="Phone Lens" class="w-4 h-4 rounded-full"></div> <img${add_attribute(
+  return `<div${add_attribute("class", cn("flex items-center justify-center relative", className), 0)}><img src="phone_frontal.png" alt="Phone Mockup" class=""> <div class="bg-black bg-contain bg-bottom bg-no-repeat absolute w-[calc(100%-20px)] h-[calc(100%-20px)] rounded-[35px] transform translate-y-1px z-0 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)]"></div> <div style="${"background-image: url('" + escape(mockup, true) + "')"}" class="${"bg-contain bg-bottom bg-no-repeat absolute w-[calc(100%-30px)] h-[calc(100%-30px)] " + escape(color, true) + " rounded-[26px] sm:rounded-[30px] md:rounded-[35px] transform translate-y-1px"}"><div class="relative"><div class="absolute top-0 left-0 z-10 w-full flex items-center justify-between px-6 py-3"><span class="${"text-[9px] font-bold " + escape(inverted ? "text-white" : "text-black", true)}">09:46</span> <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 sm:w-20 h-5 sm:h-6 bg-black rounded-full flex items-center justify-end px-[4px] pt-[2px]" data-svelte-h="svelte-fpahys"><img src="/phone-lens.jpg" alt="Phone Lens" class="w-4 h-4 rounded-full"></div> <img${add_attribute(
     "src",
-    inverted ? "phone-icons-inverted.svg" : "phone-icons.svg",
+    inverted ? "/phone-icons-inverted.svg" : "/phone-icons.svg",
     0
   )} alt="Phone Icons" class="h-1.5 sm:h-2"></div></div></div></div>`;
 });
@@ -366,12 +507,12 @@ const Fight = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     }
   ];
   $$unsubscribe_t();
-  return `<div class="mb-32"><div class="flex flex-col items-center"><div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite p-1 svelte-ac5ap2"><div class="flex items-center justify-center rounded-full bg-black fill-offwhite p-1.5 shadow-inner"><!-- HTML_TAG_START -->${IconFight}<!-- HTML_TAG_END --></div></div> <div class="mb-3 ml-0.5 text-slate-500">2. ${escape(moduleName)}</div> <h2 class="mb-8 font-display text-2xl font-semibold lg:text-4xl">${escape($t("default.page.home.components.fight.heading"))}</h2></div> <div class="relative flex flex-col items-center justify-start gap-4 lg:mt-24 lg:flex-row lg:items-stretch lg:justify-center lg:gap-10"><div class="absolute left-1/2 top-[90px] hidden h-40 w-full -translate-x-1/2 -translate-y-full transform rounded-full border-4 border-black lg:block" data-svelte-h="svelte-sr86zg"><div class="hidden lg:block absolute left-1/2 -top-[2px] -translate-y-1/2 transform"><div class="h-4 w-4 rotate-45 transform border-l-4 border-b-4 border-black"></div></div></div> <div class="relative z-0"><div class="hidden lg:block absolute left-0 top-[88px] -ml-8 -translate-y-1/2 transform" data-svelte-h="svelte-1sp5qq2"><div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div></div> <div class="relative w-full md:w-52 overflow-hidden rounded-lg shadow-xl shadow-black/5">${each(tableRows, (row) => {
+  return `<div class="mb-32"><div class="flex flex-col items-center"><div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite p-1 svelte-ac5ap2"><div class="flex items-center justify-center rounded-full bg-black fill-offwhite p-1.5 shadow-inner"><!-- HTML_TAG_START -->${IconFight}<!-- HTML_TAG_END --></div></div> <div class="mb-3 ml-0.5 text-slate-500">2. ${escape(moduleName)}</div> <h2 class="mb-8 font-display text-2xl font-semibold lg:text-4xl">${escape($t("default.page.home.components.fight.heading"))}</h2></div> <div class="relative flex flex-col items-center justify-start gap-4 lg:mt-24 lg:flex-row lg:items-stretch lg:justify-center lg:gap-10"><div class="absolute left-1/2 top-[90px] hidden h-40 w-full -translate-x-1/2 -translate-y-full transform rounded-full border-4 border-black lg:block" data-svelte-h="svelte-1698x5u"><div class="absolute -top-[2px] left-1/2 hidden -translate-y-1/2 transform lg:block"><div class="h-4 w-4 rotate-45 transform border-b-4 border-l-4 border-black"></div></div></div> <div class="relative z-0"><div class="absolute left-0 top-[88px] -ml-8 hidden -translate-y-1/2 transform lg:block" data-svelte-h="svelte-14u3ega"><div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div></div>  <div class="m-4"><div class="relative w-full overflow-hidden rounded-lg shadow-xl shadow-black/5 md:w-52">${each(tableRows, (row) => {
     return `<div class="group flex items-stretch border-b border-black/5 bg-white text-xs shadow-md last:border-b-0"><div class="flex flex-shrink-0 items-center justify-center border-r border-black/5 px-3 pb-3 pt-3"><div class="${"label bg-" + escape(row.color, true) + "-background svelte-ac5ap2"}"><div class="${"icon fill-" + escape(row.color, true) + "-foreground svelte-ac5ap2"}"><!-- HTML_TAG_START -->${row.icon}<!-- HTML_TAG_END --></div> </div></div> <div class="flex-grow break-all px-3 pb-3 pt-4">${escape(row.content)}</div> </div>`;
-  })}</div> <p class="w-full md:w-52 py-4" data-svelte-h="svelte-n3xnjn">Du notierst Deine Beobachtung, Gefühle, Bedürfnisse und Bitten</p></div> <div class="relative z-0" data-svelte-h="svelte-19zfi6m"><div class="hidden lg:block absolute left-0 top-[88px] -ml-8 -translate-y-1/2 transform"><div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div></div> <div class="hidden lg:block absolute right-0 top-[88px] -mr-6 -translate-y-1/2 transform"><div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div></div> <div style="${"background-image: url('" + escape(backgroundImage, true) + "'); background-size: 300% 100%"}"${add_attribute("class", "shadow-black-5 flex h-[178.22px] w-full md:w-52 items-center justify-center rounded-lg bg-center bg-repeat-x shadow-xl", 0)}><div class="h-8 w-20 rounded-full border-4 border-white"></div></div> <p class="w-full md:w-52 py-4">Wir generieren einen Empathie-Link, den Du Deiner/m Streitpartner*in schickst</p></div> <div class="relative z-0"><div class="hidden lg:block absolute right-0 top-[88px] -mr-6 -translate-y-1/2 transform" data-svelte-h="svelte-3ljk9j"><div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div></div> <div class="w-full md:w-52 overflow-hidden rounded-lg shadow-xl shadow-black/5">${each(tableRows, (row) => {
+  })}</div> <p class="w-full py-4 md:w-52" data-svelte-h="svelte-1pur9mq">Du notierst Deine Beobachtung, Gefühle, Bedürfnisse und Bitten</p></div></div> <div class="relative z-0" data-svelte-h="svelte-1yw47j"><div class="absolute left-0 top-[88px] -ml-8 hidden -translate-y-1/2 transform lg:block"><div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div></div> <div class="absolute right-0 top-[88px] -mr-6 hidden -translate-y-1/2 transform lg:block"><div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div></div>  <div class="m-4"><div style="${"background-image: url('" + escape(backgroundImage, true) + "'); background-size: 300% 100%"}"${add_attribute("class", "shadow-black-5 flex h-[178.22px] w-full items-center justify-center rounded-lg bg-center bg-repeat-x shadow-xl md:w-52", 0)}><div class="h-8 w-20 rounded-full border-4 border-white"></div></div> <p class="w-full py-4 md:w-52">Wir generieren einen Empathie-Link, den Du Deiner/m Streitpartner*in schickst</p></div></div> <div class="relative z-0"><div class="absolute right-0 top-[88px] -mr-6 hidden -translate-y-1/2 transform lg:block" data-svelte-h="svelte-7uxp1n"><div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div></div>  <div class="m-4 md:m-0"><div class="w-full overflow-hidden rounded-lg shadow-xl shadow-black/5 md:w-52">${each(tableRows, (row) => {
     return `<div class="group flex items-stretch border-b border-black/5 bg-white text-xs shadow-md last:border-b-0"><div class="flex flex-shrink-0 items-center justify-center border-r border-black/5 px-3 pb-3 pt-3"><div class="${"label bg-" + escape(row.color, true) + "-background svelte-ac5ap2"}"><div class="${"icon fill-" + escape(row.color, true) + "-foreground svelte-ac5ap2"}"><!-- HTML_TAG_START -->${row.icon}<!-- HTML_TAG_END --></div> </div></div> <div class="flex-grow break-all px-3 pb-3 pt-4">${escape(row.content)}</div> </div>`;
-  })}</div> <p class="w-full md:w-52 py-4" data-svelte-h="svelte-1tm7nl">Dein/e Streitpartner*in kann sich in Ruhe mit Deiner Sicht der Dinge auseinandersetzen und
-				antwortet dann</p></div></div> </div>`;
+  })}</div> <p class="w-full py-4 md:w-52" data-svelte-h="svelte-2rqqw4">Dein/e Streitpartner*in kann sich in Ruhe mit Deiner Sicht der Dinge auseinandersetzen und
+					antwortet dann</p></div></div></div> </div>`;
 });
 const css$1 = {
   code: '.skeumorphic-button.svelte-ac5ap2{transition:box-shadow 50ms;box-shadow:var(--skeumorphic-shadow-light)}.label.svelte-ac5ap2{box-shadow:-4px -4px 8px 0 white;position:relative;height:1.25rem;width:1.25rem;flex-shrink:0;border-radius:9999px;border-width:1px;--tw-border-opacity:1;border-color:rgb(255 255 255 / var(--tw-border-opacity))}.label.svelte-ac5ap2:after{content:"";box-shadow:4px 4px 8px 0 rgba(0, 0, 0, 0.4);display:block;height:100%;width:100%;border-radius:9999px}.icon.svelte-ac5ap2{position:absolute;left:50%;top:50%;height:0.875rem;width:0.875rem;--tw-translate-x:-50%;--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.card-root{box-shadow:-5px -5px 5px rgba(255, 255, 255, 0.9), 5px 5px 5px rgba(0, 0, 0, 0.1)}.need.svelte-ac5ap2{position:relative;z-index:10;display:inline}.need.svelte-ac5ap2:before{content:"";position:absolute;left:0px;top:0px;height:100%;width:100%;z-index:-1}',
@@ -413,8 +554,8 @@ const Feedback = create_ssr_component(($$result, $$props, $$bindings, slots) => 
     }
   ];
   $$unsubscribe_t();
-  return `<div class="mb-40"><div class="flex flex-col items-center"><div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite p-1 svelte-ac5ap2"><div class="flex items-center justify-center rounded-full bg-black fill-offwhite p-1.5 shadow-inner"><!-- HTML_TAG_START -->${IconFeedback}<!-- HTML_TAG_END --></div></div> <div class="mb-3 ml-0.5 text-slate-500">3. ${escape(moduleName)}</div> <div class="relative"><h2 class="mb-8 font-display text-2xl font-semibold lg:text-4xl">${escape($t("default.page.home.components.feedback.heading"))}</h2> <div class="bg-red-500 rounded-full px-2 py-0.5 text-xs text-white absolute -top-0 -right-0 transform translate-x-full -translate-y-full">${escape($t("default.menu.soon"))}</div></div> <p class="max-w-md text-center mb-8">${escape($t("default.page.home.components.feedback.description"))}</p></div> <div class="relative flex flex-row flex-wrap justify-center -mx-3">${each(tableRows, (card) => {
-    return `<div class="group relative p-3 text-sm w-full md:w-1/4 md:max-w-[460px]"><div class="absolute left-full -ml-3 top-1/2 hidden h-1 w-6 -translate-y-1/2 transform bg-black/90 md:block group-last:md:hidden"></div> <div class="group relative h-40 shadow-xl p-6 bg-white rounded-3xl"><div><div class="skeumorphic-button mb-8 h-9 w-9 rounded-full bg-offwhite p-0.5 svelte-ac5ap2"><div class="${"bg-" + escape(card.color, true) + "-background fill-" + escape(card.color, true) + "-foreground flex items-center justify-center rounded-full p-1 shadow-inner svelte-ac5ap2"}"><!-- HTML_TAG_START -->${card.icon}<!-- HTML_TAG_END --></div> </div></div> <div class="flex"><p class="">${escape(card.content)}</p> </div></div> </div>`;
+  return `<div class="mb-40"><div class="flex flex-col items-center"><div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite p-1 svelte-ac5ap2"><div class="flex items-center justify-center rounded-full bg-black fill-offwhite p-1.5 shadow-inner"><!-- HTML_TAG_START -->${IconFeedback}<!-- HTML_TAG_END --></div></div> <div class="mb-3 ml-0.5 text-slate-500">3. ${escape(moduleName)}</div> <div class="relative"><h2 class="mb-8 font-display text-2xl font-semibold lg:text-4xl">${escape($t("default.page.home.components.feedback.heading"))}</h2> <div class="bg-red-500 rounded-full px-2 py-0.5 text-xs text-white absolute -top-0 -right-0 transform translate-x-full -translate-y-full">${escape($t("default.menu.soon"))}</div></div> <p class="max-w-md text-center mb-8">${escape($t("default.page.home.components.feedback.description"))}</p></div> <div class="relative flex flex-row flex-wrap justify-center items-stretch -mx-3">${each(tableRows, (card) => {
+    return `<div class="group mx-4 md:mx-0 relative p-3 text-sm w-full md:w-1/4 md:max-w-[460px]"><div class="absolute left-full -ml-3 top-1/2 hidden h-1 w-6 -translate-y-1/2 transform bg-black/90 md:block group-last:md:hidden"></div> <div class="group relative h-full shadow-xl p-6 bg-white rounded-3xl hyphens-auto"><div><div class="skeumorphic-button mb-8 h-9 w-9 rounded-full bg-offwhite p-0.5 svelte-ac5ap2"><div class="${"bg-" + escape(card.color, true) + "-background fill-" + escape(card.color, true) + "-foreground flex items-center justify-center rounded-full p-1 shadow-inner svelte-ac5ap2"}"><!-- HTML_TAG_START -->${card.icon}<!-- HTML_TAG_END --></div> </div></div> <div class="flex"><p class="">${escape(card.content)}</p> </div></div> </div>`;
   })}</div> </div>`;
 });
 const css = {
@@ -459,11 +600,64 @@ const Learn = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   return `<div class="mb-40"><div class="flex flex-col items-start"><div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite p-1 svelte-ac5ap2"><div class="flex items-center justify-center rounded-full bg-black fill-offwhite p-1.5 shadow-inner"><!-- HTML_TAG_START -->${IconLearn}<!-- HTML_TAG_END --></div></div> <div class="mb-3 ml-0.5 text-slate-500">4. ${escape(moduleName)}</div> <div class="relative"><h2 class="mb-8 font-display text-2xl font-semibold lg:text-4xl">${escape($t("default.page.home.components.learn.heading"))}</h2> <div class="bg-red-500 rounded-full px-2 py-0.5 text-xs text-white absolute -top-0 -right-0 transform translate-x-full -translate-y-full">${escape($t("default.menu.soon"))}</div></div> <p class="max-w-md mb-8">${escape($t("default.page.home.components.learn.description"))}</p></div> </div>`;
 });
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $backgroundColor, $$unsubscribe_backgroundColor;
+  $$unsubscribe_backgroundColor = subscribe(backgroundColor, (value) => $backgroundColor = value);
   let { data } = $$props;
   console.log("data", data);
+  const targetColors = [
+    { name: "topTarget", color: "bg-white" },
+    {
+      name: "stepsTarget",
+      color: "bg-background"
+    },
+    {
+      name: "modulesTarget",
+      color: "bg-background"
+    },
+    {
+      name: "selfempathyTarget",
+      color: "bg-observation-background"
+    },
+    {
+      name: "fightTarget",
+      color: "bg-feelings-background"
+    },
+    {
+      name: "feedbackTarget",
+      color: "bg-needs-background"
+    },
+    {
+      name: "learnTarget",
+      color: "bg-request-background"
+    }
+  ];
+  const updateBackgroundColor = () => {
+    const targets = targetColors;
+    let newColor = "";
+    let section = "";
+    const offset = 100;
+    for (const target of targets) {
+      const targetDiv = document.getElementById(target.name);
+      if (targetDiv) {
+        const rect = targetDiv.getBoundingClientRect();
+        if (rect.top + offset >= 0 && rect.bottom + offset <= window.innerHeight) {
+          newColor = target.color;
+          section = target.name;
+          break;
+        }
+      }
+    }
+    if (newColor) {
+      backgroundColor.set(newColor);
+      currentSection.set(section);
+    }
+  };
+  scroll.subscribe(() => updateBackgroundColor());
+  windowHeight.subscribe(() => updateBackgroundColor());
   if ($$props.data === void 0 && $$bindings.data && data !== void 0)
     $$bindings.data(data);
-  return `<div class="flex h-full flex-grow flex-col justify-between"><div class="flex-grow"><div class="absolute">${validate_component(Menu, "Menu").$$render($$result, {}, {}, {})}</div> <div class="mb-32 relative z-0"><div class="max-container">${validate_component(AnimatedHeroBig, "AnimatedHeroBig").$$render($$result, {}, {}, {})}</div></div> <div class="max-container pb-40 relative z-10 bg-offwhite">${validate_component(The4Steps, "The4Steps").$$render($$result, {}, {}, {})} ${validate_component(Modules, "Modules").$$render($$result, {}, {}, {})} ${validate_component(Selfempathy, "Selfempathy").$$render($$result, {}, {}, {})} ${validate_component(Fight, "Fight").$$render($$result, {}, {}, {})} ${validate_component(Feedback, "Feedback").$$render($$result, {}, {}, {})} ${validate_component(Learn, "Learn").$$render($$result, {}, {}, {})}</div></div></div>`;
+  $$unsubscribe_backgroundColor();
+  return `<div class="flex h-full flex-grow flex-col justify-between">${validate_component(WebsiteMenu, "WebsiteMenu").$$render($$result, {}, {}, {})} <div class="${escape($backgroundColor, true) + " flex-grow relative transition duration-500"}"><div id="topTarget"></div> <div class="mb-20 relative z-0"><div class="max-container">${validate_component(AnimatedHeroBig, "AnimatedHeroBig").$$render($$result, {}, {}, {})}</div></div> <div class="max-container pb-40 relative z-10"><div id="stepsTarget"></div> ${validate_component(The4Steps, "The4Steps").$$render($$result, {}, {}, {})} <div id="modulesTarget"></div> ${validate_component(Modules, "Modules").$$render($$result, {}, {}, {})} <div id="selfempathyTarget"></div> ${validate_component(Selfempathy, "Selfempathy").$$render($$result, {}, {}, {})} <div id="fightTarget"></div> ${validate_component(Fight, "Fight").$$render($$result, {}, {}, {})} <div id="feedbackTarget"></div> ${validate_component(Feedback, "Feedback").$$render($$result, {}, {}, {})} <div id="learnTarget"></div> ${validate_component(Learn, "Learn").$$render($$result, {}, {}, {})}</div></div></div>`;
 });
 export {
   Page as default

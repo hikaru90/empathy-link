@@ -1,5 +1,5 @@
+import { a as PRIVATE_BREVO_API_KEY } from "../../../../../chunks/private.js";
 import { j as json } from "../../../../../chunks/index.js";
-const PRIVATE_BREVO_API_KEY = "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";
 const getTemplate = (templateName, locale, formData) => {
   const templates = [
     {

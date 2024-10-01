@@ -49,42 +49,35 @@ const animateScrollTo = (container, to, duration) => {
 
 	requestAnimationFrame(updateScrollPosition);
 };
-export const scrollToElement = (element, duration) => {
-	const scrollContainer = document.documentElement || document.body;
-	const elementRect = element.getBoundingClientRect();
-	const scrollTop = window.pageYOffset || scrollContainer.scrollTop;
-	const targetPosition = scrollTop + elementRect.top - 100; // Subtract 100px to give some space at the top
+export const scrollToElement = (element: HTMLElement, duration: number = 1000) => {
+  if (!element) return;
 
-	const easeInOutQuad = (t) => {
-		return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-	};
+  const scrollContainer = document.documentElement || document.body;
+  const elementRect = element.getBoundingClientRect();
+  const scrollTop = window.pageYOffset || scrollContainer.scrollTop;
+  const targetPosition = scrollTop + elementRect.top - 100; // Subtract 100px to give some space at the top
 
-	const startTime = performance.now();
-	const startPosition = scrollContainer.scrollTop;
-	const distance = targetPosition - startPosition;
+  const startTime = performance.now();
+  const startPosition = scrollContainer.scrollTop;
+  const distance = targetPosition - startPosition;
 
-	const animateScroll = (currentTime) => {
-		const elapsedTime = currentTime - startTime;
-		const progress = Math.min(elapsedTime / duration, 1);
-		const easeProgress = easeInOutQuad(progress);
+  const easeInOutQuad = (t: number): number => {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  };
 
-		scrollContainer.scrollTop = startPosition + distance * easeProgress;
+  const animateScroll = (currentTime: number) => {
+    const elapsedTime = currentTime - startTime;
+    const progress = Math.min(elapsedTime / duration, 1);
+    const easeProgress = easeInOutQuad(progress);
 
-		if (progress < 1) {
-			requestAnimationFrame(animateScroll);
-		}
-	};
+    window.scrollTo(0, startPosition + distance * easeProgress);
 
-	requestAnimationFrame(animateScroll);
+    if (progress < 1) {
+      requestAnimationFrame(animateScroll);
+    }
+  };
 
-	// var container = document.getElementById(containerId);
-	// if (!container || !element) return;
-
-	// const to = element.getBoundingClientRect().top;
-	// console.log('to',to);
-	// // const containerY = container.scrollTop;
-	// // const windowY = window.scrollY;
-	// animateScrollTo(document.body, to, duration || 1000);
+  requestAnimationFrame(animateScroll);
 };
 
 export const serializeNonPOJOs = (obj: object) => {

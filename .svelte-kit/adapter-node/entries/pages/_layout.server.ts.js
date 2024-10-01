@@ -1,4 +1,4 @@
-import { l as loadTranslations } from "../../chunks/translations.js";
+import { a as loadTranslations } from "../../chunks/translations.js";
 const load = async ({ url, locals }) => {
   await loadTranslations(locals.locale, url.pathname);
   console.log("layout.server.ts values - locals:", locals);

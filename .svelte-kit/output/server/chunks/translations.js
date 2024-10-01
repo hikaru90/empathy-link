@@ -373,7 +373,7 @@ const config = {
 const { t: t2, locale, locales, loading, loadTranslations, initialized } = new D(config);
 loading.subscribe(($loading) => $loading && console.log("Loading translations for the main instance..."));
 export {
-  locale as a,
-  loadTranslations as l,
+  loadTranslations as a,
+  locale as l,
   t2 as t
 };

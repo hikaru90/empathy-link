@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { a as locale, t } from "./translations.js";
+import { l as locale, t } from "./translations.js";
 import { g as get_store_value } from "./utils.js";
 console.log("locale", get_store_value(locale));
 const formSchema = z.object({

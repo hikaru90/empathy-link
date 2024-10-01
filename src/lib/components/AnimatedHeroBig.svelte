@@ -15,28 +15,34 @@
 	};
 </script>
 
-<div class="relative z-10 pt-20 lg:-mb-20 md:pt-32">
-	<h1
-		class="mb-10 max-w-[14em] font-display text-4xl font-semibold leading-[106%] md:text-5xl lg:text-7xl"
-	>
-		{$t('default.page.home.hero')}
-	</h1>
-	<a href="/app/auth/login">
-		<SparkleButton
-			class="px-3 py-5 font-bold text-black shadow-lg rounded-lg dark:shadow-gray-300/30 lg:px-6 lg:py-7 lg:text-lg"
+<div class="relative z-10 flex h-svh flex-col pt-20 md:pt-32">
+	<div class="flex-grow flex flex-col justify-center">
+		<h1
+			class="mb-10 max-w-[14em] font-display text-4xl font-semibold leading-[106%] md:text-5xl lg:text-7xl"
 		>
-			{$t('default.page.home.cta')}
-		</SparkleButton>
-	</a>
-	<div class="mt-20 flex items-center -mx-5 md:mx-0">
-		<div class="hidden md:block md:size-32 lg:size-40 rounded-full bg-offwhite/40"></div>
-		<div class="hidden md:block -ml-16 md:size-32 lg:size-40 rounded-full bg-offwhite"></div>
-		<div
-			style="background-image: url('/women.jpg')"
-			class="md:-ml-16 h-52 md:h-32 lg:h-40 w-full md:w-[300px] lg:w-[500px] md:rounded-full bg-offwhite bg-cover bg-right md:bg-center"
-		></div>
+			{$t('default.page.home.hero')}
+		</h1>
+		<a href="/app/auth/login">
+			<SparkleButton
+				class="rounded-lg px-3 py-5 font-bold text-black shadow-lg dark:shadow-gray-300/30 lg:px-6 lg:py-7 lg:text-lg"
+			>
+				{$t('default.page.home.cta')}
+			</SparkleButton>
+		</a>
 	</div>
-	<MockupHero class="absolute top-64 md:top-72 lg:top-80 -right-4 lg:right-0 w-40 md:w-60 lg:w-96" />
+	<div class="relative md:mb-32 lg:mb-60">
+		<div class="-mx-5 mt-20 flex items-center md:mx-0">
+			<div class="hidden rounded-full bg-offwhite/40 md:block md:size-32 lg:size-40"></div>
+			<div class="-ml-16 hidden rounded-full bg-offwhite md:block md:size-32 lg:size-40"></div>
+			<div
+				style="background-image: url('/women.jpg')"
+				class="h-52 w-full bg-offwhite bg-cover bg-right md:-ml-16 md:h-32 md:w-[300px] md:rounded-full md:bg-center lg:h-40 lg:w-[500px]"
+			></div>
+		</div>
+		<MockupHero
+			class="absolute -right-4 top-0 w-40 md:w-60 lg:right-0 lg:w-96 -mt-20"
+		/>
+	</div>
 </div>
 
 <style lang="scss">

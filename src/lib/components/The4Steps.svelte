@@ -53,9 +53,9 @@
     <div class="hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
       <img src="/connector.svg" alt="connector" class="w-28">
     </div>
-		<div class="-m-4 flex flex-wrap items-stretch justify-center">
+		<div class="md:-m-4 flex flex-wrap items-stretch justify-center">
 			{#each cards as card}
-				<div class="group relative h-64 md:h-72 w-full px-4 py-3 md:py-4 md:w-1/2 md:max-w-[460px]">
+				<div class="group relative h-52 md:h-72 w-full px-4 py-3 md:py-4 md:w-1/2 md:max-w-[460px]">
 					<div
 						class="absolute left-full top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-first:md:block"
 					></div>
@@ -63,15 +63,15 @@
 						class="absolute left-0 top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-last:md:block"
 					></div>
 					<div class="flex h-full flex-col justify-between rounded-3xl bg-white p-5 md:p-6 lg:p-8 shadow-lg">
-						<div>
-							<div class="skeumorphic-button mb-2 md:mb-3 lg:mb-4 h-9 w-9 rounded-full bg-offwhite p-0.5">
+						<div class="flex flex-row md:flex-col gap-4 items-center md:items-start">
+							<div class="skeumorphic-button h-9 w-9 rounded-full bg-offwhite p-0.5">
 								<div
 									class="bg-{card.backgroundColor} fill-{card.color} flex items-center justify-center rounded-full p-1 shadow-inner"
 								>
 									{@html card.icon}
 								</div>
 							</div>
-							<h3 class="mb-6 font-display text-xl font-semibold md:text-2xl">
+							<h3 class="md:mb-6 font-display text-xl font-semibold md:text-2xl">
 								{card.heading}
 							</h3>
 						</div>

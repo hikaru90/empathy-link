@@ -22,6 +22,14 @@ const menu = {
     mailLinkConfirmation: "Link was sent successfully",
     mailLinkError: "Error sending link",
     mailDialogText: "With whom do you want to fight?"
+  },
+  sections: {
+    the4steps: "The 4 Steps",
+    modules: "Modules",
+    selfempathy: "Selfempathy",
+    fight: "Fight",
+    feedback: "Feedback",
+    learn: "Learn"
   }
 };
 const page = {
@@ -52,6 +60,15 @@ const page = {
       },
       ownerRequest: {
         heading: "requested the following"
+      },
+      pause: {
+        heading: "You now have the opportunity to respond"
+      },
+      success: {
+        heading: "Done"
+      },
+      error: {
+        heading: "Unfortunately, an error occurred while submitting the response. Please try again. If the problem persists, please contact us at support@empathie-link.de"
       }
     }
   },
@@ -160,6 +177,15 @@ const page = {
       feelings: "Feelings",
       needs: "Needs",
       request: "Request"
+    },
+    create: {
+      info: "First, I have a few general questions about your conflict.",
+      observation: "Describe what happened. Without judging, and without making assumptions or exaggerations.",
+      feelings: "How did you feel about it?",
+      needs: "What needs are behind this?",
+      request: "To resolve this conflict well, it's important that you feel understood. I will ask your conflict partner to repeat what they have understood. Do you want to ask for anything else?",
+      success: "Done. You can now share the conflict link with your conflict partner.",
+      error: "Unfortunately, an error occurred while creating the fight. Please try again. If the problem persists, please contact us at support@empathie-link.de"
     }
   },
   fights: {
@@ -169,12 +195,16 @@ const page = {
       general: {
         prev: "back",
         next: "Next",
+        yes: "Yes",
+        knowledge: "I know",
+        checkJudgement: "Check for judgement",
         steps: {
           info: "Informations",
           observation: "Observation",
           feelings: "Feelings",
           needs: "Needs",
-          request: "Request"
+          request: "Request",
+          success: "Success"
         },
         badFeelings: "Bad Feelings",
         goodFeelings: "Good Feelings",
@@ -205,6 +235,7 @@ const page = {
   },
   login: {
     heading: "Login",
+    text: "Login now",
     form: {
       email: {
         label: "Mail",

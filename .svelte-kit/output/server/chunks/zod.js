@@ -171,8 +171,10 @@ const defaultOptions$1 = {
   errorMessages: false,
   markdownDescription: false,
   patternStrategy: "escape",
+  applyRegexFlags: false,
   emailStrategy: "format:email",
-  base64Strategy: "contentEncoding:base64"
+  base64Strategy: "contentEncoding:base64",
+  nameStrategy: "ref"
 };
 const getDefaultOptions = (options) => typeof options === "string" ? {
   ...defaultOptions$1,
@@ -423,32 +425,49 @@ function parseLiteralDef(def, refs) {
     const: def.value
   };
 }
+let emojiRegex;
 const zodPatterns = {
   /**
    * `c` was changed to `[cC]` to replicate /i flag
    */
-  cuid: "^[cC][^\\s-]{8,}$",
-  cuid2: "^[a-z][a-z0-9]*$",
-  ulid: "^[0-9A-HJKMNP-TV-Z]{26}$",
+  cuid: /^[cC][^\s-]{8,}$/,
+  cuid2: /^[0-9a-z]+$/,
+  ulid: /^[0-9A-HJKMNP-TV-Z]{26}$/,
   /**
    * `a-z` was added to replicate /i flag
    */
-  email: "^(?!\\.)(?!.*\\.\\.)([a-zA-Z0-9_+-\\.]*)[a-zA-Z0-9_+-]@([a-zA-Z0-9][a-zA-Z0-9\\-]*\\.)+[a-zA-Z]{2,}$",
-  emoji: "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$",
+  email: /^(?!\.)(?!.*\.\.)([a-zA-Z0-9_'+\-\.]*)[a-zA-Z0-9_+-]@([a-zA-Z0-9][a-zA-Z0-9\-]*\.)+[a-zA-Z]{2,}$/,
+  /**
+   * Constructed a valid Unicode RegExp
+   *
+   * Lazily instantiate since this type of regex isn't supported
+   * in all envs (e.g. React Native).
+   *
+   * See:
+   * https://github.com/colinhacks/zod/issues/2433
+   * Fix in Zod:
+   * https://github.com/colinhacks/zod/commit/9340fd51e48576a75adc919bff65dbc4a5d4c99b
+   */
+  emoji: () => {
+    if (emojiRegex === void 0) {
+      emojiRegex = RegExp("^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$", "u");
+    }
+    return emojiRegex;
+  },
   /**
    * Unused
    */
-  uuid: "^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$",
+  uuid: /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/,
   /**
    * Unused
    */
-  ipv4: "^(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))$",
+  ipv4: /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/,
   /**
    * Unused
    */
-  ipv6: "^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$",
-  base64: "^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$",
-  nanoid: "^[a-zA-Z0-9_-]{21}$"
+  ipv6: /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/,
+  base64: /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/,
+  nanoid: /^[a-zA-Z0-9_-]{21}$/
 };
 function parseStringDef(def, refs) {
   const res = {
@@ -486,7 +505,7 @@ function parseStringDef(def, refs) {
           addFormat(res, "uuid", check.message, refs);
           break;
         case "regex":
-          addPattern(res, check.regex.source, check.message, refs);
+          addPattern(res, check.regex, check.message, refs);
           break;
         case "cuid":
           addPattern(res, zodPatterns.cuid, check.message, refs);
@@ -495,10 +514,10 @@ function parseStringDef(def, refs) {
           addPattern(res, zodPatterns.cuid2, check.message, refs);
           break;
         case "startsWith":
-          addPattern(res, "^" + processPattern(check.value), check.message, refs);
+          addPattern(res, RegExp(`^${processPattern(check.value)}`), check.message, refs);
           break;
         case "endsWith":
-          addPattern(res, processPattern(check.value) + "$", check.message, refs);
+          addPattern(res, RegExp(`${processPattern(check.value)}$`), check.message, refs);
           break;
         case "datetime":
           addFormat(res, "date-time", check.message, refs);
@@ -517,7 +536,7 @@ function parseStringDef(def, refs) {
           setResponseValueAndErrors(res, "maxLength", typeof res.maxLength === "number" ? Math.min(res.maxLength, check.value) : check.value, check.message, refs);
           break;
         case "includes": {
-          addPattern(res, processPattern(check.value), check.message, refs);
+          addPattern(res, RegExp(processPattern(check.value)), check.message, refs);
           break;
         }
         case "ip": {
@@ -590,7 +609,7 @@ const addFormat = (schema, value, message, refs) => {
     setResponseValueAndErrors(schema, "format", value, message, refs);
   }
 };
-const addPattern = (schema, value, message, refs) => {
+const addPattern = (schema, regex, message, refs) => {
   if (schema.pattern || schema.allOf?.some((x) => x.pattern)) {
     if (!schema.allOf) {
       schema.allOf = [];
@@ -611,12 +630,87 @@ const addPattern = (schema, value, message, refs) => {
       }
     }
     schema.allOf.push({
-      pattern: value,
+      pattern: processRegExp(regex, refs),
       ...message && refs.errorMessages && { errorMessage: { pattern: message } }
     });
   } else {
-    setResponseValueAndErrors(schema, "pattern", value, message, refs);
+    setResponseValueAndErrors(schema, "pattern", processRegExp(regex, refs), message, refs);
   }
+};
+const processRegExp = (regexOrFunction, refs) => {
+  const regex = typeof regexOrFunction === "function" ? regexOrFunction() : regexOrFunction;
+  if (!refs.applyRegexFlags || !regex.flags)
+    return regex.source;
+  const flags = {
+    i: regex.flags.includes("i"),
+    m: regex.flags.includes("m"),
+    s: regex.flags.includes("s")
+    // `.` matches newlines
+  };
+  const source = flags.i ? regex.source.toLowerCase() : regex.source;
+  let pattern = "";
+  let isEscaped = false;
+  let inCharGroup = false;
+  let inCharRange = false;
+  for (let i = 0; i < source.length; i++) {
+    if (isEscaped) {
+      pattern += source[i];
+      isEscaped = false;
+      continue;
+    }
+    if (flags.i) {
+      if (inCharGroup) {
+        if (source[i].match(/[a-z]/)) {
+          if (inCharRange) {
+            pattern += source[i];
+            pattern += `${source[i - 2]}-${source[i]}`.toUpperCase();
+            inCharRange = false;
+          } else if (source[i + 1] === "-" && source[i + 2]?.match(/[a-z]/)) {
+            pattern += source[i];
+            inCharRange = true;
+          } else {
+            pattern += `${source[i]}${source[i].toUpperCase()}`;
+          }
+          continue;
+        }
+      } else if (source[i].match(/[a-z]/)) {
+        pattern += `[${source[i]}${source[i].toUpperCase()}]`;
+        continue;
+      }
+    }
+    if (flags.m) {
+      if (source[i] === "^") {
+        pattern += `(^|(?<=[\r
+]))`;
+        continue;
+      } else if (source[i] === "$") {
+        pattern += `($|(?=[\r
+]))`;
+        continue;
+      }
+    }
+    if (flags.s && source[i] === ".") {
+      pattern += inCharGroup ? `${source[i]}\r
+` : `[${source[i]}\r
+]`;
+      continue;
+    }
+    pattern += source[i];
+    if (source[i] === "\\") {
+      isEscaped = true;
+    } else if (inCharGroup && source[i] === "]") {
+      inCharGroup = false;
+    } else if (!inCharGroup && source[i] === "[") {
+      inCharGroup = true;
+    }
+  }
+  try {
+    const regexTest = new RegExp(pattern);
+  } catch {
+    console.warn(`Could not convert regex pattern at ${refs.currentPath.join("/")} to a flag-independent form! Falling back to the flag-ignorant source`);
+    return regex.source;
+  }
+  return pattern;
 };
 function parseRecordDef(def, refs) {
   if (refs.target === "openApi3" && def.keyType?._def.typeName === ZodFirstPartyTypeKind.ZodEnum) {
@@ -1119,11 +1213,15 @@ const zodToJsonSchema = (schema, options) => {
       currentPath: [...refs.basePath, refs.definitionPath, name2]
     }, true) ?? {}
   }), {}) : void 0;
-  const name = typeof options === "string" ? options : options?.name;
+  const name = typeof options === "string" ? options : options?.nameStrategy === "title" ? void 0 : options?.name;
   const main = parseDef(schema._def, name === void 0 ? refs : {
     ...refs,
     currentPath: [...refs.basePath, refs.definitionPath, name]
   }, false) ?? {};
+  const title = typeof options === "object" && options.name !== void 0 && options.nameStrategy === "title" ? options.name : void 0;
+  if (title !== void 0) {
+    main.title = title;
+  }
   const combined = name === void 0 ? definitions ? {
     ...main,
     [refs.definitionPath]: definitions

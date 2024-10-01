@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { Sun, Moon } from 'radix-icons-svelte';
-	import { HamburgerMenu } from 'radix-icons-svelte';
 	import { toggleMode, mode } from 'mode-watcher';
 	import Locale from '$lib/components/Locale.svelte';
 	import { onMount } from 'svelte';
@@ -19,6 +18,7 @@
 	import { debounce } from '$scripts/helpers';
 	import { scroll, windowHeight, windowWidth, backgroundColor, currentSection } from '$store/page';
 	import backgroundImage from '$assets/images/holo3.jpg';
+	import WebsiteHamburgerMenu from '$lib/components/WebsiteHamburgerMenu.svelte';
 
 	let lastScrollValue = 0;
 	let menuIsVisible = true;
@@ -75,7 +75,7 @@
 	};
 
 	const handleScroll = (value: number) => {
-		if($windowWidth > 768){
+		if ($windowWidth > 768) {
 			return;
 		}
 		console.log('scrollValue', value, 'lastScrollValue', lastScrollValue);
@@ -97,12 +97,16 @@
 	}
 </script>
 
-<div
-	style="width:{$windowWidth}px;"
-	class="fixed left-0 top-0 z-[100]"
->
-	<div class="{menuIsVisible ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} {$scroll > 5 ? 'shadow-xl shadow-black/5 delay-150' : ''} overflow-hidden transition-all">
-		<nav class="{$scroll > 5 ? $backgroundColor : 'bg-white'} flex items-center justify-between px-5 py-2 lg:py-3 transition-all duration-500"
+<div style="width:{$windowWidth}px;" class="fixed left-0 top-0 z-[100]">
+	<div
+		class="{menuIsVisible ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} {$scroll > 5
+			? 'shadow-xl shadow-black/5 delay-150'
+			: ''} overflow-hidden transition-all"
+	>
+		<nav
+			class="{$scroll > 5
+				? $backgroundColor
+				: 'bg-white'} flex items-center justify-between px-5 py-2 transition-all duration-500 lg:py-3"
 		>
 			<a href="/" class="w-1 overflow-visible">
 				<div>
@@ -112,8 +116,14 @@
 			<div class="hidden items-center gap-7 lg:flex">
 				{#each menuItems() as item}
 					<button on:click={scrollToTarget(item.target)} class="group relative">
-						<div class="absolute -left-3 -right-3 -top-1 -bottom-1 rounded-md transition-opacity group-hover:opacity-100 opacity-0 bg-white/30 z-0 shadow-md shadow-x"></div>
-						<div class="{item.target === $currentSection ? 'opacity-100' : 'opacity-0'} absolute -left-3 -right-3 -top-1 -bottom-1 rounded-md transition-opacity duration-300 shadow-inner shadow-black/20 bg-black/5"></div>
+						<div
+							class="shadow-x absolute -bottom-1 -left-3 -right-3 -top-1 z-0 rounded-md bg-white/30 opacity-0 shadow-md transition-opacity group-hover:opacity-100"
+						></div>
+						<div
+							class="{item.target === $currentSection
+								? 'opacity-100'
+								: 'opacity-0'} absolute -bottom-1 -left-3 -right-3 -top-1 rounded-md bg-black/5 shadow-inner shadow-black/20 transition-opacity duration-300"
+						></div>
 						<div class="relative z-10">
 							{item.label}
 						</div>
@@ -124,8 +134,8 @@
 				<Button on:click={() => goto('/app/auth/login')} variant="outline">
 					{$t('default.page.login.heading')}
 				</Button>
-				<div>
-					<HamburgerMenu class="size-6" />
+				<div class="lg:hidden">
+					<WebsiteHamburgerMenu menuItems={menuItems()} />
 				</div>
 			</div>
 		</nav>

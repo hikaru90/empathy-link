@@ -1,7 +1,7 @@
 import { c as compute_rest_props } from "./utils.js";
 import { c as create_ssr_component, v as validate_component, f as each, e as escape } from "./ssr.js";
-import "./Avatar.svelte_svelte_type_style_lang.js";
-import { d as Button$1 } from "./Avatar.js";
+import "./page.js";
+import { B as Button$1 } from "./sheet-header.js";
 import { c as cn } from "./utils2.js";
 import { b as backgroundImage } from "./SparklePill.js";
 import { tv } from "tailwind-variants";

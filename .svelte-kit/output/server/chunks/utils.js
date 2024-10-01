@@ -51,8 +51,8 @@ function split_css_unit(value) {
   ];
 }
 export {
-  split_css_unit as a,
-  null_to_empty as b,
+  null_to_empty as a,
+  split_css_unit as b,
   compute_rest_props as c,
   blank_object as d,
   safe_not_equal as e,

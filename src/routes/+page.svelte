@@ -67,14 +67,14 @@ onMount(() => {
 
 <div class="flex h-full flex-grow flex-col justify-between">
 	<WebsiteMenu />
-	<div class="flex-grow relative">
+	<div class="{$backgroundColor} flex-grow relative transition duration-500">
 		<div id="topTarget"></div>
-		<div class="mb-32 relative z-0">
+		<div class="mb-20 relative z-0">
 			<div class="max-container">
 				<AnimatedHeroBig />
 			</div>
 		</div>
-		<div class="max-container pb-40 relative z-10 mt-40 xl:mt-80">
+		<div class="max-container pb-40 relative z-10">
 			<div id="stepsTarget"></div>
 			<The4Steps />
 

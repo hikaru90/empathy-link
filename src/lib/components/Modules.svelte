@@ -43,7 +43,7 @@
 		<div class="relative flex flex-row flex-wrap justify-center gap-4">
 			{#each modules as module}
 					<div
-						class="group relative flex items-center justify-center rounded-[36px] bg-white p-3 md:p-4 lg:p-6 text-sm shadow-xl md:w-auto"
+						class="group relative flex items-center justify-center rounded-[36px] bg-white p-3 lg:p-6 text-sm shadow-xl md:w-auto"
 					>
 						<div
 							class="absolute left-full top-1/2 hidden h-1 w-4 -translate-y-1/2 transform bg-black/90 md:block group-last:md:hidden"

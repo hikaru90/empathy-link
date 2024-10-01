@@ -22,6 +22,14 @@ const menu = {
     mailLinkConfirmation: "Link erfolgreich verschickt",
     mailLinkError: "Fehler beim versenden des Links",
     mailDialogText: "Mit wem möchtest Du streiten?"
+  },
+  sections: {
+    the4steps: "Die 4 Schritte",
+    modules: "Module",
+    selfempathy: "Selbstempathie",
+    fight: "Streit",
+    feedback: "Feedback",
+    learn: "Lernen"
   }
 };
 const page = {
@@ -55,6 +63,12 @@ const page = {
       },
       pause: {
         heading: "Du hast jetzt die Möglichkeit zu antworten"
+      },
+      success: {
+        heading: "Geschafft"
+      },
+      error: {
+        heading: "Leider ist bei der Antwort ein Fehler aufgetreten. Bitte versuche es nochmal. Falls das Problem weiterhin bestehen sollte, kontaktiere uns unter support@empathie-link.de"
       }
     }
   },
@@ -104,7 +118,7 @@ const page = {
         description: "Jeder ist sich selbst der Nächste. Deshalb ist es wichtig sich darüber bewusst zu werden was man denkt, fühlt, braucht und will. Anhand der 4 Schritte kannst Du Dir in regelmäßigen abständen Selbstempathie geben und Veränderungen über die Zeit tracken."
       },
       fight: {
-        heading: "Streit, aber richtig",
+        heading: "Streiten wie ein Profi",
         description: "",
         steps: {
           observation: "Beobachtung",
@@ -163,6 +177,15 @@ const page = {
       feelings: "Gefühle",
       needs: "Bedürfnisse",
       request: "Bitte"
+    },
+    create: {
+      info: "Ich habe zuerst ein paar allgemeine Fragen zu Deinem Streit.",
+      observation: "Beschreibe was passiert ist. Ohne zu werten. Und ohne Unterstellungen oder Übertreibungen.",
+      feelings: "Wie hast Du Dich dabei gefühlt?",
+      needs: "Welche Bedürfnisse stecken dahinter?",
+      request: "Um diesen Konflikt gut zu lösen, ist es wichtig, dass Du Dich verstanden fühlst. Ich werde Deine*n Streitpartner*in Bitten wiederzugeben was er/sie verstanden hat. \nMöchtest Du noch um etwas anderes bitten?",
+      success: "Geschafft. Du kannst den Streitlink nun gerne mit Deinem oder Deiner Streitpartner*in teilen.",
+      error: "Leider ist bei der Erstellung des Streits ein Fehler aufgetreten. Bitte versuche es nochmal. Falls das Problem weiterhin bestehen sollte, kontaktiere uns unter support@empathie-link.de"
     }
   },
   fights: {
@@ -172,12 +195,16 @@ const page = {
       general: {
         prev: "zurück",
         next: "Weiter",
+        yes: "Ja",
+        knowledge: "Ich weiß",
+        checkJudgement: "Beobachtung überprüfen",
         steps: {
           info: "Infos",
           observation: "Beobachtung",
           feelings: "Gefühle",
           needs: "Bedürfnisse",
-          request: "Bitte"
+          request: "Bitte",
+          success: "Erfolg"
         },
         badFeelings: "Negative Gefühle",
         goodFeelings: "Positive Gefühle",
@@ -187,6 +214,10 @@ const page = {
       name: {
         label: "Wie heißt die Person, mit der Du Dich streiten möchtest?",
         tooShortError: "Der Name muss mindestens 3 Zeichen lang sein"
+      },
+      title: {
+        label: "Welchen Titel würdest Du dem Streit geben?",
+        tooShortError: "Der Titel muss mindestens 3 Zeichen lang sein"
       },
       observation: {
         label: "Was hast Du beobachtet?",
@@ -208,6 +239,7 @@ const page = {
   },
   login: {
     heading: "Login",
+    text: "Jetzt anmelden",
     form: {
       email: {
         label: "E-Mail",

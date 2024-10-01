@@ -71,7 +71,7 @@
 
 	<div class="relative flex flex-row flex-wrap justify-center items-stretch -mx-3">
 		{#each tableRows as card}
-			<div class="group relative p-3 text-sm w-full md:w-1/4 md:max-w-[460px]">
+			<div class="group mx-4 md:mx-0 relative p-3 text-sm w-full md:w-1/4 md:max-w-[460px]">
 				<div
 					class="absolute left-full -ml-3 top-1/2 hidden h-1 w-6 -translate-y-1/2 transform bg-black/90 md:block group-last:md:hidden"
 				></div>

@@ -38,11 +38,10 @@
 		}
 	];
 
-  let moduleName:string|undefined = undefined
-  locale.subscribe((value) => {
-		moduleName = value === 'en' ? 'Module' : 'Modul'
+	let moduleName: string | undefined = undefined;
+	locale.subscribe((value) => {
+		moduleName = value === 'en' ? 'Module' : 'Modul';
 	});
-
 </script>
 
 <div class="mb-32">
@@ -68,81 +67,92 @@
 		<div
 			class="absolute left-1/2 top-[90px] hidden h-40 w-full -translate-x-1/2 -translate-y-full transform rounded-full border-4 border-black lg:block"
 		>
-			<div class="hidden lg:block absolute left-1/2 -top-[2px] -translate-y-1/2 transform">
-				<div class="h-4 w-4 rotate-45 transform border-l-4 border-b-4 border-black"></div>
+			<div class="absolute -top-[2px] left-1/2 hidden -translate-y-1/2 transform lg:block">
+				<div class="h-4 w-4 rotate-45 transform border-b-4 border-l-4 border-black"></div>
 			</div>
 		</div>
 		<div class="relative z-0">
-			<div class="hidden lg:block absolute left-0 top-[88px] -ml-8 -translate-y-1/2 transform">
+			<div class="absolute left-0 top-[88px] -ml-8 hidden -translate-y-1/2 transform lg:block">
 				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div>
 			</div>
-			<div class="relative w-full md:w-52 overflow-hidden rounded-lg shadow-xl shadow-black/5">
-				{#each tableRows as row}
-					<div
-						class="group flex items-stretch border-b border-black/5 bg-white text-xs shadow-md last:border-b-0"
-					>
+			<!-- card -->
+			<div class="m-4">
+				<div class="relative w-full overflow-hidden rounded-lg shadow-xl shadow-black/5 md:w-52">
+					{#each tableRows as row}
 						<div
-							class="flex flex-shrink-0 items-center justify-center border-r border-black/5 px-3 pb-3 pt-3"
+							class="group flex items-stretch border-b border-black/5 bg-white text-xs shadow-md last:border-b-0"
 						>
-							<div class="label bg-{row.color}-background">
-								<div class="icon fill-{row.color}-foreground">
-									{@html row.icon}
+							<div
+								class="flex flex-shrink-0 items-center justify-center border-r border-black/5 px-3 pb-3 pt-3"
+							>
+								<div class="label bg-{row.color}-background">
+									<div class="icon fill-{row.color}-foreground">
+										{@html row.icon}
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="flex-grow break-all px-3 pb-3 pt-4">
-							{row.content}
-						</div>
-					</div>
-				{/each}
-			</div>
-			<p class="w-full md:w-52 py-4">Du notierst Deine Beobachtung, Gefühle, Bedürfnisse und Bitten</p>
-		</div>
-		<div class="relative z-0">
-			<div class="hidden lg:block absolute left-0 top-[88px] -ml-8 -translate-y-1/2 transform">
-				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div>
-			</div>
-			<div class="hidden lg:block absolute right-0 top-[88px] -mr-6 -translate-y-1/2 transform">
-				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div>
-			</div>
-			<div
-				style="background-image: url('{backgroundImage}'); background-size: 300% 100%"
-				class={'shadow-black-5 flex h-[178.22px] w-full md:w-52 items-center justify-center rounded-lg bg-center bg-repeat-x shadow-xl'}
-			>
-				<div class="h-8 w-20 rounded-full border-4 border-white"></div>
-			</div>
-			<p class="w-full md:w-52 py-4">
-				Wir generieren einen Empathie-Link, den Du Deiner/m Streitpartner*in schickst
-			</p>
-		</div>
-		<div class="relative z-0">
-			<div class="hidden lg:block absolute right-0 top-[88px] -mr-6 -translate-y-1/2 transform">
-				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div>
-			</div>
-			<div class="w-full md:w-52 overflow-hidden rounded-lg shadow-xl shadow-black/5">
-				{#each tableRows as row}
-					<div
-						class="group flex items-stretch border-b border-black/5 bg-white text-xs shadow-md last:border-b-0"
-					>
-						<div
-							class="flex flex-shrink-0 items-center justify-center border-r border-black/5 px-3 pb-3 pt-3"
-						>
-							<div class="label bg-{row.color}-background">
-								<div class="icon fill-{row.color}-foreground">
-									{@html row.icon}
-								</div>
+							<div class="flex-grow break-all px-3 pb-3 pt-4">
+								{row.content}
 							</div>
 						</div>
-						<div class="flex-grow break-all px-3 pb-3 pt-4">
-							{row.content}
-						</div>
-					</div>
-				{/each}
+					{/each}
+				</div>
+				<p class="w-full py-4 md:w-52">
+					Du notierst Deine Beobachtung, Gefühle, Bedürfnisse und Bitten
+				</p>
 			</div>
-			<p class="w-full md:w-52 py-4">
-				Dein/e Streitpartner*in kann sich in Ruhe mit Deiner Sicht der Dinge auseinandersetzen und
-				antwortet dann
-			</p>
+		</div>
+		<div class="relative z-0">
+			<div class="absolute left-0 top-[88px] -ml-8 hidden -translate-y-1/2 transform lg:block">
+				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div>
+			</div>
+			<div class="absolute right-0 top-[88px] -mr-6 hidden -translate-y-1/2 transform lg:block">
+				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div>
+			</div>
+			<!-- card -->
+			<div class="m-4">
+				<div
+					style="background-image: url('{backgroundImage}'); background-size: 300% 100%"
+					class={'shadow-black-5 flex h-[178.22px] w-full items-center justify-center rounded-lg bg-center bg-repeat-x shadow-xl md:w-52'}
+				>
+					<div class="h-8 w-20 rounded-full border-4 border-white"></div>
+				</div>
+				<p class="w-full py-4 md:w-52">
+					Wir generieren einen Empathie-Link, den Du Deiner/m Streitpartner*in schickst
+				</p>
+			</div>
+		</div>
+		<div class="relative z-0">
+			<div class="absolute right-0 top-[88px] -mr-6 hidden -translate-y-1/2 transform lg:block">
+				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div>
+			</div>
+			<!-- card -->
+			<div class="m-4 md:m-0">
+				<div class="w-full overflow-hidden rounded-lg shadow-xl shadow-black/5 md:w-52">
+					{#each tableRows as row}
+						<div
+							class="group flex items-stretch border-b border-black/5 bg-white text-xs shadow-md last:border-b-0"
+						>
+							<div
+								class="flex flex-shrink-0 items-center justify-center border-r border-black/5 px-3 pb-3 pt-3"
+							>
+								<div class="label bg-{row.color}-background">
+									<div class="icon fill-{row.color}-foreground">
+										{@html row.icon}
+									</div>
+								</div>
+							</div>
+							<div class="flex-grow break-all px-3 pb-3 pt-4">
+								{row.content}
+							</div>
+						</div>
+					{/each}
+				</div>
+				<p class="w-full py-4 md:w-52">
+					Dein/e Streitpartner*in kann sich in Ruhe mit Deiner Sicht der Dinge auseinandersetzen und
+					antwortet dann
+				</p>
+			</div>
 		</div>
 	</div>
 </div>

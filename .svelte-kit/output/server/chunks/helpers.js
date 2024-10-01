@@ -6,11 +6,14 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const generateHslaColors = (hue, saturation, lightness, length) => {
   const colors = [];
   for (let i = 1; i < length + 1; i++) {
-    const opacity = i / (length - 1);
+    let opacity = i / (length - 1);
+    if (length === 1)
+      opacity = 1;
     const hslaColor = `hsla(${hue}, ${saturation}%, ${lightness}%, ${opacity})`;
     colors.push(hslaColor);
   }
   colors.reverse();
+  console.log("colors", colors);
   return colors;
 };
 const sortByKey = (array, key) => {
@@ -36,10 +39,10 @@ const debounce = (func, delay2) => {
   };
 };
 export {
-  setCookie as a,
-  debounce as b,
+  sortByKey as a,
+  delay as b,
   serializeNonPOJOs as c,
-  delay as d,
+  debounce as d,
   generateHslaColors as g,
-  sortByKey as s
+  setCookie as s
 };

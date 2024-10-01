@@ -65,7 +65,7 @@
   {#if !user}
 	<div class="w-full h-full bg-black/60 absolute top-0 left-0 z-10 flex items-center justify-center">
     <Button on:click={() => goto('/app/auth/login')} decoration="dark-op1" class="border-neutral-700">
-      {$t('default.page.login.heading')}
+      {$t('default.page.login.text')}
     </Button>
   </div>
 {/if}

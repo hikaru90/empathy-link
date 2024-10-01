@@ -1,10 +1,10 @@
 import { s as subscribe } from "./utils.js";
 import { c as create_ssr_component, v as validate_component, e as escape } from "./ssr.js";
-import "./Avatar.svelte_svelte_type_style_lang.js";
 import { d as derivedMode } from "./page.js";
 import { t } from "./translations.js";
 import "clsx";
-import { i as Logo, A as Avatar_1, B as Button } from "./Avatar.js";
+import { L as Logo } from "./sheet-header.js";
+import { A as Avatar_1, B as Button } from "./Avatar.js";
 import { u as user } from "./auth.js";
 import "./client.js";
 const AppTopMenu = create_ssr_component(($$result, $$props, $$bindings, slots) => {
