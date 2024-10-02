@@ -93,7 +93,7 @@
 					<Button
 						on:click={() => (displaySelfcenteredNeeds = false)}
 						class="{displaySelfcenteredNeeds === false
-							? 'solid-need-button'
+							? 'solid-need-button text-white'
 							: 'border-need-button'} h-7 rounded-full px-4 leading-tight transition"
 					>
 						{$t('default.page.dashboard.needs.community')}
@@ -101,7 +101,7 @@
 					<Button
 						on:click={() => (displaySelfcenteredNeeds = true)}
 						class="{displaySelfcenteredNeeds === true
-							? 'solid-need-button'
+							? 'solid-need-button text-white'
 							: 'border-need-button'} h-7 rounded-full px-4 leading-tight"
 					>
 						{$t('default.page.dashboard.needs.selfcentered')}

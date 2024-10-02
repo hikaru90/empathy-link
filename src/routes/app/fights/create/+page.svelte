@@ -503,7 +503,7 @@
 							on:validateObservation={validateObservation}
 							on:disableJudgementCheck={disableJudgementCheck}
 							on:toPrev={decreaseStep}
-							primaryButtonClass={`bg-${stepConstructor[step - 1].slug}-background`}
+							primaryButtonClass={currentBackgroundColor}
 							class="flex-shrink-0"
 						/>
 					</AppBottomMenu>

@@ -22,7 +22,7 @@
 			{@html IconSelf}
 			</div>
 		</div>
-		<div class="text-slate-500 mb-3 ml-0.5">
+		<div class="text-black/60 mb-3 ml-0.5">
 			1. { moduleName}
 		</div>
 		<h2 class="font-display text-2xl font-semibold lg:text-4xl mb-8">

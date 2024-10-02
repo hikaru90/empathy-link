@@ -1,17 +1,38 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button-op1/index.js';
+	import { Button } from '$lib/components/ui/button-sparkle';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import Cross1 from 'svelte-radix/Cross1.svelte';
 	import { t } from '$lib/translations';
 	import { backgroundColor, currentSection } from '$store/page';
 	import { scrollToElement } from '$scripts/helpers';
-	import { HamburgerMenu, CaretRight } from 'radix-icons-svelte';
+	import { HamburgerMenu, CaretRight, Person } from 'radix-icons-svelte';
+	import { goto } from '$app/navigation';
+	import { Label } from '$lib/components/ui/label/index.js';
+	import { Switch } from '$lib/components/ui/switch';
+	import { toggleMode, mode } from 'mode-watcher';
+	import * as Select from '$lib/components/ui/select/index.js';
+	import { locale, locales } from '$lib/translations';
+	import { setCookie } from '$scripts/helpers';
 
 	export let menuItems: any;
 	let dialogOpen = false;
 
+	const langs = [
+		{ value: 'en', label: 'English' },
+		{ value: 'de', label: 'German' }
+	];
+
+	$: darkMode = $mode === 'dark';
+
+	const handleSelect: (event: SelectedChangeEvent) => void = (event) => {
+		if (event) {
+			setCookie('locale', event.value);
+			locale.update(() => event.value);
+		}
+	};
+
 	const scrollToTarget = (target) => {
-		dialogOpen = false
+		dialogOpen = false;
 		const targetDiv = document.getElementById(target);
 		scrollToElement(targetDiv, 400);
 		setTimeout(() => {
@@ -38,15 +59,49 @@
 				</div>
 			</Sheet.Close>
 		</Sheet.Header>
-		<div class="p-5 flex flex-col gap-2 items-start">
-			{#each menuItems as item}
-				<button on:click={scrollToTarget(item.target)} class="font-bold text-lg flex items-center gap-2">
-					<div class="flex items-center justify-center size-4 bg-muted/60 rounded-full">
-						<CaretRight class="size-4" />
-					</div>
-					{item.label}
-				</button>
-			{/each}
+		<div class="flex h-full flex-col justify-between gap-2 p-5">
+			<div class="mb-10 flex flex-col items-start gap-2">
+				{#each menuItems as item}
+					<button
+						on:click={scrollToTarget(item.target)}
+						class="flex w-full items-center justify-between gap-2 text-lg font-bold"
+					>
+						{item.label}
+						<div class="mr-[2px] flex size-6 items-center justify-center rounded-full">
+							<CaretRight class="size-4" />
+						</div>
+					</button>
+				{/each}
+			</div>
+			<div class="flex flex-col gap-5">
+				<Select.Root
+					selected={langs.find((lang) => lang.value === $locale)}
+					onSelectedChange={handleSelect}
+				>
+					<Select.Trigger class="">
+						<Select.Value placeholder="Language" />
+					</Select.Trigger>
+					<Select.Content>
+						{#each langs as lang}
+							<Select.Item value={lang.value} label={lang.label}>{lang.label}</Select.Item>
+						{/each}
+					</Select.Content>
+					<Select.Input name="favoriteFruit" />
+				</Select.Root>
+				<div class="mb-4 flex items-center space-x-2">
+					<Switch
+						id="lightMode"
+						bind:checked={darkMode}
+						on:click={toggleMode}
+						class="bg-gray-500"
+					/>
+					<Label for="lightMode">Dark Mode</Label>
+				</div>
+				<div class="mb-3 border-b border-gray-300/30 dark:border-gray-300/20"></div>
+				<Button on:click={() => goto('/app/auth/login')} variant="outline" class="w-full font-bold">
+					{$t('default.page.login.heading')}
+				</Button>
+			</div>
 		</div>
 	</Sheet.Content>
 </Sheet.Root>

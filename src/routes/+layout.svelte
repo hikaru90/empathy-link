@@ -36,12 +36,12 @@
 		windowHeight.set(window.innerHeight);
 	};
 
-	const unsubscribe = backgroundColor.subscribe((value) => {
-		if (browser) {
-			document.body.classList.remove('bg-white','bg-background','bg-background','bg-observation-background','bg-feelings-background','bg-needs-background','bg-request-background');
-			document.body.classList.add(value);
-		}
-	});
+	// const unsubscribe = backgroundColor.subscribe((value) => {
+	// 	if (browser) {
+	// 		document.body.classList.remove('bg-white','bg-background','bg-background','bg-observation-background','bg-feelings-background','bg-needs-background','bg-request-background');
+	// 		document.body.classList.add(value);
+	// 	}
+	// });
 
 	onMount(() => {
 		handleResize();
@@ -63,7 +63,7 @@
 		}
 		setLangAttribute();
 	});
-	onDestroy(unsubscribe);
+	// onDestroy(unsubscribe);
 
 	function setLangAttribute() {
 		if (browser) {
@@ -102,7 +102,7 @@
 		id="scrollContainer"
 		in:blur={{ duration: animationDuration, delay: animationDuration }}
 		out:blur={{ duration: animationDuration }}
-		class=""
+		class="min-h-svh bg-background"
 	>
 		{#if !contentReady}
 			<div

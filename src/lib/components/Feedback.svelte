@@ -53,7 +53,7 @@
 				{@html IconFeedback}
 			</div>
 		</div>
-		<div class="mb-3 ml-0.5 text-slate-500">
+		<div class="mb-3 ml-0.5 text-black/60">
 			3. {moduleName}
 		</div>
 		<div class="relative">

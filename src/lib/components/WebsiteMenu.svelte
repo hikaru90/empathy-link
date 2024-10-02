@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { Sun, Moon } from 'radix-icons-svelte';
+	import { Sun, Moon, MixerVertical } from 'radix-icons-svelte';
 	import { toggleMode, mode } from 'mode-watcher';
 	import Locale from '$lib/components/Locale.svelte';
 	import { onMount } from 'svelte';
@@ -131,9 +131,6 @@
 				{/each}
 			</div>
 			<div class="flex w-1 items-center justify-end gap-4">
-				<Button on:click={() => goto('/app/auth/login')} variant="outline">
-					{$t('default.page.login.heading')}
-				</Button>
 				<div class="lg:hidden">
 					<WebsiteHamburgerMenu menuItems={menuItems()} />
 				</div>

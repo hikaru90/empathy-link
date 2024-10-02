@@ -9,10 +9,11 @@
 :global(html, body) {
 	// @apply h-full w-full;
 	scrollbar-gutter: auto;
+	@apply h-20;
 }
 :global(body) {
 	// @apply flex flex-col;
-	@apply transition duration-500;
+	@apply transition duration-500 bg-black;
 }
 :global(.max-container) {
 	@apply mx-auto w-full max-w-[1200px] px-5 md:px-16;

@@ -45,7 +45,7 @@
 </script>
 
 <div class="mb-40">
-	<div class="flex flex-col items-start">
+	<div class="flex flex-col items-center lg:items-start text-center lg:text-left">
 		<div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite p-1">
 			<div
 				class="flex items-center justify-center rounded-full bg-black fill-offwhite p-1.5 shadow-inner"
@@ -53,7 +53,7 @@
 				{@html IconLearn}
 			</div>
 		</div>
-		<div class="mb-3 ml-0.5 text-slate-500">
+		<div class="mb-3 ml-0.5 text-black/60">
 			4. {moduleName}
 		</div>
 		<div class="relative">

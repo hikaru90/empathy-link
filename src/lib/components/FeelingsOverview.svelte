@@ -99,7 +99,7 @@
 					<Button
 						on:click={() => (displayPositiveFeelings = false)}
 						class="{displayPositiveFeelings === false
-							? 'solid-button'
+							? 'solid-button text-white'
 							: 'border-button'} h-7 rounded-full px-4 leading-tight transition"
 					>
 						{$t('default.page.dashboard.feelings.negative')}
@@ -107,7 +107,7 @@
 					<Button
 						on:click={() => (displayPositiveFeelings = true)}
 						class="{displayPositiveFeelings === true
-							? 'solid-button'
+							? 'solid-button text-white'
 							: 'border-button'} h-7 rounded-full px-4 leading-tight"
 					>
 						{$t('default.page.dashboard.feelings.positive')}

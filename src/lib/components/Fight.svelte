@@ -53,7 +53,7 @@
 				{@html IconFight}
 			</div>
 		</div>
-		<div class="mb-3 ml-0.5 text-slate-500">
+		<div class="mb-3 ml-0.5 text-black/60">
 			2. {moduleName}
 		</div>
 		<h2 class="mb-8 font-display text-2xl font-semibold lg:text-4xl">

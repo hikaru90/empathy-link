@@ -7,7 +7,7 @@
 	import { Toaster } from '$lib/components/ui/sonner';
 	import AppMenu from '$lib/components/AppMenu.svelte';
 	import { onDestroy, onMount } from 'svelte';
-	import { scroll, windowHeight, windowWidth } from '$store/page';
+	import { scroll, windowHeight, windowWidth, backgroundColor } from '$store/page';
 	import { browser } from '$app/environment';
 	import 'simplebar';
 	import 'simplebar/dist/simplebar.css';
@@ -42,6 +42,7 @@
 			document.getElementById('scrollContainer')?.addEventListener('scroll', handleScroll);
 			window?.addEventListener('resize', handleResize);
 		}
+		backgroundColor.set('bg-black');
 	});
 
 	onNavigate((navigation) => {
@@ -76,7 +77,7 @@
 		<div
 			in:blur={{ duration: animationDuration, delay: animationDuration }}
 			out:blur={{ duration: animationDuration }}
-			class="app/layout"
+			class="app/layout bg-background min-h-svh"
 		>
 			<ModeWatcher />
 			<slot />
