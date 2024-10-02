@@ -12,11 +12,14 @@
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { CaretLeft } from 'radix-icons-svelte';
+	import { backgroundColor } from '$store/page';
 
 	// export let data: PageData;
 
 	onMount(() => {
 		if (!$user) goto('/app/auth/login');
+		// Add bg-background class to the body
+		backgroundColor.set('bg-background');
 	});
 </script>
 

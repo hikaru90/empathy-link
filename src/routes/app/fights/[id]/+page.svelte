@@ -13,6 +13,7 @@
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { Trash, Check } from 'radix-icons-svelte';
 	import { goto } from '$app/navigation';
+	import { backgroundColor } from '$store/page';
 
 	let initialized = false;
 	let pending = true;
@@ -72,6 +73,7 @@
 		await fetchData();
 		initialized = true;
 		pending = false;
+		backgroundColor.set('bg-background');
 
 		console.log('record', record);
 		console.log('responses', responses);
@@ -83,12 +85,12 @@
 </script>
 
 {#if !initialized}
-	<div class="flex h-full flex-grow items-center justify-center">
+	<div class="flex h-full items-center justify-center">
 		<Skeleton class="h-[20px] w-[100px] rounded-full" />
 	</div>
 {:else}
-	<div class="flex h-full flex-grow flex-col justify-between bg-background">
-		<div class="flex-grow">
+	<div class="">
+		<div class="">
 			<AppTopMenu />
 
 			<div class="max-container">

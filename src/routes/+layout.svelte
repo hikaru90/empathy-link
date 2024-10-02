@@ -7,7 +7,7 @@
 	import { Toaster } from '$lib/components/ui/sonner';
 	import AppMenu from '$lib/components/AppMenu.svelte';
 	import { onDestroy, onMount } from 'svelte';
-	import { scroll, windowHeight, windowWidth } from '$store/page';
+	import { scroll, windowHeight, windowWidth, backgroundColor } from '$store/page';
 	import { browser } from '$app/environment';
 	import 'simplebar';
 	import 'simplebar/dist/simplebar.css';
@@ -36,6 +36,13 @@
 		windowHeight.set(window.innerHeight);
 	};
 
+	const unsubscribe = backgroundColor.subscribe((value) => {
+		if (browser) {
+			document.body.classList.remove('bg-white','bg-background','bg-background','bg-observation-background','bg-feelings-background','bg-needs-background','bg-request-background');
+			document.body.classList.add(value);
+		}
+	});
+
 	onMount(() => {
 		handleResize();
 		contentReady = true;
@@ -56,6 +63,7 @@
 		}
 		setLangAttribute();
 	});
+	onDestroy(unsubscribe);
 
 	function setLangAttribute() {
 		if (browser) {
@@ -94,7 +102,7 @@
 		id="scrollContainer"
 		in:blur={{ duration: animationDuration, delay: animationDuration }}
 		out:blur={{ duration: animationDuration }}
-		class="overflow-x-hidden"
+		class=""
 	>
 		{#if !contentReady}
 			<div
@@ -108,7 +116,6 @@
 			<div
 				in:blur={{ duration: animationDuration, delay: animationDuration }}
 				out:blur={{ duration: animationDuration }}
-				class="flex flex-grow flex-col"
 			>
 				<ModeWatcher />
 				<slot />

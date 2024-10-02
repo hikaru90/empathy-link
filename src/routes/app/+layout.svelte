@@ -68,7 +68,7 @@
 		<div
 			in:blur={{ duration: animationDuration, delay: animationDuration }}
 			out:blur={{ duration: animationDuration }}
-			class="flex items-center justify-center py-60"
+			class="flex items-center justify-center h-svh"
 		>
 			<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
 		</div>

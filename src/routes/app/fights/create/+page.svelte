@@ -29,6 +29,7 @@
 	import Mascot from '$lib/components/Mascot.svelte';
 	import { user } from '$store/auth';
 	import Share from '$lib/components/Share.svelte';
+	import { backgroundColor } from '$store/page';
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
 	let feelings = [];
@@ -48,10 +49,18 @@
 	let checkForJudgement = false;
 	let id: string;
 
+	const updateBackgroundColor = (step: number) => {
+		const color = `bg-${stepConstructor[step - 1].slug}-background`
+		backgroundColor.set(color)
+		return color
+	};
+
+
 	$: () => {
 		if (step === 2) checkForJudgement = true;
 	};
 	$: options.validators = steps[step - 1];
+	$: currentBackgroundColor = updateBackgroundColor(step);
 
 	const speechBubbleContentArray = [
 		{ step: 1, content: [$t('default.page.fight.create.info')] },
@@ -295,7 +304,7 @@
 {/if} -->
 
 <div
-	class="flex flex-grow flex-col justify-between transition duration-700 {`bg-${stepConstructor[step - 1].slug}-background`}"
+	class="flex flex-grow flex-col justify-between transition duration-500 {currentBackgroundColor}"
 >
 	<AppTopMenu />
 	<div class="max-container relative flex flex-grow flex-col pb-40">

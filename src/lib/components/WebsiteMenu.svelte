@@ -106,7 +106,7 @@
 		<nav
 			class="{$scroll > 5
 				? $backgroundColor
-				: 'bg-white'} flex items-center justify-between px-5 py-2 transition-all duration-500 lg:py-3"
+				: 'bg-white'} flex items-center justify-between px-5 py-3 transition-all duration-500 lg:py-3"
 		>
 			<a href="/" class="w-1 overflow-visible">
 				<div>
@@ -140,5 +140,5 @@
 			</div>
 		</nav>
 	</div>
-	<slot name="submenu" />
+	<!-- <slot name="submenu" /> -->
 </div>

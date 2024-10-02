@@ -394,7 +394,7 @@
 	</div>
 {/if} -->
 <div
-	class="flex flex-grow flex-col justify-between transition duration-700 {`bg-${stepConstructor[step - 1].slug}-background`}"
+	class="flex flex-grow flex-col justify-between transition duration-500 {`bg-${stepConstructor[step - 1].slug}-background`}"
 >
 	<AppTopMenu />
 	<div class="max-container relative flex h-[calc(100dvh-100px)] flex-grow flex-col">

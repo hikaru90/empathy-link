@@ -5,7 +5,7 @@
 	import { t } from '$lib/translations';
 	import { backgroundColor, currentSection } from '$store/page';
 	import { scrollToElement } from '$scripts/helpers';
-	import { HamburgerMenu } from 'radix-icons-svelte';
+	import { HamburgerMenu, CaretRight } from 'radix-icons-svelte';
 
 	export let menuItems: any;
 	let dialogOpen = false;
@@ -14,6 +14,9 @@
 		dialogOpen = false
 		const targetDiv = document.getElementById(target);
 		scrollToElement(targetDiv, 400);
+		setTimeout(() => {
+			window.scrollBy(0, -0.1);
+		}, 500);
 	};
 </script>
 
@@ -25,8 +28,7 @@
 		<Sheet.Header
 			class="flex flex-row items-center justify-between border-b border-black/10 px-5 py-3.5"
 		>
-		<div></div>
-			<!-- <Sheet.Title class="pt-0.5">{$t('default.menu.profile.sheet.header')}</Sheet.Title> -->
+			<Sheet.Title class="pt-0.5">{$t('default.menu.title')}</Sheet.Title>
 			<Sheet.Close class="!m-0" on:click={() => (dialogOpen = false)}>
 				<div class="label bg-feelings-background">
 					<div class="icon flex items-center justify-center fill-feelings-foreground">
@@ -38,7 +40,12 @@
 		</Sheet.Header>
 		<div class="p-5 flex flex-col gap-2 items-start">
 			{#each menuItems as item}
-				<button on:click={scrollToTarget(item.target)} class="font-bold text-lg">{item.label}</button>
+				<button on:click={scrollToTarget(item.target)} class="font-bold text-lg flex items-center gap-2">
+					<div class="flex items-center justify-center size-4 bg-muted/60 rounded-full">
+						<CaretRight class="size-4" />
+					</div>
+					{item.label}
+				</button>
 			{/each}
 		</div>
 	</Sheet.Content>
