@@ -86,10 +86,10 @@
 	<div class="relative">
 		<div
 			style="background: radial-gradient(circle at center, hsl(var(--feelings-background) / 1), transparent 67%);"
-			class="absolute right-0 top-60 z-0 h-[800px] w-[800px] translate-x-1/2 -translate-y-1/2 transform"
+			class="absolute right-0 top-60 z-0 h-[800px] w-[800px] translate-x-1/2 -translate-y-1/2 transform dark:opacity-40"
 		></div>
 		<div
-			class="relative z-10 rounded-lg bg-feelings-background text-feelings-foreground shadow-2xl shadow-black/10"
+			class="relative z-10 rounded-lg bg-feelings-background dark:bg-muted text-feelings-foreground shadow-2xl shadow-black/10"
 		>
 			<div class="flex items-center justify-between px-4 pb-2 pt-3">
 				<h2 class="text-md mb-2 font-bold">

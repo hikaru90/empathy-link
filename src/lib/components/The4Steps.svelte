@@ -5,6 +5,7 @@
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import IconSteps from '$assets/icons/icon-steps.svg?raw';
+	import Connector from "$assets/icons/connector.svg?raw";
   import {Button} from '$lib/components/ui/button'
 
 	interface Card {
@@ -51,18 +52,21 @@
 	</h2>
 	<div class="relative mb-16 md:mb:20">
     <div class="hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-      <img src="/connector.svg" alt="connector" class="w-28">
+			<div class="w-28 stroke-black fill-none dark:stroke-neon">
+				{@html Connector}
+			</div>
+      <!-- <img src="/connector.svg" alt="connector" class="w-28 text-red-200"> -->
     </div>
 		<div class="md:-m-4 flex flex-wrap items-stretch justify-center">
 			{#each cards as card}
 				<div class="group relative h-52 md:h-72 w-full px-4 py-3 md:py-4 md:w-1/2 md:max-w-[460px]">
 					<div
-						class="absolute left-full top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-first:md:block"
+						class="absolute left-full top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-first:md:block dark:bg-neon"
 					></div>
 					<div
-						class="absolute left-0 top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-last:md:block"
+						class="absolute left-0 top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-last:md:block dark:bg-neon"
 					></div>
-					<div class="flex h-full flex-col justify-between rounded-3xl bg-white p-5 md:p-6 lg:p-8 shadow-lg">
+					<div class="flex h-full flex-col justify-between rounded-3xl bg-muted p-5 md:p-6 lg:p-8 shadow-lg">
 						<div class="flex flex-row md:flex-col gap-4 items-center md:items-start">
 							<div class="skeumorphic-button h-9 w-9 rounded-full bg-offwhite p-0.5">
 								<div
@@ -81,7 +85,7 @@
 							</p>
 							<div class="flex items-end">
 								<div
-									class="ml-2 lg:ml-10 flex w-6 h-6 lg:h-8 lg:w-8 flex-shrink-0 items-center justify-center rounded-full bg-black text-offwhite shadow-md"
+									class="ml-2 lg:ml-10 flex w-6 h-6 lg:h-8 lg:w-8 flex-shrink-0 items-center justify-center rounded-full bg-black text-white/60 shadow-md"
 								>
 									<IconPlus />
 								</div>

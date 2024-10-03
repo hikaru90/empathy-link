@@ -46,14 +46,14 @@
 
 <div class="mb-40">
 	<div class="flex flex-col items-center">
-		<div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite p-1">
+		<div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite dark:bg-muted p-1">
 			<div
-				class="flex items-center justify-center rounded-full bg-black fill-offwhite p-1.5 shadow-inner"
+				class="flex items-center justify-center rounded-full bg-black fill-offwhite dark:fill-neon p-1.5 shadow-inner"
 			>
 				{@html IconFeedback}
 			</div>
 		</div>
-		<div class="mb-3 ml-0.5 text-black/60">
+		<div class="mb-3 ml-0.5 text-black/60 dark:text-white/80">
 			3. {moduleName}
 		</div>
 		<div class="relative">
@@ -73,10 +73,10 @@
 		{#each tableRows as card}
 			<div class="group mx-4 md:mx-0 relative p-3 text-sm w-full md:w-1/4 md:max-w-[460px]">
 				<div
-					class="absolute left-full -ml-3 top-1/2 hidden h-1 w-6 -translate-y-1/2 transform bg-black/90 md:block group-last:md:hidden"
+					class="absolute left-full -ml-3 top-1/2 hidden h-1 w-6 -translate-y-1/2 transform bg-black/90 dark:bg-neon md:block group-last:md:hidden"
 				></div>
 
-				<div class="group relative h-full shadow-xl p-6 bg-white rounded-3xl hyphens-auto">
+				<div class="group relative h-full shadow-xl p-6 bg-muted rounded-3xl hyphens-auto">
 					<div>
 						<div class="skeumorphic-button mb-8 h-9 w-9 rounded-full bg-offwhite p-0.5">
 							<div

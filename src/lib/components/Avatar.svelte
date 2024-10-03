@@ -36,7 +36,7 @@
 		<Button
 			decoration="floating-op1"
 			builders={[builder]}
-			class="-mr-2 flex items-center justify-center border-neutral-200 bg-background px-1.5 text-sm text-neutral-800 transition hover:bg-offwhite"
+			class="-mr-2 flex items-center justify-center border-neutral-200 dark:border-neutral-800 bg-background dark:bg-muted px-1.5 text-sm text-neutral-800 dark:text-white transition hover:bg-offwhite"
 		>
 			<Person class="h-4 w-4" />
 		</Button>

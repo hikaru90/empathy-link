@@ -33,10 +33,10 @@
 </script>
 
 {#if $user}
-	<div class="app/dashboard/page bg-background">
+	<div class="app/dashboard/page bg-background dark:bg-white-background overflow-hidden">
 		<AppTopMenu />
 		<div class="flex-grow">
-			<div class="max-container relative overflow-hidden">
+			<div class="max-container relative">
 				<div
 					class="relative z-10 mb-8 flex flex-row items-center justify-between py-4 md:items-center md:bg-transparent md:pb-6"
 				>

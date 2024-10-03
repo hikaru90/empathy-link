@@ -23,13 +23,13 @@
 
 
 const targetColors = [
-	{name: 'topTarget', color: 'bg-white'},
+	{name: 'topTarget', color: 'bg-white-background'},
 	{name: 'stepsTarget', color: 'bg-background'},
 	{name: 'modulesTarget', color: 'bg-background'},
-	{name: 'selfempathyTarget', color: 'bg-observation-background'},
-	{name: 'fightTarget', color: 'bg-feelings-background'},
-	{name: 'feedbackTarget', color: 'bg-needs-background'},
-	{name: 'learnTarget', color: 'bg-request-background'}
+	{name: 'selfempathyTarget', color: 'bg-observation-background dark:bg-white-background'},
+	{name: 'fightTarget', color: 'bg-feelings-background dark:bg-background'},
+	{name: 'feedbackTarget', color: 'bg-needs-background dark:bg-white-background'},
+	{name: 'learnTarget', color: 'bg-request-background dark:bg-background'}
 ]
 
 const updateBackgroundColor = () => {

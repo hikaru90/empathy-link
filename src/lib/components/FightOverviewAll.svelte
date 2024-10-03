@@ -61,11 +61,11 @@
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
 	<div class="relative z-0">
-		<div style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);" class="absolute left-0 top-20 w-[500px] h-[500px] z-0 transform -translate-x-1/2 -translate-y-1/2"></div>
+		<div style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);" class="absolute left-0 top-20 w-[500px] h-[500px] z-0 transform -translate-x-1/2 -translate-y-1/2 dark:opacity-20"></div>
 	</div>
 	<div class="relative z-10">
 		<div
-			class="rounded-t-xl border-b border-black/5 bg-almostwhite px-5 pb-3 pt-4 shadow-2xl shadow-black/10"
+			class="rounded-t-xl border-b border-black/5 bg-almostwhite dark:bg-muted px-5 pb-3 pt-4 shadow-2xl shadow-black/10"
 		>
 			<h2 class="text-md mb-3 font-bold">
 				{$t('default.page.fight.title')}
@@ -86,7 +86,7 @@
 				<div class="w-1/6"></div>
 			</div>
 		</div>
-		<div class="rounded-b-xl bg-almostwhite px-4 pb-3 pt-2 shadow-2xl shadow-black/10">
+		<div class="rounded-b-xl bg-almostwhite dark:bg-muted px-4 pb-3 pt-2 shadow-2xl shadow-black/10">
 			<div>
 				{#each records as record}
 					<button
@@ -131,7 +131,7 @@
 						decoration="floating-op1"
 						noInnerShadow
 						on:click={loadMore}
-						class="gap-3 border-neutral-100 bg-almostwhite text-black hover:bg-almostwhite"
+						class="gap-3 border-neutral-100 dark:border-neutral-800 bg-almostwhite dark:bg-muted text-black dark:text-white hover:bg-almostwhite"
 					>
 						<SparklePill
 							fast={true}

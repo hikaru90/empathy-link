@@ -62,7 +62,7 @@
 				<div
 					class={cn(
 						buttonVariants({ variant, size, className }),
-						'skeumorphic-button-dark h-[29.4px] w-full rounded-full border-2 transition duration-700'
+						'skeumorphic-button-dark h-[29.4px] w-full rounded-full border-2 transition duration-700 hover:bg-muted'
 					)}
 				>
 					<slot />

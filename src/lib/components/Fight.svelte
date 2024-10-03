@@ -46,14 +46,14 @@
 
 <div class="mb-32">
 	<div class="flex flex-col items-center">
-		<div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite p-1">
+		<div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite dark:bg-muted p-1">
 			<div
-				class="flex items-center justify-center rounded-full bg-black fill-offwhite p-1.5 shadow-inner"
+				class="flex items-center justify-center rounded-full bg-black fill-offwhite dark:fill-neon p-1.5 shadow-inner"
 			>
 				{@html IconFight}
 			</div>
 		</div>
-		<div class="mb-3 ml-0.5 text-black/60">
+		<div class="mb-3 ml-0.5 text-black/60 dark:text-white/80">
 			2. {moduleName}
 		</div>
 		<h2 class="mb-8 font-display text-2xl font-semibold lg:text-4xl">
@@ -65,15 +65,15 @@
 		class="relative flex flex-col items-center justify-start gap-4 lg:mt-24 lg:flex-row lg:items-stretch lg:justify-center lg:gap-10"
 	>
 		<div
-			class="absolute left-1/2 top-[90px] hidden h-40 w-full -translate-x-1/2 -translate-y-full transform rounded-full border-4 border-black lg:block"
+			class="absolute left-1/2 top-[90px] hidden h-40 w-full -translate-x-1/2 -translate-y-full transform rounded-full border-4 border-black dark:border-neon lg:block"
 		>
 			<div class="absolute -top-[2px] left-1/2 hidden -translate-y-1/2 transform lg:block">
-				<div class="h-4 w-4 rotate-45 transform border-b-4 border-l-4 border-black"></div>
+				<div class="h-4 w-4 rotate-45 transform border-b-4 border-l-4 border-black dark:border-neon"></div>
 			</div>
 		</div>
 		<div class="relative z-0">
 			<div class="absolute left-0 top-[88px] -ml-8 hidden -translate-y-1/2 transform lg:block">
-				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div>
+				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black dark:border-neon"></div>
 			</div>
 			<!-- card -->
 			<div class="m-4">
@@ -91,7 +91,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="flex-grow break-all px-3 pb-3 pt-4">
+							<div class="flex-grow break-all px-3 pb-3 pt-4 dark:text-black">
 								{row.content}
 							</div>
 						</div>
@@ -104,10 +104,10 @@
 		</div>
 		<div class="relative z-0">
 			<div class="absolute left-0 top-[88px] -ml-8 hidden -translate-y-1/2 transform lg:block">
-				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div>
+				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black dark:border-neon"></div>
 			</div>
 			<div class="absolute right-0 top-[88px] -mr-6 hidden -translate-y-1/2 transform lg:block">
-				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div>
+				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black dark:border-neon"></div>
 			</div>
 			<!-- card -->
 			<div class="m-4">
@@ -124,10 +124,10 @@
 		</div>
 		<div class="relative z-0">
 			<div class="absolute right-0 top-[88px] -mr-6 hidden -translate-y-1/2 transform lg:block">
-				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black"></div>
+				<div class="h-4 w-4 rotate-45 transform border-r-4 border-t-4 border-black dark:border-neon"></div>
 			</div>
 			<!-- card -->
-			<div class="m-4 md:m-0">
+			<div class="m-4">
 				<div class="w-full overflow-hidden rounded-lg shadow-xl shadow-black/5 md:w-52">
 					{#each tableRows as row}
 						<div
@@ -142,7 +142,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="flex-grow break-all px-3 pb-3 pt-4">
+							<div class="flex-grow break-all px-3 pb-3 pt-4 dark:text-black">
 								{row.content}
 							</div>
 						</div>

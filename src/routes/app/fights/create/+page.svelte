@@ -304,7 +304,7 @@
 {/if} -->
 
 <div
-	class="flex flex-grow flex-col justify-between transition duration-500 {currentBackgroundColor}"
+	class="flex flex-grow flex-col justify-between transition duration-500 {currentBackgroundColor} min-h-svh"
 >
 	<AppTopMenu />
 	<div class="max-container relative flex flex-grow flex-col pb-40">

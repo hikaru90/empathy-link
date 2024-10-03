@@ -124,9 +124,9 @@
 		</div>
 	</div>
 	<div class="flex flex-grow">
-		<div class="triangle size-3 flex-shrink-0 bg-white"></div>
+		<div class="triangle size-3 flex-shrink-0 bg-muted"></div>
 		<div
-			class="rounded-tl-0 relative flex flex-grow rounded-b rounded-tr bg-white px-2 pb-2 pt-1 text-sm leading-tight gap-2"
+			class="rounded-tl-0 relative flex flex-grow rounded-b rounded-tr bg-muted px-2 pb-2 pt-1 text-sm leading-tight gap-2"
 		>
 		{#if thinking}
 		<div id="speechBubble" class="w-full">

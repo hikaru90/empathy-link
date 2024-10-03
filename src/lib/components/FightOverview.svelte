@@ -50,11 +50,11 @@
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
 <div class="relative z-0">
-	<div style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);" class="absolute left-0 top-20 w-[500px] h-[500px] z-0 transform -translate-x-1/2 -translate-y-1/2"></div>
+	<div style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);" class="absolute left-0 top-20 w-[500px] h-[500px] z-0 transform -translate-x-1/2 -translate-y-1/2 dark:opacity-10"></div>
 </div>
 	<div class="relative z-10">
 		<div
-			class="rounded-t-xl border-b border-black/5 bg-almostwhite px-5 pb-3 pt-4 shadow-2xl shadow-black/10"
+			class="rounded-t-xl border-b border-black/5 bg-almostwhite dark:bg-muted px-5 pb-3 pt-4 shadow-2xl shadow-black/10"
 		>
 			<h2 class="text-md mb-2 font-bold">
 				{$t('default.page.dashboard.fights.tableCaption')}
@@ -75,7 +75,7 @@
 				<div class="w-1/6"></div>
 			</div>
 		</div>
-		<div class="rounded-b-xl bg-almostwhite px-4 pb-3 pt-2 shadow-2xl shadow-black/10">
+		<div class="rounded-b-xl bg-almostwhite dark:bg-muted px-4 pb-3 pt-2 shadow-2xl shadow-black/10">
 			{#each records as record}
 				<button on:click={gotoFight(record.id)} class="group w-full text-left flex items-center border-b border-black/5 py-2 sm:py-3 text-xs last:border-b-0">
 					<div class="flex w-1/6">
@@ -95,9 +95,9 @@
 					</div>
 					<div class="w-1/6">
 						{#if record.opened}
-							<Check class="w-3 h-3 text-black" />
+							<Check class="w-3 h-3 text-black dark:text-neon" />
 							{:else}
-							<Cross2 class="w-3 h-3 text-black" />
+							<Cross2 class="w-3 h-3 text-black dark:text-neon" />
 						{/if}
 					</div>
 					<div class="w-1/6 flex justify-end">

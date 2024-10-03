@@ -106,7 +106,7 @@
 		<nav
 			class="{$scroll > 5
 				? $backgroundColor
-				: 'bg-white'} flex items-center justify-between px-5 py-3 transition-all duration-500 lg:py-3"
+				: 'bg-white-background'} flex items-center justify-between px-5 py-3 transition-all duration-500 lg:py-3"
 		>
 			<a href="/" class="w-1 overflow-visible">
 				<div>
@@ -117,7 +117,7 @@
 				{#each menuItems() as item}
 					<button on:click={scrollToTarget(item.target)} class="group relative">
 						<div
-							class="shadow-x absolute -bottom-1 -left-3 -right-3 -top-1 z-0 rounded-md bg-white/30 opacity-0 shadow-md transition-opacity group-hover:opacity-100"
+							class="shadow-x absolute -bottom-1 -left-3 -right-3 -top-1 z-0 rounded-md bg-white-background/30 opacity-0 shadow-md transition-opacity group-hover:opacity-100"
 						></div>
 						<div
 							class="{item.target === $currentSection
@@ -131,6 +131,24 @@
 				{/each}
 			</div>
 			<div class="flex w-1 items-center justify-end gap-4">
+				<div>
+					<Button on:click={toggleMode} variant="outline" size="icon" class="size-9">
+						<Sun
+							class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+						/>
+						<Moon
+							class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+						/>
+						<span class="sr-only">Toggle theme</span>
+					</Button>
+				</div>
+				<Button
+					on:click={() => goto('/app/auth/login')}
+					variant="outline"
+					class="hidden font-bold lg:block"
+				>
+					{$t('default.page.login.heading')}
+				</Button>
 				<div class="lg:hidden">
 					<WebsiteHamburgerMenu menuItems={menuItems()} />
 				</div>

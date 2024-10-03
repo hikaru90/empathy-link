@@ -32,11 +32,11 @@
 	</div>
 	<div class="relative md:mb-32 lg:mb-60">
 		<div class="-mx-5 mt-20 flex items-center md:mx-0">
-			<div class="hidden rounded-full bg-offwhite/40 md:block md:size-32 lg:size-40"></div>
-			<div class="-ml-16 hidden rounded-full bg-offwhite md:block md:size-32 lg:size-40"></div>
+			<div class="hidden rounded-full bg-muted-dark/40 md:block md:size-32 lg:size-40"></div>
+			<div class="-ml-16 hidden rounded-full bg-muted-dark md:block md:size-32 lg:size-40"></div>
 			<div
 				style="background-image: url('/women.jpg')"
-				class="h-52 w-full bg-offwhite bg-cover bg-right md:-ml-16 md:h-32 md:w-[300px] md:rounded-full md:bg-center lg:h-40 lg:w-[500px]"
+				class="h-52 w-full bg-cover bg-right md:-ml-16 md:h-32 md:w-[300px] md:rounded-full md:bg-center lg:h-40 lg:w-[500px]"
 			></div>
 		</div>
 		<MockupHero

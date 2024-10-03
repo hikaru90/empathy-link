@@ -43,17 +43,17 @@
 		<div class="relative flex flex-row flex-wrap justify-center gap-4">
 			{#each modules as module}
 					<div
-						class="group relative flex items-center justify-center rounded-[36px] bg-white p-3 lg:p-6 text-sm shadow-xl md:w-auto"
+						class="group relative flex items-center justify-center rounded-[36px] bg-muted p-3 lg:p-6 text-sm shadow-xl md:w-auto"
 					>
 						<div
-							class="absolute left-full top-1/2 hidden h-1 w-4 -translate-y-1/2 transform bg-black/90 md:block group-last:md:hidden"
+							class="absolute left-full top-1/2 hidden h-1 w-4 -translate-y-1/2 transform bg-black/90 dark:bg-neon md:block group-last:md:hidden"
 						></div>
 						<div
 							class="flex size-[100px] md:size-[120px] lg:size-[140px] flex-shrink-0 flex-col items-center justify-between rounded-3xl bg-black p-2 lg:p-4 text-offwhite shadow-xl"
 						>
 							<div></div>
 							<div
-								class="flex w-16 h-16 lg:h-20 lg:w-20 flex-shrink-0 items-center justify-center rounded-full fill-offwhite/90 p-1 shadow-inner"
+								class="flex w-16 h-16 lg:h-20 lg:w-20 flex-shrink-0 items-center justify-center rounded-full fill-offwhite/90 dark:fill-white p-1 shadow-inner"
 							>
 								{@html module.icon}
 							</div>
@@ -65,7 +65,7 @@
 										{$locale == 'en' ? 'soon' : 'bald'}
 									</div>
 								{/if}
-								<span class="text-[10px] md:text-xs">
+								<span class="text-[10px] md:text-xs dark:text-white">
 									{module.heading}
 								</span>
 							</div>

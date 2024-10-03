@@ -14,15 +14,15 @@
 </script>
 
 <div class="flex flex-col lg:flex-row items-center justify-center gap-16 md:gap-20 mb-40">
-	<div class="flex flex-col items-center justify-center">
-		<div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite p-1">
+	<div class="flex flex-col items-center justify-center xl:items-start">
+		<div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite dark:bg-muted p-1">
 			<div
-				class="bg-black fill-offwhite flex items-center justify-center rounded-full p-1.5 shadow-inner"
+				class="bg-black fill-offwhite dark:fill-neon flex items-center justify-center rounded-full p-1.5 shadow-inner"
 			>
 			{@html IconSelf}
 			</div>
 		</div>
-		<div class="text-black/60 mb-3 ml-0.5">
+		<div class="text-black/60 dark:text-white/80 mb-3 ml-0.5">
 			1. { moduleName}
 		</div>
 		<h2 class="font-display text-2xl font-semibold lg:text-4xl mb-8">
@@ -33,8 +33,8 @@
 		</p>
 	</div>
 	<div class="relative flex">
-		<PhoneMockup mockup="screenshot-fight2.png" color="bg-observation-background" inverted class="w-50 md:w-72" />
-		<PhoneMockup mockup="screenshot-dashboard.png" color="bg-offwhite" class="w-50 md:w-72 -ml-36" />
+		<PhoneMockup mockup="screenshot-fight2.png" color="bg-[#618BFF]" inverted class="w-50 md:w-72" />
+		<PhoneMockup mockup="screenshot-dashboard.png" color="bg-[#D7D5D1]" class="w-50 md:w-72 -ml-36" />
 	</div>
 </div>
 

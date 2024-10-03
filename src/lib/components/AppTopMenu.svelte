@@ -74,33 +74,6 @@
 				<Logo simplified />
 			</a>
 			<div class="flex items-center gap-4">
-				<!-- <Popover.Root>
-					<Popover.Trigger>
-						<MixerVertical class="h-5 w-5" />
-					</Popover.Trigger>
-					<Popover.Content class="mt-[10px] w-40 bg-background">
-						<div class="mb-3 border-b border-gray-300/60 pb-3 dark:border-gray-300/20">
-							<Select.Root
-								selected={langs.find((lang) => lang.value === $locale)}
-								onSelectedChange={handleSelect}
-							>
-								<Select.Trigger class="">
-									<Select.Value placeholder="Language" />
-								</Select.Trigger>
-								<Select.Content>
-									{#each langs as lang}
-										<Select.Item value={lang.value} label={lang.label}>{lang.label}</Select.Item>
-									{/each}
-								</Select.Content>
-								<Select.Input name="favoriteFruit" />
-							</Select.Root>
-						</div>
-						<div class="flex items-center space-x-2">
-							<Switch id="lightMode" bind:checked={darkMode} on:click={toggleMode} />
-							<Label for="lightMode">Dark Mode</Label>
-						</div>
-					</Popover.Content>
-				</Popover.Root> -->
 				{#if $user}
 					<div class="">
 						<Avatar />
