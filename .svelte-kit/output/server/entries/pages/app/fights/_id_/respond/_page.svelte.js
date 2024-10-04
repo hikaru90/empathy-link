@@ -3,8 +3,8 @@ import { c as create_ssr_component, e as escape, v as validate_component, a as a
 import { A as AppTopMenu } from "../../../../../../chunks/AppTopMenu.js";
 import { A as AppBottomMenu } from "../../../../../../chunks/AppBottomMenu.js";
 import { p as page } from "../../../../../../chunks/stores.js";
-import "../../../../../../chunks/Avatar.svelte_svelte_type_style_lang.js";
-import { A as ArrowRight, C as ChevronUp, a as ChevronDown, d as defaults, F as FormStepDisplay, D as Drawer, b as Drawer_content, c as Drawer_header, e as Drawer_title, f as Close, g as Cross1 } from "../../../../../../chunks/index6.js";
+import "../../../../../../chunks/index3.js";
+import { A as ArrowRight, C as ChevronUp, a as ChevronDown, d as defaults, F as FormStepDisplay, D as Drawer, b as Drawer_content, c as Drawer_header, e as Drawer_title, f as Close, g as Cross1 } from "../../../../../../chunks/index7.js";
 import "../../../../../../chunks/page.js";
 import { t, l as locale } from "../../../../../../chunks/translations.js";
 import "clsx";
@@ -13,7 +13,7 @@ import "../../../../../../chunks/auth.js";
 import { s as superForm } from "../../../../../../chunks/memoize.js";
 import "../../../../../../chunks/index.js";
 import { c as createEventDispatcher, o as onDestroy } from "../../../../../../chunks/lifecycle.js";
-import { B as Button } from "../../../../../../chunks/Avatar.js";
+import { B as Button } from "../../../../../../chunks/switch.js";
 import { C as CaretLeft } from "../../../../../../chunks/CaretLeft.js";
 import { a as zod, z as zodClient } from "../../../../../../chunks/zod.js";
 import { z } from "zod";
@@ -116,6 +116,14 @@ const ResponseMascot = create_ssr_component(($$result, $$props, $$bindings, slot
   let { formSuccess } = $$props;
   let { speechBubbleContentArray } = $$props;
   let thinking = false;
+  const getSpeechBubbleContent = (formSuccess2, step2) => {
+    try {
+      return step2 === 13 && !formSuccess2 ? speechBubbleContentArray.find((el) => el.step === 13).errorContent : speechBubbleContentArray.find((el) => el.step === step2).content;
+    } catch (err) {
+      console.error("error in getSpeechBubbleContent", err);
+      return [];
+    }
+  };
   let speechBubbleElement;
   const addSpeechBubbleText = (text = "Hi") => {
     speechBubbleContent = [speechBubbleContent[0], text];
@@ -149,12 +157,12 @@ const ResponseMascot = create_ssr_component(($$result, $$props, $$bindings, slot
   if ($$props.checkJudgement === void 0 && $$bindings.checkJudgement && checkJudgement !== void 0)
     $$bindings.checkJudgement(checkJudgement);
   $$result.css.add(css$1);
-  speechBubbleContent = step === 13 && !formSuccess ? speechBubbleContentArray.find((el) => el.step === 13).errorContent : speechBubbleContentArray.find((el) => el.step === step).content;
+  speechBubbleContent = getSpeechBubbleContent(formSuccess, step);
   $$unsubscribe_locale();
-  return `<div class="mt-4 flex items-start gap-2"><div class="relative left-0 right-0 flex h-12 flex-shrink-0 justify-center gap-1" data-svelte-h="svelte-ido9h0"><div style="${"background-image: url('" + escape(backgroundImage, true) + "'); background-size: 300% 100%"}" class="animate-bg relative z-10 flex h-full w-[60px] items-center justify-center rounded-b rounded-t-[50px] shadow-lg transition duration-700"><div data-name="face" class="lookaround face-3 flex flex-col gap-1 svelte-12yl6i5"><div data-name="eyes" class="eyes flex items-center justify-center gap-2"><div class="h-2 w-2 rounded-full border-2 border-white bg-black shadow-md"></div> <div class="h-2 w-2 rounded-full border-2 border-white bg-black shadow-md"></div></div> <div data-name="mouth" class="mouth flex items-center justify-center svelte-12yl6i5"><div class="h-1.5 w-2.5 rounded-b-full bg-black"></div></div></div></div></div> <div class="flex flex-grow"><div class="triangle size-3 flex-shrink-0 bg-white svelte-12yl6i5"></div> <div class="rounded-tl-0 relative flex flex-grow rounded-b rounded-tr bg-white px-2 pb-2 pt-1 text-sm leading-tight gap-2">${thinking ? `<div id="speechBubble" class="w-full" data-svelte-h="svelte-534rav">...</div>` : `<div id="speechBubble" class="w-full"${add_attribute("this", speechBubbleElement, 0)}></div>`} ${speechBubbleContent.length > 1 ? `<div class="flex justify-end text-2xs"><div class="-mr-1 flex flex-col items-center gap-0.5"><button class="chevron svelte-12yl6i5">${validate_component(ChevronUp, "ChevronUp").$$render($$result, { class: "size-2.5" }, {}, {})}</button>  <button class="chevron svelte-12yl6i5">${validate_component(ChevronDown, "ChevronDown").$$render($$result, { class: "size-2.5" }, {}, {})}</button></div></div>` : ``}</div></div></div>  `;
+  return `<div class="mt-4 flex items-start gap-2"><div class="relative left-0 right-0 flex h-12 flex-shrink-0 justify-center gap-1" data-svelte-h="svelte-ido9h0"><div style="${"background-image: url('" + escape(backgroundImage, true) + "'); background-size: 300% 100%"}" class="animate-bg relative z-10 flex h-full w-[60px] items-center justify-center rounded-b rounded-t-[50px] shadow-lg transition duration-700"><div data-name="face" class="lookaround face-3 flex flex-col gap-1 svelte-12yl6i5"><div data-name="eyes" class="eyes flex items-center justify-center gap-2"><div class="h-2 w-2 rounded-full border-2 border-white bg-black shadow-md"></div> <div class="h-2 w-2 rounded-full border-2 border-white bg-black shadow-md"></div></div> <div data-name="mouth" class="mouth flex items-center justify-center svelte-12yl6i5"><div class="h-1.5 w-2.5 rounded-b-full bg-black"></div></div></div></div></div> <div class="flex flex-grow"><div class="triangle size-3 flex-shrink-0 bg-muted svelte-12yl6i5"></div> <div class="rounded-tl-0 relative flex flex-grow rounded-b rounded-tr bg-muted px-2 pb-2 pt-1 text-sm leading-tight gap-2">${thinking ? `<div id="speechBubble" class="w-full" data-svelte-h="svelte-534rav">...</div>` : `<div id="speechBubble" class="w-full"${add_attribute("this", speechBubbleElement, 0)}></div>`} ${speechBubbleContent.length > 1 ? `<div class="flex justify-end text-2xs"><div class="-mr-1 flex flex-col items-center gap-0.5"><button class="chevron svelte-12yl6i5">${validate_component(ChevronUp, "ChevronUp").$$render($$result, { class: "size-2.5" }, {}, {})}</button>  <button class="chevron svelte-12yl6i5">${validate_component(ChevronDown, "ChevronDown").$$render($$result, { class: "size-2.5" }, {}, {})}</button></div></div>` : ``}</div></div></div>  `;
 });
 const css = {
-  code: '.form-content{margin-bottom:4rem;flex-grow:1;overflow-y:auto;overflow-x:hidden;padding-left:1px;padding-right:1px;--mask:linear-gradient(\n  	to bottom,\n  	rgba(0, 0, 0, 0) 0,\n  	rgba(0, 0, 0, 1) 3%,\n  	rgba(0, 0, 0, 1) 97%,\n  	rgba(0, 0, 0, 0) 100%\n  );-webkit-mask:var(--mask);mask:var(--mask)}.form-label{margin-bottom:0.5rem;margin-top:1rem;display:block;width:100%;padding-bottom:0.5rem;font-size:1.25rem;line-height:1.75rem;font-weight:700;line-height:1.25}.form-label:not([data-fs-error]):is(.dark *){--tw-text-opacity:1;color:hsl(var(--foreground) / var(--tw-text-opacity))}.breathe.svelte-1oous0z{animation:svelte-1oous0z-breathe 5s infinite alternate forwards}.breathe.svelte-1oous0z:after{content:"";position:absolute;left:50%;top:50%;z-index:-10;height:18rem;width:18rem;--tw-translate-x:-50%;--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));border-radius:9999px;background-color:rgb(255 255 255 / 0.8)}.breathe2.svelte-1oous0z{animation:svelte-1oous0z-breathe 5s ease-in-out infinite alternate forwards;animation-delay:1s}.breathe2.svelte-1oous0z:after{content:"";position:absolute;left:50%;top:50%;z-index:-10;height:10rem;width:10rem;--tw-translate-x:-50%;--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));border-radius:9999px;--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity))}@keyframes svelte-1oous0z-breathe{0%{transform:scale(0.2);opacity:0}100%{transform:scale(1);opacity:0.8}}',
+  code: '.form-label{margin-bottom:0.5rem;margin-top:1rem;display:block;width:100%;padding-bottom:0.5rem;font-size:1.25rem;line-height:1.75rem;font-weight:700;line-height:1.25}.form-label:not([data-fs-error]):is(.dark *){--tw-text-opacity:1;color:hsl(var(--foreground) / var(--tw-text-opacity))}.breathe.svelte-18kg1ym{animation:svelte-18kg1ym-breathe 5s infinite alternate forwards}.breathe.svelte-18kg1ym:after{content:"";position:absolute;left:50%;top:50%;z-index:-10;height:18rem;width:18rem;--tw-translate-x:-50%;--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));border-radius:9999px;background-color:hsl(var(--muted) / 0.4)}.breathe2.svelte-18kg1ym{animation:svelte-18kg1ym-breathe 5s ease-in-out infinite alternate forwards;animation-delay:1s}.breathe2.svelte-18kg1ym:after{content:"";position:absolute;left:50%;top:50%;z-index:-10;height:10rem;width:10rem;--tw-translate-x:-50%;--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));border-radius:9999px;--tw-bg-opacity:1;background-color:hsl(var(--muted) / var(--tw-bg-opacity))}@keyframes svelte-18kg1ym-breathe{0%{transform:scale(0.2);opacity:0}100%{transform:scale(1);opacity:0.8}}',
   map: null
 };
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -334,7 +342,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     $$settled = true;
     $$result.head = previous_head;
     options.validators = steps[step - 1];
-    $$rendered = ` <div class="${"flex flex-grow flex-col justify-between transition duration-700 " + escape(`bg-${stepConstructor[step - 1].slug}-background`, true) + " svelte-1oous0z"}">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="max-container relative flex h-[calc(100dvh-100px)] flex-grow flex-col"><form class="-mt-1 flex h-full flex-grow flex-col pb-[74px]">${!formSubmitted && !formSuccess ? `${step > 8 ? `${validate_component(FormStepDisplay, "FormStepDisplay").$$render(
+    $$rendered = ` <div class="${"flex flex-grow flex-col justify-between transition duration-500 " + escape(`bg-${stepConstructor[step - 1].slug}-background`, true) + " dark:bg-background overflow-hidden svelte-18kg1ym"}">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="max-container relative flex flex-grow flex-col pb-40"><form class="-mt-1 flex h-full flex-grow flex-col pb-[74px]">${!formSubmitted && !formSuccess ? `${step > 8 ? `${validate_component(FormStepDisplay, "FormStepDisplay").$$render(
       $$result,
       {
         step,

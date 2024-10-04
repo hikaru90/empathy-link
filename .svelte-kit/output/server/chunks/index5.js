@@ -1,188 +1,353 @@
-import { c as compute_rest_props, s as subscribe } from "./utils.js";
-import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute, v as validate_component, g as escape_attribute_value } from "./ssr.js";
-import "./page.js";
-import { D as Dialog_title$1 } from "./Avatar.js";
-import { c as cn, f as flyAndScale } from "./utils2.js";
-import { k as getCtx, D as Dialog_close, l as Dialog } from "./Avatar.svelte_svelte_type_style_lang.js";
-import { D as Dialog_portal$1, b as Dialog_overlay$1, f as fade, c as Dialog_content$1, C as Cross1 } from "./sheet-header.js";
-/* empty css                                             */
+import { c as compute_rest_props, s as subscribe, n as noop } from "./utils.js";
+import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object, a as add_attribute, f as each, e as escape, v as validate_component } from "./ssr.js";
+import { c as cn } from "./utils2.js";
+import { L as Label } from "./switch.js";
+import { w as writable } from "./index2.js";
+import { h as hasContext, g as getContext, s as setContext } from "./lifecycle.js";
+import { n as nanoid } from "./index3.js";
 import "clsx";
-const Dialog_description$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let builder;
-  let $$restProps = compute_rest_props($$props, ["asChild", "id", "el"]);
-  let $description, $$unsubscribe_description;
-  let { asChild = false } = $$props;
-  let { id = void 0 } = $$props;
-  let { el = void 0 } = $$props;
-  const { elements: { description }, ids, getAttrs } = getCtx();
-  $$unsubscribe_description = subscribe(description, (value) => $description = value);
-  const attrs = getAttrs("description");
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.id === void 0 && $$bindings.id && id !== void 0)
-    $$bindings.id(id);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
-  {
-    if (id) {
-      ids.description.set(id);
-    }
-  }
-  builder = $description;
-  {
-    Object.assign(builder, attrs);
-  }
-  $$unsubscribe_description();
-  return `${asChild ? `${slots.default ? slots.default({ builder }) : ``}` : `<div${spread([escape_object(builder), escape_object($$restProps)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({ builder }) : ``}</div>`}`;
-});
-const Dialog_title = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["class"]);
+import "./page.js";
+const Input = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["class", "value", "readonly"]);
   let { class: className = void 0 } = $$props;
+  let { value = void 0 } = $$props;
+  let { readonly = void 0 } = $$props;
   if ($$props.class === void 0 && $$bindings.class && className !== void 0)
     $$bindings.class(className);
-  return `${validate_component(Dialog_title$1, "DialogPrimitive.Title").$$render(
-    $$result,
-    Object.assign(
-      {},
-      {
-        class: cn("text-lg font-semibold leading-none tracking-tight", className)
-      },
-      $$restProps
-    ),
-    {},
-    {
-      default: () => {
-        return `${slots.default ? slots.default({}) : ``}`;
-      }
-    }
-  )}`;
-});
-const Dialog_portal = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, []);
-  return `${validate_component(Dialog_portal$1, "DialogPrimitive.Portal").$$render($$result, Object.assign({}, $$restProps), {}, {
-    default: () => {
-      return `${slots.default ? slots.default({}) : ``}`;
-    }
-  })}`;
-});
-const Dialog_header = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["class"]);
-  let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
-  return `<div${spread(
+  if ($$props.value === void 0 && $$bindings.value && value !== void 0)
+    $$bindings.value(value);
+  if ($$props.readonly === void 0 && $$bindings.readonly && readonly !== void 0)
+    $$bindings.readonly(readonly);
+  return `<input${spread(
     [
       {
-        class: escape_attribute_value(cn("flex flex-col space-y-1.5 text-left", className))
+        class: escape_attribute_value(cn("flex h-9 w-full rounded-md border border-input bg-black/5 dark:bg-black/20 border-black/10 dark:border-white/10 px-3 py-1 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50", className))
       },
+      { readonly: readonly || null },
       escape_object($$restProps)
     ],
     {}
-  )}>${slots.default ? slots.default({}) : ``}</div>`;
+  )}${add_attribute("value", value, 0)}>`;
 });
-const Dialog_overlay = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["class", "transition", "transitionConfig"]);
-  let { class: className = void 0 } = $$props;
-  let { transition = fade } = $$props;
-  let { transitionConfig = { duration: 150 } } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
-  if ($$props.transition === void 0 && $$bindings.transition && transition !== void 0)
-    $$bindings.transition(transition);
-  if ($$props.transitionConfig === void 0 && $$bindings.transitionConfig && transitionConfig !== void 0)
-    $$bindings.transitionConfig(transitionConfig);
-  return `${validate_component(Dialog_overlay$1, "DialogPrimitive.Overlay").$$render(
-    $$result,
-    Object.assign(
-      {},
-      { transition },
-      { transitionConfig },
-      {
-        class: cn("fixed inset-0 z-[1001] bg-zinc-400/80 backdrop-blur-xl brightness-50", className)
-      },
-      $$restProps
-    ),
-    {},
-    {}
-  )}`;
-});
-const css = {
-  code: '.label.svelte-168kay9{box-shadow:4px 4px 8px 0 rgba(0, 0, 0, 0.4);position:relative;height:1.75rem;width:1.75rem;flex-shrink:0;border-radius:9999px;border-width:1px;--tw-border-opacity:1;border-color:rgb(255 255 255 / var(--tw-border-opacity))}.label.svelte-168kay9:after{content:"";box-shadow:-4px -4px 8px 0 white;display:block;height:100%;width:100%;border-radius:9999px}.icon.svelte-168kay9{position:absolute;left:50%;top:50%;display:flex;height:0.875rem;width:0.875rem;--tw-translate-x:-50%;--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));align-items:center;justify-content:center}',
-  map: null
-};
-const Dialog_content = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["class", "transition", "transitionConfig"]);
-  let { class: className = void 0 } = $$props;
-  let { transition = flyAndScale } = $$props;
-  let { transitionConfig = { duration: 200 } } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
-  if ($$props.transition === void 0 && $$bindings.transition && transition !== void 0)
-    $$bindings.transition(transition);
-  if ($$props.transitionConfig === void 0 && $$bindings.transitionConfig && transitionConfig !== void 0)
-    $$bindings.transitionConfig(transitionConfig);
-  $$result.css.add(css);
-  return `${validate_component(Dialog_portal, "Dialog.Portal").$$render($$result, {}, {}, {
-    default: () => {
-      return `${validate_component(Dialog_overlay, "Dialog.Overlay").$$render($$result, {}, {}, {})} ${validate_component(Dialog_content$1, "DialogPrimitive.Content").$$render(
-        $$result,
-        Object.assign(
-          {},
-          { transition },
-          { transitionConfig },
-          {
-            class: cn("fixed left-[50%] top-[50%] z-[1002] grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border bg-offwhite p-6 shadow-lg sm:rounded-lg md:w-full max-w-[90vw] md:max-w-lg rounded-2xl", className)
-          },
-          $$restProps
-        ),
-        {},
-        {
-          default: () => {
-            return `${slots.default ? slots.default({}) : ``} ${validate_component(Dialog_close, "DialogPrimitive.Close").$$render(
-              $$result,
-              {
-                class: "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
-              },
-              {},
-              {
-                default: () => {
-                  return `<div class="label bg-feelings-background svelte-168kay9"><div class="icon fill-feelings-foreground svelte-168kay9"> ${validate_component(Cross1, "Cross1").$$render($$result, { class: "text-red-600" }, {}, {})}</div></div> <span class="sr-only" data-svelte-h="svelte-1pewzs3">Close</span>`;
-                }
-              }
-            )}`;
-          }
-        }
-      )}`;
+const FORM_FIELD = Symbol("FORM_FIELD_CTX");
+function setFormField(props) {
+  setContext(FORM_FIELD, props);
+  return props;
+}
+function getFormField() {
+  if (!hasContext(FORM_FIELD)) {
+    ctxError("Form.Field");
+  }
+  return getContext(FORM_FIELD);
+}
+const FORM_CONTROL = Symbol("FORM_CONTROL_CTX");
+function setFormControl(props) {
+  setContext(FORM_CONTROL, props);
+  return props;
+}
+function getFormControl() {
+  if (!hasContext(FORM_CONTROL)) {
+    ctxError("<Control />");
+  }
+  return getContext(FORM_CONTROL);
+}
+function ctxError(ctx) {
+  throw new Error(`Unable to find \`${ctx}\` context. Did you forget to wrap the component in a \`${ctx}\`?`);
+}
+function getAriaDescribedBy({ fieldErrorsId = void 0, descriptionId = void 0, errors }) {
+  let describedBy = "";
+  if (descriptionId) {
+    describedBy += descriptionId + " ";
+  }
+  if (errors.length && fieldErrorsId) {
+    describedBy += fieldErrorsId;
+  }
+  return describedBy ? describedBy.trim() : void 0;
+}
+function getAriaRequired(constraints) {
+  if (!("required" in constraints))
+    return void 0;
+  return constraints.required ? "true" : void 0;
+}
+function getAriaInvalid(errors) {
+  return errors && errors.length ? "true" : void 0;
+}
+function getDataFsError(errors) {
+  return errors && errors.length ? "" : void 0;
+}
+function generateId() {
+  return nanoid(5);
+}
+function extractErrorArray(errors) {
+  if (Array.isArray(errors))
+    return errors;
+  if (typeof errors === "object" && "_errors" in errors) {
+    if (errors._errors !== void 0)
+      return errors._errors;
+  }
+  return [];
+}
+function getValueAtPath(path, obj) {
+  const keys = path.split(/[[\].]/).filter(Boolean);
+  let value = obj;
+  for (const key of keys) {
+    if (typeof value !== "object" || value === null) {
+      return void 0;
     }
-  })}`;
+    value = value[key];
+  }
+  return value;
+}
+const Field = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let formErrors;
+  let formConstraints;
+  let formTainted;
+  let formData;
+  let $formTainted, $$unsubscribe_formTainted = noop, $$subscribe_formTainted = () => ($$unsubscribe_formTainted(), $$unsubscribe_formTainted = subscribe(formTainted, ($$value) => $formTainted = $$value), formTainted);
+  let $formConstraints, $$unsubscribe_formConstraints = noop, $$subscribe_formConstraints = () => ($$unsubscribe_formConstraints(), $$unsubscribe_formConstraints = subscribe(formConstraints, ($$value) => $formConstraints = $$value), formConstraints);
+  let $formErrors, $$unsubscribe_formErrors = noop, $$subscribe_formErrors = () => ($$unsubscribe_formErrors(), $$unsubscribe_formErrors = subscribe(formErrors, ($$value) => $formErrors = $$value), formErrors);
+  let $formData, $$unsubscribe_formData = noop, $$subscribe_formData = () => ($$unsubscribe_formData(), $$unsubscribe_formData = subscribe(formData, ($$value) => $formData = $$value), formData);
+  let $errors, $$unsubscribe_errors;
+  let $tainted, $$unsubscribe_tainted;
+  let { form } = $$props;
+  let { name } = $$props;
+  const field = {
+    name: writable(name),
+    errors: writable([]),
+    constraints: writable({}),
+    tainted: writable(false),
+    fieldErrorsId: writable(),
+    descriptionId: writable(),
+    form
+  };
+  const { tainted, errors } = field;
+  $$unsubscribe_tainted = subscribe(tainted, (value) => $tainted = value);
+  $$unsubscribe_errors = subscribe(errors, (value) => $errors = value);
+  setFormField(field);
+  if ($$props.form === void 0 && $$bindings.form && form !== void 0)
+    $$bindings.form(form);
+  if ($$props.name === void 0 && $$bindings.name && name !== void 0)
+    $$bindings.name(name);
+  $$subscribe_formErrors({ errors: formErrors, constraints: formConstraints, tainted: formTainted, form: formData } = form, $$subscribe_formConstraints(), $$subscribe_formTainted(), $$subscribe_formData());
+  {
+    field.name.set(name);
+  }
+  {
+    field.errors.set(extractErrorArray(getValueAtPath(name, $formErrors)));
+  }
+  {
+    field.constraints.set(getValueAtPath(name, $formConstraints) ?? {});
+  }
+  {
+    field.tainted.set($formTainted ? getValueAtPath(name, $formTainted) === true : false);
+  }
+  $$unsubscribe_formTainted();
+  $$unsubscribe_formConstraints();
+  $$unsubscribe_formErrors();
+  $$unsubscribe_formData();
+  $$unsubscribe_errors();
+  $$unsubscribe_tainted();
+  return ` ${slots.default ? slots.default({
+    value: $formData[name],
+    errors: $errors,
+    tainted: $tainted,
+    constraints: $formConstraints[name]
+  }) : ``}`;
 });
-const Dialog_description = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+const Control$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let errorAttr;
+  let attrs;
+  let labelAttrs;
+  let $idStore, $$unsubscribe_idStore;
+  let $constraints, $$unsubscribe_constraints;
+  let $errors, $$unsubscribe_errors;
+  let $descriptionId, $$unsubscribe_descriptionId;
+  let $fieldErrorsId, $$unsubscribe_fieldErrorsId;
+  let $name, $$unsubscribe_name;
+  let { id = generateId() } = $$props;
+  const { name, fieldErrorsId, descriptionId, errors, constraints } = getFormField();
+  $$unsubscribe_name = subscribe(name, (value) => $name = value);
+  $$unsubscribe_fieldErrorsId = subscribe(fieldErrorsId, (value) => $fieldErrorsId = value);
+  $$unsubscribe_descriptionId = subscribe(descriptionId, (value) => $descriptionId = value);
+  $$unsubscribe_errors = subscribe(errors, (value) => $errors = value);
+  $$unsubscribe_constraints = subscribe(constraints, (value) => $constraints = value);
+  const controlContext = {
+    id: writable(id),
+    attrs: writable(),
+    labelAttrs: writable()
+  };
+  const { id: idStore } = controlContext;
+  $$unsubscribe_idStore = subscribe(idStore, (value) => $idStore = value);
+  setFormControl(controlContext);
+  if ($$props.id === void 0 && $$bindings.id && id !== void 0)
+    $$bindings.id(id);
+  {
+    controlContext.id.set(id);
+  }
+  errorAttr = getDataFsError($errors);
+  attrs = {
+    name: $name,
+    id: $idStore,
+    "data-fs-error": errorAttr,
+    "aria-describedby": getAriaDescribedBy({
+      fieldErrorsId: $fieldErrorsId,
+      descriptionId: $descriptionId,
+      errors: $errors
+    }),
+    "aria-invalid": getAriaInvalid($errors),
+    "aria-required": getAriaRequired($constraints),
+    "data-fs-control": ""
+  };
+  labelAttrs = {
+    for: $idStore,
+    "data-fs-label": "",
+    "data-fs-error": errorAttr
+  };
+  {
+    controlContext.attrs.set(attrs);
+  }
+  {
+    controlContext.labelAttrs.set(labelAttrs);
+  }
+  $$unsubscribe_idStore();
+  $$unsubscribe_constraints();
+  $$unsubscribe_errors();
+  $$unsubscribe_descriptionId();
+  $$unsubscribe_fieldErrorsId();
+  $$unsubscribe_name();
+  return ` ${slots.default ? slots.default({ attrs }) : ``}`;
+});
+const Field_errors = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let errorAttr;
+  let fieldErrorsAttrs;
+  let errorAttrs;
+  let $$restProps = compute_rest_props($$props, ["id", "asChild", "el"]);
+  let $fieldErrorsId, $$unsubscribe_fieldErrorsId;
+  let $errors, $$unsubscribe_errors;
+  const { fieldErrorsId, errors } = getFormField();
+  $$unsubscribe_fieldErrorsId = subscribe(fieldErrorsId, (value) => $fieldErrorsId = value);
+  $$unsubscribe_errors = subscribe(errors, (value) => $errors = value);
+  let { id = generateId() } = $$props;
+  let { asChild = false } = $$props;
+  let { el = void 0 } = $$props;
+  if ($$props.id === void 0 && $$bindings.id && id !== void 0)
+    $$bindings.id(id);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
+    $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
+    $$bindings.el(el);
+  errorAttr = getDataFsError($errors);
+  {
+    fieldErrorsId.set(id);
+  }
+  fieldErrorsAttrs = {
+    id: $fieldErrorsId,
+    "data-fs-error": errorAttr,
+    "data-fs-field-errors": "",
+    "aria-live": "assertive",
+    ...$$restProps
+  };
+  errorAttrs = {
+    "data-fs-field-error": "",
+    "data-fs-error": errorAttr
+  };
+  $$unsubscribe_fieldErrorsId();
+  $$unsubscribe_errors();
+  return ` ${asChild ? `${slots.default ? slots.default({
+    errors: $errors,
+    fieldErrorsAttrs,
+    errorAttrs
+  }) : ``}` : `<div${spread([escape_object(fieldErrorsAttrs)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({
+    errors: $errors,
+    fieldErrorsAttrs,
+    errorAttrs
+  }) : ` ${each($errors, (error) => {
+    return `<div${spread([escape_object(errorAttrs)], {})}>${escape(error)}</div>`;
+  })} `}</div>`}`;
+});
+const Form_label = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
+  let $labelAttrs, $$unsubscribe_labelAttrs;
   let { class: className = void 0 } = $$props;
+  const { labelAttrs } = getFormControl();
+  $$unsubscribe_labelAttrs = subscribe(labelAttrs, (value) => $labelAttrs = value);
   if ($$props.class === void 0 && $$bindings.class && className !== void 0)
     $$bindings.class(className);
-  return `${validate_component(Dialog_description$1, "DialogPrimitive.Description").$$render(
+  $$unsubscribe_labelAttrs();
+  return `${validate_component(Label, "Label").$$render(
     $$result,
     Object.assign(
       {},
+      $labelAttrs,
       {
-        class: cn("text-sm text-muted-foreground", className)
+        class: cn("data-[fs-error]:text-destructive", className)
       },
       $$restProps
     ),
     {},
     {
       default: () => {
-        return `${slots.default ? slots.default({}) : ``}`;
+        return `${slots.default ? slots.default({ labelAttrs }) : ``}`;
       }
     }
   )}`;
 });
-const Root = Dialog;
+const Form_field_errors = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["class", "errorClasses"]);
+  let { class: className = void 0 } = $$props;
+  let { errorClasses = void 0 } = $$props;
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  if ($$props.errorClasses === void 0 && $$bindings.errorClasses && errorClasses !== void 0)
+    $$bindings.errorClasses(errorClasses);
+  return `${validate_component(Field_errors, "FormPrimitive.FieldErrors").$$render(
+    $$result,
+    Object.assign(
+      {},
+      {
+        class: cn("text-[0.8rem] font-medium text-destructive bg-red-200 rounded !mb-4", className)
+      },
+      $$restProps
+    ),
+    {},
+    {
+      default: ({ errors, fieldErrorsAttrs, errorAttrs }) => {
+        return `${slots.default ? slots.default({ errors, fieldErrorsAttrs, errorAttrs }) : ` ${each(errors, (error) => {
+          return `<div${spread(
+            [
+              escape_object(errorAttrs),
+              {
+                class: escape_attribute_value(cn("px-2 py-1 border border-red-600/10", errorClasses))
+              }
+            ],
+            {}
+          )}>${escape(error)}</div>`;
+        })} `}`;
+      }
+    }
+  )}`;
+});
+const Form_field = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let { form } = $$props;
+  let { name } = $$props;
+  let { class: className = void 0 } = $$props;
+  if ($$props.form === void 0 && $$bindings.form && form !== void 0)
+    $$bindings.form(form);
+  if ($$props.name === void 0 && $$bindings.name && name !== void 0)
+    $$bindings.name(name);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  return `${validate_component(Field, "FormPrimitive.Field").$$render($$result, { form, name }, {}, {
+    default: ({ constraints, errors, tainted, value }) => {
+      return `<div${add_attribute("class", cn("space-y-2", className), 0)}>${slots.default ? slots.default({ constraints, errors, tainted, value }) : ``}</div>`;
+    }
+  })}`;
+});
+const Control = Control$1;
 export {
-  Dialog_content as D,
-  Root as R,
-  Dialog_header as a,
-  Dialog_title as b,
-  Dialog_description as c
+  Control as C,
+  Form_field as F,
+  Input as I,
+  Form_label as a,
+  Form_field_errors as b
 };

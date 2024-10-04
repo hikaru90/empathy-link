@@ -6,13 +6,13 @@ import { s as setContext, g as getContext, c as createEventDispatcher } from "..
 import { CalendarDateTime, CalendarDate, ZonedDateTime, parseZonedDateTime, parseDateTime, parseDate, getLocalTimeZone, getDayOfWeek, DateFormatter, startOfMonth, endOfMonth, isSameMonth, isSameDay, isToday } from "@internationalized/date";
 import { c as cn } from "../../../../chunks/utils2.js";
 import { t as withGet, i as isBrowser, q as isHTMLElement, f as styleToString, o as omit, m as makeElement, j as addMeltEventListener, h as executeCallbacks, g as effect, k as kbd, l as createElHelpers } from "../../../../chunks/page.js";
-import { i as chunk, t as toWritableStores, g as generateIds, o as overridable, j as isValidIndex, c as createBitAttrs, b as removeUndefined, d as getOptionUpdater, e as createDispatcher, f as buttonVariants } from "../../../../chunks/Avatar.svelte_svelte_type_style_lang.js";
+import { i as chunk, t as toWritableStores, g as generateIds, o as overridable, j as isValidIndex, c as createBitAttrs, b as removeUndefined, d as getOptionUpdater, e as createDispatcher, f as buttonVariants } from "../../../../chunks/index3.js";
 import { w as writable, d as derived } from "../../../../chunks/index2.js";
 import { t as tick } from "../../../../chunks/scheduler.js";
 import { e as endDate, s as startDate } from "../../../../chunks/dashboard.js";
-import { R as Root, D as Dialog_content, a as Dialog_header, b as Dialog_title, c as Dialog_description } from "../../../../chunks/index5.js";
+import { R as Root, D as Dialog_content, a as Dialog_header, b as Dialog_title, c as Dialog_description } from "../../../../chunks/index6.js";
 import { t, l as locale } from "../../../../chunks/translations.js";
-import { B as Button } from "../../../../chunks/Avatar.js";
+import { B as Button } from "../../../../chunks/switch.js";
 import "clsx";
 import { S as Skeleton } from "../../../../chunks/skeleton.js";
 import { p as pb } from "../../../../chunks/pocketbase.js";
@@ -2376,7 +2376,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   do {
     $$settled = true;
     $$result.head = previous_head;
-    $$rendered = `${$user ? `<div class="app/dashboard/page">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="flex-grow"><div class="max-container relative"><div class="relative z-10 mb-8 flex flex-row items-center justify-between py-4 md:items-center md:bg-transparent md:pb-6"><h1 class="font-heading text-lg font-semibold" data-svelte-h="svelte-1xyf527">Dashboard</h1> <button class="mb-0.5 rounded-full bg-neutral-600 py-0.5 text-center text-2xs text-neutral-300 px-2">${escape(new Intl.DateTimeFormat("de-DE", { month: "short", day: "numeric" }).format(
+    $$rendered = `${$user ? `<div class="app/dashboard/page bg-background overflow-hidden">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="flex-grow"><div class="max-container relative"><div class="relative z-10 mb-8 flex flex-row items-center justify-between py-4 md:items-center md:bg-transparent md:pb-6"><h1 class="font-heading text-lg font-semibold" data-svelte-h="svelte-1xyf527">Dashboard</h1> <button class="mb-0.5 rounded-full bg-neutral-600 py-0.5 text-center text-2xs text-neutral-300 px-2">${escape(new Intl.DateTimeFormat("de-DE", { month: "short", day: "numeric" }).format(
       new Date($startDate)
     ))}
 						- ${escape(new Intl.DateTimeFormat(
@@ -2386,7 +2386,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
         day: "numeric",
         year: "numeric"
       }
-    ).format(new Date($endDate)))}</button></div> <div class="mb-10">${validate_component(FightOverview, "FightOverview").$$render($$result, {}, {}, {})}</div> <div class="mb-10">${validate_component(FeelingsOverview, "FeelingsOverview").$$render($$result, {}, {}, {})}</div> <div class="mb-10">${validate_component(NeedsOverview, "NeedsOverview").$$render($$result, {}, {}, {})}</div></div> ${validate_component(AppBottomMenu, "AppBottomMenu").$$render($$result, {}, {}, {
+    ).format(new Date($endDate)))}</button></div> <div class="mb-10">${validate_component(FightOverview, "FightOverview").$$render($$result, {}, {}, {})}</div> <div class="mb-10">${validate_component(FeelingsOverview, "FeelingsOverview").$$render($$result, {}, {}, {})}</div> <div class="mb-10 pb-40">${validate_component(NeedsOverview, "NeedsOverview").$$render($$result, {}, {}, {})}</div></div> ${validate_component(AppBottomMenu, "AppBottomMenu").$$render($$result, {}, {}, {
       default: () => {
         return `<div class="relative md:flex md:justify-center w-full">${validate_component(DaterangePicker, "DaterangePicker").$$render(
           $$result,

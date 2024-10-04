@@ -5,7 +5,7 @@ const POST = async ({ request }) => {
   const { text, lang } = await request.json();
   const model = genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
-    systemInstruction: "you are an expert that is trained to identify if an observation contains a judgement based on nonviolent communication principles. You receive texts and answer if the observation contains a jugement or not. if it does, make a suggestion that doesn't. please make sure that the text really has to contain a judgment for you to point it out. If the prompt is in german, please answer in german."
+    systemInstruction: `you are an expert that is trained to identify if an observation contains a judgement based on nonviolent communication principles. You receive texts and answer if the observation contains a jugement or not. If it does, make a suggestion that doesn't. please make sure that the text really has to contain a judgment for you to point it out. Answer in ${lang}.`
   });
   const safetySettings = [
     {

@@ -4,7 +4,7 @@ import { c as create_ssr_component, v as validate_component } from "../../../../
 import { t, l as locale } from "../../../../../chunks/translations.js";
 import "../../../../../chunks/page.js";
 import "clsx";
-import "../../../../../chunks/Avatar.svelte_svelte_type_style_lang.js";
+import "../../../../../chunks/index3.js";
 import "../../../../../chunks/client.js";
 import "../../../../../chunks/auth.js";
 import { p as pb } from "../../../../../chunks/pocketbase.js";
@@ -30,7 +30,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   $$unsubscribe_page();
   $$unsubscribe_t();
   $$unsubscribe_locale();
-  return `${`<div class="flex h-full flex-grow items-center justify-center">${validate_component(Skeleton, "Skeleton").$$render($$result, { class: "h-[20px] w-[100px] rounded-full" }, {}, {})}</div>`}`;
+  return `${`<div class="flex h-full items-center justify-center">${validate_component(Skeleton, "Skeleton").$$render($$result, { class: "h-[20px] w-[100px] rounded-full" }, {}, {})}</div>`}`;
 });
 export {
   Page as default

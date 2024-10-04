@@ -3,7 +3,7 @@ import { A as AppBottomMenu } from "../../../../chunks/AppBottomMenu.js";
 import "../../../../chunks/index.js";
 import "clsx";
 import "../../../../chunks/page.js";
-import "../../../../chunks/Avatar.svelte_svelte_type_style_lang.js";
+import "../../../../chunks/index3.js";
 import "../../../../chunks/schema.js";
 import "../../../../chunks/client.js";
 import "../../../../chunks/memoize.js";

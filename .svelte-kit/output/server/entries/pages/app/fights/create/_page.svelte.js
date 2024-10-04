@@ -1,15 +1,15 @@
 import { c as compute_rest_props, s as subscribe, g as get_store_value } from "../../../../../chunks/utils.js";
-import { h as handleRovingFocus, e as arraysAreEqual, B as Button, f as globals } from "../../../../../chunks/Avatar.js";
+import { k as handleRovingFocus, l as arraysAreEqual, B as Button, m as globals } from "../../../../../chunks/switch.js";
 import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute, g as escape_attribute_value, v as validate_component, e as escape, f as each } from "../../../../../chunks/ssr.js";
 import { A as AppTopMenu } from "../../../../../chunks/AppTopMenu.js";
 import { A as AppBottomMenu } from "../../../../../chunks/AppBottomMenu.js";
-import { F as Form_field, C as Control, a as Form_label, I as Input, b as Form_field_errors } from "../../../../../chunks/index4.js";
-import { o as omit, m as makeElement, u as disabledAttr, q as isHTMLElement, h as executeCallbacks, j as addMeltEventListener, l as createElHelpers, r as noop, k as kbd } from "../../../../../chunks/page.js";
-import { t as toWritableStores, o as overridable, c as createBitAttrs, b as removeUndefined, d as getOptionUpdater, e as createDispatcher } from "../../../../../chunks/Avatar.svelte_svelte_type_style_lang.js";
+import { F as Form_field, C as Control, a as Form_label, I as Input, b as Form_field_errors } from "../../../../../chunks/index5.js";
+import { o as omit, m as makeElement, u as disabledAttr, q as isHTMLElement, h as executeCallbacks, j as addMeltEventListener, l as createElHelpers, r as noop, k as kbd, b as backgroundColor } from "../../../../../chunks/page.js";
+import { t as toWritableStores, o as overridable, c as createBitAttrs, b as removeUndefined, d as getOptionUpdater, e as createDispatcher } from "../../../../../chunks/index3.js";
 import { s as setContext, g as getContext, c as createEventDispatcher, o as onDestroy } from "../../../../../chunks/lifecycle.js";
 import { d as derived, w as writable } from "../../../../../chunks/index2.js";
 import "clsx";
-import { t as toggleVariants, A as ArrowRight, C as ChevronUp, a as ChevronDown, d as defaults$1, D as Drawer, b as Drawer_content, c as Drawer_header, e as Drawer_title, f as Close, g as Cross1, F as FormStepDisplay } from "../../../../../chunks/index6.js";
+import { t as toggleVariants, A as ArrowRight, C as ChevronUp, a as ChevronDown, d as defaults$1, D as Drawer, b as Drawer_content, c as Drawer_header, e as Drawer_title, f as Close, g as Cross1, F as FormStepDisplay } from "../../../../../chunks/index7.js";
 import { c as cn } from "../../../../../chunks/utils2.js";
 import "../../../../../chunks/client.js";
 import { s as superForm } from "../../../../../chunks/memoize.js";
@@ -23,7 +23,7 @@ import { p as pb } from "../../../../../chunks/pocketbase.js";
 import { b as backgroundImage } from "../../../../../chunks/SparklePill.js";
 import { u as user } from "../../../../../chunks/auth.js";
 import { p as page } from "../../../../../chunks/stores.js";
-import { R as Root, D as Dialog_content, a as Dialog_header, b as Dialog_title, c as Dialog_description } from "../../../../../chunks/index5.js";
+import { R as Root, D as Dialog_content, a as Dialog_header, b as Dialog_title, c as Dialog_description } from "../../../../../chunks/index6.js";
 import { a as toast } from "../../../../../chunks/Toaster.svelte_svelte_type_style_lang.js";
 /* empty css                                                        */
 import { P as PaperPlane } from "../../../../../chunks/PaperPlane.js";
@@ -557,7 +557,7 @@ const Textarea = create_ssr_component(($$result, $$props, $$bindings, slots) => 
   return `<textarea${spread(
     [
       {
-        class: escape_attribute_value(cn("flex min-h-[60px] w-full rounded-md border border-input bg-black/5 dark:bg-black/20 border-black/10 px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50", className))
+        class: escape_attribute_value(cn("flex min-h-[60px] w-full rounded-md border border-input bg-black/5 dark:bg-black/20 border-black/10 dark:border-white/10 px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50", className))
       },
       { readonly: readonly || null },
       escape_object($$restProps)
@@ -613,7 +613,7 @@ const Mascot = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   $$result.css.add(css$2);
   speechBubbleContent = step === 6 && !formSuccess ? speechBubbleContentArray.find((el) => el.step === 6).errorContent : speechBubbleContentArray.find((el) => el.step === step).content;
   $$unsubscribe_locale();
-  return `<div class="mt-4 flex items-start gap-2"><div class="relative left-0 right-0 flex h-12 flex-shrink-0 justify-center gap-1" data-svelte-h="svelte-ido9h0"><div style="${"background-image: url('" + escape(backgroundImage, true) + "'); background-size: 300% 100%"}" class="animate-bg relative z-10 flex h-full w-[60px] items-center justify-center rounded-b rounded-t-[50px] shadow-lg transition duration-700"><div data-name="face" class="lookaround face-3 flex flex-col gap-1 svelte-12yl6i5"><div data-name="eyes" class="eyes flex items-center justify-center gap-2"><div class="h-2 w-2 rounded-full border-2 border-white bg-black shadow-md"></div> <div class="h-2 w-2 rounded-full border-2 border-white bg-black shadow-md"></div></div> <div data-name="mouth" class="mouth flex items-center justify-center svelte-12yl6i5"><div class="h-1.5 w-2.5 rounded-b-full bg-black"></div></div></div></div></div> <div class="flex flex-grow"><div class="triangle size-3 flex-shrink-0 bg-white svelte-12yl6i5"></div> <div class="rounded-tl-0 relative flex flex-grow rounded-b rounded-tr bg-white px-2 pb-2 pt-1 text-sm leading-tight gap-2">${thinking ? `<div id="speechBubble" class="w-full" data-svelte-h="svelte-534rav">...</div>` : `<div id="speechBubble" class="w-full"${add_attribute("this", speechBubbleElement, 0)}></div>`} ${speechBubbleContent.length > 1 ? `<div class="flex justify-end text-2xs"><div class="-mr-1 flex flex-col items-center gap-0.5"><button class="chevron svelte-12yl6i5">${validate_component(ChevronUp, "ChevronUp").$$render($$result, { class: "size-2.5" }, {}, {})}</button>  <button class="chevron svelte-12yl6i5">${validate_component(ChevronDown, "ChevronDown").$$render($$result, { class: "size-2.5" }, {}, {})}</button></div></div>` : ``}</div></div></div>  `;
+  return `<div class="mt-4 flex items-start gap-2"><div class="relative left-0 right-0 flex h-12 flex-shrink-0 justify-center gap-1" data-svelte-h="svelte-ido9h0"><div style="${"background-image: url('" + escape(backgroundImage, true) + "'); background-size: 300% 100%"}" class="animate-bg relative z-10 flex h-full w-[60px] items-center justify-center rounded-b rounded-t-[50px] shadow-lg transition duration-700"><div data-name="face" class="lookaround face-3 flex flex-col gap-1 svelte-12yl6i5"><div data-name="eyes" class="eyes flex items-center justify-center gap-2"><div class="h-2 w-2 rounded-full border-2 border-white bg-black shadow-md"></div> <div class="h-2 w-2 rounded-full border-2 border-white bg-black shadow-md"></div></div> <div data-name="mouth" class="mouth flex items-center justify-center svelte-12yl6i5"><div class="h-1.5 w-2.5 rounded-b-full bg-black"></div></div></div></div></div> <div class="flex flex-grow"><div class="triangle size-3 flex-shrink-0 bg-muted svelte-12yl6i5"></div> <div class="rounded-tl-0 relative flex flex-grow rounded-b rounded-tr bg-muted px-2 pb-2 pt-1 text-sm leading-tight gap-2">${thinking ? `<div id="speechBubble" class="w-full" data-svelte-h="svelte-534rav">...</div>` : `<div id="speechBubble" class="w-full"${add_attribute("this", speechBubbleElement, 0)}></div>`} ${speechBubbleContent.length > 1 ? `<div class="flex justify-end text-2xs"><div class="-mr-1 flex flex-col items-center gap-0.5"><button class="chevron svelte-12yl6i5">${validate_component(ChevronUp, "ChevronUp").$$render($$result, { class: "size-2.5" }, {}, {})}</button>  <button class="chevron svelte-12yl6i5">${validate_component(ChevronDown, "ChevronDown").$$render($$result, { class: "size-2.5" }, {}, {})}</button></div></div>` : ``}</div></div></div>  `;
 });
 const Drawer_footer = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["el", "class"]);
@@ -859,6 +859,7 @@ const css = {
   map: null
 };
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let currentBackgroundColor;
   let $formData, $$unsubscribe_formData;
   let $user, $$unsubscribe_user;
   let $t, $$unsubscribe_t;
@@ -882,6 +883,11 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let formSuccess = false;
   let checkForJudgement = false;
   let id;
+  const updateBackgroundColor = (step2) => {
+    const color = `bg-${stepConstructor[step2 - 1].slug}-background`;
+    backgroundColor.set(color);
+    return color;
+  };
   const speechBubbleContentArray = [
     {
       step: 1,
@@ -1027,7 +1033,8 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     $$settled = true;
     $$result.head = previous_head;
     options.validators = steps[step - 1];
-    $$rendered = ` <div class="${"flex flex-grow flex-col justify-between transition duration-700 " + escape(`bg-${stepConstructor[step - 1].slug}-background`, true)}">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="max-container relative flex flex-grow flex-col pb-40"><form class="-mt-1 flex h-full flex-grow flex-col pb-[74px]">${!formSubmitted && !formSuccess ? `${validate_component(FormStepDisplay, "FormStepDisplay").$$render(
+    currentBackgroundColor = updateBackgroundColor(step);
+    $$rendered = ` <div class="${"flex flex-grow flex-col justify-between transition duration-500 " + escape(currentBackgroundColor, true) + " dark:bg-background min-h-svh overflow-hidden"}">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="max-container relative flex flex-grow flex-col pb-40"><form class="-mt-1 flex h-full flex-grow flex-col pb-[74px]">${!formSubmitted && !formSuccess ? `${validate_component(FormStepDisplay, "FormStepDisplay").$$render(
       $$result,
       {
         step,
@@ -1036,7 +1043,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       },
       {},
       {}
-    )}` : ``} <div class="relative z-0">${validate_component(Mascot, "Mascot").$$render(
+    )}` : ``} ${validate_component(Mascot, "Mascot").$$render(
       $$result,
       {
         speechBubbleContentArray,
@@ -1141,13 +1148,13 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
                     return `<div class="${"text-" + escape(stepConstructor[step - 1].slug, true) + "-foreground mb-1 mt-3 flex items-center gap-3 text-xs"}">${escape(positive.category === "true" ? $t("default.page.fights.form.general.goodFeelings") : $t("default.page.fights.form.general.badFeelings"))} <div class="${"border-b border-" + escape(stepConstructor[step - 1].slug, true) + "-foreground mr-2 flex-grow border-opacity-20"}"></div></div> <div class="-mx-1 flex w-full flex-wrap justify-start transition-all">${each(positive.content, (category) => {
                       return `${each(category.content, (feeling) => {
                         return `<button type="button" class="${escape(
-                          categoryIsVisible(feeling, category) || $formData.feelings.includes(feeling.id) ? "pointer-events-auto max-w-[1000px] p-1 opacity-100" : "pointer-events-none m-0 max-w-0 p-0 opacity-0",
+                          categoryIsVisible(feeling, category) || $formData.feelings.includes(feeling.id) ? "pointer-events-auto max-w-[300px] p-1 opacity-100" : "pointer-events-none m-0 max-w-0 p-0 opacity-0",
                           true
                         ) + " transition-all"}">${validate_component(Toggle_group_item, "ToggleGroup.Item").$$render(
                           $$result,
                           {
                             value: feeling.id,
-                            class: (feeling.nameEN === category.category ? `bg-white/40 font-bold` : "border border-white/40") + " py-0 text-black  shadow hover:text-black data-[state=on]:bg-feelings-foreground data-[state=on]:text-white dark:text-white dark:hover:bg-black/20"
+                            class: (feeling.nameEN === category.category ? `bg-white/40 dark:bg-muted font-bold` : "border border-white/40 dark:border-white/20") + " py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-feelings-foreground dark:data-[state=on]:bg-feelings-foreground max-w-[300px]"
                           },
                           {},
                           {
@@ -1193,7 +1200,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
                         $$result,
                         {
                           value: need.id,
-                          class: (need.nameEN === category.category ? `bg-white/40 font-bold` : "border border-white/40") + " py-0 text-black  shadow hover:text-black data-[state=on]:bg-needs-foreground data-[state=on]:text-white dark:text-white dark:hover:bg-black/20"
+                          class: (need.nameEN === category.category ? `bg-white/40 dark:bg-muted font-bold` : "border border-white/40 dark:border-white/20") + " py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-needs-foreground dark:data-[state=on]:bg-needs-foreground max-w-[300px]"
                         },
                         {},
                         {
@@ -1239,7 +1246,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
           {
             step,
             checkForJudgement,
-            primaryButtonClass: `bg-${stepConstructor[step - 1].slug}-background`,
+            primaryButtonClass: currentBackgroundColor,
             class: "flex-shrink-0"
           },
           {},
@@ -1250,7 +1257,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       default: () => {
         return `${validate_component(Share, "Share").$$render($$result, { id }, {}, {})}`;
       }
-    })}`}</div></form></div> </div>`;
+    })}`}</form></div> </div>`;
   } while (!$$settled);
   $$unsubscribe_formData();
   $$unsubscribe_user();
