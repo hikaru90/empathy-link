@@ -89,7 +89,7 @@
 		<Skeleton class="h-[20px] w-[100px] rounded-full" />
 	</div>
 {:else}
-	<div class="">
+	<div class="overflow-hidden">
 		<div class="">
 			<AppTopMenu />
 
@@ -141,7 +141,7 @@
 				<div class="relative z-0">
 					<div
 						style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);"
-						class="absolute left-0 top-20 z-0 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 transform"
+						class="absolute left-0 top-20 z-0 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 transform opacity-10"
 					></div>
 				</div>
 				<div class="relative z-10">
@@ -152,7 +152,7 @@
 					<div class="relative z-0">
 						<div
 							style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);"
-							class="absolute left-96 top-20 z-0 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 transform"
+							class="absolute left-96 top-20 z-0 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 transform opacity-10"
 						></div>
 					</div>
 					<div class="relative z-10 mt-8">

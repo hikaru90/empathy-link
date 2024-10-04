@@ -385,7 +385,7 @@
 	});
 
 	//todo: remove
-	step = 1;
+	step = 10;
 </script>
 
 <!-- {#if $message}
@@ -394,10 +394,10 @@
 	</div>
 {/if} -->
 <div
-	class="flex flex-grow flex-col justify-between transition duration-500 {`bg-${stepConstructor[step - 1].slug}-background`}"
+	class="flex flex-grow flex-col justify-between transition duration-500 {`bg-${stepConstructor[step - 1].slug}-background`} dark:bg-background overflow-hidden"
 >
 	<AppTopMenu />
-	<div class="max-container relative flex h-[calc(100dvh-100px)] flex-grow flex-col">
+	<div class="max-container relative flex flex-grow flex-col pb-40">
 		<form
 			on:submit|preventDefault
 			use:enhance
@@ -449,7 +449,7 @@
 							</div>
 						</div>
 					{:else if step === 4}
-						<div data-simplebar class="form-content">
+						<div class="form-content">
 							<div class="form-label pt-10">
 								{fight.expand.owner.firstName}
 								{$t('default.page.respond.steps.ownerObservation.heading')}
@@ -459,12 +459,12 @@
 							</div>
 						</div>
 					{:else if step === 5}
-						<div data-simplebar class="form-content">
+						<div class="form-content">
 							<div class="form-label pt-10">
 								{fight.expand.owner.firstName}
 								{$t('default.page.respond.steps.ownerFeelings.heading')}
 							</div>
-							<div class="flex flex-wrap items-center gap-2">
+							<div class="flex flex-wrap items-center gap-2 pb-6">
 								{#each fight.expand.feelings as feeling}
 									<div class="rounded-md bg-white/20 px-4 py-2 shadow-lg">
 										{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
@@ -473,12 +473,12 @@
 							</div>
 						</div>
 					{:else if step === 6}
-						<div data-simplebar class="form-content">
+						<div class="form-content">
 							<div class="form-label pt-10">
 								{fight.expand.owner.firstName}
 								{$t('default.page.respond.steps.ownerNeeds.heading')}
 							</div>
-							<div class="flex flex-wrap items-center gap-2">
+							<div class="flex flex-wrap items-center gap-2 pb-6">
 								{#each fight.expand.needs as need}
 									<div class="rounded-md bg-white/10 px-4 py-2 shadow-lg">
 										{$locale === 'de' ? need.nameDE : need.nameEN}
@@ -487,23 +487,23 @@
 							</div>
 						</div>
 					{:else if step === 7}
-						<div data-simplebar class="form-content">
+						<div  class="form-content">
 							<div class="form-label pt-10">
 								{fight.expand.owner.firstName}
 								{$t('default.page.respond.steps.ownerRequest.heading')}
 							</div>
-							<div class="rounded bg-white/10 px-4 py-3 shadow-xl">
+							<div class="rounded bg-white/10 px-4 py-3 shadow-xl pb-6">
 								{fight.request}
 							</div>
 						</div>
 					{:else if step === 8}
 						<div class="form-content flex items-center justify-center">
-							<div class="flex max-w-[18em] flex-col gap-4 text-center">
+							<div class="flex max-w-[18em] flex-col gap-4 text-center pb-6">
 								{$t('default.page.respond.steps.pause.heading')}
 							</div>
 						</div>
 					{:else if step === 9}
-						<div data-simplebar class="form-content">
+						<div  class="form-content">
 							<Form.Field {form} name="observation">
 								<Form.Control let:attrs>
 									<Form.Label class="form-label"
@@ -521,7 +521,7 @@
 							</Form.Field>
 						</div>
 					{:else if step === 10}
-						<div data-simplebar class="form-content">
+						<div  class="form-content">
 							<Form.Field {form} name="feelings">
 								<Form.Control let:attrs>
 									<Form.Label class="form-label"
@@ -562,8 +562,8 @@
 																	<ToggleGroup.Item
 																		value={feeling.id}
 																		class="{feeling.nameEN === category.category
-																			? `bg-white/40 font-bold`
-																			: 'border border-white/40'} py-0 text-black  shadow hover:text-black data-[state=on]:bg-feelings-foreground data-[state=on]:text-white dark:text-white dark:hover:bg-black/20"
+																			? `bg-white/40 dark:bg-muted font-bold`
+																			: 'border border-white/40 dark:border-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-feelings-foreground dark:data-[state=on]:bg-feelings-foreground max-w-[300px]"
 																	>
 																		{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
 																	</ToggleGroup.Item>
@@ -581,7 +581,7 @@
 							</Form.Field>
 						</div>
 					{:else if step === 11}
-						<div data-simplebar class="form-content">
+						<div  class="form-content">
 							<Form.Field {form} name="needs">
 								<Form.Control let:attrs>
 									<Form.Label class="form-label"
@@ -608,8 +608,8 @@
 															<ToggleGroup.Item
 																value={need.id}
 																class="{need.nameEN === category.category
-																	? `bg-white/40 font-bold`
-																	: 'border border-white/40'} py-0 text-black  shadow hover:text-black data-[state=on]:bg-needs-foreground data-[state=on]:text-white dark:text-white dark:hover:bg-black/20"
+																	? `bg-white/40 dark:bg-muted font-bold`
+																: 'border border-white/40 dark:border-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-needs-foreground dark:data-[state=on]:bg-needs-foreground max-w-[300px]"
 															>
 																{$locale === 'de' ? need.nameDE : need.nameEN}
 															</ToggleGroup.Item>
@@ -625,7 +625,7 @@
 							</Form.Field>
 						</div>
 					{:else if !formSubmitted}
-						<div data-simplebar class="form-content">
+						<div  class="form-content">
 							<Form.Field {form} name="request">
 								<Form.Control let:attrs>
 									<Form.Label class="form-label"
@@ -677,18 +677,6 @@
 </Drawer.Root>
 
 <style lang="scss">
-	:global(.form-content) {
-		@apply mb-16 flex-grow overflow-y-auto overflow-x-hidden px-[1px];
-		--mask: linear-gradient(
-			to bottom,
-			rgba(0, 0, 0, 0) 0,
-			rgba(0, 0, 0, 1) 3%,
-			rgba(0, 0, 0, 1) 97%,
-			rgba(0, 0, 0, 0) 100%
-		);
-		-webkit-mask: var(--mask);
-		mask: var(--mask);
-	}
 	:global(.form-label) {
 		@apply mb-2 mt-4 block w-full pb-2 text-xl font-bold leading-tight;
 		&:not([data-fs-error]) {
@@ -700,7 +688,7 @@
 		animation: breathe 5s infinite alternate forwards;
 		&:after {
 			content: '';
-			@apply absolute left-1/2 top-1/2 -z-10 h-72 w-72 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white/80;
+			@apply absolute left-1/2 top-1/2 -z-10 h-72 w-72 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-muted/40;
 		}
 	}
 	.breathe2 {
@@ -708,7 +696,7 @@
 		animation-delay: 1s;
 		&:after {
 			content: '';
-			@apply absolute left-1/2 top-1/2 -z-10 h-40 w-40 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white;
+			@apply absolute left-1/2 top-1/2 -z-10 h-40 w-40 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-muted;
 		}
 	}
 

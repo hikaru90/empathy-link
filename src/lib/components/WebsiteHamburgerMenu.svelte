@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button-sparkle';
+	import { Button as ButtonOp1 } from '$lib/components/ui/button-op1/index.js';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import Cross1 from 'svelte-radix/Cross1.svelte';
 	import { t } from '$lib/translations';
@@ -45,18 +46,18 @@
 	<button on:click={() => (dialogOpen = true)} class="flex items-center">
 		<HamburgerMenu class="size-6" />
 	</button>
-	<Sheet.Content class="{$backgroundColor} z-[1003] flex flex-col">
+	<Sheet.Content class="{$backgroundColor} z-[1003] flex flex-col border-muted">
 		<Sheet.Header
-			class="flex flex-row items-center justify-between border-b border-black/10 px-5 py-3.5"
+			class="flex flex-row items-center justify-between border-b border-black/10 px-5 py-2.5"
 		>
 			<Sheet.Title class="pt-0.5">{$t('default.menu.title')}</Sheet.Title>
 			<Sheet.Close class="!m-0" on:click={() => (dialogOpen = false)}>
-				<div class="label bg-feelings-background">
-					<div class="icon flex items-center justify-center fill-feelings-foreground">
-						<!-- {@html row.icon} -->
-						<Cross1 class="text-red-600" />
-					</div>
-				</div>
+				<ButtonOp1
+					decoration="floating-op1"
+					class="-mr-2 flex items-center justify-center border-neutral-200 bg-background p-1.5 text-sm text-neutral-800 transition hover:bg-offwhite dark:border-neutral-800 dark:bg-muted dark:text-white"
+				>
+					<Cross1 class="size-4 text-red-600" />
+				</ButtonOp1>
 			</Sheet.Close>
 		</Sheet.Header>
 		<div class="flex h-full flex-col justify-between gap-2 p-5">
@@ -98,7 +99,7 @@
 					<Label for="lightMode">Dark Mode</Label>
 				</div>
 				<div class="mb-3 border-b border-gray-300/30 dark:border-gray-300/20"></div>
-				<Button on:click={() => goto('/app/auth/login')} variant="outline" class="w-full font-bold">
+				<Button on:click={() => goto('/app/auth/login')} variant="outline" class="w-full font-bold dark:text-black rounded-lg">
 					{$t('default.page.login.heading')}
 				</Button>
 			</div>

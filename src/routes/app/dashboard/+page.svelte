@@ -33,7 +33,7 @@
 </script>
 
 {#if $user}
-	<div class="app/dashboard/page bg-background dark:bg-white-background overflow-hidden">
+	<div class="app/dashboard/page bg-background overflow-hidden">
 		<AppTopMenu />
 		<div class="flex-grow">
 			<div class="max-container relative">

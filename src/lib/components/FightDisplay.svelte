@@ -47,12 +47,12 @@
 >
 	{#each tableRows as row}
 		<div
-			class="group flex items-stretch border-b border-black/5 bg-almostwhite text-xs shadow-md last:border-b-0"
+			class="group flex items-stretch border-b border-black/5 bg-almostwhite dark:bg-muted text-xs shadow-md last:border-b-0"
 		>
 			<div
 				class="flex flex-shrink-0 items-center justify-center border-r border-black/5 px-3 pb-3 pt-3 group-first:pt-6 group-last:pb-6"
 			>
-				<div class="label bg-{row.color}-background">
+				<div class="label bg-{row.color}-background dark:bg-muted/40">
 					<div class="label-shadow"></div>
 					<div class="icon fill-{row.color}-foreground">
 						{@html row.icon}
@@ -80,10 +80,10 @@
 <style lang="scss">
 	.label {
 		box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.4);
-		@apply relative z-10 h-6 w-6 flex-shrink-0 rounded-full border border-white;
+		@apply relative z-10 h-6 w-6 flex-shrink-0 rounded-full border border-white dark:border-muted;
 	}
 	.label-shadow {
-		box-shadow: /*inset 0 0 4px rgba(0, 0, 0, 0.4),*/ -4px -4px 8px 0 rgba(white, 1);
+		box-shadow: var(--skeumorphic-shadow-dark);
 		@apply absolute left-0 top-0 z-0 block h-full w-full rounded-full;
 	}
 	.icon {

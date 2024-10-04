@@ -65,7 +65,7 @@
 <!-- <div style="height: {navbarHeight}px" class="flex-shrink-0"></div> -->
 <div
 	bind:clientHeight={navbarHeight}
-	class="fixed left-3 right-3 bottom-[72px] lg:bottom-[86px] z-[100] rounded-full p-2 backdrop-blur-lg backdrop-brightness-[0.3] shadow-xl shadow-black/20"
+	class="fixed left-3 right-3 bottom-[72px] lg:bottom-[86px] z-[100] rounded-full p-2 backdrop-blur-lg backdrop-brightness-[0.3] shadow-xl shadow-black/20 dark:shadow-white/10 dark:shadow-2xl"
 >
 	<slot/>
 </div>

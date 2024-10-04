@@ -304,7 +304,7 @@
 {/if} -->
 
 <div
-	class="flex flex-grow flex-col justify-between transition duration-500 {currentBackgroundColor} min-h-svh"
+	class="flex flex-grow flex-col justify-between transition duration-500 {currentBackgroundColor} dark:bg-background min-h-svh overflow-hidden"
 >
 	<AppTopMenu />
 	<div class="max-container relative flex flex-grow flex-col pb-40">
@@ -321,7 +321,6 @@
 					stepBackground={stepConstructor[step - 1].slug}
 				/>
 			{/if}
-			<div class="relative z-0">
 				<Mascot
 					{speechBubbleContentArray}
 					{step}
@@ -407,14 +406,14 @@
 																	on:click={toggleFeelingsCatgeory(feeling, category.category)}
 																	class="{categoryIsVisible(feeling, category) ||
 																	$formData.feelings.includes(feeling.id)
-																		? 'pointer-events-auto max-w-[1000px] p-1 opacity-100'
+																		? 'pointer-events-auto max-w-[300px] p-1 opacity-100'
 																		: 'pointer-events-none m-0 max-w-0 p-0 opacity-0'} transition-all"
 																>
 																	<ToggleGroup.Item
 																		value={feeling.id}
 																		class="{feeling.nameEN === category.category
-																			? `bg-white/40 font-bold`
-																			: 'border border-white/40'} py-0 text-black  shadow hover:text-black data-[state=on]:bg-feelings-foreground data-[state=on]:text-white dark:text-white dark:hover:bg-black/20"
+																			? `bg-white/40 dark:bg-muted font-bold`
+																			: 'border border-white/40 dark:border-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-feelings-foreground dark:data-[state=on]:bg-feelings-foreground max-w-[300px]"
 																	>
 																		{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
 																	</ToggleGroup.Item>
@@ -459,8 +458,8 @@
 															<ToggleGroup.Item
 																value={need.id}
 																class="{need.nameEN === category.category
-																	? `bg-white/40 font-bold`
-																	: 'border border-white/40'} py-0 text-black  shadow hover:text-black data-[state=on]:bg-needs-foreground data-[state=on]:text-white dark:text-white dark:hover:bg-black/20"
+																? `bg-white/40 dark:bg-muted font-bold`
+																: 'border border-white/40 dark:border-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-needs-foreground dark:data-[state=on]:bg-needs-foreground max-w-[300px]"
 															>
 																{$locale === 'de' ? need.nameDE : need.nameEN}
 															</ToggleGroup.Item>
@@ -512,7 +511,6 @@
 						<Share {id} />
 					</AppBottomMenu>
 				{/if}
-			</div>
 		</form>
 	</div>
 </div>

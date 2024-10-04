@@ -61,7 +61,7 @@
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
 	<div class="relative z-0">
-		<div style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);" class="absolute left-0 top-20 w-[500px] h-[500px] z-0 transform -translate-x-1/2 -translate-y-1/2 dark:opacity-20"></div>
+		<div style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);" class="absolute left-0 top-20 w-[500px] h-[500px] z-0 transform -translate-x-1/2 -translate-y-1/2 dark:opacity-10"></div>
 	</div>
 	<div class="relative z-10">
 		<div

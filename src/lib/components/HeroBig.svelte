@@ -10,7 +10,7 @@
     {$t('default.page.home.hero')}
   </h1>
   <a href="/app/auth/login">
-    <SparkleButton class="shadow-lg dark:shadow-gray-300/30 text-black font-bold lg:text-lg px-3 py-5 lg:px-6 lg:py-7">
+    <SparkleButton class="shadow-lg dark:shadow-gray-300/30 text-black font-bold lg:text-lg ">
       {$t('default.page.home.cta')}
     </SparkleButton>
   </a>

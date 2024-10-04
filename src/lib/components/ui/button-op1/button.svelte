@@ -20,7 +20,7 @@
 {#if decoration === 'op1'}
 	<div
 		class={cn(
-			'relative flex items-center gap-[4px] border border-black/10 bg-black/10 p-[2px] dark:bg-black/20 md:rounded',
+			'op1 relative flex items-center gap-[4px] border border-black/10 bg-black/10 p-[2px] dark:bg-black/20 md:rounded',
 			wrapperClass
 		)}
 	>
@@ -39,7 +39,7 @@
 					<div
 						class={cn(
 							buttonVariants({ variant, size, className }),
-							'skeumorphic-button h-[29.4px] rounded-full border-2 border-offwhite bg-offwhite text-black transition duration-700 hover:bg-offwhite'
+							'skeumorphic-button h-[29.4px] rounded-full border-2 border-offwhite bg-offwhite text-black transition duration-700 '
 						)}
 					>
 						<slot />
@@ -49,7 +49,7 @@
 		</div>
 	</div>
 {:else if decoration === 'dark-op1'}
-	<div class={cn('relative flex items-center gap-[4px]', wrapperClass)}>
+	<div class={cn('dark-op1 relative flex items-center gap-[4px]', wrapperClass)}>
 		<div class="flex w-full items-center justify-center">
 			<ButtonPrimitive.Root
 				{builders}
@@ -62,7 +62,7 @@
 				<div
 					class={cn(
 						buttonVariants({ variant, size, className }),
-						'skeumorphic-button-dark h-[29.4px] w-full rounded-full border-2 transition duration-700 hover:bg-muted'
+						'skeumorphic-button-dark h-[29.4px] w-full rounded-full border-2 transition duration-700 dark:hover:bg-muted'
 					)}
 				>
 					<slot />
@@ -71,7 +71,7 @@
 		</div>
 	</div>
 {:else if decoration === 'floating-op1'}
-	<div class={cn('relative flex items-center gap-[4px]', wrapperClass)}>
+	<div class={cn('floating-op1 relative flex items-center gap-[4px]', wrapperClass)}>
 		<div class="flex w-full flex-grow items-center justify-center">
 			<ButtonPrimitive.Root
 				{builders}
@@ -105,7 +105,7 @@
 		<div
 			class={cn(
 				buttonVariants({ variant, size, className }),
-				'skeumorphic-button h-[29.4px] rounded-full border-2 border-offwhite bg-offwhite text-black transition duration-700 hover:bg-offwhite'
+				'skeumorphic-button h-[29.4px] rounded-full border-2 border-offwhite bg-offwhite text-black transition duration-700 dark:hover:bg-muted'
 			)}
 		>
 			<slot />

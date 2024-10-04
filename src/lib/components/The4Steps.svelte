@@ -96,11 +96,11 @@
 			{/each}
 		</div>
 	</div>
-  <div class="flex items-center justify-center">
+  <!-- <div class="flex items-center justify-center">
     <Button variant="outline" class="bg-transparent border-2 border-black/60 text-base">
       {$t('default.page.home.components.the4steps.cta.text')}
     </Button>
-  </div>
+  </div> -->
 </div>
 
 <style lang="scss">

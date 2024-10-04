@@ -11,7 +11,16 @@
 	let speechBubbleIndex = 0;
 	let thinking = false
 
-	$: speechBubbleContent = step === 13 && !formSuccess ? speechBubbleContentArray.find(el => el.step === 13)!.errorContent : speechBubbleContentArray.find(el => el.step === step)!.content
+	const getSpeechBubbleContent = (formSuccess:boolean, step:number) => {
+		try{	
+			return step === 13 && !formSuccess ? speechBubbleContentArray.find(el => el.step === 13)!.errorContent : speechBubbleContentArray.find(el => el.step === step)!.content
+		}catch(err){
+			console.error('error in getSpeechBubbleContent', err);
+			return []
+		}
+	}
+
+	$: speechBubbleContent = getSpeechBubbleContent(formSuccess, step)
 	
 	
 	let speechBubbleElement: HTMLElement;

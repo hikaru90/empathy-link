@@ -8,7 +8,7 @@
 	const dispatch = createEventDispatcher();
 </script>
 
-<div class="sticky top-0 z-10 -mx-5 md:flex md:justify-center {`bg-${stepBackground}-background`} transition duration-500">
+<div class="sticky top-0 z-10 -mx-5 md:flex md:justify-center {`bg-${stepBackground}-background`} dark:bg-background transition duration-500">
 	<div class="md:my-4">
 		<div
 			class="lcd-screen relative flex items-center gap-[4px] border border-black/10 bg-black/5 p-[2px] dark:bg-black/20 md:rounded"
@@ -19,13 +19,13 @@
 				<button
 					on:click={() => dispatch('changeStep', { step: index + 1 })}
 					type="button"
-					class="group {`bg-${stepBackground}-background`} flex-grow rounded-[2px] shadow transition duration-500"
+					class="group {`bg-${stepBackground}-background`} dark:bg-background flex-grow rounded-[2px] shadow transition duration-500"
 				>
 					<div
 						class="flex items-center justify-center overflow-hidden rounded-[2px] p-2 shadow-inner shadow-white/20 dark:shadow-white/10"
 					>
 						<div
-							class="skeumorphic-button {`bg-${entry.slug}-background text-${entry.slug}-foreground`} rounded-full border-2 {`border-${stepBackground}-background`} transition duration-500"
+							class="skeumorphic-button {`bg-${entry.slug}-background text-${entry.slug}-foreground`} dark:bg-muted/40 rounded-full border-2 {`border-${stepBackground}-background`} dark:border-muted transition duration-500"
 						>
 							<div
 								class="flex items-center rounded-full border border-black/5 p-1 {step === index + 1
