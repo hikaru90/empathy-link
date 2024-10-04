@@ -1,11 +1,11 @@
 import { s as subscribe, c as compute_rest_props } from "./utils.js";
 import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute, g as escape_attribute_value, v as validate_component, e as escape, f as each } from "./ssr.js";
-import { t as toWritableStores, o as overridable, g as generateIds, s as sleep, h as handleFocus, a as getPortalDestination, r as removeScroll, c as createBitAttrs, b as removeUndefined, d as getOptionUpdater, e as createDispatcher } from "./Avatar.svelte_svelte_type_style_lang.js";
+import { t as toWritableStores, o as overridable, g as generateIds, s as sleep, h as handleFocus, a as getPortalDestination, r as removeScroll, c as createBitAttrs, b as removeUndefined, d as getOptionUpdater, e as createDispatcher } from "./index3.js";
 import { o as omit, e as safeOnMount, m as makeElement, i as isBrowser, f as styleToString, p as portalAttr, g as effect, h as executeCallbacks, j as addMeltEventListener, k as kbd, l as createElHelpers, n as isElement, q as isHTMLElement, r as noop, d as derivedMode, s as scroll } from "./page.js";
 import { t, l as locale } from "./translations.js";
-import { d as derivedVisible, u as usePopper, g as getPositioningUpdater, R as Root$1, S as Select_trigger, V as Value, a as Select_content, b as Select_item, I as Input, c as Switch, L as Label, A as Avatar_1 } from "./Avatar.js";
+import { h as derivedVisible, u as usePopper, i as getPositioningUpdater, g as Logo, R as Root$1, c as Select_trigger, V as Value, d as Select_content, e as Select_item, I as Input, f as Switch, L as Label } from "./switch.js";
 import { s as setCookie, d as debounce } from "./helpers.js";
-import { L as Logo } from "./sheet-header.js";
+import { A as Avatar_1 } from "./Avatar.js";
 import { u as user } from "./auth.js";
 import { s as setContext, g as getContext } from "./lifecycle.js";
 import { w as writable, d as derived } from "./index2.js";

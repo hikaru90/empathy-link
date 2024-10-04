@@ -12,12 +12,12 @@ import { b as delay } from "../../../../chunks/helpers.js";
 import { A as AppTopMenu } from "../../../../chunks/AppTopMenu.js";
 import { A as AppBottomMenu } from "../../../../chunks/AppBottomMenu.js";
 import "../../../../chunks/index.js";
-import "../../../../chunks/Avatar.svelte_svelte_type_style_lang.js";
+import "../../../../chunks/index3.js";
 import "../../../../chunks/schema.js";
 import "../../../../chunks/memoize.js";
 import "../../../../chunks/Toaster.svelte_svelte_type_style_lang.js";
-import { B as Button$1 } from "../../../../chunks/index3.js";
-import { B as Button } from "../../../../chunks/Avatar.js";
+import { B as Button$1 } from "../../../../chunks/index4.js";
+import { B as Button } from "../../../../chunks/switch.js";
 import { C as CaretLeft } from "../../../../chunks/CaretLeft.js";
 const Plus = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["color", "size"]);

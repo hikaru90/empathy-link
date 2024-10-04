@@ -10,20 +10,20 @@ return {
 	assets: new Set(["connector.svg","favicon.png","feelings.js","hero/2phone.png","hero/2phone_lit.png","hero/bak/1phone.png","hero/bak/1phone_lit.png","hero/bak/2phone.png","hero/bak/2phone_lit.png","hero/bak/icon1.png","hero/bak/icon1_lit.png","hero/bak/icon2.png","hero/bak/icon2_lit.png","hero/bak/icon3.png","hero/bak/icon3_lit.png","hero/bak/icon4.png","hero/bak/icon4_lit.png","hero/icon1.png","hero/icon1_lit.png","hero/icon2.png","hero/icon2_lit.png","hero/icon3.png","hero/icon3_lit.png","hero/icon4.png","hero/icon4_lit.png","hero/phone_mobile.png","hero.bin","hero.gltf","holo3.jpg","Image_0.png","inverted-border.svg","iphone_mockup.png","needs.js","phone-icons-inverted.svg","phone-icons.svg","phone-lens.jpg","phone_frontal.png","screenshot-dashboard.png","screenshot-fight2.png","women.jpg"]),
 	mimeTypes: {".svg":"image/svg+xml",".png":"image/png",".js":"text/javascript",".bin":"application/octet-stream",".gltf":"model/gltf+json",".jpg":"image/jpeg"},
 	_: {
-		client: {"start":"_app/immutable/entry/start.C4JVHyPa.js","app":"_app/immutable/entry/app.5lHxkIgy.js","imports":["_app/immutable/entry/start.C4JVHyPa.js","_app/immutable/chunks/entry.Cn3xRfEv.js","_app/immutable/chunks/scheduler.CkaH_kk_.js","_app/immutable/entry/app.5lHxkIgy.js","_app/immutable/chunks/preload-helper.D6kgxu3v.js","_app/immutable/chunks/scheduler.CkaH_kk_.js","_app/immutable/chunks/index.54FFccaA.js"],"stylesheets":[],"fonts":[],"uses_env_dynamic_public":false},
+		client: {"start":"_app/immutable/entry/start.DsUUhXU7.js","app":"_app/immutable/entry/app.DQ57Tow7.js","imports":["_app/immutable/entry/start.DsUUhXU7.js","_app/immutable/chunks/entry.BCP1s-CR.js","_app/immutable/chunks/scheduler.DdioMMNe.js","_app/immutable/entry/app.DQ57Tow7.js","_app/immutable/chunks/preload-helper.D6kgxu3v.js","_app/immutable/chunks/scheduler.DdioMMNe.js","_app/immutable/chunks/index.DwuYAy9N.js"],"stylesheets":[],"fonts":[],"uses_env_dynamic_public":false},
 		nodes: [
-			__memo(() => import('./chunks/0-DFTO5VU-.js')),
-			__memo(() => import('./chunks/1-tesKQkq8.js')),
-			__memo(() => import('./chunks/2-CrHPl3mT.js')),
-			__memo(() => import('./chunks/3-CunLBORW.js')),
-			__memo(() => import('./chunks/4-GAsJ90hf.js')),
-			__memo(() => import('./chunks/5-D4NP6s29.js')),
-			__memo(() => import('./chunks/6-Bh1DN1yE.js')),
-			__memo(() => import('./chunks/7-CAyoni06.js')),
-			__memo(() => import('./chunks/8-COXUoLT5.js')),
-			__memo(() => import('./chunks/9-Du-vGkSS.js')),
-			__memo(() => import('./chunks/10-FMHG5Ome.js')),
-			__memo(() => import('./chunks/11-lQQDyGkG.js'))
+			__memo(() => import('./chunks/0-DhM3h2gS.js')),
+			__memo(() => import('./chunks/1-C9vtULQo.js')),
+			__memo(() => import('./chunks/2-BsIO1yns.js')),
+			__memo(() => import('./chunks/3-DJEeqQhq.js')),
+			__memo(() => import('./chunks/4-BxMKsHEH.js')),
+			__memo(() => import('./chunks/5-DwvWD333.js')),
+			__memo(() => import('./chunks/6-D053S05C.js')),
+			__memo(() => import('./chunks/7-BfqO9QJ9.js')),
+			__memo(() => import('./chunks/8-qWTlc1Cw.js')),
+			__memo(() => import('./chunks/9-CGEZ02AL.js')),
+			__memo(() => import('./chunks/10-C1dOTFgV.js')),
+			__memo(() => import('./chunks/11-wG_l7P_y.js'))
 		],
 		routes: [
 			{
@@ -38,7 +38,7 @@ return {
 				pattern: /^\/api\/ai\/checkForJudgement\/?$/,
 				params: [],
 				page: null,
-				endpoint: __memo(() => import('./chunks/_server.ts-XjmznJCn.js'))
+				endpoint: __memo(() => import('./chunks/_server.ts-DcPWlbFk.js'))
 			},
 			{
 				id: "/api/mails/send",

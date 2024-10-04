@@ -1,4 +1,5 @@
 const menu = {
+  title: "Menü",
   profile: {
     account: "Mein Account",
     logout: "Ausloggen",
