@@ -25,14 +25,6 @@
 				toast.success($t('default.page.login.toasts.success'));
 			}
 		}
-		// onUpdated: ({ form: f }) => {
-		//   console.log('f',f);
-		//   if (f.valid) {
-		//     toast.success(`You submitted ${JSON.stringify(f.data, null, 2)}`);
-		//   } else {
-		//     toast.error("Please fix the errors in the form.");
-		//   }
-		// }
 	});
 
 	const { form: formData, errors, enhance, delayed, message, constraints, reset } = form;
@@ -57,7 +49,7 @@
 		<Form.FieldErrors />
 	</Form.Field>
   <div class="flex items-center justify-between">
-		<Button variant="ghost" on:click={() => goto('/app/auth/register')}>{$t('default.page.register.cta')}</Button>
-    <Form.Button>{$t('default.page.login.cta')}</Form.Button>
+		<Button variant="ghost" on:click={() => goto('/app/auth/register')}>{$t('default.page.login.switchToRegister')}</Button>
+    <Form.Button class="bg-primary text-muted">{$t('default.page.login.cta')}</Form.Button>
   </div>
 </form>

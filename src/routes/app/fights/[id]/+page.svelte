@@ -163,7 +163,7 @@
 			</div>
 
 			<AppBottomMenu>
-				<Share {id} />
+				<Share {id} {record} />
 			</AppBottomMenu>
 		</div>
 	</div>

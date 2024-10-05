@@ -31,6 +31,8 @@ export const actions = {
 
 		try {
 			await event.locals.pb.collection('users').create({
+				firstName: form.data.firstName,
+				lastName: form.data.lastName,
 				email: form.data.email,
 				password: form.data.password,
 				passwordConfirm: form.data.password

@@ -31,6 +31,22 @@
 
 <!-- <SuperDebug data={formData} /> -->
 		<form method="POST" use:enhance class={className}>
+			<Form.Field {form} name="firstName">
+				<Form.Control let:attrs>
+					<Form.Label>{$t('default.page.register.form.firstname.label')}</Form.Label>
+					<Input {...attrs} bind:value={$formData.firstName} />
+				</Form.Control>
+				<!-- <Form.Description>This is your public display name.</Form.Description> -->
+				<Form.FieldErrors />
+			</Form.Field>
+			<Form.Field {form} name="lastName">
+				<Form.Control let:attrs>
+					<Form.Label>{$t('default.page.register.form.lastname.label')}</Form.Label>
+					<Input {...attrs} bind:value={$formData.lastName} />
+				</Form.Control>
+				<!-- <Form.Description>This is your public display name.</Form.Description> -->
+				<Form.FieldErrors />
+			</Form.Field>
 			<Form.Field {form} name="email">
 				<Form.Control let:attrs>
 					<Form.Label>{$t('default.page.register.form.email.label')}</Form.Label>
@@ -49,8 +65,8 @@
 			</Form.Field>
 			<div class="flex items-center justify-between">
 				<Button variant="ghost" on:click={() => goto('/app/auth/login')}
-					>{$t('default.page.login.cta')}</Button
+					>{$t('default.page.login.switchToLogin')}</Button
 				>
-				<Form.Button>{$t('default.page.register.cta')}</Form.Button>
+				<Form.Button class="bg-primary text-muted">{$t('default.page.register.cta')}</Form.Button>
 			</div>
 		</form>

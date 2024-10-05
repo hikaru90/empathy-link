@@ -48,6 +48,7 @@
 	let formSuccess = false;
 	let checkForJudgement = false;
 	let id: string;
+	let createdRecord: object;
 
 	const updateBackgroundColor = (step: number) => {
 		const color = `bg-${stepConstructor[step - 1].slug}-background`
@@ -82,6 +83,7 @@
 			console.log('submit form', data);
 			const record = await pb.collection('fights').create(data);
 			id = record.id;
+			createdRecord = record;
 			formSuccess = true;
 			formSubmitted = true;
 		} catch (err) {
@@ -508,7 +510,7 @@
 					</AppBottomMenu>
 				{:else}
 					<AppBottomMenu>
-						<Share {id} />
+						<Share {id} record={createdRecord} />
 					</AppBottomMenu>
 				{/if}
 		</form>

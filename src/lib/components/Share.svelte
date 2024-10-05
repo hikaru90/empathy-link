@@ -30,9 +30,10 @@
 	import { goto } from '$app/navigation';
 
   export let id:string;
+  export let record:string;
+
 	let initialized = false;
 	let pending = true;
-	let record = undefined;
 	let responses = [];
 	let dialogOpen = false;
 	let drawerOpen = false;
@@ -107,6 +108,7 @@
 
 	const sendLink = () => {
 		try {
+			console.log('send link record', record);
 			const sendMailRes = fetch('/api/mails/send', {
 				method: 'POST',
 				headers: {
@@ -125,7 +127,7 @@
 			dialogOpen = false;
 			toast.success($t('default.menu.share.mailLinkConfirmation'));
 		} catch (err) {
-			console.log('error sending link per mail');
+			console.log('error sending link per mail', err);
 			toast.error($t('default.menu.share.mailLinkError'));
 		}
 	};
