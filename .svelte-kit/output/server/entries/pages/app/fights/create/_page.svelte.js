@@ -648,7 +648,7 @@ const Share = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   $$unsubscribe_locale = subscribe(locale, (value) => $locale = value);
   $$unsubscribe_page = subscribe(page, (value) => $page = value);
   let { id } = $$props;
-  let record = void 0;
+  let { record } = $$props;
   let dialogOpen = false;
   let drawerOpen = false;
   const schema = z.object({
@@ -681,6 +681,7 @@ const Share = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   $$unsubscribe_formData = subscribe(formData, (value) => $formData = value);
   const sendLink = () => {
     try {
+      console.log("send link record", record);
       const sendMailRes = fetch("/api/mails/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -697,7 +698,7 @@ const Share = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       dialogOpen = false;
       toast.success($t("default.menu.share.mailLinkConfirmation"));
     } catch (err) {
-      console.log("error sending link per mail");
+      console.log("error sending link per mail", err);
       toast.error($t("default.menu.share.mailLinkError"));
     }
   };
@@ -706,6 +707,8 @@ const Share = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   });
   if ($$props.id === void 0 && $$bindings.id && id !== void 0)
     $$bindings.id(id);
+  if ($$props.record === void 0 && $$bindings.record && record !== void 0)
+    $$bindings.record(record);
   $$result.css.add(css$1);
   let $$settled;
   let $$rendered;
@@ -883,6 +886,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let formSuccess = false;
   let checkForJudgement = false;
   let id;
+  let createdRecord;
   const updateBackgroundColor = (step2) => {
     const color = `bg-${stepConstructor[step2 - 1].slug}-background`;
     backgroundColor.set(color);
@@ -922,6 +926,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       console.log("submit form", data2);
       const record = await pb.collection("fights").create(data2);
       id = record.id;
+      createdRecord = record;
       formSuccess = true;
       formSubmitted = true;
     } catch (err) {
@@ -1255,7 +1260,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       }
     })}` : `${validate_component(AppBottomMenu, "AppBottomMenu").$$render($$result, {}, {}, {
       default: () => {
-        return `${validate_component(Share, "Share").$$render($$result, { id }, {}, {})}`;
+        return `${validate_component(Share, "Share").$$render($$result, { id, record: createdRecord }, {}, {})}`;
       }
     })}`}</form></div> </div>`;
   } while (!$$settled);

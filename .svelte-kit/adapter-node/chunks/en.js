@@ -250,6 +250,8 @@ const page = {
         tooLongError: "Password must be at most 30 characters long"
       }
     },
+    switchToRegister: "Not registered yet?",
+    switchToLogin: "Switch to Login",
     cta: "Login",
     toasts: {
       error: "Error logging in, please try again",
@@ -259,6 +261,16 @@ const page = {
   register: {
     heading: "Register",
     form: {
+      firstname: {
+        label: "Firstname",
+        tooShortError: "Firstname must be at least 3 characters long",
+        tooLongError: "Firstname must be at most 30 characters long"
+      },
+      lastname: {
+        label: "Lastname",
+        tooShortError: "Lastname must be at least 3 characters long",
+        tooLongError: "Lastname must be at most 30 characters long"
+      },
       email: {
         label: "Mail",
         validEmailError: "This is not a valid E-Mail",

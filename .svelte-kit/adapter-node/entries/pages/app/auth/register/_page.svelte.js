@@ -42,7 +42,51 @@ const RegisterForm = create_ssr_component(($$result, $$props, $$bindings, slots)
   do {
     $$settled = true;
     $$result.head = previous_head;
-    $$rendered = ` <form method="POST"${add_attribute("class", className, 0)}>${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "email" }, {}, {
+    $$rendered = ` <form method="POST"${add_attribute("class", className, 0)}>${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "firstName" }, {}, {
+      default: () => {
+        return `${validate_component(Control, "Form.Control").$$render($$result, {}, {}, {
+          default: ({ attrs }) => {
+            return `${validate_component(Form_label, "Form.Label").$$render($$result, {}, {}, {
+              default: () => {
+                return `${escape($t("default.page.register.form.firstname.label"))}`;
+              }
+            })} ${validate_component(Input, "Input").$$render(
+              $$result,
+              Object.assign({}, attrs, { value: $formData.firstName }),
+              {
+                value: ($$value) => {
+                  $formData.firstName = $$value;
+                  $$settled = false;
+                }
+              },
+              {}
+            )}`;
+          }
+        })}  ${validate_component(Form_field_errors, "Form.FieldErrors").$$render($$result, {}, {}, {})}`;
+      }
+    })} ${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "lastName" }, {}, {
+      default: () => {
+        return `${validate_component(Control, "Form.Control").$$render($$result, {}, {}, {
+          default: ({ attrs }) => {
+            return `${validate_component(Form_label, "Form.Label").$$render($$result, {}, {}, {
+              default: () => {
+                return `${escape($t("default.page.register.form.lastname.label"))}`;
+              }
+            })} ${validate_component(Input, "Input").$$render(
+              $$result,
+              Object.assign({}, attrs, { value: $formData.lastName }),
+              {
+                value: ($$value) => {
+                  $formData.lastName = $$value;
+                  $$settled = false;
+                }
+              },
+              {}
+            )}`;
+          }
+        })}  ${validate_component(Form_field_errors, "Form.FieldErrors").$$render($$result, {}, {}, {})}`;
+      }
+    })} ${validate_component(Form_field, "Form.Field").$$render($$result, { form, name: "email" }, {}, {
       default: () => {
         return `${validate_component(Control, "Form.Control").$$render($$result, {}, {}, {
           default: ({ attrs }) => {
@@ -88,9 +132,9 @@ const RegisterForm = create_ssr_component(($$result, $$props, $$bindings, slots)
       }
     })} <div class="flex items-center justify-between">${validate_component(Button, "Button").$$render($$result, { variant: "ghost" }, {}, {
       default: () => {
-        return `${escape($t("default.page.login.cta"))}`;
+        return `${escape($t("default.page.login.switchToLogin"))}`;
       }
-    })} ${validate_component(Form_button, "Form.Button").$$render($$result, {}, {}, {
+    })} ${validate_component(Form_button, "Form.Button").$$render($$result, { class: "bg-primary text-muted" }, {}, {
       default: () => {
         return `${escape($t("default.page.register.cta"))}`;
       }

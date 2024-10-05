@@ -87,9 +87,9 @@ const LoginForm = create_ssr_component(($$result, $$props, $$bindings, slots) =>
       }
     })} <div class="flex items-center justify-between">${validate_component(Button, "Button").$$render($$result, { variant: "ghost" }, {}, {
       default: () => {
-        return `${escape($t("default.page.register.cta"))}`;
+        return `${escape($t("default.page.login.switchToRegister"))}`;
       }
-    })} ${validate_component(Form_button, "Form.Button").$$render($$result, {}, {}, {
+    })} ${validate_component(Form_button, "Form.Button").$$render($$result, { class: "bg-primary text-muted" }, {}, {
       default: () => {
         return `${escape($t("default.page.login.cta"))}`;
       }
