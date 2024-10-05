@@ -1,8 +1,17 @@
-// import { getInitialLocale } from '$scripts/helpers';
+import type { LayoutServerLoad } from './$types';
 import { loadTranslations, locale } from '$lib/translations';
+// import { getInitialLocale } from '$scripts/helpers';
 // import { getCookie } from '$scripts/helpers';
 
-export const load = async ({ url, locals }) => {
+export const load = (async ({ fetch, url, locals }) => {
+	const postHogApi = await fetch(`/api/posthog/decide`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ userId: locals.posthogId })
+  }).then(r => r.json())
+
 	// console.log('locals layout.server.ts', locals);
 	// const initLocale = getInitialLocale();
 
@@ -11,9 +20,14 @@ export const load = async ({ url, locals }) => {
 	console.log('layout.server.ts values - locals:',locals );
 	console.log('layout.server.ts values - user:',locals.user );
 
-	return {
-		url: url.pathname,
+  return {
+    url: url.pathname,
 		user: locals.user,
-		locale: locals.locale
-	};
-};
+		locale: locals.locale,
+    sessionToken: locals.sessionToken,
+    userId: locals.userId,
+    posthogId: locals.posthogId,
+    featureFlags: postHogApi.featureFlags || {}
+  };
+
+}) satisfies LayoutServerLoad;

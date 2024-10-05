@@ -43,7 +43,7 @@ declare module '$env/static/private' {
 	export const CUDA_PATH: string;
 	export const CUDA_PATH_V11_2: string;
 	export const DriverData: string;
-	export const EFC_27164: string;
+	export const EFC_35108: string;
 	export const FPS_BROWSER_APP_PROFILE_STRING: string;
 	export const FPS_BROWSER_USER_PROFILE_STRING: string;
 	export const GDAL_DATA: string;
@@ -79,12 +79,14 @@ declare module '$env/static/private' {
 	export const npm_package_dependencies_formsnap: string;
 	export const npm_package_dependencies_mode_watcher: string;
 	export const npm_package_dependencies_openai: string;
+	export const npm_package_dependencies_posthog_js: string;
 	export const npm_package_dependencies_radix_icons_svelte: string;
 	export const npm_package_dependencies_resize_observer_polyfill: string;
 	export const npm_package_dependencies_simplebar: string;
 	export const npm_package_dependencies_svelte_radix: string;
 	export const npm_package_dependencies_tailwind_merge: string;
 	export const npm_package_dependencies_tailwind_variants: string;
+	export const npm_package_dependencies_uuid: string;
 	export const npm_package_dependencies_vaul_svelte: string;
 	export const npm_package_dependencies__azure_identity: string;
 	export const npm_package_dependencies__azure_openai: string;
@@ -200,7 +202,7 @@ declare module '$env/static/private' {
  * ```
  */
 declare module '$env/static/public' {
-	
+	export const PUBLIC_POSTHOG_KEY: string;
 }
 
 /**
@@ -236,7 +238,7 @@ declare module '$env/dynamic/private' {
 		CUDA_PATH: string;
 		CUDA_PATH_V11_2: string;
 		DriverData: string;
-		EFC_27164: string;
+		EFC_35108: string;
 		FPS_BROWSER_APP_PROFILE_STRING: string;
 		FPS_BROWSER_USER_PROFILE_STRING: string;
 		GDAL_DATA: string;
@@ -272,12 +274,14 @@ declare module '$env/dynamic/private' {
 		npm_package_dependencies_formsnap: string;
 		npm_package_dependencies_mode_watcher: string;
 		npm_package_dependencies_openai: string;
+		npm_package_dependencies_posthog_js: string;
 		npm_package_dependencies_radix_icons_svelte: string;
 		npm_package_dependencies_resize_observer_polyfill: string;
 		npm_package_dependencies_simplebar: string;
 		npm_package_dependencies_svelte_radix: string;
 		npm_package_dependencies_tailwind_merge: string;
 		npm_package_dependencies_tailwind_variants: string;
+		npm_package_dependencies_uuid: string;
 		npm_package_dependencies_vaul_svelte: string;
 		npm_package_dependencies__azure_identity: string;
 		npm_package_dependencies__azure_openai: string;
@@ -400,6 +404,7 @@ declare module '$env/dynamic/private' {
  */
 declare module '$env/dynamic/public' {
 	export const env: {
+		PUBLIC_POSTHOG_KEY: string;
 		[key: `PUBLIC_${string}`]: string | undefined;
 	}
 }

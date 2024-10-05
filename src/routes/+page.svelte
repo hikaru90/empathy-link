@@ -16,10 +16,13 @@
 	import { scroll, windowHeight } from '$store/page';
 	import { onMount } from 'svelte';
 	import { backgroundColor, currentSection } from '$store/page';
+	import { featureFlags as flagStore } from '$store/posthog';
 
 	export let data;
 
 	console.log('data', data);
+
+	$: ({ featureFlags, ...identity } = data);
 
 
 const targetColors = [

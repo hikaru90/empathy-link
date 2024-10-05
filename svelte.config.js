@@ -22,7 +22,10 @@ const config = {
 			fallback: null,
 			precompress: false,
 			// strict: true
-			strict: false
+			strict: false,
+			prefetch: {
+				enabled: false,
+			}
 		}),
 		alias: {
 			$static: "static",

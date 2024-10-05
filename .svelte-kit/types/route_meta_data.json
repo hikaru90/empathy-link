@@ -17,6 +17,9 @@
 	"/api/populateNeeds": [
 		"src/routes/api/populateNeeds/+server.ts"
 	],
+	"/api/posthog/decide": [
+		"src/routes/api/posthog/decide/+server.ts"
+	],
 	"/app": [
 		"src/routes/app/+layout.ts",
 		"src/routes/app/+layout.server.ts",

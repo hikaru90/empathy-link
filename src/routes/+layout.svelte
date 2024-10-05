@@ -14,11 +14,19 @@
 	import ResizeObserver from 'resize-observer-polyfill';
 	import { onNavigate } from '$app/navigation';
 	import { getScrollbarWidth } from '$scripts/helpers';
+	import { page } from '$app/stores';
+	import { postHog, featureFlags } from '$store/posthog';
+
+	export let data;
+
+	let currentPath: string;
+	featureFlags.set(data.featureFlags);
+	postHog.init(data.posthogId, data.featureFlags);
+
 	if (browser) {
 		window.ResizeObserver = ResizeObserver;
 	}
 
-	export let data;
 	let contentReady = false;
 	let lastKnownScrollPosition = 0;
 	let ticking = false;
@@ -62,6 +70,43 @@
 			window?.addEventListener('resize', handleResize);
 		}
 		setLangAttribute();
+
+		if (browser) {
+			const unsubscribePostHog = postHog.subscribe(({ initialized }) => {
+				if (initialized) {
+					// Subscribe to page store for SPA navigation
+					const unsubscribePage = page.subscribe(($page) => {
+						if (currentPath && currentPath !== $page.url.pathname) {
+							// Function to run on page exit (SPA navigation)
+							postHog.capture('$pageleave');
+						}
+
+						// Update the current path
+						currentPath = $page.url.pathname;
+
+						// Function to run on page load
+						postHog.capture('$pageview');
+					});
+
+					// Handler for hard reloads or page exits
+					const handleBeforeUnload = () => {
+						postHog.capture('$pageleave');
+					};
+					window.addEventListener('beforeunload', handleBeforeUnload);
+
+					return () => {
+						// Cleanup
+						unsubscribePage();
+						window.removeEventListener('beforeunload', handleBeforeUnload);
+					};
+				}
+			});
+
+			return () => {
+				// Unsubscribe from PostHog store when component is destroyed
+				unsubscribePostHog();
+			};
+		}
 	});
 	// onDestroy(unsubscribe);
 
