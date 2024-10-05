@@ -1,0 +1,6 @@
+const PRIVATE_BREVO_API_KEY = "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";
+const PRIVATE_GEMINI_API_KEY = "AIzaSyDyv0hzY8PoBi42XLykLs9zHFm79hcOoCo";
+export {
+  PRIVATE_GEMINI_API_KEY as P,
+  PRIVATE_BREVO_API_KEY as a
+};

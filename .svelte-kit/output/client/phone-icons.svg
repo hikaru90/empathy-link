@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37.13 6.28">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #5fff7d;
+      }
+
+      .cls-1, .cls-2 {
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        fill: #1c1c1c;
+      }
+
+      .cls-3 {
+        stroke-linecap: square;
+      }
+
+      .cls-3, .cls-4 {
+        fill: none;
+        stroke: #1c1c1c;
+        stroke-miterlimit: 10;
+        stroke-width: .5px;
+      }
+
+      .cls-4 {
+        stroke-linecap: round;
+      }
+    </style>
+  </defs>
+  <path id="Pfad_84" data-name="Pfad 84" class="cls-2" d="M.49,4.41c0-.17.13-.3.3-.3h1.18c.17,0,.3.13.3.3h0v1.18c0,.17-.13.3-.3.3H.79c-.17,0-.3-.13-.3-.3h0v-1.18ZM2.85,2.64c0-.17.13-.3.3-.3h1.18c.17,0,.3.13.3.3h0v2.95c0,.17-.13.3-.3.3h-1.18c-.17,0-.3-.13-.3-.3h0v-2.95ZM5.22.87c0-.17.13-.3.3-.3h1.18c.17,0,.3.13.3.3h0v4.72c0,.17-.13.3-.3.3h-1.18c-.17,0-.3-.13-.3-.3h0V.87ZM7.58,5.59c0-.17.13-.3.3-.3h1.18c.16-.03.32.08.35.24.03.16-.08.32-.24.35-.04,0-.07,0-.11,0h-1.19c-.16,0-.29-.13-.3-.3h0Z"/>
+  <g id="Gruppe_338" data-name="Gruppe 338">
+    <path id="Pfad_85" data-name="Pfad 85" class="cls-2" d="M17.87,2.43c-.92,0-1.79.36-2.44,1.01l.94.94c.83-.83,2.17-.83,3,0h0s.94-.94.94-.94c-.65-.65-1.52-1.01-2.44-1.01Z"/>
+    <path id="Pfad_86" data-name="Pfad 86" class="cls-2" d="M16.74,4.76l1.13,1.13,1.13-1.13c-.62-.62-1.63-.62-2.25,0,0,0,0,0,0,0Z"/>
+    <path id="Pfad_87" data-name="Pfad 87" class="cls-2" d="M17.86,1.9c1.06,0,2.07.42,2.82,1.17l.94-.94c-2.07-2.07-5.44-2.07-7.51,0,0,0,0,0,0,0l.94.94c.74-.75,1.76-1.17,2.82-1.17Z"/>
+  </g>
+  <g id="Gruppe_339" data-name="Gruppe 339">
+    <rect id="Rechteck_333" data-name="Rechteck 333" class="cls-3" x="26.22" y=".87" width="9.37" height="4.72" rx="1" ry="1"/>
+    <rect id="Rechteck_334" data-name="Rechteck 334" class="cls-1" x="26.74" y="1.44" width="5.7" height="3.63" rx=".5" ry=".5"/>
+    <line id="Linie_63" data-name="Linie 63" class="cls-4" x1="36.5" y1="2.47" x2="36.5" y2="4.05"/>
+  </g>
+</svg>
