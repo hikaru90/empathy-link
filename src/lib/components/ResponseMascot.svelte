@@ -11,8 +11,9 @@
 	let speechBubbleIndex = 0;
 	let thinking = false
 
-	const getSpeechBubbleContent = (formSuccess:boolean, step:number) => {
+	const getSpeechBubbleContent = (formSuccess:boolean, step:number, speechBubbleContentArray:object[]) => {
 		try{	
+			console.log('speechBubbleContentArray',speechBubbleContentArray);
 			return step === 13 && !formSuccess ? speechBubbleContentArray.find(el => el.step === 13)!.errorContent : speechBubbleContentArray.find(el => el.step === step)!.content
 		}catch(err){
 			console.error('error in getSpeechBubbleContent', err);
@@ -20,7 +21,7 @@
 		}
 	}
 
-	$: speechBubbleContent = getSpeechBubbleContent(formSuccess, step)
+	$: speechBubbleContent = getSpeechBubbleContent(formSuccess, step, speechBubbleContentArray)
 	
 	
 	let speechBubbleElement: HTMLElement;
@@ -114,7 +115,6 @@
 		}
 	});
 </script>
-
 <div class="mt-4 flex items-start gap-2">
 	<div class="relative left-0 right-0 flex h-12 flex-shrink-0 justify-center gap-1">
 		<div

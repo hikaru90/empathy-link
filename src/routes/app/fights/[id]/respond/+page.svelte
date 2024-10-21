@@ -38,6 +38,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import ResponseMascot from '$lib/components/ResponseMascot.svelte';
 	import { Cross1, QuestionMarkCircled } from 'radix-icons-svelte';
+	import { backgroundColor } from '$store/page';
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
 	let feelings = [];
@@ -66,11 +67,18 @@
 	let checkForJudgement = false;
 	let drawerOpen = false;
 
+	const updateBackgroundColor = (step: number) => {
+		const color = `bg-${stepConstructor[step - 1].slug}-background`
+		backgroundColor.set(color)
+		return color
+	};
+
 	$: () => {
 		console.log('check step', step);
 		if (step === 9) checkForJudgement = true;
 	};
 	$: options.validators = steps[step - 1];
+	$: currentBackgroundColor = updateBackgroundColor(step);
 
 	const handleSubmit = async () => {
 		try {
@@ -327,11 +335,7 @@
 		return false;
 	};
 
-	onMount(async () => {
-		await initFeelings();
-		await initNeeds();
-		await initFight();
-
+	const initSpeechBubbleContentArray = () => {
 		speechBubbleContentArray = [
 			{
 				step: 1,
@@ -381,11 +385,17 @@
 				errorContent: [$t('default.page.respond.steps.error')]
 			}
 		];
+	};
 
+	onMount(async () => {
+		await initFeelings();
+		await initNeeds();
+		await initFight();
+		initSpeechBubbleContentArray();
 	});
 
 	//todo: remove
-	step = 1;
+	// step = 1;
 </script>
 
 <!-- {#if $message}
@@ -394,7 +404,7 @@
 	</div>
 {/if} -->
 <div
-	class="flex flex-grow flex-col justify-between transition duration-500 {`bg-${stepConstructor[step - 1].slug}-background`} dark:bg-background overflow-hidden"
+	class="flex flex-grow flex-col justify-between transition duration-500 {currentBackgroundColor} dark:bg-background min-h-svh overflow-hidden"
 >
 	<AppTopMenu />
 	<div class="max-container relative flex flex-grow flex-col pb-40">
@@ -440,7 +450,7 @@
 						</div>
 					{:else if step === 3}
 						<div class="form-content flex items-center justify-center">
-							<div class="relative flex flex-col text-center">
+							<div class="relative flex flex-col text-center my-40">
 								<span class="relative z-10 -mb-2">
 									{$t('default.page.respond.steps.breathe.heading')}
 								</span>
@@ -499,7 +509,7 @@
 					{:else if step === 8}
 						<div class="form-content flex items-center justify-center">
 							<div class="flex max-w-[18em] flex-col gap-4 text-center pb-6">
-								{$t('default.page.respond.steps.pause.heading')}
+								<!-- {$t('default.page.respond.steps.pause.heading')} -->
 							</div>
 						</div>
 					{:else if step === 9}

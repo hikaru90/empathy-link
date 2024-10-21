@@ -238,6 +238,7 @@
 		"login": {
 			"heading": "Login",
 			"text": "Login now",
+			"verifyMail": "Please verify your E-Mail to login.",
 			"form": {
 				"email": {
 					"label": "Mail",
@@ -261,6 +262,7 @@
 		},
 		"register": {
 			"heading": "Register",
+			"text": "Register now",
 			"form": {
 				"firstname": {
 					"label": "Firstname",

@@ -15,6 +15,7 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { locale, locales } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
+	import { user } from '$store/auth';
 
 	const langs = [
 		{ value: 'en', label: 'English' },
@@ -55,7 +56,12 @@
 				</Button>
 			</Sheet.Close>
 		</Sheet.Header>
+
+
 		<div class="flex flex-grow flex-col justify-between p-5">
+			<div class="break-all">
+				{JSON.stringify($user)}
+			</div>
 			<div>
 				<div class="mb-3 border-b border-gray-300/60 pb-3 dark:border-gray-300/20">
 					<Select.Root

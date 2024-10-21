@@ -64,8 +64,8 @@
 <div class="fixed bottom-0 left-0 z-[1002] w-full bg-black px-4 pb-4 pt-2 text-gray-200">
   {#if !user}
 	<div class="w-full h-full bg-black/60 absolute top-0 left-0 z-10 flex items-center justify-center">
-    <Button on:click={() => goto('/app/auth/login')} decoration="dark-op1" class="border-neutral-700">
-      {$t('default.page.login.text')}
+    <Button on:click={() => goto('/app/auth/register')} decoration="dark-op1" class="border-neutral-700">
+      {$t('default.page.register.text')}
     </Button>
   </div>
 {/if}

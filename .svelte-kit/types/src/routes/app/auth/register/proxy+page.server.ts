@@ -29,15 +29,33 @@ export const actions = {
 			});
 		}
 
+		const allusers = await event.locals.pb.collection('users').getFullList();
+		console.log('allusers', allusers);
+		const existingUser = await event.locals.pb
+			.collection('users')
+			.getFirstListItem(`email="${form.data.email}"`);
+		console.log('existingUser', existingUser);
+		if (existingUser) {
+			return setError(form, 'email', 'This email is already registered');
+		}
+
 		try {
-			await event.locals.pb.collection('users').create({
+			const formData = {
 				firstName: form.data.firstName,
 				lastName: form.data.lastName,
 				email: form.data.email,
 				password: form.data.password,
 				passwordConfirm: form.data.password
-			});
-			await event.locals.pb.collection('users').requestVerification(form.data.email);
+			};
+			console.log('formData', formData);
+			const creationResult = await event.locals.pb.collection('users').create(formData);
+			console.log('creationResult', creationResult);
+
+			//send verification mail
+			const verifyMail = await event.locals.pb
+				.collection('users')
+				.requestVerification(String(form.data.email));
+			console.log('verifyMail', verifyMail);
 		} catch (err) {
 			console.log('error in register form', err);
 			return fail(500, {
@@ -45,7 +63,7 @@ export const actions = {
 			});
 		}
 
-		redirect(302, '/app/auth/login');
+		redirect(302, '/app/auth/login?verifyMail=true');
 		return { form };
 	}
 };
