@@ -63,10 +63,10 @@
 				<!-- <Form.Description>This is your public display name.</Form.Description> -->
 				<Form.FieldErrors />
 			</Form.Field>
-			<div class="flex items-center justify-between">
-				<Button variant="ghost" on:click={() => goto('/app/auth/login')}
-					>{$t('default.page.login.switchToLogin')}</Button
-				>
+	<div class="flex items-center justify-between">
+		<a href="/app/auth/login" class="text-sm hover:underline"
+			>{$t('default.page.login.switchToLogin')}</a
+		>
 				<Form.Button class="bg-primary text-muted">{$t('default.page.register.cta')}</Form.Button>
 			</div>
 		</form>

@@ -230,7 +230,7 @@
 	};
 	const initFeelings = async () => {
 		const records = await pb.collection('feelings').getFullList({
-			sort: 'category'
+			sort: 'category,sort'
 		});
 		const data = serializeNonPOJOs(records);
 		let res = groupBy(data, 'positive');
@@ -239,7 +239,7 @@
 			entry.content.map((category) => (category.visible = false));
 			return entry;
 		});
-		console.log('res', res);
+		console.log('feelings res', res);
 		feelings = res;
 	};
 	const initNeeds = async () => {
@@ -294,7 +294,7 @@
 	});
 
 	//todo: remove
-	// step = 6;
+	step = 3;
 	// formSubmitted = true;
 	// formSuccess = true;
 </script>

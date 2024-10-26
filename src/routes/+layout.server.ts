@@ -12,13 +12,7 @@ export const load = (async ({ fetch, url, locals }) => {
     body: JSON.stringify({ userId: locals.posthogId })
   }).then(r => r.json())
 
-	// console.log('locals layout.server.ts', locals);
-	// const initLocale = getInitialLocale();
-
 	await loadTranslations(locals.locale, url.pathname);
-
-	console.log('layout.server.ts values - locals:',locals );
-	console.log('layout.server.ts values - user:',locals.user );
 
   return {
     url: url.pathname,

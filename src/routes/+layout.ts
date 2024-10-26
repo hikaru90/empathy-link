@@ -9,9 +9,6 @@ export const load = async ({ url, data }) => {
 	if (data.user) user.set(data.user);
 	else user.set(undefined);
 
-	console.log('layout.ts values - locals:',data );
-	console.log('layout.ts values - user:',data.user );
-
 	return {
 		locale: data.locale,
 		route: url.pathname,

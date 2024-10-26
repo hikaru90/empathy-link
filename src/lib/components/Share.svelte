@@ -29,8 +29,8 @@
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 
-  export let id:string;
-  export let record:string;
+	export let id: string;
+	export let record: string;
 
 	let initialized = false;
 	let pending = true;
@@ -165,78 +165,80 @@
 </div>
 
 <Drawer.Root bind:open={drawerOpen}>
-  <Drawer.Content class="">
-    <Drawer.Header class="w-full border-b border-black/10">
-      <div class="flex items-center justify-between">
-        <Drawer.Title>{$t('default.menu.share.cta')}</Drawer.Title>
-        <!-- <Drawer.Description>This action cannot be undone.</Drawer.Description> -->
-        <Drawer.Close>
-          <div class="label bg-feelings-background">
-            <div class="icon fill-feelings-foreground">
-              <!-- {@html row.icon} -->
-              <Cross1 class="text-red-600" />
-            </div>
-          </div>
-        </Drawer.Close>
-      </div>
-    </Drawer.Header>
-    <Drawer.Footer class="flex flex-col gap-4 pb-10">
-      <button
-        use:copy={shareableLink}
-        on:svelte-copy={() => {
-          drawerOpen = false;
-          toast.success($t('default.menu.share.copyLinkConfirmation'));
-        }}
-        class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm"
-      >
-        {$t('default.menu.share.copyLink')}
-        <Clipboard />
-      </button>
+	<Drawer.Content class="">
+		<Drawer.Header class="w-full border-b border-black/10">
+			<div class="flex items-center justify-between">
+				<Drawer.Title>{$t('default.menu.share.cta')}</Drawer.Title>
+				<!-- <Drawer.Description>This action cannot be undone.</Drawer.Description> -->
+				<Drawer.Close>
+					<div class="label bg-feelings-background">
+						<div class="icon fill-feelings-foreground">
+							<!-- {@html row.icon} -->
+							<Cross1 class="text-red-600" />
+						</div>
+					</div>
+				</Drawer.Close>
+			</div>
+		</Drawer.Header>
+		<Drawer.Footer class="pb-10">
+			<div class="max-container flex flex-col gap-4">
+				<button
+					use:copy={shareableLink}
+					on:svelte-copy={() => {
+						drawerOpen = false;
+						toast.success($t('default.menu.share.copyLinkConfirmation'));
+					}}
+					class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm"
+				>
+					{$t('default.menu.share.copyLink')}
+					<Clipboard />
+				</button>
 
-      <button
-        on:click={() => ((drawerOpen = false), (dialogOpen = true))}
-        class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm"
-        >{$t('default.menu.share.mailLink')} <EnvelopeClosed /></button
-      >
-    </Drawer.Footer>
-  </Drawer.Content>
+				<button
+					on:click={() => ((drawerOpen = false), (dialogOpen = true))}
+					class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm"
+					>{$t('default.menu.share.mailLink')} <EnvelopeClosed /></button
+				>
+			</div>
+		</Drawer.Footer>
+	</Drawer.Content>
 </Drawer.Root>
 
 <Dialog.Root bind:open={dialogOpen} preventScroll={false}>
-  <Dialog.Content>
-    <Dialog.Header>
-      <Dialog.Title class="mb-10 max-w-[9em] leading-tight"
-        >{$t('default.menu.share.mailDialogText')}</Dialog.Title
-      >
-      <Dialog.Description>
-        <form
-          on:submit|preventDefault
-          use:enhance
-          class="-mt-1 flex h-full flex-grow flex-col items-start"
-        >
-          <Form.Field {form} name="email" class="w-full">
-            <Form.Control let:attrs>
-              <Form.Label class="form-label">E-Mail</Form.Label>
-              <Input
-                {...attrs}
-                bind:value={$formData.email}
-                type="text"
-                placeholder={$locale === 'en' ? 'E-Mail' : 'E-Mail Adresse'}
-                class="mb-4"
-              />
-            </Form.Control>
-            <!-- <Form.Description>This is your public display name.</Form.Description> -->
-            <Form.FieldErrors />
-          </Form.Field>
-          <div class="flex w-full justify-end">
-            <Button type="submit" class="flex items-center gap-3"
-              >{$t('default.menu.share.cta')} <PaperPlane /></Button
-            >
-          </div>
-        </form>
-      </Dialog.Description>
-    </Dialog.Header>
-  </Dialog.Content>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title class="mb-10 max-w-[9em] leading-tight"
+				>{$t('default.menu.share.mailDialogText')}</Dialog.Title
+			>
+			<Dialog.Description>
+				<form
+					on:submit|preventDefault
+					use:enhance
+					class="-mt-1 flex h-full flex-grow flex-col items-start"
+				>
+					<Form.Field {form} name="email" class="w-full">
+						<Form.Control let:attrs>
+							<Form.Label class="form-label">E-Mail</Form.Label>
+							<Input
+								{...attrs}
+								bind:value={$formData.email}
+								type="text"
+								placeholder={$locale === 'en' ? 'E-Mail' : 'E-Mail Adresse'}
+								class="mb-4"
+							/>
+						</Form.Control>
+						<!-- <Form.Description>This is your public display name.</Form.Description> -->
+						<Form.FieldErrors />
+					</Form.Field>
+					<div class="flex w-full justify-end">
+						<Button type="submit" class="flex items-center gap-3"
+							>{$t('default.menu.share.cta')} <PaperPlane /></Button
+						>
+					</div>
+				</form>
+			</Dialog.Description>
+		</Dialog.Header>
+	</Dialog.Content>
 </Dialog.Root>
 
 <style lang="scss">

@@ -29,14 +29,18 @@ export const actions = {
 			});
 		}
 
-		const allusers = await event.locals.pb.collection('users').getFullList();
-		console.log('allusers', allusers);
-		const existingUser = await event.locals.pb
-			.collection('users')
-			.getFirstListItem(`email="${form.data.email}"`);
-		console.log('existingUser', existingUser);
-		if (existingUser) {
-			return setError(form, 'email', 'This email is already registered');
+		try {
+			const existingUser = await event.locals.pb.collection('users').getFirstListItem(`email="${form.data.email}"`);
+			if (existingUser) {
+				return setError(form, 'email', 'A user with this email already exists');
+			}
+		} catch (err) {
+			// If no user is found, getFirstListItem throws an error
+			// We can ignore this error as it means the user doesn't exist
+			if (err.status !== 404) {
+				console.error('Error checking for existing user:', err);
+				return fail(500, { form });
+			}
 		}
 
 		try {
@@ -45,17 +49,17 @@ export const actions = {
 				lastName: form.data.lastName,
 				email: form.data.email,
 				password: form.data.password,
-				passwordConfirm: form.data.password
+				passwordConfirm: form.data.password,
+				emailVisibility: true,
 			};
 			console.log('formData', formData);
 			const creationResult = await event.locals.pb.collection('users').create(formData);
 			console.log('creationResult', creationResult);
 
 			//send verification mail
-			const verifyMail = await event.locals.pb
+			await event.locals.pb
 				.collection('users')
 				.requestVerification(String(form.data.email));
-			console.log('verifyMail', verifyMail);
 		} catch (err) {
 			console.log('error in register form', err);
 			return fail(500, {

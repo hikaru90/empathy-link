@@ -194,6 +194,13 @@ export const setCookie = (name: string, value: string, days?: number) => {
 	}
 };
 
+export const deleteCookie = (name: string) => {
+	if (!import.meta.env.SSR) {
+		document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+	}
+};
+
+
 export const getCookie = (name: string) => {
 	if (!import.meta.env.SSR) {
 		let cname = name + '=';

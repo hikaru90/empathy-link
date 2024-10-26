@@ -16,6 +16,7 @@
 	import { locale, locales } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
 	import { user } from '$store/auth';
+	import backgroundImage from '$assets/images/holo3.jpg';
 
 	const langs = [
 		{ value: 'en', label: 'English' },
@@ -57,11 +58,7 @@
 			</Sheet.Close>
 		</Sheet.Header>
 
-
 		<div class="flex flex-grow flex-col justify-between p-5">
-			<div class="break-all">
-				{JSON.stringify($user)}
-			</div>
 			<div>
 				<div class="mb-3 border-b border-gray-300/60 pb-3 dark:border-gray-300/20">
 					<Select.Root
@@ -90,9 +87,29 @@
 				</div>
 			</div>
 			<Sheet.Footer class="w-full">
-				<!-- <Sheet.Close asChild let:builder>
-					<Button builders={[builder]} type="submit">Save changes</Button>
-				</Sheet.Close> -->
+				<div class="my-2 flex gap-4 px-6">
+					<div class="relative flex items-center justify-center">
+						<div
+							class="flex size-7 items-center justify-center rounded-full bg-muted text-xs font-bold uppercase tracking-[-0.12em] relative z-10"
+						>
+							{$user.firstName.charAt(0)}
+							{$user.lastName.charAt(0)}
+						</div>
+						<div
+							style="background-image: url('{backgroundImage}'); background-size: 400% 400%"
+							class={'size-[36px] rounded-full bg-center absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 z-0 shadow-lg'}
+						></div>
+					</div>
+					<div class="flex flex-col">
+						<div class="font-bold">
+							{$user.firstName}
+							{$user.lastName}
+						</div>
+						<div class="text-sm -mt-1">
+							{$user.email}
+						</div>
+					</div>
+				</div>
 
 				<form action="/app/auth/logout" method="POST" class="w-full">
 					<button type="submit" class="w-full">
@@ -106,6 +123,11 @@
 						>
 					</button>
 				</form>
+
+
+				<!-- <div class="break-all">
+					{JSON.stringify($user)}
+				</div> -->
 			</Sheet.Footer>
 		</div>
 	</Sheet.Content>

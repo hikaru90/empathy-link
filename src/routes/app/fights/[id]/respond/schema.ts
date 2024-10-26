@@ -28,5 +28,5 @@ export const schemaStep11 = schemaStep3.extend({
 	needs: z.array(z.string()).min(1, { message: get(t)('default.page.fights.form.needs.tooFewError') })
 });
 export const schemaStep12 = schemaStep4.extend({
-	request: z.string().min(10, { message: get(t)('default.page.fights.form.request.tooFewError') })
+	request: z.string().optional()
 });

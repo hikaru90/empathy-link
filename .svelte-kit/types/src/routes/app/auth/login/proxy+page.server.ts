@@ -6,19 +6,30 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { formSchema } from './schema';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
-import { user } from '$store/auth'
+import { user } from '$store/auth';
 
-export const load = async ({ locals }: Parameters<PageServerLoad>[0]) => {
-		console.log('PageServerLoad');
+const redirectToFightOrDashboard = (
+	cookies,
+) => {
+	const loginRedirectTarget = cookies.get('loginRedirectTarget');
 
-		if (locals.user) {
-			user.update(value => locals.user)
-			console.log('redirecting');
-			throw redirect(303, '/app/dashboard');
-		}
-		return {
-			form: await superValidate(zod(formSchema))
-		};
+	if (loginRedirectTarget) {
+		redirect(302, loginRedirectTarget);
+	} else {
+		redirect(302, '/app/dashboard');
+	}
+};
+
+export const load = async ({ locals, cookies }: Parameters<PageServerLoad>[0]) => {
+	if (locals.user) {
+		user.update((value) => locals.user);
+		console.log('redirecting');
+		console.log('PageServerLoad locals', locals);
+		redirectToFightOrDashboard(cookies);
+	}
+	return {
+		form: await superValidate(zod(formSchema))
+	};
 };
 
 export const actions = {
@@ -50,7 +61,8 @@ export const actions = {
 				});
 			}
 
-			redirect(302, '/app/dashboard');
+			redirectToFightOrDashboard(event.cookies);
+
 			return { form };
 			// return message(form, 'Login successfull');
 		} catch (err) {

@@ -34,11 +34,13 @@
 	import IconSteps from '$assets/icons/icon-steps.svg?raw';
 	import { pb } from '$scripts/pocketbase';
 	import { onMount } from 'svelte';
-	import { serializeNonPOJOs, groupBy } from '$scripts/helpers';
+	import { serializeNonPOJOs, groupBy, setCookie, deleteCookie } from '$scripts/helpers';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import ResponseMascot from '$lib/components/ResponseMascot.svelte';
 	import { Cross1, QuestionMarkCircled } from 'radix-icons-svelte';
 	import { backgroundColor } from '$store/page';
+	import { browser } from '$app/environment';
+	import { user } from '$store/auth';
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
 	let feelings = [];
@@ -68,9 +70,9 @@
 	let drawerOpen = false;
 
 	const updateBackgroundColor = (step: number) => {
-		const color = `bg-${stepConstructor[step - 1].slug}-background`
-		backgroundColor.set(color)
-		return color
+		const color = `bg-${stepConstructor[step - 1].slug}-background`;
+		backgroundColor.set(color);
+		return color;
 	};
 
 	$: () => {
@@ -392,6 +394,20 @@
 		await initNeeds();
 		await initFight();
 		initSpeechBubbleContentArray();
+
+		if (browser && $page.url) {
+			if(!$user){
+				console.log('setting cookie loginRedirectTarget');
+				setCookie('loginRedirectTarget', $page.url.pathname + $page.url.search, 0.1);
+			}else{
+				console.log('deleting cookie loginRedirectTarget'
+
+
+
+				);
+				deleteCookie('loginRedirectTarget');
+			}
+		}
 	});
 
 	//todo: remove
@@ -404,7 +420,7 @@
 	</div>
 {/if} -->
 <div
-	class="flex flex-grow flex-col justify-between transition duration-500 {currentBackgroundColor} dark:bg-background min-h-svh overflow-hidden"
+	class="flex flex-grow flex-col justify-between transition duration-500 {currentBackgroundColor} min-h-svh overflow-hidden dark:bg-background"
 >
 	<AppTopMenu />
 	<div class="max-container relative flex flex-grow flex-col pb-40">
@@ -440,17 +456,16 @@
 							<Button
 								on:click={() => (drawerOpen = true)}
 								variant="ghost"
-								class="mb-6 flex w-full items-center justify-start gap-2 text-black"
+								class="mb-6 flex w-full items-center justify-start gap-2"
 								><QuestionMarkCircled />
 								{$t('default.page.respond.steps.greeting.explanationCta')}</Button
 							>
 						</div>
 					{:else if step === 2}
-						<div class="form-content flex flex-col items-center justify-center text-center">
-						</div>
+						<div class="form-content flex flex-col items-center justify-center text-center"></div>
 					{:else if step === 3}
 						<div class="form-content flex items-center justify-center">
-							<div class="relative flex flex-col text-center my-40">
+							<div class="relative my-40 flex flex-col text-center">
 								<span class="relative z-10 -mb-2">
 									{$t('default.page.respond.steps.breathe.heading')}
 								</span>
@@ -497,23 +512,23 @@
 							</div>
 						</div>
 					{:else if step === 7}
-						<div  class="form-content">
+						<div class="form-content">
 							<div class="form-label pt-10">
 								{fight.expand.owner.firstName}
 								{$t('default.page.respond.steps.ownerRequest.heading')}
 							</div>
-							<div class="rounded bg-white/10 px-4 py-3 shadow-xl pb-6">
+							<div class="rounded bg-white/10 px-4 py-3 pb-6 shadow-xl">
 								{fight.request}
 							</div>
 						</div>
 					{:else if step === 8}
 						<div class="form-content flex items-center justify-center">
-							<div class="flex max-w-[18em] flex-col gap-4 text-center pb-6">
+							<div class="flex max-w-[18em] flex-col gap-4 pb-6 text-center">
 								<!-- {$t('default.page.respond.steps.pause.heading')} -->
 							</div>
 						</div>
 					{:else if step === 9}
-						<div  class="form-content">
+						<div class="form-content">
 							<Form.Field {form} name="observation">
 								<Form.Control let:attrs>
 									<Form.Label class="form-label"
@@ -531,7 +546,7 @@
 							</Form.Field>
 						</div>
 					{:else if step === 10}
-						<div  class="form-content">
+						<div class="form-content">
 							<Form.Field {form} name="feelings">
 								<Form.Control let:attrs>
 									<Form.Label class="form-label"
@@ -572,8 +587,8 @@
 																	<ToggleGroup.Item
 																		value={feeling.id}
 																		class="{feeling.nameEN === category.category
-																			? `bg-white/40 dark:bg-muted font-bold`
-																			: 'border border-white/40 dark:border-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-feelings-foreground dark:data-[state=on]:bg-feelings-foreground max-w-[300px]"
+																			? `bg-white/40 font-bold dark:bg-muted`
+																			: 'border border-white/40 dark:border-white/20'} max-w-[300px] py-0  text-black shadow hover:text-black data-[state=on]:bg-feelings-foreground data-[state=on]:text-white dark:text-white dark:data-[state=on]:bg-feelings-foreground"
 																	>
 																		{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
 																	</ToggleGroup.Item>
@@ -591,7 +606,7 @@
 							</Form.Field>
 						</div>
 					{:else if step === 11}
-						<div  class="form-content">
+						<div class="form-content">
 							<Form.Field {form} name="needs">
 								<Form.Control let:attrs>
 									<Form.Label class="form-label"
@@ -618,8 +633,8 @@
 															<ToggleGroup.Item
 																value={need.id}
 																class="{need.nameEN === category.category
-																	? `bg-white/40 dark:bg-muted font-bold`
-																: 'border border-white/40 dark:border-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-needs-foreground dark:data-[state=on]:bg-needs-foreground max-w-[300px]"
+																	? `bg-white/40 font-bold dark:bg-muted`
+																	: 'border border-white/40 dark:border-white/20'} max-w-[300px] py-0  text-black shadow hover:text-black data-[state=on]:bg-needs-foreground data-[state=on]:text-white dark:text-white dark:data-[state=on]:bg-needs-foreground"
 															>
 																{$locale === 'de' ? need.nameDE : need.nameEN}
 															</ToggleGroup.Item>
@@ -635,7 +650,7 @@
 							</Form.Field>
 						</div>
 					{:else if !formSubmitted}
-						<div  class="form-content">
+						<div class="form-content">
 							<Form.Field {form} name="request">
 								<Form.Control let:attrs>
 									<Form.Label class="form-label"
@@ -648,9 +663,13 @@
 							</Form.Field>
 						</div>
 					{:else if formSuccess}
-						{$t('default.page.respond.steps.success')}
+					<div class="form-content">
+							<div class="my-6">
+								{$t('default.page.respond.steps.success.heading')}
+							</div>
+						</div>
 					{:else}
-						{$t('default.page.respond.steps.error')}
+						{$t('default.page.respond.steps.error.heading')}
 					{/if}
 				{/key}
 			{/if}

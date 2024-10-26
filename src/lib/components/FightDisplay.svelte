@@ -9,9 +9,23 @@
 	import { json } from '@sveltejs/kit';
 
 	export let record;
+	export let fight: object | undefined = undefined;
 	// export let adversary;
 
 	console.log('record', record);
+
+	const overlap = (type: string = 'feelings') => {
+		if (!fight) return undefined
+		const fightArray = fight[type];
+		const responseArray = record[type];
+		
+		let count = 0
+		const fightArrayCount = fightArray.length;
+		responseArray.forEach((entry) => {
+			if(fightArray.includes(entry)) count++
+		});
+		return Math.round(count * 100 / fightArrayCount);
+	};
 
 	const tableRows = [
 		{ icon: IconEye, color: 'observation', type: 'text', content: record.observation },
@@ -19,25 +33,34 @@
 			icon: IconHeart,
 			color: 'feelings',
 			type: 'array',
+			overlap: overlap('feelings'),
 			content: record.expand.feelings
 		},
-		{ icon: IconSwirl, color: 'needs', type: 'array', content: record.expand.needs },
+		{
+			icon: IconSwirl,
+			color: 'needs',
+			type: 'array',
+			overlap: overlap('needs'),
+			content: record.expand.needs
+		},
 		{ icon: IconSteps, color: 'request', type: 'text', content: record.request }
 	];
 </script>
 
-<div class="{$user.id === record.owner ? 'justify-start' : 'justify-end'} mb-3 flex items-center gap-2">
+<div
+	class="{$user.id === record.owner ? 'justify-start' : 'justify-end'} mb-3 flex items-center gap-2"
+>
 	<div class="rounded-full bg-neutral-400 bg-opacity-50 px-3 py-1 text-xs text-black">
 		{$user.id === record.owner ? $user.firstName : record.expand.fight.name} — {new Date(
 			record.created
 		).toLocaleDateString('de-DE')}
 	</div>
 	{#if $user.id === record.owner && record.opened}
-			<div class="rounded-full bg-green-600 px-1 py-[2px] text-2xs text-green-300 flex items-center">
-				<Check />
-				<Check class="-ml-2" />
-			</div>
-		{/if}
+		<div class="flex items-center rounded-full bg-green-600 px-1 py-[2px] text-2xs text-green-300">
+			<Check />
+			<Check class="-ml-2" />
+		</div>
+	{/if}
 </div>
 
 <div
@@ -47,7 +70,7 @@
 >
 	{#each tableRows as row}
 		<div
-			class="group flex items-stretch border-b border-black/5 bg-almostwhite dark:bg-muted text-xs shadow-md last:border-b-0"
+			class="group flex items-stretch border-b border-black/5 bg-almostwhite text-xs shadow-md last:border-b-0 dark:bg-muted"
 		>
 			<div
 				class="flex flex-shrink-0 items-center justify-center border-r border-black/5 px-3 pb-3 pt-3 group-first:pt-6 group-last:pb-6"
@@ -60,6 +83,14 @@
 				</div>
 			</div>
 			<div class="flex-grow break-all px-3 pb-3 pt-3 group-first:pt-6 group-last:pb-6">
+				{#if row.overlap}
+				<div class="flex items-center">
+					<div class="border border-{row.color}-background rounded-full px-2 py-0.5 mb-2 text-xs">
+						{row.overlap}%
+						{$locale === 'en' ? 'overlap' : 'Überschneidung'}
+					</div>
+				</div>
+				{/if}
 				{#if row.type === 'text'}
 					{row.content}
 				{:else}
