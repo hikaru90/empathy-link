@@ -2456,13 +2456,15 @@ var memoize = function memoize2(fn) {
 export {
   SuperFormError as S,
   mapErrors as a,
-  schemaInfo as b,
-  merge as c,
-  defaultValues as d,
-  schemaShape as e,
-  memoize as f,
+  splitPath as b,
+  schemaInfo as c,
+  merge as d,
+  defaultValues as e,
+  schemaShape as f,
+  memoize as g,
   mergeDefaults as m,
   parseRequest as p,
   replaceInvalidDefaults as r,
-  superForm as s
+  superForm as s,
+  traversePath as t
 };

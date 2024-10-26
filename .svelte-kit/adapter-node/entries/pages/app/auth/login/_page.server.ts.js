@@ -1,16 +1,24 @@
-import { r as redirect, f as fail } from "../../../../../chunks/index.js";
+import { f as fail, r as redirect } from "../../../../../chunks/index.js";
 import "../../../../../chunks/client.js";
 import "../../../../../chunks/memoize.js";
 import { s as superValidate } from "../../../../../chunks/superValidate.js";
 import { a as zod } from "../../../../../chunks/zod.js";
 import { f as formSchema } from "../../../../../chunks/schema.js";
 import { u as user } from "../../../../../chunks/auth.js";
-const load = async ({ locals }) => {
-  console.log("PageServerLoad");
+const redirectToFightOrDashboard = (cookies) => {
+  const loginRedirectTarget = cookies.get("loginRedirectTarget");
+  if (loginRedirectTarget) {
+    redirect(302, loginRedirectTarget);
+  } else {
+    redirect(302, "/app/dashboard");
+  }
+};
+const load = async ({ locals, cookies }) => {
   if (locals.user) {
     user.update((value) => locals.user);
     console.log("redirecting");
-    throw redirect(303, "/app/dashboard");
+    console.log("PageServerLoad locals", locals);
+    redirectToFightOrDashboard(cookies);
   }
   return {
     form: await superValidate(zod(formSchema))
@@ -41,7 +49,7 @@ const actions = {
           form
         });
       }
-      redirect(302, "/app/dashboard");
+      redirectToFightOrDashboard(event.cookies);
       return { form };
     } catch (err) {
       console.log("error in login action", err);

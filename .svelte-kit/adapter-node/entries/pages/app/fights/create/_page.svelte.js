@@ -3,7 +3,7 @@ import { k as handleRovingFocus, l as arraysAreEqual, B as Button, m as globals 
 import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute, g as escape_attribute_value, v as validate_component, e as escape, f as each } from "../../../../../chunks/ssr.js";
 import { A as AppTopMenu } from "../../../../../chunks/AppTopMenu.js";
 import { A as AppBottomMenu } from "../../../../../chunks/AppBottomMenu.js";
-import { F as Form_field, C as Control, a as Form_label, I as Input, b as Form_field_errors } from "../../../../../chunks/index5.js";
+import { F as Form_field, C as Control, c as Form_label, I as Input, d as Form_field_errors } from "../../../../../chunks/index5.js";
 import { o as omit, m as makeElement, u as disabledAttr, q as isHTMLElement, h as executeCallbacks, j as addMeltEventListener, l as createElHelpers, r as noop, k as kbd, b as backgroundColor } from "../../../../../chunks/page.js";
 import { t as toWritableStores, o as overridable, c as createBitAttrs, b as removeUndefined, d as getOptionUpdater, e as createDispatcher } from "../../../../../chunks/index3.js";
 import { s as setContext, g as getContext, c as createEventDispatcher, o as onDestroy } from "../../../../../chunks/lifecycle.js";
@@ -541,7 +541,7 @@ const schemaStep4 = schemaStep3.extend({
   needs: z.array(z.string()).min(1, { message: get_store_value(t)("default.page.fights.form.needs.tooFewError") })
 });
 const schemaStep5 = schemaStep4.extend({
-  request: z.string().min(10, { message: get_store_value(t)("default.page.fights.form.request.tooFewError") })
+  request: z.string().optional()
 });
 const Textarea = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class", "value", "readonly"]);
@@ -578,6 +578,14 @@ const Mascot = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let { formSuccess } = $$props;
   let { speechBubbleContentArray } = $$props;
   let thinking = false;
+  const getSpeechBubbleContent = (formSuccess2, step2) => {
+    try {
+      return step2 === 13 && !formSuccess2 ? speechBubbleContentArray.find((el) => el.step === 13).errorContent : speechBubbleContentArray.find((el) => el.step === step2).content;
+    } catch (err) {
+      console.error("error in getSpeechBubbleContent", err);
+      return [];
+    }
+  };
   let speechBubbleElement;
   const addSpeechBubbleText = (text = "Hi") => {
     speechBubbleContent = [speechBubbleContent[0], text];
@@ -611,7 +619,7 @@ const Mascot = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   if ($$props.checkJudgement === void 0 && $$bindings.checkJudgement && checkJudgement !== void 0)
     $$bindings.checkJudgement(checkJudgement);
   $$result.css.add(css$2);
-  speechBubbleContent = step === 6 && !formSuccess ? speechBubbleContentArray.find((el) => el.step === 6).errorContent : speechBubbleContentArray.find((el) => el.step === step).content;
+  speechBubbleContent = getSpeechBubbleContent(formSuccess, step);
   $$unsubscribe_locale();
   return `<div class="mt-4 flex items-start gap-2"><div class="relative left-0 right-0 flex h-12 flex-shrink-0 justify-center gap-1" data-svelte-h="svelte-ido9h0"><div style="${"background-image: url('" + escape(backgroundImage, true) + "'); background-size: 300% 100%"}" class="animate-bg relative z-10 flex h-full w-[60px] items-center justify-center rounded-b rounded-t-[50px] shadow-lg transition duration-700"><div data-name="face" class="lookaround face-3 flex flex-col gap-1 svelte-12yl6i5"><div data-name="eyes" class="eyes flex items-center justify-center gap-2"><div class="h-2 w-2 rounded-full border-2 border-white bg-black shadow-md"></div> <div class="h-2 w-2 rounded-full border-2 border-white bg-black shadow-md"></div></div> <div data-name="mouth" class="mouth flex items-center justify-center svelte-12yl6i5"><div class="h-1.5 w-2.5 rounded-b-full bg-black"></div></div></div></div></div> <div class="flex flex-grow"><div class="triangle size-3 flex-shrink-0 bg-muted svelte-12yl6i5"></div> <div class="rounded-tl-0 relative flex flex-grow rounded-b rounded-tr bg-muted px-2 pb-2 pt-1 text-sm leading-tight gap-2">${thinking ? `<div id="speechBubble" class="w-full" data-svelte-h="svelte-534rav">...</div>` : `<div id="speechBubble" class="w-full"${add_attribute("this", speechBubbleElement, 0)}></div>`} ${speechBubbleContent.length > 1 ? `<div class="flex justify-end text-2xs"><div class="-mr-1 flex flex-col items-center gap-0.5"><button class="chevron svelte-12yl6i5">${validate_component(ChevronUp, "ChevronUp").$$render($$result, { class: "size-2.5" }, {}, {})}</button>  <button class="chevron svelte-12yl6i5">${validate_component(ChevronDown, "ChevronDown").$$render($$result, { class: "size-2.5" }, {}, {})}</button></div></div>` : ``}</div></div></div>  `;
 });
@@ -766,9 +774,9 @@ const Share = create_ssr_component(($$result, $$props, $$bindings, slots) => {
                     }
                   })}</div>`;
                 }
-              })} ${validate_component(Drawer_footer, "Drawer.Footer").$$render($$result, { class: "flex flex-col gap-4 pb-10" }, {}, {
+              })} ${validate_component(Drawer_footer, "Drawer.Footer").$$render($$result, { class: "pb-10" }, {}, {
                 default: () => {
-                  return `<button class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm svelte-ljnb6t">${escape($t("default.menu.share.copyLink"))} ${validate_component(Clipboard$1, "Clipboard").$$render($$result, {}, {}, {})}</button> <button class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm svelte-ljnb6t">${escape($t("default.menu.share.mailLink"))} ${validate_component(EnvelopeClosed$1, "EnvelopeClosed").$$render($$result, {}, {}, {})}</button>`;
+                  return `<div class="max-container flex flex-col gap-4"><button class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm svelte-ljnb6t">${escape($t("default.menu.share.copyLink"))} ${validate_component(Clipboard$1, "Clipboard").$$render($$result, {}, {}, {})}</button> <button class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm svelte-ljnb6t">${escape($t("default.menu.share.mailLink"))} ${validate_component(EnvelopeClosed$1, "EnvelopeClosed").$$render($$result, {}, {}, {})}</button></div>`;
                 }
               })}`;
             }
@@ -1030,6 +1038,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       return true;
     return false;
   };
+  step = 3;
   $$result.css.add(css);
   let $$settled;
   let $$rendered;

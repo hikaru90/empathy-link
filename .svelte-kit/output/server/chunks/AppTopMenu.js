@@ -21,11 +21,19 @@ const AppTopMenu = create_ssr_component(($$result, $$props, $$bindings, slots) =
   $$unsubscribe_mode();
   $$unsubscribe_t();
   $$unsubscribe_user();
-  return ` <div class="left-0 top-0 z-[100] w-full border-b border-black/10"><nav class="flex items-center justify-between px-5 py-2 transition-all"><a href="/" class="">${validate_component(Logo, "Logo").$$render($$result, { simplified: true }, {}, {})}</a> <div class="flex items-center gap-4">${$user ? `<div class="">${validate_component(Avatar_1, "Avatar").$$render($$result, {}, {}, {})}</div>` : `${validate_component(Button, "Button").$$render($$result, { variant: "outline" }, {}, {
-    default: () => {
-      return `${escape($t("default.page.login.heading"))}`;
+  return ` <div class="left-0 top-0 z-[100] w-full border-b border-black/10"><nav class="flex items-center justify-between px-5 py-2 transition-all"><a href="/" class="">${validate_component(Logo, "Logo").$$render($$result, { simplified: true }, {}, {})}</a> <div class="flex items-center gap-4">${$user ? `<div class="">${validate_component(Avatar_1, "Avatar").$$render($$result, {}, {}, {})}</div>` : `${validate_component(Button, "Button").$$render(
+    $$result,
+    {
+      decoration: "op1",
+      class: "dark:text-white"
+    },
+    {},
+    {
+      default: () => {
+        return `${escape($t("default.page.login.heading"))}`;
+      }
     }
-  })}`}</div></nav> ${slots.submenu ? slots.submenu({}) : ``}</div>`;
+  )}`}</div></nav> ${slots.submenu ? slots.submenu({}) : ``}</div>`;
 });
 export {
   AppTopMenu as A

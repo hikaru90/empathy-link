@@ -3238,7 +3238,7 @@ const Button = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     }
   )}</div></div></div>` : `${decoration === "dark-op1" ? `<div class="${escape(null_to_empty(cn("dark-op1 relative flex items-center gap-[4px]", wrapperClass)), true) + " svelte-8i710s"}"><div class="flex w-full items-center justify-center">${validate_component(Button$1, "ButtonPrimitive.Root").$$render($$result, Object.assign({}, { builders }, { class: "p-1.5 w-full" }, { type: "button" }, $$restProps), {}, {
     default: () => {
-      return `<div class="${escape(null_to_empty(cn(buttonVariants({ variant, size: size2, className }), "skeumorphic-button-dark h-[29.4px] w-full rounded-full border-2 transition duration-700 dark:hover:bg-muted")), true) + " svelte-8i710s"}">${slots.default ? slots.default({}) : ``}</div>`;
+      return `<div class="${escape(null_to_empty(cn(buttonVariants({ variant, size: size2, className }), "skeumorphic-button-dark h-[29.4px] w-full rounded-full border-2 transition duration-700 ")), true) + " svelte-8i710s"}">${slots.default ? slots.default({}) : ``}</div>`;
     }
   })}</div></div>` : `${decoration === "floating-op1" ? `<div class="${escape(null_to_empty(cn("floating-op1 relative flex items-center gap-[4px]", wrapperClass)), true) + " svelte-8i710s"}"><div class="flex w-full flex-grow items-center justify-center">${validate_component(Button$1, "ButtonPrimitive.Root").$$render($$result, Object.assign({}, { builders }, { class: "w-full p-1.5" }, { type: "button" }, $$restProps), {}, {
     default: () => {

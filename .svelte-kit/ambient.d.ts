@@ -104,6 +104,7 @@ declare module '$env/static/private' {
 	export const npm_package_devDependencies_prettier: string;
 	export const npm_package_devDependencies_prettier_plugin_svelte: string;
 	export const npm_package_devDependencies_prettier_plugin_tailwindcss: string;
+	export const npm_package_devDependencies_rimraf: string;
 	export const npm_package_devDependencies_sass: string;
 	export const npm_package_devDependencies_svelte: string;
 	export const npm_package_devDependencies_sveltekit_i18n: string;
@@ -299,6 +300,7 @@ declare module '$env/dynamic/private' {
 		npm_package_devDependencies_prettier: string;
 		npm_package_devDependencies_prettier_plugin_svelte: string;
 		npm_package_devDependencies_prettier_plugin_tailwindcss: string;
+		npm_package_devDependencies_rimraf: string;
 		npm_package_devDependencies_sass: string;
 		npm_package_devDependencies_svelte: string;
 		npm_package_devDependencies_sveltekit_i18n: string;

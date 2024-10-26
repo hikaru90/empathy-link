@@ -66,7 +66,7 @@ const page = {
         heading: "Du hast jetzt die Möglichkeit zu antworten"
       },
       success: {
-        heading: "Geschafft"
+        heading: "Dein Antwort wurde abgeschickt"
       },
       error: {
         heading: "Leider ist bei der Antwort ein Fehler aufgetreten. Bitte versuche es nochmal. Falls das Problem weiterhin bestehen sollte, kontaktiere uns unter support@empathie-link.de"
@@ -241,6 +241,8 @@ const page = {
   login: {
     heading: "Login",
     text: "Jetzt anmelden",
+    verifyMail: "Wir haben Dir eine Bestätigungs-E-Mail geschickt. Bitte bestätige diese, um Dich einzuloggen. Falls Du keine E-Mail erhalten hast, schau bitte in Deinem Spam-Ordner nach.",
+    reverify: "Bestätigungsmail erneut verschicken",
     form: {
       email: {
         label: "E-Mail",
@@ -254,7 +256,13 @@ const page = {
         tooLongError: "Das Password darf maximal 30 Zeichen lang sein"
       }
     },
-    switchToRegister: "Noch nicht registriert?",
+    forgotPassword: {
+      question: "Passwort vergessen?",
+      heading: "Passwort zurücksetzen",
+      description: "Sollen wir Dir eine E-Mail zum zurücksetzen Deines Passworts schicken?",
+      success: "Wir haben Dir eine E-Mail zum zurücksetzen Deines Passworts geschickt"
+    },
+    switchToRegister: "Ich habe noch keinen Account",
     switchToLogin: "Zur Login-Seite",
     cta: "Einloggen",
     toasts: {
@@ -264,6 +272,7 @@ const page = {
   },
   register: {
     heading: "Registrieren",
+    text: "Jetzt registrieren",
     form: {
       firstname: {
         label: "Vorname",

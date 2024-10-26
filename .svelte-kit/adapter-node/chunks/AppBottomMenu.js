@@ -19,7 +19,7 @@ const AppBottomMenu = create_ssr_component(($$result, $$props, $$bindings, slots
   ];
   $$unsubscribe_mode();
   $$unsubscribe_t();
-  return ` <div class="fixed left-3 right-3 bottom-[72px] lg:bottom-[86px] z-[100] rounded-full p-2 backdrop-blur-lg backdrop-brightness-[0.3] shadow-xl shadow-black/20 dark:shadow-white/10 dark:shadow-2xl">${slots.default ? slots.default({}) : ``}</div>`;
+  return ` <div class="fixed left-3 right-3 bottom-[72px] lg:bottom-[86px] z-[100] rounded-full p-2 backdrop-blur-lg backdrop-brightness-[0.3] shadow-xl shadow-black/20 dark:shadow-white/10 dark:shadow-2xl max-w-[1200px] mx-auto">${slots.default ? slots.default({}) : ``}</div>`;
 });
 export {
   AppBottomMenu as A

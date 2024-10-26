@@ -6,8 +6,6 @@ const load = async ({ url, data }) => {
     user.set(data.user);
   else
     user.set(void 0);
-  console.log("layout.ts values - locals:", data);
-  console.log("layout.ts values - user:", data.user);
   return {
     locale: data.locale,
     route: url.pathname,

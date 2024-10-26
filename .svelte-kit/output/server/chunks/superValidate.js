@@ -1,5 +1,5 @@
-import "./index.js";
-import { p as parseRequest, m as mergeDefaults, a as mapErrors, r as replaceInvalidDefaults } from "./memoize.js";
+import { p as parseRequest, m as mergeDefaults, a as mapErrors, r as replaceInvalidDefaults, b as splitPath, t as traversePath } from "./memoize.js";
+import { f as fail } from "./index.js";
 async function superValidate(data, adapter, options) {
   if (data && "superFormValidationLibrary" in data) {
     options = adapter;
@@ -46,6 +46,49 @@ async function superValidate(data, adapter, options) {
   }
   return output;
 }
+function setError(form, path, error, options) {
+  if (error == void 0 || typeof error !== "string" && !Array.isArray(error)) {
+    options = error;
+    error = path;
+    path = "";
+  }
+  if (options === void 0)
+    options = {};
+  const errArr = Array.isArray(error) ? error : [error];
+  if (!form.errors)
+    form.errors = {};
+  if (path === null || path === "") {
+    if (!form.errors._errors)
+      form.errors._errors = [];
+    form.errors._errors = options.overwrite ? errArr : form.errors._errors.concat(errArr);
+  } else {
+    const realPath = splitPath(path);
+    const leaf = traversePath(form.errors, realPath, ({ parent, key, value }) => {
+      if (value === void 0)
+        parent[key] = {};
+      return parent[key];
+    });
+    if (leaf) {
+      leaf.parent[leaf.key] = Array.isArray(leaf.value) && !options.overwrite ? leaf.value.concat(errArr) : errArr;
+    }
+  }
+  form.valid = false;
+  const output = options.removeFiles === false ? { form } : withFiles({ form });
+  return fail(options.status ?? 400, output);
+}
+function withFiles(obj) {
+  if (typeof obj !== "object")
+    return obj;
+  for (const key in obj) {
+    const value = obj[key];
+    if (value instanceof File)
+      delete obj[key];
+    else if (value && typeof value === "object")
+      withFiles(value);
+  }
+  return obj;
+}
 export {
+  setError as a,
   superValidate as s
 };

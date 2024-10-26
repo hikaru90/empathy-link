@@ -1,7 +1,7 @@
 import { s as subscribe } from "../../../../../chunks/utils.js";
 import { c as create_ssr_component, a as add_attribute, v as validate_component, e as escape } from "../../../../../chunks/ssr.js";
 import { F as Form_button, M as Menu } from "../../../../../chunks/form-button.js";
-import { F as Form_field, C as Control, a as Form_label, I as Input, b as Form_field_errors } from "../../../../../chunks/index5.js";
+import { F as Form_field, C as Control, c as Form_label, I as Input, d as Form_field_errors } from "../../../../../chunks/index5.js";
 import { f as formSchema } from "../../../../../chunks/schema.js";
 import "../../../../../chunks/client.js";
 import { s as superForm } from "../../../../../chunks/memoize.js";
@@ -10,7 +10,6 @@ import { z as zodClient } from "../../../../../chunks/zod.js";
 import { t } from "../../../../../chunks/translations.js";
 import { a as toast } from "../../../../../chunks/Toaster.svelte_svelte_type_style_lang.js";
 import "../../../../../chunks/index3.js";
-import { B as Button } from "../../../../../chunks/button.js";
 const RegisterForm = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $t, $$unsubscribe_t;
   let $formData, $$unsubscribe_formData;
@@ -130,11 +129,7 @@ const RegisterForm = create_ssr_component(($$result, $$props, $$bindings, slots)
           }
         })}  ${validate_component(Form_field_errors, "Form.FieldErrors").$$render($$result, {}, {}, {})}`;
       }
-    })} <div class="flex items-center justify-between">${validate_component(Button, "Button").$$render($$result, { variant: "ghost" }, {}, {
-      default: () => {
-        return `${escape($t("default.page.login.switchToLogin"))}`;
-      }
-    })} ${validate_component(Form_button, "Form.Button").$$render($$result, { class: "bg-primary text-muted" }, {}, {
+    })} <div class="flex items-center justify-between"><a href="/app/auth/login" class="text-sm hover:underline">${escape($t("default.page.login.switchToLogin"))}</a> ${validate_component(Form_button, "Form.Button").$$render($$result, { class: "bg-primary text-muted" }, {}, {
       default: () => {
         return `${escape($t("default.page.register.cta"))}`;
       }

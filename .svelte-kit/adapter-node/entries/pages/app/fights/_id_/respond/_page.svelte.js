@@ -5,11 +5,11 @@ import { A as AppBottomMenu } from "../../../../../../chunks/AppBottomMenu.js";
 import { p as page } from "../../../../../../chunks/stores.js";
 import "../../../../../../chunks/index3.js";
 import { A as ArrowRight, C as ChevronUp, a as ChevronDown, d as defaults, F as FormStepDisplay, D as Drawer, b as Drawer_content, c as Drawer_header, e as Drawer_title, f as Close, g as Cross1 } from "../../../../../../chunks/index7.js";
-import "../../../../../../chunks/page.js";
+import { b as backgroundColor } from "../../../../../../chunks/page.js";
 import { t, l as locale } from "../../../../../../chunks/translations.js";
 import "clsx";
 import "../../../../../../chunks/client.js";
-import "../../../../../../chunks/auth.js";
+import { u as user } from "../../../../../../chunks/auth.js";
 import { s as superForm } from "../../../../../../chunks/memoize.js";
 import "../../../../../../chunks/index.js";
 import { c as createEventDispatcher, o as onDestroy } from "../../../../../../chunks/lifecycle.js";
@@ -101,7 +101,7 @@ const schemaStep11 = schemaStep3.extend({
   needs: z.array(z.string()).min(1, { message: get_store_value(t)("default.page.fights.form.needs.tooFewError") })
 });
 const schemaStep12 = schemaStep4.extend({
-  request: z.string().min(10, { message: get_store_value(t)("default.page.fights.form.request.tooFewError") })
+  request: z.string().optional()
 });
 const css$1 = {
   code: ".triangle.svelte-12yl6i5{-webkit-clip-path:polygon(0 0, 100% 0, 100% 100%);clip-path:polygon(0 0, 100% 0, 100% 100%)}.mouth.svelte-12yl6i5{animation:svelte-12yl6i5-mouth 10s infinite}.lookaround.svelte-12yl6i5{animation:svelte-12yl6i5-lookaround 10s infinite}.chevron.svelte-12yl6i5{display:flex;width:1rem;height:1rem;align-items:center;justify-content:center;border-radius:0.25rem;--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}@keyframes svelte-12yl6i5-mouth{0%{transform:scaleY(0.4)}5%{transform:scaleY(1)}25%{transform:scaleY(0.4)}100%{transform:scaleY(1)}}@keyframes svelte-12yl6i5-lookaround{0%{transform:translate(0, 20%)}5%{transform:translate(-20%, 20%)}25%{transform:translate(40%, 20%)}30%{transform:translate(30%, 52%)}50%{transform:translate(30%, 52%)}55%{transform:translate(-30%, 44%)}85%{transform:translate(-30%, 44%)}100%{transform:translate(0, 20%)}}",
@@ -116,9 +116,10 @@ const ResponseMascot = create_ssr_component(($$result, $$props, $$bindings, slot
   let { formSuccess } = $$props;
   let { speechBubbleContentArray } = $$props;
   let thinking = false;
-  const getSpeechBubbleContent = (formSuccess2, step2) => {
+  const getSpeechBubbleContent = (formSuccess2, step2, speechBubbleContentArray2) => {
     try {
-      return step2 === 13 && !formSuccess2 ? speechBubbleContentArray.find((el) => el.step === 13).errorContent : speechBubbleContentArray.find((el) => el.step === step2).content;
+      console.log("speechBubbleContentArray", speechBubbleContentArray2);
+      return step2 === 13 && !formSuccess2 ? speechBubbleContentArray2.find((el) => el.step === 13).errorContent : speechBubbleContentArray2.find((el) => el.step === step2).content;
     } catch (err) {
       console.error("error in getSpeechBubbleContent", err);
       return [];
@@ -157,7 +158,7 @@ const ResponseMascot = create_ssr_component(($$result, $$props, $$bindings, slot
   if ($$props.checkJudgement === void 0 && $$bindings.checkJudgement && checkJudgement !== void 0)
     $$bindings.checkJudgement(checkJudgement);
   $$result.css.add(css$1);
-  speechBubbleContent = getSpeechBubbleContent(formSuccess, step);
+  speechBubbleContent = getSpeechBubbleContent(formSuccess, step, speechBubbleContentArray);
   $$unsubscribe_locale();
   return `<div class="mt-4 flex items-start gap-2"><div class="relative left-0 right-0 flex h-12 flex-shrink-0 justify-center gap-1" data-svelte-h="svelte-ido9h0"><div style="${"background-image: url('" + escape(backgroundImage, true) + "'); background-size: 300% 100%"}" class="animate-bg relative z-10 flex h-full w-[60px] items-center justify-center rounded-b rounded-t-[50px] shadow-lg transition duration-700"><div data-name="face" class="lookaround face-3 flex flex-col gap-1 svelte-12yl6i5"><div data-name="eyes" class="eyes flex items-center justify-center gap-2"><div class="h-2 w-2 rounded-full border-2 border-white bg-black shadow-md"></div> <div class="h-2 w-2 rounded-full border-2 border-white bg-black shadow-md"></div></div> <div data-name="mouth" class="mouth flex items-center justify-center svelte-12yl6i5"><div class="h-1.5 w-2.5 rounded-b-full bg-black"></div></div></div></div></div> <div class="flex flex-grow"><div class="triangle size-3 flex-shrink-0 bg-muted svelte-12yl6i5"></div> <div class="rounded-tl-0 relative flex flex-grow rounded-b rounded-tr bg-muted px-2 pb-2 pt-1 text-sm leading-tight gap-2">${thinking ? `<div id="speechBubble" class="w-full" data-svelte-h="svelte-534rav">...</div>` : `<div id="speechBubble" class="w-full"${add_attribute("this", speechBubbleElement, 0)}></div>`} ${speechBubbleContent.length > 1 ? `<div class="flex justify-end text-2xs"><div class="-mr-1 flex flex-col items-center gap-0.5"><button class="chevron svelte-12yl6i5">${validate_component(ChevronUp, "ChevronUp").$$render($$result, { class: "size-2.5" }, {}, {})}</button>  <button class="chevron svelte-12yl6i5">${validate_component(ChevronDown, "ChevronDown").$$render($$result, { class: "size-2.5" }, {}, {})}</button></div></div>` : ``}</div></div></div>  `;
 });
@@ -166,12 +167,15 @@ const css = {
   map: null
 };
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $t, $$unsubscribe_t;
+  let currentBackgroundColor;
   let $$unsubscribe_page;
+  let $$unsubscribe_user;
+  let $t, $$unsubscribe_t;
   let $formData, $$unsubscribe_formData;
   let $$unsubscribe_locale;
-  $$unsubscribe_t = subscribe(t, (value) => $t = value);
   $$unsubscribe_page = subscribe(page, (value) => value);
+  $$unsubscribe_user = subscribe(user, (value) => value);
+  $$unsubscribe_t = subscribe(t, (value) => $t = value);
   $$unsubscribe_locale = subscribe(locale, (value) => value);
   const data = defaults(zod(schemaStep12));
   let fight = void 0;
@@ -196,6 +200,11 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let formSuccess = false;
   let checkForJudgement = false;
   let drawerOpen = false;
+  const updateBackgroundColor = (step2) => {
+    const color = `bg-${stepConstructor[step2 - 1].slug}-background`;
+    backgroundColor.set(color);
+    return color;
+  };
   const handleSubmit = async () => {
     try {
       let data2 = $formData;
@@ -333,7 +342,6 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     });
     stepConstructor = [...newSteps];
   });
-  step = 1;
   $$result.css.add(css);
   let $$settled;
   let $$rendered;
@@ -342,7 +350,8 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     $$settled = true;
     $$result.head = previous_head;
     options.validators = steps[step - 1];
-    $$rendered = ` <div class="${"flex flex-grow flex-col justify-between transition duration-500 " + escape(`bg-${stepConstructor[step - 1].slug}-background`, true) + " dark:bg-background overflow-hidden svelte-18kg1ym"}">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="max-container relative flex flex-grow flex-col pb-40"><form class="-mt-1 flex h-full flex-grow flex-col pb-[74px]">${!formSubmitted && !formSuccess ? `${step > 8 ? `${validate_component(FormStepDisplay, "FormStepDisplay").$$render(
+    currentBackgroundColor = updateBackgroundColor(step);
+    $$rendered = ` <div class="${"flex flex-grow flex-col justify-between transition duration-500 " + escape(currentBackgroundColor, true) + " min-h-svh overflow-hidden dark:bg-background svelte-18kg1ym"}">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="max-container relative flex flex-grow flex-col pb-40"><form class="-mt-1 flex h-full flex-grow flex-col pb-[74px]">${!formSubmitted && !formSuccess ? `${step > 8 ? `${validate_component(FormStepDisplay, "FormStepDisplay").$$render(
       $$result,
       {
         step,
@@ -413,8 +422,9 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       }
     )}`;
   } while (!$$settled);
-  $$unsubscribe_t();
   $$unsubscribe_page();
+  $$unsubscribe_user();
+  $$unsubscribe_t();
   $$unsubscribe_formData();
   $$unsubscribe_locale();
   return $$rendered;

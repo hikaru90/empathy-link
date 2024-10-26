@@ -1,8 +1,8 @@
-import { s as subscribe } from "../../../../../chunks/utils.js";
-import { c as create_ssr_component, a as add_attribute, v as validate_component, e as escape } from "../../../../../chunks/ssr.js";
+import { c as compute_rest_props, s as subscribe } from "../../../../../chunks/utils.js";
+import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object, a as add_attribute, v as validate_component, e as escape } from "../../../../../chunks/ssr.js";
 import { F as Form_button, M as Menu } from "../../../../../chunks/form-button.js";
 import "../../../../../chunks/index.js";
-import { F as Form_field, C as Control, a as Form_label, I as Input, b as Form_field_errors } from "../../../../../chunks/index5.js";
+import { g as getFormField, a as getDataFsError, b as generateId, F as Form_field, C as Control, c as Form_label, I as Input, d as Form_field_errors } from "../../../../../chunks/index5.js";
 import { f as formSchema } from "../../../../../chunks/schema.js";
 import "../../../../../chunks/client.js";
 import { s as superForm } from "../../../../../chunks/memoize.js";
@@ -10,13 +10,91 @@ import { z as zodClient } from "../../../../../chunks/zod.js";
 import { t } from "../../../../../chunks/translations.js";
 import { a as toast } from "../../../../../chunks/Toaster.svelte_svelte_type_style_lang.js";
 import "../../../../../chunks/index3.js";
+import { R as Root, D as Dialog_content, a as Dialog_header, b as Dialog_title, c as Dialog_description } from "../../../../../chunks/index6.js";
+import "../../../../../chunks/pocketbase.js";
+import { c as cn } from "../../../../../chunks/utils2.js";
 import { B as Button } from "../../../../../chunks/button.js";
+import { p as page } from "../../../../../chunks/stores.js";
+const Check = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["color", "size"]);
+  let { color = "currentColor" } = $$props;
+  let { size = 15 } = $$props;
+  if ($$props.color === void 0 && $$bindings.color && color !== void 0)
+    $$bindings.color(color);
+  if ($$props.size === void 0 && $$bindings.size && size !== void 0)
+    $$bindings.size(size);
+  return `<svg${spread(
+    [
+      { width: escape_attribute_value(size) },
+      { height: escape_attribute_value(size) },
+      { viewBox: "0 0 15 15" },
+      { fill: "none" },
+      { xmlns: "http://www.w3.org/2000/svg" },
+      escape_object($$restProps)
+    ],
+    {}
+  )}><path fill-rule="evenodd" clip-rule="evenodd" d="M11.4669 3.72684C11.7558 3.91574 11.8369 4.30308 11.648 4.59198L7.39799 11.092C7.29783 11.2452 7.13556 11.3467 6.95402 11.3699C6.77247 11.3931 6.58989 11.3355 6.45446 11.2124L3.70446 8.71241C3.44905 8.48022 3.43023 8.08494 3.66242 7.82953C3.89461 7.57412 4.28989 7.55529 4.5453 7.78749L6.75292 9.79441L10.6018 3.90792C10.7907 3.61902 11.178 3.53795 11.4669 3.72684Z"${add_attribute("fill", color, 0)}></path></svg>`;
+});
+const Check$1 = Check;
+const Description = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let descriptionAttrs;
+  let $$restProps = compute_rest_props($$props, ["id", "asChild", "el"]);
+  let $errors, $$unsubscribe_errors;
+  let $descriptionId, $$unsubscribe_descriptionId;
+  const { descriptionId, errors } = getFormField();
+  $$unsubscribe_descriptionId = subscribe(descriptionId, (value) => $descriptionId = value);
+  $$unsubscribe_errors = subscribe(errors, (value) => $errors = value);
+  let { id = generateId() } = $$props;
+  let { asChild = false } = $$props;
+  let { el = void 0 } = $$props;
+  if ($$props.id === void 0 && $$bindings.id && id !== void 0)
+    $$bindings.id(id);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
+    $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
+    $$bindings.el(el);
+  {
+    descriptionId.set(id);
+  }
+  descriptionAttrs = {
+    id: $descriptionId,
+    "data-fs-error": getDataFsError($errors),
+    "data-fs-description": "",
+    ...$$restProps
+  };
+  $$unsubscribe_errors();
+  $$unsubscribe_descriptionId();
+  return ` ${asChild ? `${slots.default ? slots.default({ descriptionAttrs }) : ``}` : `<div${spread([escape_object(descriptionAttrs)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({ descriptionAttrs }) : ``}</div>`}`;
+});
+const Form_description = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["class"]);
+  let { class: className = void 0 } = $$props;
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  return `${validate_component(Description, "FormPrimitive.Description").$$render(
+    $$result,
+    Object.assign(
+      {},
+      {
+        class: cn("text-[0.8rem] text-muted-foreground", className)
+      },
+      $$restProps
+    ),
+    {},
+    {
+      default: ({ descriptionAttrs }) => {
+        return `${slots.default ? slots.default({ descriptionAttrs }) : ``}`;
+      }
+    }
+  )}`;
+});
 const LoginForm = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $t, $$unsubscribe_t;
   let $formData, $$unsubscribe_formData;
   $$unsubscribe_t = subscribe(t, (value) => $t = value);
   let { class: className = void 0 } = $$props;
   let { data } = $$props;
+  let resetPassordDialogOpen = false;
   const form = superForm(data, {
     resetForm: false,
     validators: zodClient(formSchema),
@@ -24,9 +102,8 @@ const LoginForm = create_ssr_component(($$result, $$props, $$bindings, slots) =>
       console.log("result", result);
       if (result.type === "failure")
         toast.error($t("default.page.login.toasts.error"));
-      if (result.type === "success") {
-        toast.success($t("default.page.login.toasts.success"));
-      }
+      if (result.type === "success")
+        ;
     }
   });
   const { form: formData, errors, enhance, delayed, message, constraints, reset } = form;
@@ -83,31 +160,80 @@ const LoginForm = create_ssr_component(($$result, $$props, $$bindings, slots) =>
               {}
             )}`;
           }
-        })}  ${validate_component(Form_field_errors, "Form.FieldErrors").$$render($$result, {}, {}, {})}`;
+        })} ${validate_component(Form_description, "Form.Description").$$render($$result, {}, {}, {
+          default: () => {
+            return `<a role="button" tabindex="0" class="text-sm text-muted-foreground hover:underline">${escape($t("default.page.login.forgotPassword.question"))}</a>`;
+          }
+        })} ${validate_component(Form_field_errors, "Form.FieldErrors").$$render($$result, {}, {}, {})}`;
       }
-    })} <div class="flex items-center justify-between">${validate_component(Button, "Button").$$render($$result, { variant: "ghost" }, {}, {
-      default: () => {
-        return `${escape($t("default.page.login.switchToRegister"))}`;
-      }
-    })} ${validate_component(Form_button, "Form.Button").$$render($$result, { class: "bg-primary text-muted" }, {}, {
+    })} <div class="flex items-center justify-between"><a href="/app/auth/register" class="text-sm hover:underline">${escape($t("default.page.login.switchToRegister"))}</a> ${validate_component(Form_button, "Form.Button").$$render($$result, { class: "bg-primary text-muted" }, {}, {
       default: () => {
         return `${escape($t("default.page.login.cta"))}`;
       }
-    })}</div></form>`;
+    })}</div></form> ${validate_component(Root, "Dialog.Root").$$render(
+      $$result,
+      {
+        preventScroll: false,
+        open: resetPassordDialogOpen
+      },
+      {
+        open: ($$value) => {
+          resetPassordDialogOpen = $$value;
+          $$settled = false;
+        }
+      },
+      {
+        default: () => {
+          return `${validate_component(Dialog_content, "Dialog.Content").$$render($$result, {}, {}, {
+            default: () => {
+              return `${validate_component(Dialog_header, "Dialog.Header").$$render($$result, {}, {}, {
+                default: () => {
+                  return `${validate_component(Dialog_title, "Dialog.Title").$$render($$result, { class: "mb-10 leading-tight" }, {}, {
+                    default: () => {
+                      return `${escape($t("default.page.login.forgotPassword.heading"))}`;
+                    }
+                  })} ${validate_component(Dialog_description, "Dialog.Description").$$render($$result, {}, {}, {
+                    default: () => {
+                      return `${escape($t("default.page.login.forgotPassword.description"))} <div class="mt-4 flex justify-end">${validate_component(Button, "Button").$$render(
+                        $$result,
+                        {
+                          class: "flex items-center gap-3 bg-muted-dark"
+                        },
+                        {},
+                        {
+                          default: () => {
+                            return `${escape($t("default.page.login.forgotPassword.heading"))} ${validate_component(Check$1, "Check").$$render($$result, { class: "text-needs-background" }, {}, {})}`;
+                          }
+                        }
+                      )}</div>`;
+                    }
+                  })}`;
+                }
+              })}`;
+            }
+          })}`;
+        }
+      }
+    )}`;
   } while (!$$settled);
   $$unsubscribe_t();
   $$unsubscribe_formData();
   return $$rendered;
 });
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $page, $$unsubscribe_page;
   let $t, $$unsubscribe_t;
+  $$unsubscribe_page = subscribe(page, (value) => $page = value);
   $$unsubscribe_t = subscribe(t, (value) => $t = value);
   let { data } = $$props;
+  const verifyMail = $page.url.searchParams.get("verifyMail");
+  console.log("verifyMail", verifyMail);
   console.log("login page");
   if ($$props.data === void 0 && $$bindings.data && data !== void 0)
     $$bindings.data(data);
+  $$unsubscribe_page();
   $$unsubscribe_t();
-  return `<div class="flex h-full flex-grow flex-col justify-between"><div class="flex-grow">${validate_component(Menu, "Menu").$$render($$result, {}, {}, {})} <div class="max-container relative"><div class="w-full flex flex-col items-center justify-center py-32"><h1 class="font-heading font-bold text-2xl">${escape($t("default.page.login.heading"))}</h1> ${validate_component(LoginForm, "LoginForm").$$render(
+  return `<div class="flex h-full flex-grow flex-col justify-between"><div class="flex-grow">${validate_component(Menu, "Menu").$$render($$result, {}, {}, {})} <div class="max-container relative"><div class="w-full flex flex-col items-center justify-center py-32">${verifyMail ? `<div class="max-container relative"><div class="text-white">${escape($t("default.page.login.verifyMail"))}</div></div>` : ``} <h1 class="font-heading font-bold text-2xl">${escape($t("default.page.login.heading"))}</h1> ${validate_component(LoginForm, "LoginForm").$$render(
     $$result,
     {
       data: data.form,

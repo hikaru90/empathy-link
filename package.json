@@ -7,7 +7,7 @@
 	},
 	"scripts": {
 		"dev": "vite dev --port 3000 --host",
-		"build": "vite build",
+		"build": "rimraf build && rimraf .svelte-kit && vite build",
 		"buildprod": "vite -r dotenv/config build",
 		"preview": "vite preview",
 		"test": "playwright test",
@@ -41,6 +41,7 @@
 		"prettier": "^3.2.5",
 		"prettier-plugin-svelte": "^3.2.2",
 		"prettier-plugin-tailwindcss": "^0.5.13",
+		"rimraf": "^6.0.1",
 		"sass": "^1.74.1",
 		"svelte": "^4.2.12",
 		"svelte-check": "^3.6.9",

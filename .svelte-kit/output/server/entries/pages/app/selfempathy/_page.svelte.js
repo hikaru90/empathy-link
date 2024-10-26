@@ -9,6 +9,8 @@ import "../../../../chunks/client.js";
 import "../../../../chunks/memoize.js";
 import "../../../../chunks/translations.js";
 import "../../../../chunks/Toaster.svelte_svelte_type_style_lang.js";
+/* empty css                                                              */
+import "../../../../chunks/pocketbase.js";
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   console.log("login page");
   return `<div class="flex h-full flex-grow flex-col justify-between"><div class="flex-grow">${validate_component(AppBottomMenu, "AppBottomMenu").$$render($$result, {}, {}, {})} <h1 data-svelte-h="svelte-143zctw">Selfempathy</h1></div></div>`;

@@ -348,6 +348,9 @@ export {
   Control as C,
   Form_field as F,
   Input as I,
-  Form_label as a,
-  Form_field_errors as b
+  getDataFsError as a,
+  generateId as b,
+  Form_label as c,
+  Form_field_errors as d,
+  getFormField as g
 };

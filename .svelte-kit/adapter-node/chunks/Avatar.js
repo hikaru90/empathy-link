@@ -8,6 +8,8 @@ import "./client.js";
 import { t, l as locale } from "./translations.js";
 import { R as Root, T as Trigger, C as Close } from "./index3.js";
 import { s as setCookie } from "./helpers.js";
+import { u as user } from "./auth.js";
+import { b as backgroundImage } from "./SparklePill.js";
 import { c as cn } from "./utils2.js";
 const Person = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["color", "size"]);
@@ -86,7 +88,7 @@ const Sheet_footer = create_ssr_component(($$result, $$props, $$bindings, slots)
   return `<div${spread(
     [
       {
-        class: escape_attribute_value(cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className))
+        class: escape_attribute_value(cn("flex flex-col", className))
       },
       escape_object($$restProps)
     ],
@@ -98,9 +100,11 @@ const Avatar_1 = create_ssr_component(($$result, $$props, $$bindings, slots) => 
   let $mode, $$unsubscribe_mode;
   let $t, $$unsubscribe_t;
   let $locale, $$unsubscribe_locale;
+  let $user, $$unsubscribe_user;
   $$unsubscribe_mode = subscribe(derivedMode, (value) => $mode = value);
   $$unsubscribe_t = subscribe(t, (value) => $t = value);
   $$unsubscribe_locale = subscribe(locale, (value) => $locale = value);
+  $$unsubscribe_user = subscribe(user, (value) => $user = value);
   const langs = [{ value: "en", label: "English" }, { value: "de", label: "German" }];
   const handleSelect = (event) => {
     if (event) {
@@ -220,7 +224,7 @@ const Avatar_1 = create_ssr_component(($$result, $$props, $$bindings, slots) => 
                 }
               })}</div></div> ${validate_component(Sheet_footer, "Sheet.Footer").$$render($$result, { class: "w-full" }, {}, {
                 default: () => {
-                  return ` <form action="/app/auth/logout" method="POST" class="w-full"><button type="submit" class="w-full">${validate_component(Button, "Button").$$render(
+                  return `<div class="my-2 flex gap-4 px-6"><div class="relative flex items-center justify-center"><div class="flex size-7 items-center justify-center rounded-full bg-muted text-xs font-bold uppercase tracking-[-0.12em] relative z-10">${escape($user.firstName.charAt(0))} ${escape($user.lastName.charAt(0))}</div> <div style="${"background-image: url('" + escape(backgroundImage, true) + "'); background-size: 400% 400%"}"${add_attribute("class", "size-[36px] rounded-full bg-center absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 z-0 shadow-lg", 0)}></div></div> <div class="flex flex-col"><div class="font-bold">${escape($user.firstName)} ${escape($user.lastName)}</div> <div class="text-sm -mt-1">${escape($user.email)}</div></div></div> <form action="/app/auth/logout" method="POST" class="w-full"><button type="submit" class="w-full">${validate_component(Button, "Button").$$render(
                     $$result,
                     {
                       wrapperClass: "w-full",
@@ -233,7 +237,7 @@ const Avatar_1 = create_ssr_component(($$result, $$props, $$bindings, slots) => 
                         return `${escape($t("default.menu.profile.logout"))} ${validate_component(Exit, "Exit").$$render($$result, { class: "size-3" }, {}, {})}`;
                       }
                     }
-                  )}</button></form>`;
+                  )}</button></form> `;
                 }
               })}</div>`;
             }
@@ -245,6 +249,7 @@ const Avatar_1 = create_ssr_component(($$result, $$props, $$bindings, slots) => 
   $$unsubscribe_mode();
   $$unsubscribe_t();
   $$unsubscribe_locale();
+  $$unsubscribe_user();
   return $$rendered;
 });
 export {

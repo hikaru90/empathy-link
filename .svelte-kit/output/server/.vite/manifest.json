@@ -48,6 +48,8 @@
       "_translations.js",
       "_index3.js",
       "_helpers.js",
+      "_auth.js",
+      "_SparklePill.js",
       "_utils2.js"
     ]
   },
@@ -349,7 +351,7 @@
       "_page.js"
     ],
     "css": [
-      "_app/immutable/assets/simplebar.JGS7PKR6.css"
+      "_app/immutable/assets/simplebar.D9N56SMQ.css"
     ]
   },
   "_skeleton.js": {
@@ -389,8 +391,8 @@
     "file": "chunks/superValidate.js",
     "name": "superValidate",
     "imports": [
-      "_index.js",
-      "_memoize.js"
+      "_memoize.js",
+      "_index.js"
     ]
   },
   "_switch.js": {
@@ -764,7 +766,11 @@
       "_translations.js",
       "_Toaster.svelte_svelte_type_style_lang.js",
       "_index3.js",
-      "_button.js"
+      "_index6.js",
+      "_pocketbase.js",
+      "_utils2.js",
+      "_button.js",
+      "_stores.js"
     ]
   },
   "src/routes/app/auth/logout/+server.ts": {
@@ -809,8 +815,7 @@
       "_zod.js",
       "_translations.js",
       "_Toaster.svelte_svelte_type_style_lang.js",
-      "_index3.js",
-      "_button.js"
+      "_index3.js"
     ]
   },
   "src/routes/app/dashboard/+page.svelte": {
@@ -871,7 +876,8 @@
       "_CaretLeft.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.Cc8VDaJ_.css"
+      "_app/immutable/assets/_page.Cc8VDaJ_.css",
+      "_app/immutable/assets/dialog-content.CiZ0nAqS.css"
     ]
   },
   "src/routes/app/fights/[id]/+page.server.ts": {
@@ -1002,7 +1008,11 @@
       "_client.js",
       "_memoize.js",
       "_translations.js",
-      "_Toaster.svelte_svelte_type_style_lang.js"
+      "_Toaster.svelte_svelte_type_style_lang.js",
+      "_pocketbase.js"
+    ],
+    "css": [
+      "_app/immutable/assets/dialog-content.CiZ0nAqS.css"
     ]
   }
 }
