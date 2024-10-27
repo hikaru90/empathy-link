@@ -26,6 +26,7 @@ import { p as page } from "../../../../../chunks/stores.js";
 import { R as Root, D as Dialog_content, a as Dialog_header, b as Dialog_title, c as Dialog_description } from "../../../../../chunks/index6.js";
 import { a as toast } from "../../../../../chunks/Toaster.svelte_svelte_type_style_lang.js";
 /* empty css                                                        */
+import { C as Check } from "../../../../../chunks/Check.js";
 import { P as PaperPlane } from "../../../../../chunks/PaperPlane.js";
 function getElemDirection(elem) {
   const style = window.getComputedStyle(elem);
@@ -352,6 +353,27 @@ const EnvelopeClosed = create_ssr_component(($$result, $$props, $$bindings, slot
   )}><path fill-rule="evenodd" clip-rule="evenodd" d="M1 2C0.447715 2 0 2.44772 0 3V12C0 12.5523 0.447715 13 1 13H14C14.5523 13 15 12.5523 15 12V3C15 2.44772 14.5523 2 14 2H1ZM1 3L14 3V3.92494C13.9174 3.92486 13.8338 3.94751 13.7589 3.99505L7.5 7.96703L1.24112 3.99505C1.16621 3.94751 1.0826 3.92486 1 3.92494V3ZM1 4.90797V12H14V4.90797L7.74112 8.87995C7.59394 8.97335 7.40606 8.97335 7.25888 8.87995L1 4.90797Z"${add_attribute("fill", color, 0)}></path></svg>`;
 });
 const EnvelopeClosed$1 = EnvelopeClosed;
+const Reset = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $$restProps = compute_rest_props($$props, ["color", "size"]);
+  let { color = "currentColor" } = $$props;
+  let { size = 15 } = $$props;
+  if ($$props.color === void 0 && $$bindings.color && color !== void 0)
+    $$bindings.color(color);
+  if ($$props.size === void 0 && $$bindings.size && size !== void 0)
+    $$bindings.size(size);
+  return `<svg${spread(
+    [
+      { width: escape_attribute_value(size) },
+      { height: escape_attribute_value(size) },
+      { viewBox: "0 0 15 15" },
+      { fill: "none" },
+      { xmlns: "http://www.w3.org/2000/svg" },
+      escape_object($$restProps)
+    ],
+    {}
+  )}><path fill-rule="evenodd" clip-rule="evenodd" d="M4.85355 2.14645C5.04882 2.34171 5.04882 2.65829 4.85355 2.85355L3.70711 4H9C11.4853 4 13.5 6.01472 13.5 8.5C13.5 10.9853 11.4853 13 9 13H5C4.72386 13 4.5 12.7761 4.5 12.5C4.5 12.2239 4.72386 12 5 12H9C10.933 12 12.5 10.433 12.5 8.5C12.5 6.567 10.933 5 9 5H3.70711L4.85355 6.14645C5.04882 6.34171 5.04882 6.65829 4.85355 6.85355C4.65829 7.04882 4.34171 7.04882 4.14645 6.85355L2.14645 4.85355C1.95118 4.65829 1.95118 4.34171 2.14645 4.14645L4.14645 2.14645C4.34171 1.95118 4.65829 1.95118 4.85355 2.14645Z"${add_attribute("fill", color, 0)}></path></svg>`;
+});
+const Reset$1 = Reset;
 const Share1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["color", "size"]);
   let { color = "currentColor" } = $$props;
@@ -725,7 +747,7 @@ const Share = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     $$settled = true;
     $$result.head = previous_head;
     shareableLink = `${$page.url.origin}/app/fights/${id}/respond`;
-    $$rendered = `<div class="relative flex h-auto items-center justify-between"><a href="/app/dashboard" class="block">${validate_component(Button, "Button").$$render(
+    $$rendered = `<div class="relative flex h-auto w-full items-center justify-between"><a href="/app/dashboard" class="block">${validate_component(Button, "Button").$$render(
       $$result,
       {
         decoration: "dark-op1",
@@ -737,7 +759,31 @@ const Share = create_ssr_component(($$result, $$props, $$bindings, slots) => {
           return `${validate_component(CaretLeft, "CaretLeft").$$render($$result, { class: "h-4 w-4 rounded-full" }, {}, {})}`;
         }
       }
-    )}</a> ${validate_component(Button, "Button").$$render(
+    )}</a> <div class="flex items-center">${!record.resolved ? `${validate_component(Button, "Button").$$render(
+      $$result,
+      {
+        decoration: "dark-op1",
+        class: "flex items-center gap-2 border-neutral-900 bg-green-700 text-sm text-zinc-200 hover:bg-green-800"
+      },
+      {},
+      {
+        default: () => {
+          return `${escape($t("default.page.fight.resolve"))} ${validate_component(Check, "Check").$$render($$result, { class: "-mr-2" }, {}, {})}`;
+        }
+      }
+    )}` : `${validate_component(Button, "Button").$$render(
+      $$result,
+      {
+        decoration: "dark-op1",
+        class: "flex items-center gap-2 border-neutral-900 bg-red-700 text-sm text-zinc-200 hover:bg-red-800"
+      },
+      {},
+      {
+        default: () => {
+          return `${escape($t("default.page.fight.unresolve"))} ${validate_component(Reset$1, "Reset").$$render($$result, { class: "-mr-2" }, {}, {})}`;
+        }
+      }
+    )}`} ${validate_component(Button, "Button").$$render(
       $$result,
       {
         decoration: "dark-op1",
@@ -746,10 +792,10 @@ const Share = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       {},
       {
         default: () => {
-          return `${escape($t("default.menu.share.cta"))} ${validate_component(Share1$1, "Share1").$$render($$result, {}, {}, {})}`;
+          return `${escape($t("default.menu.share.cta"))} ${validate_component(Share1$1, "Share1").$$render($$result, { class: "-mr-1" }, {}, {})}`;
         }
       }
-    )}</div> ${validate_component(Drawer, "Drawer.Root").$$render(
+    )}</div></div> ${validate_component(Drawer, "Drawer.Root").$$render(
       $$result,
       { open: drawerOpen },
       {

@@ -1,4 +1,4 @@
-import { c as compute_rest_props, s as subscribe } from "../../../../chunks/utils.js";
+import { c as compute_rest_props, s as subscribe, a as null_to_empty } from "../../../../chunks/utils.js";
 import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object, a as add_attribute, v as validate_component, e as escape } from "../../../../chunks/ssr.js";
 import { S as Skeleton } from "../../../../chunks/skeleton.js";
 import "../../../../chunks/page.js";
@@ -18,6 +18,7 @@ import "../../../../chunks/memoize.js";
 import "../../../../chunks/Toaster.svelte_svelte_type_style_lang.js";
 /* empty css                                                              */
 import { B as Button$1 } from "../../../../chunks/index4.js";
+import { c as cn } from "../../../../chunks/utils2.js";
 import { B as Button } from "../../../../chunks/switch.js";
 import { C as CaretLeft } from "../../../../chunks/CaretLeft.js";
 const Plus = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -41,7 +42,7 @@ const Plus = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   )}><path fill-rule="evenodd" clip-rule="evenodd" d="M8 2.75C8 2.47386 7.77614 2.25 7.5 2.25C7.22386 2.25 7 2.47386 7 2.75V7H2.75C2.47386 7 2.25 7.22386 2.25 7.5C2.25 7.77614 2.47386 8 2.75 8H7V12.25C7 12.5261 7.22386 12.75 7.5 12.75C7.77614 12.75 8 12.5261 8 12.25V8H12.25C12.5261 8 12.75 7.77614 12.75 7.5C12.75 7.22386 12.5261 7 12.25 7H8V2.75Z"${add_attribute("fill", color, 0)}></path></svg>`;
 });
 const Plus$1 = Plus;
-const css$1 = {
+const css$2 = {
   code: ".skeumorphic-button.svelte-5cv73o{transition:box-shadow 50ms;box-shadow:var(--skeumorphic-shadow-light)}",
   map: null
 };
@@ -68,10 +69,88 @@ const FightOverviewAll = create_ssr_component(($$result, $$props, $$bindings, sl
     console.log("endDate changed -> fetching data");
     await fetchData();
   });
-  $$result.css.add(css$1);
+  $$result.css.add(css$2);
+  let $$settled;
+  let $$rendered;
+  let previous_head = $$result.head;
+  do {
+    $$settled = true;
+    $$result.head = previous_head;
+    $$rendered = `${`${validate_component(Skeleton, "Skeleton").$$render($$result, { class: "h-[20px] w-[100px] rounded-full" }, {}, {})}`}`;
+  } while (!$$settled);
   $$unsubscribe_user();
   $$unsubscribe_t();
-  return `${`${validate_component(Skeleton, "Skeleton").$$render($$result, { class: "h-[20px] w-[100px] rounded-full" }, {}, {})}`}`;
+  return $$rendered;
+});
+const css$1 = {
+  code: ".skeumorphic-button.svelte-5cv73o{transition:box-shadow 50ms;box-shadow:var(--skeumorphic-shadow-light)}",
+  map: null
+};
+const ReceivedLinks = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $user, $$unsubscribe_user;
+  let $$unsubscribe_t;
+  $$unsubscribe_user = subscribe(user, (value) => $user = value);
+  $$unsubscribe_t = subscribe(t, (value) => value);
+  let { class: className = void 0 } = $$props;
+  let pending = true;
+  let records = [];
+  let openedFights = [];
+  const fetchData = async () => {
+    try {
+      pending = true;
+      const existingRecords = await pb.collection("fights").getFullList({
+        filter: `opponent = '${$user.id}'`,
+        requestKey: "existingRecords",
+        expand: "owner"
+      });
+      records = existingRecords;
+      console.log("existingRecords", existingRecords);
+      openedFights = openedFights.filter((fightId) => !existingRecords.map((record) => record.id).includes(fightId));
+      console.log("openedFights", openedFights);
+      const filterString = openedFights.map((fightId) => `owner != '${$user.id}' && id = '${fightId}'`).join(" || ");
+      console.log("filterString", filterString);
+      const newRecords = await pb.collection("fights").getFullList({
+        sort: "-created",
+        filter: filterString,
+        requestKey: "receivedLinks",
+        expand: "owner"
+      });
+      transferOpenedLinks(newRecords);
+      await delay(1e3);
+      records = [...records, ...newRecords];
+      console.log("newRecords", newRecords);
+      pending = false;
+    } catch (error) {
+      console.error("Error fetching receivedLinksdata", error);
+    }
+  };
+  const transferOpenedLinks = (records2) => {
+    console.log("transferRecords", records2);
+    records2.forEach(async (record) => {
+      if ($user.id === record.owner)
+        return;
+      await pb.collection("fights").update(record.id, { opponent: $user.id });
+    });
+  };
+  endDate.subscribe(async () => {
+    console.log("endDate changed -> fetching data");
+    pending = true;
+    await fetchData();
+  });
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
+    $$bindings.class(className);
+  $$result.css.add(css$1);
+  let $$settled;
+  let $$rendered;
+  let previous_head = $$result.head;
+  do {
+    $$settled = true;
+    $$result.head = previous_head;
+    $$rendered = `<div class="${escape(null_to_empty(cn(className, "")), true) + " svelte-5cv73o"}">${`${validate_component(Skeleton, "Skeleton").$$render($$result, { class: "h-[20px] w-[100px] rounded-full" }, {}, {})}`} </div>`;
+  } while (!$$settled);
+  $$unsubscribe_user();
+  $$unsubscribe_t();
+  return $$rendered;
 });
 const css = {
   code: ".skeumorphic-button-dark.svelte-ef713u{transition:box-shadow 50ms;box-shadow:inset 0 0 8px 0 rgba(0, 0, 0, 0.2), var(--skeumorphic-shadow)}",
@@ -85,7 +164,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   $$result.css.add(css);
   $$unsubscribe_user();
   $$unsubscribe_t();
-  return `${$user ? `<div class="flex h-full flex-grow flex-col justify-between">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="max-container flex-grow pb-40"><div class="relative z-10 mb-8 flex flex-row items-start justify-between py-4 md:items-center md:bg-transparent md:pb-6"><h1 class="font-heading text-lg font-semibold">${escape($t("default.page.fight.heading"))}</h1></div> ${validate_component(FightOverviewAll, "FightOverviewAll").$$render($$result, {}, {}, {})} ${validate_component(AppBottomMenu, "AppBottomMenu").$$render($$result, {}, {}, {
+  return `${$user ? `<div class="flex h-full flex-grow flex-col justify-between">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="max-container flex-grow pb-40"><div class="relative z-10 mb-8 flex flex-row items-start justify-between py-4 md:items-center md:bg-transparent md:pb-6"><h1 class="font-heading text-lg font-semibold">${escape($t("default.page.fight.heading"))}</h1></div> ${validate_component(ReceivedLinks, "ReceivedLinks").$$render($$result, { class: "mb-14" }, {}, {})} ${validate_component(FightOverviewAll, "FightOverviewAll").$$render($$result, {}, {}, {})} ${validate_component(AppBottomMenu, "AppBottomMenu").$$render($$result, {}, {}, {
     default: () => {
       return `<div class="relative flex h-auto items-center justify-between"><a href="/app/dashboard" class="block">${validate_component(Button, "Button").$$render(
         $$result,
@@ -99,10 +178,10 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
             return `${validate_component(CaretLeft, "CaretLeft").$$render($$result, { class: "h-4 w-4 rounded-full" }, {}, {})}`;
           }
         }
-      )}</a> <a href="/app/fights/create" class="skeumorphic-button-dark inline-block rounded-full mr-1 svelte-ef713u">${validate_component(Button$1, "SparkleButton").$$render(
+      )}</a> <a href="/app/fights/create" class="skeumorphic-button-dark inline-block rounded-full mr-1 md:mr-0.5 svelte-ef713u">${validate_component(Button$1, "SparkleButton").$$render(
         $$result,
         {
-          class: "flex items-center justify-between gap-10 rounded-full pl-5 pr-3 py-1 font-bold text-black dark:shadow-gray-300/30"
+          class: "flex items-center justify-between gap-10 rounded-full pl-5 pr-3 font-bold text-black dark:shadow-gray-300/30"
         },
         {},
         {

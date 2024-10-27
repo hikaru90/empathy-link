@@ -154,7 +154,8 @@ const page = {
         partner: "Partner",
         date: "Date",
         opened: "Opened",
-        round: "Round"
+        round: "Round",
+        resolved: "Resolved"
       }
     },
     feelings: {
@@ -173,6 +174,9 @@ const page = {
   fight: {
     heading: "Fight",
     title: "Overview",
+    resolve: "Resolve",
+    unresolve: "Unresolve",
+    resolved: "Resolved",
     card: {
       observation: "Observation",
       feelings: "Feelings",
@@ -192,6 +196,10 @@ const page = {
   fights: {
     create: "Start a fight",
     loadMore: "Load more",
+    displayResolved: "Display resolved",
+    receivedLinks: {
+      heading: "Received Empathy-Links"
+    },
     form: {
       general: {
         prev: "back",

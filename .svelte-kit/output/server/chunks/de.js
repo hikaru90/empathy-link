@@ -154,7 +154,8 @@ const page = {
         partner: "Streitpartner",
         date: "Datum",
         opened: "Geöffnet",
-        round: "Runde"
+        round: "Runde",
+        resolved: "Gelöst"
       }
     },
     feelings: {
@@ -173,6 +174,9 @@ const page = {
   fight: {
     heading: "Streit",
     title: "Übersicht",
+    resolve: "Auflösen",
+    unresolve: "Aufheben",
+    resolved: "Gelöst",
     card: {
       observation: "Beobachtung",
       feelings: "Gefühle",
@@ -192,6 +196,10 @@ const page = {
   fights: {
     create: "Fang einen Streit an",
     loadMore: "Mehr laden",
+    displayResolved: "Gelöste anzeigen",
+    receivedLinks: {
+      heading: "Erhaltene Streitlinks"
+    },
     form: {
       general: {
         prev: "zurück",
