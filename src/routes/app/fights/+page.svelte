@@ -13,6 +13,7 @@
 	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { CaretLeft } from 'radix-icons-svelte';
 	import { backgroundColor } from '$store/page';
+	import ReceivedLinks from '$lib/components/ReceivedLinks.svelte';
 
 	// export let data: PageData;
 
@@ -32,6 +33,7 @@
 			>
 				<h1 class="font-heading text-lg font-semibold">{$t('default.page.fight.heading')}</h1>
 			</div>
+			<ReceivedLinks class="mb-14" />
 			<FightOverviewAll />
 			<AppBottomMenu>
 				<div class="relative flex h-auto items-center justify-between">
@@ -43,9 +45,9 @@
 							<CaretLeft class="h-4 w-4 rounded-full" />
 						</Button>
 					</a>
-					<a href="/app/fights/create" class="skeumorphic-button-dark inline-block rounded-full mr-1">
+					<a href="/app/fights/create" class="skeumorphic-button-dark inline-block rounded-full mr-1 md:mr-0.5">
 						<SparkleButton
-							class="flex items-center justify-between gap-10 rounded-full pl-5 pr-3 py-1 font-bold text-black dark:shadow-gray-300/30"
+							class="flex items-center justify-between gap-10 rounded-full pl-5 pr-3 font-bold text-black dark:shadow-gray-300/30"
 						>
 							{$t('default.page.fights.create')}
 							<Plus class="h-4 w-4" />

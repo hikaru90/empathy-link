@@ -155,7 +155,8 @@
 					"partner": "Streitpartner",
 					"date": "Datum",
 					"opened": "Geöffnet",
-					"round": "Runde"
+					"round": "Runde",
+					"resolved": "Gelöst"
 				}
 			},
 			"feelings": {
@@ -174,6 +175,9 @@
 		"fight": {
 			"heading": "Streit",
 			"title": "Übersicht",
+			"resolve": "Auflösen",
+			"unresolve": "Aufheben",
+			"resolved": "Gelöst",
 			"card": {
 				"observation": "Beobachtung",
 				"feelings": "Gefühle",
@@ -193,6 +197,10 @@
 		"fights": {
 			"create": "Fang einen Streit an",
 			"loadMore": "Mehr laden",
+			"displayResolved": "Gelöste anzeigen",
+			"receivedLinks": {
+				"heading": "Erhaltene Streitlinks"
+			},
 			"form": {
 				"general": {
 					"prev": "zurück",

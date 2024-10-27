@@ -93,6 +93,10 @@
 		<div class="">
 			<AppTopMenu />
 
+				<div class="{record.resolved ? 'max-h-40 px-2 py-2 opacity-100' : 'max-h-0 opacity-0'} -mt-0.5 bg-green-600 flex items-center justify-center  text-white transition-all text-sm">
+					{$t('default.page.fight.resolved')}
+				</div>
+
 			<div class="max-container">
 				<div
 					class="relative z-10 -mx-5 flex flex-row items-center justify-between gap-3 px-5 py-4 md:items-center md:bg-transparent md:pb-6"
@@ -163,7 +167,9 @@
 			</div>
 
 			<AppBottomMenu>
-				<Share {id} {record} />
+				<div class="flex items-center justify-between gap-3">
+					<Share {id} {record} />
+				</div>
 			</AppBottomMenu>
 		</div>
 	</div>

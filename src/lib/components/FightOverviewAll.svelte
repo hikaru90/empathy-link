@@ -11,6 +11,8 @@
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { Plus } from 'radix-icons-svelte';
 	import { delay } from '$scripts/helpers';
+	import { Switch } from '$lib/components/ui/switch';
+	import { Label } from '$lib/components/ui/label/index.js';
 
 	let initialized = false;
 	let pending = true;
@@ -18,6 +20,7 @@
 	let page = 1;
 	const perPage = 5;
 	let endReached = false;
+	let displayResolved = true;
 
 	const fetchData = async () => {
 		pending = true;
@@ -31,6 +34,8 @@
 		records = [...records, ...newRecords.items];
 		pending = false;
 	};
+
+	$: filteredRecords = displayResolved ? records : records.filter((record) => !record.resolved);
 
 	endDate.subscribe(async () => {
 		console.log('endDate changed -> fetching data');
@@ -61,18 +66,32 @@
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
 	<div class="relative z-0">
-		<div style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);" class="absolute left-0 top-20 w-[500px] h-[500px] z-0 transform -translate-x-1/2 -translate-y-1/2 dark:opacity-10"></div>
+		<div
+			style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);"
+			class="absolute left-0 top-20 z-0 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 transform dark:opacity-10"
+		></div>
 	</div>
 	<div class="relative z-10">
 		<div
-			class="rounded-t-xl border-b border-black/5 bg-almostwhite dark:bg-muted px-5 pb-3 pt-4 shadow-2xl shadow-black/10"
+			class="rounded-t-xl border-b border-black/5 bg-almostwhite px-5 pb-3 pt-4 shadow-2xl shadow-black/10 dark:bg-muted"
 		>
-			<h2 class="text-md mb-3 font-bold">
-				{$t('default.page.fight.title')}
-			</h2>
+			<div class="flex items-center justify-between mb-4">
+				<h2 class="text-md font-bold">
+					{$t('default.page.fight.title')}
+				</h2>
+				<div class="flex items-center gap-2">
+					<Switch
+						id="lightMode"
+						bind:checked={displayResolved}
+						on:click={() => (displayResolved = !displayResolved)}
+						class="bg-gray-500 transform scale-75"
+						/>
+						<Label for="lightMode" class="cursor-pointer">{$t('default.page.fights.displayResolved')}</Label>
+					</div>
+			</div>
 			<div class="flex items-center text-2xs text-neutral-400">
 				<div class="w-1/6">
-					{$t('default.page.dashboard.fights.table.round')}
+					{$t('default.page.dashboard.fights.table.resolved')}
 				</div>
 				<div class="w-1/3">
 					{$t('default.page.dashboard.fights.table.partner')}
@@ -86,19 +105,27 @@
 				<div class="w-1/6"></div>
 			</div>
 		</div>
-		<div class="rounded-b-xl bg-almostwhite dark:bg-muted px-4 pb-3 pt-2 shadow-2xl shadow-black/10">
+		<div
+			class="rounded-b-xl bg-almostwhite px-4 pb-3 pt-2 shadow-2xl shadow-black/10 dark:bg-muted"
+		>
 			<div>
-				{#each records as record}
+				{#each filteredRecords as record}
 					<button
 						on:click={gotoFight(record.id)}
 						class="group flex w-full items-center border-b border-black/5 py-2 text-left text-xs last:border-b-0 sm:py-3"
 					>
 						<div class="flex w-1/6">
-							<div class="scale-75 transform rounded-full bg-black/10 px-2.5 text-2xs font-bold">
-								{record.responses?.length + 1}
-							</div>
+							{#if record.resolved}
+								<div class="rounded-full text-green-600/80 p-1 text-2xs">
+									<Check class="size-3" />
+								</div>
+								{:else}
+								<div class="rounded-full text-red-600/80 p-1 text-2xs">
+									<Cross2 class="size-3" />
+								</div>
+							{/if}
 						</div>
-						<div  class="input-fade-right w-1/3 overflow-hidden mr-2 whitespace-nowrap ">
+						<div class="input-fade-right mr-2 w-1/3 overflow-hidden whitespace-nowrap">
 							{record.name}
 						</div>
 						<div class="w-1/4">
@@ -131,7 +158,7 @@
 						decoration="floating-op1"
 						noInnerShadow
 						on:click={loadMore}
-						class="gap-3 border-neutral-100 dark:border-neutral-800 bg-almostwhite dark:bg-muted text-black dark:text-white hover:bg-almostwhite"
+						class="gap-3 border-neutral-100 bg-almostwhite text-black hover:bg-almostwhite dark:border-neutral-800 dark:bg-muted dark:text-white"
 					>
 						<SparklePill
 							fast={true}

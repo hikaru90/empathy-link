@@ -21,6 +21,7 @@
 		EnvelopeClosed,
 		PaperPlane,
 		Trash,
+		Reset,
 		Check
 	} from 'radix-icons-svelte';
 	import * as Drawer from '$lib/components/ui/drawer';
@@ -132,6 +133,14 @@
 		}
 	};
 
+	const toggleResolution = async () => {
+		try {
+			await pb.collection('fights').update(id, { resolved: !record.resolved });
+		} catch (err) {
+			console.error('error resolving fight', err);
+		}
+	};
+
 	onMount(async () => {
 		initialized = true;
 		pending = false;
@@ -145,7 +154,7 @@
 	});
 </script>
 
-<div class="relative flex h-auto items-center justify-between">
+<div class="relative flex h-auto w-full items-center justify-between">
 	<a href="/app/dashboard" class="block">
 		<Button
 			decoration="dark-op1"
@@ -154,14 +163,36 @@
 			<CaretLeft class="h-4 w-4 rounded-full" />
 		</Button>
 	</a>
-	<Button
-		on:click={() => (drawerOpen = true)}
-		decoration="dark-op1"
-		class="flex items-center gap-2 border-neutral-900 bg-neutral-800 text-sm text-zinc-200"
-	>
-		{$t('default.menu.share.cta')}
-		<Share1 />
-	</Button>
+
+	<div class="flex items-center">
+		{#if !record.resolved}
+		<Button
+			on:click={toggleResolution}
+			decoration="dark-op1"
+			class="flex items-center gap-2 border-neutral-900 bg-green-700 text-sm text-zinc-200 hover:bg-green-800"
+		>
+			{$t('default.page.fight.resolve')}
+			<Check class="-mr-2" />
+		</Button>
+		{:else}
+		<Button
+			on:click={toggleResolution}
+			decoration="dark-op1"
+			class="flex items-center gap-2 border-neutral-900 bg-red-700 text-sm text-zinc-200 hover:bg-red-800"
+		>
+			{$t('default.page.fight.unresolve')}
+			<Reset class="-mr-2" />
+		</Button>
+		{/if}
+		<Button
+			on:click={() => (drawerOpen = true)}
+			decoration="dark-op1"
+			class="flex items-center gap-2 border-neutral-900 bg-neutral-800 text-sm text-zinc-200"
+		>
+			{$t('default.menu.share.cta')}
+			<Share1 class="-mr-1" />
+		</Button>
+	</div>
 </div>
 
 <Drawer.Root bind:open={drawerOpen}>

@@ -396,6 +396,16 @@
 		initSpeechBubbleContentArray();
 
 		if (browser && $page.url) {
+			// Add the fight id to localStorage in the openedFights key
+			const fightId = $page.params.id;
+			if (fightId) {
+				const openedFights = JSON.parse(localStorage.getItem('openedFights') || '[]');
+				if (!openedFights.includes(fightId)) {
+					openedFights.push(fightId);
+					localStorage.setItem('openedFights', JSON.stringify(openedFights));
+				}
+			}
+
 			if(!$user){
 				console.log('setting cookie loginRedirectTarget');
 				setCookie('loginRedirectTarget', $page.url.pathname + $page.url.search, 0.1);
