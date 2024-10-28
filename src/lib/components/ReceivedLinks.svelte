@@ -39,23 +39,32 @@
         expand: 'owner'
       });
       records = existingRecords;
-      console.log('existingRecords', existingRecords);
+      console.log('existingRecords', existingRecords.map((record) => record.id));
+			
+
+
+
 
       // remove existing ids from openFights
+			//["kucb0dqftelwkmn","cq5en7nds89tr5c","kehjsy88aqqa0cm"]
       openedFights = openedFights.filter((fightId) => !existingRecords.map((record) => record.id).includes(fightId));
       console.log('openedFights', openedFights);
-      // get new fight ids from localstorage
+			// all fight ids that are in localstorage but not in existingRecords
+
 			const filterString = openedFights.map((fightId) => `owner != '${$user.id}' && id = '${fightId}'`).join(' || ');
 			console.log('filterString', filterString);
-      //fetch the underlying fight
-			const newRecords = await pb.collection('fights').getFullList({
-				sort: '-created',
-				filter: filterString,
-				requestKey: 'receivedLinks',
-        expand: 'owner'
-			});
-      // set the opponent of the new fights
-			transferOpenedLinks(newRecords);
+
+			if(filterString){
+				//fetch the underlying fight
+				const newRecords = await pb.collection('fights').getFullList({
+					sort: '-created',
+					filter: filterString,
+					requestKey: 'receivedLinks',
+					expand: 'owner'
+				});
+				// set the opponent of the new fights
+				transferOpenedLinks(newRecords);
+			}
 
 
 			await delay(1000);
@@ -69,13 +78,16 @@
 
 	$: filteredRecords = displayResolved ? records : records.filter((record) => !record.resolved);
 
-
   const transferOpenedLinks = (records) => {
       console.log('transferRecords', records);
+			if (browser) {
+				localStorage.removeItem('openedFights');
+			}
       
       records.forEach(async (record) => {
         if($user.id === record.owner) return;
         await pb.collection('fights').update(record.id, { opponent: $user.id });
+        // Remove the openedFights entry from localStorage entirely
       })
   }
 
@@ -103,8 +115,6 @@
 				openedFights = JSON.parse(storedFights);
 			}
 		}
-
-		console.log('openedFights', openedFights);
 
 		await fetchData();
 		initialized = true;
