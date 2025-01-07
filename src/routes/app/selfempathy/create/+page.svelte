@@ -22,6 +22,7 @@
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import IconSteps from '$assets/icons/icon-steps.svg?raw';
+	import IconCheckin from '$assets/icons/icon-checkin.svg?raw';
 	import { pb } from '$scripts/pocketbase';
 	import { onMount } from 'svelte';
 	import { serializeNonPOJOs, groupBy } from '$scripts/helpers';
@@ -64,15 +65,15 @@
 	$: currentBackgroundColor = updateBackgroundColor(step);
 
 	const speechBubbleContentArray = [
-		{ step: 1, content: [$t('default.page.fight.create.info')] },
-		{ step: 2, content: [$t('default.page.fight.create.observation')] },
-		{ step: 3, content: [$t('default.page.fight.create.feelings')] },
-		{ step: 4, content: [$t('default.page.fight.create.needs')] },
-		{ step: 5, content: [$t('default.page.fight.create.request')] },
+		{ step: 1, content: [$t('default.page.selfempathy.steps.step1.speechbubble')] },
+		{ step: 2, content: [$t('default.page.selfempathy.steps.step2.speechbubble')] },
+		{ step: 3, content: [$t('default.page.selfempathy.steps.step3.speechbubble')] },
+		{ step: 4, content: [$t('default.page.selfempathy.steps.step4.speechbubble')] },
+		{ step: 5, content: [$t('default.page.selfempathy.steps.step5.speechbubble')] },
 		{
 			step: 6,
-			content: [$t('default.page.fight.create.success')],
-			errorContent: [$t('default.page.fight.create.error')]
+			content: [$t('default.page.selfempathy.steps.step6.success')],
+			errorContent: [$t('default.page.selfempathy.steps.step6.error')]
 		}
 	];
 
@@ -170,56 +171,56 @@
 
 	let stepConstructor = [
 		{
-			slug: 'info',
-			name: get(t)('default.page.fights.form.general.steps.info'),
-			icon: IconFolder,
+			slug: 'checkin',
+			name: get(t)('default.page.selfempathy.steps.step1.name'),
+			icon: IconCheckin,
 			invertedTextColor: false,
 			hidden: false
 		},
 		{
 			slug: 'observation',
-			name: get(t)('default.page.fights.form.general.steps.observation'),
+			name: get(t)('default.page.selfempathy.steps.step2.name'),
 			icon: IconEye,
 			invertedTextColor: true,
 			hidden: false
 		},
 		{
 			slug: 'feelings',
-			name: get(t)('default.page.fights.form.general.steps.feelings'),
+			name: get(t)('default.page.selfempathy.steps.step3.name'),
 			icon: IconHeart,
 			invertedTextColor: false,
 			hidden: false
 		},
 		{
 			slug: 'needs',
-			name: get(t)('default.page.fights.form.general.steps.needs'),
+			name: get(t)('default.page.selfempathy.steps.step4.name'),
 			icon: IconSwirl,
 			invertedTextColor: false,
 			hidden: false
 		},
 		{
 			slug: 'request',
-			name: get(t)('default.page.fights.form.general.steps.request'),
+			name: get(t)('default.page.selfempathy.steps.step5.name'),
 			icon: IconSteps,
 			invertedTextColor: false,
 			hidden: false
 		},
 		{
 			slug: 'success',
-			name: get(t)('default.page.fights.form.general.steps.success'),
+			name: get(t)('default.page.selfempathy.steps.step6.name'),
 			icon: IconSteps,
 			invertedTextColor: false,
 			hidden: true
 		}
 	];
-	t.subscribe((value) => {
-		const newSteps = stepConstructor.map((entry) => {
-			const translation = value(`default.page.fights.form.general.steps.${entry.slug}`);
-			entry.name = translation;
-			return entry;
-		});
-		stepConstructor = [...newSteps];
-	});
+	// t.subscribe((value) => {
+	// 	const newSteps = stepConstructor.map((entry) => {
+	// 		const translation = value(`default.page.fights.form.general.steps.${entry.slug}`);
+	// 		entry.name = translation;
+	// 		return entry;
+	// 	});
+	// 	stepConstructor = [...newSteps];
+	// });
 	const decreaseStep = () => {
 		console.log('decreaseStep');
 		if (step > 1) {
@@ -333,12 +334,12 @@
 				{#key step}
 					{#if step === 1}
 						<div class="form-content">
-							<Form.Field {form} name="name">
+							<Form.Field {form} name="balance">
 								<Form.Control let:attrs>
 									<Form.Label class="form-label "
-										>{$t('default.page.fights.form.name.label')}</Form.Label
+										>{$t('default.page.selfempathy.steps.step1.balance')}</Form.Label
 									>
-									<Input {...attrs} bind:value={$formData.name} />
+									<Input {...attrs} bind:value={$formData.balance} />
 								</Form.Control>
 								<!-- <Form.Description>This is your public display name.</Form.Description> -->
 								<Form.FieldErrors />

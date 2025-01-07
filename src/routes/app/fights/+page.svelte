@@ -25,9 +25,9 @@
 </script>
 
 {#if $user}
-	<div class="flex h-full flex-grow flex-col justify-between">
+	<div class="flex h-full flex-grow flex-col justify-between overflow-hidden">
 		<AppTopMenu />
-		<div class="max-container flex-grow pb-40 overflow-hidden">
+		<div class="max-container flex-grow pb-40">
 			<div
 				class="relative z-10 mb-8 flex flex-row items-start justify-between py-4 md:items-center md:bg-transparent md:pb-6"
 			>

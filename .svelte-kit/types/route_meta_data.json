@@ -80,5 +80,25 @@
 		"src/routes/app/+layout.server.ts",
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
+	],
+	"/app/selfempathy/create": [
+		"src/routes/app/+layout.ts",
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/app/selfempathy/[id]": [
+		"src/routes/app/selfempathy/[id]/+page.server.ts",
+		"src/routes/app/+layout.ts",
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/app/selfempathy/[id]/respond": [
+		"src/routes/app/selfempathy/[id]/respond/+page.server.ts",
+		"src/routes/app/+layout.ts",
+		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
 	]
 }

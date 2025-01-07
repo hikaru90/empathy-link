@@ -140,7 +140,7 @@
 					<h2 class="text-md font-bold">
 						{$t('default.page.fights.receivedLinks.heading')}
 					</h2>
-					<div class="flex items-center gap-2">
+					<div class="flex items-center gap-1">
 						<Switch
 							id="lightMode"
 							bind:checked={displayResolved}

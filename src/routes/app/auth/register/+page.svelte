@@ -14,8 +14,8 @@
 
 		<div class="max-container relative">
 			<div class="w-full flex flex-col items-center justify-center py-32">
-				<h1 class="font-heading font-bold text-2xl">{$t('default.page.register.heading')}</h1>
-				<RegisterForm data={data.form} class="w-[400px]" />
+				<h1 class="font-heading font-bold text-2xl mb-6">{$t('default.page.register.heading')}</h1>
+				<RegisterForm data={data.form} class="w-full max-w-[400px]" />
 			</div>
 		</div>
 	</div>

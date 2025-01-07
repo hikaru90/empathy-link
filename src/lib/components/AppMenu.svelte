@@ -25,7 +25,7 @@
 			name: get(t)('default.menu.bar.selfempathy'),
 			path: '/app/selfempathy',
 			icon: IconSelf,
-			available: false
+			available: true
 		},
 		{
 			slug: 'fights',

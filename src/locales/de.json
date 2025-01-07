@@ -172,6 +172,58 @@
 				"empty": "Keine Bedürfnisse"
 			}
 		},
+		"selfempathy": {
+			"heading": "Selbstempathie",
+			"title": "Übersicht",
+			"create": "Gib Dir Empathie",
+			"steps": {
+				"step1": {
+					"name": "Check-in",
+					"speechbubble": "Lass uns ein kurzes Check-in machen.",
+					"balance": "Wie ausgeglichen fühlst Du Dich emotional gerade?",
+					"balance_low": "sehr unausgeglichen",
+					"balance_high": "sehr ausgeglichen",
+					"awareness": "Wie bewusst nimmst Du in diesem Moment Deine Gedanken und Deinen Körper wahr?",
+					"awareness_low": "nicht bewusst",
+					"awareness_high": "sehr bewusst",
+					"energy": "Wie viel Energie und Motivation hast Du gerade für Selbstreflexion?",
+					"energy_low": "keine",
+					"energy_high": "sehr viel",
+					"calmness": "Wie ruhig fühlst Du Dich gerade?",
+					"calmness_low": "gestresst",
+					"calmness_high": "ruhig",
+					"kindness": "Wie achtsam bist Du gerade Dir selbst gegenüber?",
+					"kindness_low": "nicht achtsam",
+					"kindness_high": "sehr achtsam"
+				},
+				"step2": {
+					"name": "Beobachtung",
+					"speechbubble": "Nimm Dir kurz Zeit zu reflektieren was objektiv passiert ist oder in Deinem Leben gerade passiert. Beschreibe ohne zu werten. Und ohne Unterstellungen oder Übertreibungen.",
+					"observation": "Was hast Du beobachtet?"
+				},
+				"step3": {
+					"name": "Gefühl",
+					"speechbubble": "Wie hast Du Dich dabei gefühlt?",
+					"feelings": "Wie fühlst Du Dich?"
+				},
+				"step4": {
+					"name": "Bedürfnis",
+					"speechbubble": "Welche Bedürfnisse stecken dahinter?",
+					"needs": "Welche Bedürfnisse hast Du?"
+				},
+				"step5": {
+					"name": "Bitte",
+					"speechbubble": "Hast du eine Bitte an Dich selber?",
+					"request": "Was ist Deine Bitte?"
+				},
+				"step6": {
+					"name": "Übermittlung",
+					"success": "Geschafft. Schön, dass Du Dir Zeit genommen hast um in Dich hineinzufühlen. Deine Antworten wurden gespeichert und können num im Dashboard angesehen werden. Hoffentlich hat Dir diese Introspektion geholfen.",
+					"error": "Leider ist beim Speichern ein Fehler aufgetreten. Bitte versuche es nochmal. Falls das Problem weiterhin bestehen sollte, kontaktiere uns unter support@empathie-link.de"
+
+				}
+			}
+		},
 		"fight": {
 			"heading": "Streit",
 			"title": "Übersicht",
@@ -197,7 +249,7 @@
 		"fights": {
 			"create": "Fang einen Streit an",
 			"loadMore": "Mehr laden",
-			"displayResolved": "Gelöste anzeigen",
+			"displayResolved": "gelöst",
 			"receivedLinks": {
 				"heading": "Erhaltene Streitlinks"
 			},

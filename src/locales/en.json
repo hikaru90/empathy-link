@@ -172,6 +172,57 @@
 				"empty": "No needs"
 			}
 		},
+		"selfempathy": {
+			"heading": "Selfempathy",
+			"title": "Overview",
+			"create": "Give yourself Empathy",
+			"steps": {
+				"step1": {
+					"name": "Check-in",
+					"speechbubble":"Let's do a quick check-in.",
+					"balance": "How balanced do you feel emotionally right now?",
+					"balance_low": "very unbalanced",
+					"balance_high": "very balanced",
+					"awareness": "How aware are you of your body and thoughts in this moment?",
+					"awareness_low": "not aware",
+					"awareness_high": "very aware",
+					"energy": "How much energy and motivation do you have for self-reflection right now?",
+					"energy_low": "not much",
+					"energy_high": "a lot",
+					"calmness": "How calm do you feel right now?",
+					"calmness_low": "stressed",
+					"calmness_high": "calm",
+					"kindness": "How kind and open are you toward yourself right now?",
+					"kindness_low": "not kind",
+					"kindness_high": "very kind"
+				},
+				"step2": {
+					"name": "Observation",
+					"speechbubble": "Take a moment to reflect on what has objectively happened or is currently happening in your life. Describe it without judging, assuming, or exaggerating.",
+					"observation": "What did you observe?"
+				},
+				"step3": {
+					"name": "Feeling",
+					"speechbubble": "How did you feel about it?",
+					"feelings": "How did you feel?"
+				},
+				"step4": {
+					"name": "Need",
+					"speechbubble": "What needs lie behind the feeling?",
+					"needs": "What do you need?"
+				},
+				"step5": {
+					"name": "Request",
+					"speechbubble": "Do you have a request for your future self?",
+					"request": "What is your request?"
+				},
+				"step6": {
+					"name": "Submission",
+					"success": "Done! It’s great that you took the time to tune in to yourself. Your answers have been saved and can now be viewed on the dashboard. Hopefully, this introspection has been helpful for you.",
+					"error": "Unfortunately, an error occurred while saving. Please try again. If the problem persists, please contact us at support@empathie-link.de"
+				}
+			}
+		},
 		"fight": {
 			"heading": "Fight",
 			"title": "Overview",
@@ -197,7 +248,7 @@
 		"fights": {
 			"create": "Start a fight",
 			"loadMore": "Load more",
-			"displayResolved": "Display resolved",
+			"displayResolved": "resolved",
 			"receivedLinks": {
 				"heading": "Received Empathy-Links"
 			},

@@ -1,17 +1,57 @@
 <script lang="ts">
 	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
+	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
 	import type { PageData } from '../../app/selfempathy/$types.js';
 	import LoginForm from '$lib/components/LoginForm.svelte';
 	import { t } from '$lib/translations';
-	// export let data: PageData;
+	import { user } from '$store/auth';
+	import { goto } from '$app/navigation';
+	import { backgroundColor } from '$store/page';
+	import { onMount } from 'svelte';
+	import { CaretLeft, Plus, HeartFilled } from 'radix-icons-svelte';
+	import { Button } from '$lib/components/ui/button-op1/index.js';
+	import { Button as SparkleButton } from '$lib/components/ui/button-sparkle';
 
-	console.log('login page');
+
+	onMount(() => {
+		if (!$user) goto('/app/auth/login');
+		// Add bg-background class to the body
+		backgroundColor.set('bg-background');
+	});
 </script>
 
-<div class="flex h-full flex-grow flex-col justify-between">
-	<div class="flex-grow">
-		<AppBottomMenu />
+{#if $user}
+	<div class="flex h-full flex-grow flex-col justify-between overflow-hidden">
+		<AppTopMenu />
+		<div class="max-container flex-grow pb-40">
+			<div
+				class="relative z-10 mb-8 flex flex-row items-start justify-between py-4 md:items-center md:bg-transparent md:pb-6"
+			>
+				<h1 class="font-heading text-lg font-semibold">{$t('default.page.selfempathy.heading')}</h1>
+			</div>
 
-		<h1>Selfempathy</h1>
+
+			<AppBottomMenu>
+				<div class="relative flex h-auto items-center justify-between">
+					<a href="/app/dashboard" class="block">
+						<Button
+							decoration="dark-op1"
+							class="flex items-center border-neutral-900 bg-neutral-800 px-1.5 text-sm text-zinc-200"
+						>
+							<CaretLeft class="h-4 w-4 rounded-full" />
+						</Button>
+					</a>
+					<a href="/app/selfempathy/create" class="skeumorphic-button-dark inline-block rounded-full mr-1 md:mr-0.5">
+						<SparkleButton
+							class="flex items-center justify-between gap-10 rounded-full pl-5 pr-3 font-bold text-black dark:shadow-gray-300/30"
+						>
+							{$t('default.page.selfempathy.create')}
+							<HeartFilled class="h-4 w-4 text-red-600
+							" />
+						</SparkleButton>
+					</a>
+				</div>
+			</AppBottomMenu>
+		</div>
 	</div>
-</div>
+{/if}
