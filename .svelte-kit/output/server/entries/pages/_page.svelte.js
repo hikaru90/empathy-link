@@ -1,7 +1,7 @@
 import { c as compute_rest_props, s as subscribe, g as get_store_value, a as null_to_empty } from "../../chunks/utils.js";
 import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object, a as add_attribute, v as validate_component, e as escape, f as each } from "../../chunks/ssr.js";
 import { R as Root, C as Close } from "../../chunks/index3.js";
-import { d as derivedMode, b as backgroundColor, w as windowWidth, s as scroll, c as currentSection, a as windowHeight } from "../../chunks/page.js";
+import { d as derivedMode, b as backgroundColor, w as windowWidth, s as scroll, c as currentSection, a as cn, e as windowHeight } from "../../chunks/page.js";
 import { t, l as locale } from "../../chunks/translations.js";
 import "clsx";
 import { S as Sheet_content, a as Sheet_header, b as Sheet_title, B as Button, C as Cross1, R as Root$1, c as Select_trigger, V as Value, d as Select_content, e as Select_item, I as Input, f as Switch, L as Label, g as Logo } from "../../chunks/switch.js";
@@ -10,10 +10,11 @@ import "../../chunks/auth.js";
 import { B as Button$1 } from "../../chunks/index4.js";
 import { s as setCookie } from "../../chunks/helpers.js";
 import { B as Button$2 } from "../../chunks/button.js";
-import { c as cn } from "../../chunks/utils2.js";
 import { b as backgroundImage } from "../../chunks/SparklePill.js";
-import { I as IconFolder, a as IconEye, b as IconHeart, c as IconSwirl, d as IconSteps } from "../../chunks/icon-steps.js";
+import { I as IconFolder } from "../../chunks/icon-folder.js";
+import { I as IconEye, a as IconHeart, b as IconSwirl, c as IconSteps } from "../../chunks/icon-steps.js";
 import { P as PaperPlane } from "../../chunks/PaperPlane.js";
+import { H as HeartFilled } from "../../chunks/HeartFilled.js";
 import { g as getContext } from "../../chunks/lifecycle.js";
 import "posthog-js";
 const CaretRight = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -58,27 +59,6 @@ const HamburgerMenu = create_ssr_component(($$result, $$props, $$bindings, slots
   )}><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 3C1.22386 3 1 3.22386 1 3.5C1 3.77614 1.22386 4 1.5 4H13.5C13.7761 4 14 3.77614 14 3.5C14 3.22386 13.7761 3 13.5 3H1.5ZM1 7.5C1 7.22386 1.22386 7 1.5 7H13.5C13.7761 7 14 7.22386 14 7.5C14 7.77614 13.7761 8 13.5 8H1.5C1.22386 8 1 7.77614 1 7.5ZM1 11.5C1 11.2239 1.22386 11 1.5 11H13.5C13.7761 11 14 11.2239 14 11.5C14 11.7761 13.7761 12 13.5 12H1.5C1.22386 12 1 11.7761 1 11.5Z"${add_attribute("fill", color, 0)}></path></svg>`;
 });
 const HamburgerMenu$1 = HamburgerMenu;
-const HeartFilled = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["color", "size"]);
-  let { color = "currentColor" } = $$props;
-  let { size = 15 } = $$props;
-  if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-    $$bindings.color(color);
-  if ($$props.size === void 0 && $$bindings.size && size !== void 0)
-    $$bindings.size(size);
-  return `<svg${spread(
-    [
-      { width: escape_attribute_value(size) },
-      { height: escape_attribute_value(size) },
-      { viewBox: "0 0 15 15" },
-      { fill: "none" },
-      { xmlns: "http://www.w3.org/2000/svg" },
-      escape_object($$restProps)
-    ],
-    {}
-  )}><path fill-rule="evenodd" clip-rule="evenodd" d="M1.35248 4.90532C1.35248 2.94498 2.936 1.35248 4.89346 1.35248C6.25769 1.35248 6.86058 1.92336 7.50002 2.93545C8.13946 1.92336 8.74235 1.35248 10.1066 1.35248C12.064 1.35248 13.6476 2.94498 13.6476 4.90532C13.6476 6.74041 12.6013 8.50508 11.4008 9.96927C10.2636 11.3562 8.92194 12.5508 8.00601 13.3664C7.94645 13.4194 7.88869 13.4709 7.83291 13.5206C7.64324 13.6899 7.3568 13.6899 7.16713 13.5206C7.11135 13.4709 7.05359 13.4194 6.99403 13.3664C6.0781 12.5508 4.73641 11.3562 3.59926 9.96927C2.39872 8.50508 1.35248 6.74041 1.35248 4.90532Z"${add_attribute("fill", color, 0)}></path></svg>`;
-});
-const HeartFilled$1 = HeartFilled;
 const Moon = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["color", "size"]);
   let { color = "currentColor" } = $$props;
@@ -421,7 +401,7 @@ const HeroAnimation = create_ssr_component(($$result, $$props, $$bindings, slots
     menuItems = [...newMenuItems];
   });
   $$result.css.add(css$7);
-  return `<div class="relative h-full w-full p-[1.2em]"><div class="pop-in svelte-11drj4t" data-svelte-h="svelte-1igc2am"><div class="flex items-center justify-center"><div style="${"background-image: url('" + escape(backgroundImage, true) + "'); background-size: 300% 100%"}" class="animate-bg-fast flex h-[1em] w-[2em] flex-col items-center justify-center rounded-full shadow-lg"></div></div></div> <div class="relative flex h-full flex-col justify-between pb-[3.6em]"><div class="flex flex-col gap-px sm:gap-[0.5em]"><div class="step step1 bg-observation-background svelte-11drj4t"><div class="w-[2em] fill-observation-foreground"><!-- HTML_TAG_START -->${IconEye}<!-- HTML_TAG_END --></div></div> <div class="step step2 bg-feelings-background svelte-11drj4t"><div class="w-[2em] fill-feelings-foreground"><!-- HTML_TAG_START -->${IconHeart}<!-- HTML_TAG_END --></div></div> <div class="step step3 bg-needs-background svelte-11drj4t"><div class="w-[2em] fill-needs-foreground"><!-- HTML_TAG_START -->${IconSwirl}<!-- HTML_TAG_END --></div></div> <div class="step step4 bg-request-background svelte-11drj4t"><div class="w-[2em] fill-request-foreground"><!-- HTML_TAG_START -->${IconSteps}<!-- HTML_TAG_END --></div></div></div> <div class="step5 flex items-center justify-center rounded-full p-[1em] shadow-lg svelte-11drj4t"><div class="flex w-full items-center justify-between fill-observation-foreground"><div class="h-[0.5em] w-[3em] rounded bg-slate-600"></div> ${validate_component(PaperPlane, "PaperPlane").$$render($$result, { class: "text-slate-500" }, {}, {})}</div></div> <div class="absolute flex h-full w-full items-center justify-center pb-[3em]"><div class="heart svelte-11drj4t">${validate_component(HeartFilled$1, "HeartFilled").$$render($$result, { class: "size-[5em] text-red-400" }, {}, {})}</div></div></div> <div class="fixed bottom-0 left-0 z-40 w-full rounded-b-[1em] bg-black px-[0.5em] py-[0.5em] text-gray-200"><div class="" data-svelte-h="svelte-1e4u1hl"><img src="/inverted-border.svg" alt="" class="absolute left-[0.01em] top-[0.02em] w-[1.6em] -translate-y-full transform"> <img src="/inverted-border.svg" alt="" class="absolute right-[0.13em] top-[0em] w-[1.6em] -translate-y-full -rotate-90 transform"></div> <div class="flex items-center justify-around">${each(menuItems, (item) => {
+  return `<div class="relative h-full w-full p-[1.2em]"><div class="pop-in svelte-11drj4t" data-svelte-h="svelte-1igc2am"><div class="flex items-center justify-center"><div style="${"background-image: url('" + escape(backgroundImage, true) + "'); background-size: 300% 100%"}" class="animate-bg-fast flex h-[1em] w-[2em] flex-col items-center justify-center rounded-full shadow-lg"></div></div></div> <div class="relative flex h-full flex-col justify-between pb-[3.6em]"><div class="flex flex-col gap-px sm:gap-[0.5em]"><div class="step step1 bg-observation-background svelte-11drj4t"><div class="w-[2em] fill-observation-foreground"><!-- HTML_TAG_START -->${IconEye}<!-- HTML_TAG_END --></div></div> <div class="step step2 bg-feelings-background svelte-11drj4t"><div class="w-[2em] fill-feelings-foreground"><!-- HTML_TAG_START -->${IconHeart}<!-- HTML_TAG_END --></div></div> <div class="step step3 bg-needs-background svelte-11drj4t"><div class="w-[2em] fill-needs-foreground"><!-- HTML_TAG_START -->${IconSwirl}<!-- HTML_TAG_END --></div></div> <div class="step step4 bg-request-background svelte-11drj4t"><div class="w-[2em] fill-request-foreground"><!-- HTML_TAG_START -->${IconSteps}<!-- HTML_TAG_END --></div></div></div> <div class="step5 flex items-center justify-center rounded-full p-[1em] shadow-lg svelte-11drj4t"><div class="flex w-full items-center justify-between fill-observation-foreground"><div class="h-[0.5em] w-[3em] rounded bg-slate-600"></div> ${validate_component(PaperPlane, "PaperPlane").$$render($$result, { class: "text-slate-500" }, {}, {})}</div></div> <div class="absolute flex h-full w-full items-center justify-center pb-[3em]"><div class="heart svelte-11drj4t">${validate_component(HeartFilled, "HeartFilled").$$render($$result, { class: "size-[5em] text-red-400" }, {}, {})}</div></div></div> <div class="fixed bottom-0 left-0 z-40 w-full rounded-b-[1em] bg-black px-[0.5em] py-[0.5em] text-gray-200"><div class="" data-svelte-h="svelte-1e4u1hl"><img src="/inverted-border.svg" alt="" class="absolute left-[0.01em] top-[0.02em] w-[1.6em] -translate-y-full transform"> <img src="/inverted-border.svg" alt="" class="absolute right-[0.13em] top-[0em] w-[1.6em] -translate-y-full -rotate-90 transform"></div> <div class="flex items-center justify-around">${each(menuItems, (item) => {
     return `<div class="relative flex flex-col items-center justify-center"><a${add_attribute("href", item.path, 0)} class="flex flex-col items-center justify-center"><div class="size-[1.4em] fill-white"><!-- HTML_TAG_START -->${item.icon}<!-- HTML_TAG_END --> </div></a> </div>`;
   })}</div></div> </div>`;
 });

@@ -43,9 +43,7 @@ declare module '$env/static/private' {
 	export const CUDA_PATH: string;
 	export const CUDA_PATH_V11_2: string;
 	export const DriverData: string;
-	export const EFC_12924: string;
-	export const FPS_BROWSER_APP_PROFILE_STRING: string;
-	export const FPS_BROWSER_USER_PROFILE_STRING: string;
+	export const EFC_9176: string;
 	export const GDAL_DATA: string;
 	export const GDAL_DRIVER_PATH: string;
 	export const GDAL_VERSION: string;
@@ -67,7 +65,6 @@ declare module '$env/static/private' {
 	export const npm_command: string;
 	export const npm_config_engine_strict: string;
 	export const npm_config_frozen_lockfile: string;
-	export const npm_config_node_gyp: string;
 	export const npm_config_registry: string;
 	export const npm_config_user_agent: string;
 	export const npm_execpath: string;
@@ -239,9 +236,7 @@ declare module '$env/dynamic/private' {
 		CUDA_PATH: string;
 		CUDA_PATH_V11_2: string;
 		DriverData: string;
-		EFC_12924: string;
-		FPS_BROWSER_APP_PROFILE_STRING: string;
-		FPS_BROWSER_USER_PROFILE_STRING: string;
+		EFC_9176: string;
 		GDAL_DATA: string;
 		GDAL_DRIVER_PATH: string;
 		GDAL_VERSION: string;
@@ -263,7 +258,6 @@ declare module '$env/dynamic/private' {
 		npm_command: string;
 		npm_config_engine_strict: string;
 		npm_config_frozen_lockfile: string;
-		npm_config_node_gyp: string;
 		npm_config_registry: string;
 		npm_config_user_agent: string;
 		npm_execpath: string;

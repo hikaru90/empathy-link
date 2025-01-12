@@ -1,12 +1,11 @@
 import { c as compute_rest_props, s as subscribe, n as noop } from "./utils.js";
 import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object, a as add_attribute, f as each, e as escape, v as validate_component } from "./ssr.js";
-import { c as cn } from "./utils2.js";
+import { a as cn } from "./page.js";
 import { L as Label } from "./switch.js";
 import { w as writable } from "./index2.js";
 import { h as hasContext, g as getContext, s as setContext } from "./lifecycle.js";
 import { n as nanoid } from "./index3.js";
 import "clsx";
-import "./page.js";
 const Input = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class", "value", "readonly"]);
   let { class: className = void 0 } = $$props;

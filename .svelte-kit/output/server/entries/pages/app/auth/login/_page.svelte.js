@@ -12,7 +12,7 @@ import { a as toast } from "../../../../../chunks/Toaster.svelte_svelte_type_sty
 import "../../../../../chunks/index3.js";
 import { R as Root, D as Dialog_content, a as Dialog_header, b as Dialog_title, c as Dialog_description } from "../../../../../chunks/index6.js";
 import "../../../../../chunks/pocketbase.js";
-import { c as cn } from "../../../../../chunks/utils2.js";
+import { a as cn } from "../../../../../chunks/page.js";
 import { B as Button } from "../../../../../chunks/button.js";
 import { C as Check } from "../../../../../chunks/Check.js";
 import { p as page } from "../../../../../chunks/stores.js";
@@ -217,7 +217,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     $$result,
     {
       data: data.form,
-      class: "w-full md:w-[400px]"
+      class: "w-full max-w-[400px]"
     },
     {},
     {}

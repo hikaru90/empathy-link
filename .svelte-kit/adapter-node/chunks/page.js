@@ -1,9 +1,10 @@
 import { d as derived, w as writable, r as readable } from "./index2.js";
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 import { tv } from "tailwind-variants";
 import { g as get_store_value } from "./utils.js";
 import { o as onMount } from "./ssr2.js";
 import { o as onDestroy } from "./lifecycle.js";
-import "clsx";
 let timeoutAction;
 let timeoutEnable;
 function withoutTransition(action) {
@@ -148,6 +149,45 @@ function isValidMode(value) {
     return false;
   return modes.includes(value);
 }
+function cubicOut(t) {
+  const f = t - 1;
+  return f * f * f + 1;
+}
+function cn(...inputs) {
+  return twMerge(clsx(inputs));
+}
+const flyAndScale = (node, params = { y: -8, x: 0, start: 0.95, duration: 150 }) => {
+  const style = getComputedStyle(node);
+  const transform = style.transform === "none" ? "" : style.transform;
+  const scaleConversion = (valueA, scaleA, scaleB) => {
+    const [minA, maxA] = scaleA;
+    const [minB, maxB] = scaleB;
+    const percentage = (valueA - minA) / (maxA - minA);
+    const valueB = percentage * (maxB - minB) + minB;
+    return valueB;
+  };
+  const styleToString2 = (style2) => {
+    return Object.keys(style2).reduce((str, key) => {
+      if (style2[key] === void 0)
+        return str;
+      return str + `${key}:${style2[key]};`;
+    }, "");
+  };
+  return {
+    duration: params.duration ?? 200,
+    delay: 0,
+    css: (t) => {
+      const y = scaleConversion(t, [0, 1], [params.y ?? 5, 0]);
+      const x = scaleConversion(t, [0, 1], [params.x ?? 0, 0]);
+      const scale = scaleConversion(t, [0, 1], [params.start ?? 0.95, 1]);
+      return styleToString2({
+        transform: `${transform} translate3d(${x}px, ${y}px, 0) scale(${scale})`,
+        opacity: t
+      });
+    },
+    easing: cubicOut
+  };
+};
 var has = Object.prototype.hasOwnProperty;
 function find(iter, tar, key) {
   for (key of iter.keys()) {
@@ -748,40 +788,43 @@ windowWidth.subscribe((value) => {
   console.log("windowWidth changed", value);
 });
 export {
-  isObject as A,
-  stripValues as B,
-  isHTMLButtonElement as C,
-  isElementDisabled as D,
-  createHiddenInput as E,
-  FIRST_LAST_KEYS as F,
-  isHTMLInputElement as G,
-  buttonVariants as H,
-  isFunction as I,
-  addEventListener$1 as J,
-  windowHeight as a,
+  isHTMLLabelElement as A,
+  useEscapeKeydown as B,
+  dequal as C,
+  isObject as D,
+  stripValues as E,
+  isHTMLButtonElement as F,
+  FIRST_LAST_KEYS as G,
+  isElementDisabled as H,
+  createHiddenInput as I,
+  isHTMLInputElement as J,
+  buttonVariants as K,
+  isFunction as L,
+  addEventListener$1 as M,
+  cn as a,
   backgroundColor as b,
   currentSection as c,
   derivedMode as d,
-  safeOnMount as e,
-  styleToString as f,
-  effect as g,
-  executeCallbacks as h,
+  windowHeight as e,
+  safeOnMount as f,
+  styleToString as g,
+  effect as h,
   isBrowser as i,
-  addMeltEventListener as j,
-  kbd as k,
-  createElHelpers as l,
+  executeCallbacks as j,
+  addMeltEventListener as k,
+  kbd as l,
   makeElement as m,
-  isElement as n,
+  createElHelpers as n,
   omit as o,
   portalAttr as p,
-  isHTMLElement as q,
-  noop as r,
+  isElement as q,
+  isHTMLElement as r,
   scroll as s,
-  withGet as t,
-  disabledAttr as u,
-  getElementByMeltId as v,
+  noop as t,
+  flyAndScale as u,
+  withGet as v,
   windowWidth as w,
-  isHTMLLabelElement as x,
-  useEscapeKeydown as y,
-  dequal as z
+  disabledAttr as x,
+  cubicOut as y,
+  getElementByMeltId as z
 };

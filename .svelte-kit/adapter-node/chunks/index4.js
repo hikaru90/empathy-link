@@ -1,8 +1,7 @@
 import { c as compute_rest_props } from "./utils.js";
 import { c as create_ssr_component, v as validate_component, f as each, e as escape } from "./ssr.js";
-import "./page.js";
+import { a as cn } from "./page.js";
 import { j as Button$1 } from "./switch.js";
-import { c as cn } from "./utils2.js";
 import { b as backgroundImage } from "./SparklePill.js";
 import { tv } from "tailwind-variants";
 import "clsx";

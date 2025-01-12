@@ -147,7 +147,15 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   if ($$props.data === void 0 && $$bindings.data && data !== void 0)
     $$bindings.data(data);
   $$unsubscribe_t();
-  return `<div class="flex h-full flex-grow flex-col justify-between"><div class="flex-grow">${validate_component(Menu, "Menu").$$render($$result, {}, {}, {})} <div class="max-container relative"><div class="w-full flex flex-col items-center justify-center py-32"><h1 class="font-heading font-bold text-2xl">${escape($t("default.page.register.heading"))}</h1> ${validate_component(RegisterForm, "RegisterForm").$$render($$result, { data: data.form, class: "w-[400px]" }, {}, {})}</div></div></div></div>`;
+  return `<div class="flex h-full flex-grow flex-col justify-between"><div class="flex-grow">${validate_component(Menu, "Menu").$$render($$result, {}, {}, {})} <div class="max-container relative"><div class="w-full flex flex-col items-center justify-center py-32"><h1 class="font-heading font-bold text-2xl mb-6">${escape($t("default.page.register.heading"))}</h1> ${validate_component(RegisterForm, "RegisterForm").$$render(
+    $$result,
+    {
+      data: data.form,
+      class: "w-full max-w-[400px]"
+    },
+    {},
+    {}
+  )}</div></div></div></div>`;
 });
 export {
   Page as default

@@ -1,8 +1,7 @@
 import { c as compute_rest_props, s as subscribe } from "./utils.js";
 import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute, v as validate_component, g as escape_attribute_value } from "./ssr.js";
-import "./page.js";
+import { a as cn, u as flyAndScale } from "./page.js";
 import { D as Dialog_title$1, n as Dialog_portal$1, o as Dialog_overlay$1, p as fade, q as Dialog_content$1, C as Cross1 } from "./switch.js";
-import { c as cn, f as flyAndScale } from "./utils2.js";
 import { k as getCtx, D as Dialog_close, l as Dialog } from "./index3.js";
 /* empty css                                             */
 import "clsx";
