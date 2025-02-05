@@ -1,7 +1,7 @@
 import { s as subscribe, c as compute_rest_props } from "./utils.js";
 import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute, g as escape_attribute_value, v as validate_component, e as escape, f as each } from "./ssr.js";
 import { t as toWritableStores, o as overridable, g as generateIds, s as sleep, h as handleFocus, a as getPortalDestination, r as removeScroll, c as createBitAttrs, b as removeUndefined, d as getOptionUpdater, e as createDispatcher } from "./index3.js";
-import { o as omit, e as safeOnMount, m as makeElement, i as isBrowser, f as styleToString, p as portalAttr, g as effect, h as executeCallbacks, j as addMeltEventListener, k as kbd, l as createElHelpers, n as isElement, q as isHTMLElement, r as noop, d as derivedMode, s as scroll } from "./page.js";
+import { o as omit, f as safeOnMount, m as makeElement, i as isBrowser, g as styleToString, p as portalAttr, h as effect, j as executeCallbacks, k as addMeltEventListener, l as kbd, n as createElHelpers, q as isElement, r as isHTMLElement, t as noop, a as cn, u as flyAndScale, d as derivedMode, s as scroll } from "./page.js";
 import { t, l as locale } from "./translations.js";
 import { h as derivedVisible, u as usePopper, i as getPositioningUpdater, g as Logo, R as Root$1, c as Select_trigger, V as Value, d as Select_content, e as Select_item, I as Input, f as Switch, L as Label } from "./switch.js";
 import { s as setCookie, d as debounce } from "./helpers.js";
@@ -12,7 +12,6 @@ import { w as writable, d as derived } from "./index2.js";
 import { t as tick } from "./scheduler.js";
 import "clsx";
 import "./client.js";
-import { c as cn, f as flyAndScale } from "./utils2.js";
 import { B as Button } from "./button.js";
 const defaults = {
   positioning: {

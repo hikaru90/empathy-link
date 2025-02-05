@@ -14,25 +14,13 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_index3.js",
-      "_page.js",
-      "_translations.js",
-      "_client.js",
-      "_auth.js"
-    ]
-  },
-  "_AppTopMenu.js": {
-    "file": "chunks/AppTopMenu.js",
-    "name": "AppTopMenu",
-    "imports": [
-      "_utils.js",
-      "_ssr.js",
       "_page.js",
       "_translations.js",
       "_switch.js",
       "_Avatar.js",
       "_auth.js",
-      "_client.js"
+      "_client.js",
+      "_index3.js"
     ]
   },
   "_Avatar.js": {
@@ -49,8 +37,7 @@
       "_index3.js",
       "_helpers.js",
       "_auth.js",
-      "_SparklePill.js",
-      "_utils2.js"
+      "_SparklePill.js"
     ]
   },
   "_CaretLeft.js": {
@@ -69,12 +56,75 @@
       "_ssr.js"
     ]
   },
+  "_FightDisplay.svelte_svelte_type_style_lang.js": {
+    "file": "_app/immutable/assets/FightDisplay.C0O7MeJv.css",
+    "src": "_FightDisplay.svelte_svelte_type_style_lang.js"
+  },
+  "_HeartFilled.js": {
+    "file": "chunks/HeartFilled.js",
+    "name": "HeartFilled",
+    "imports": [
+      "_utils.js",
+      "_ssr.js"
+    ]
+  },
   "_PaperPlane.js": {
     "file": "chunks/PaperPlane.js",
     "name": "PaperPlane",
     "imports": [
       "_utils.js",
       "_ssr.js"
+    ]
+  },
+  "_ResponseMascot.js": {
+    "file": "chunks/ResponseMascot.js",
+    "name": "ResponseMascot",
+    "imports": [
+      "_utils.js",
+      "_lifecycle.js",
+      "_ssr.js",
+      "_page.js",
+      "_translations.js",
+      "_switch.js",
+      "_CaretLeft.js",
+      "_index7.js",
+      "_SparklePill.js"
+    ],
+    "css": [
+      "_app/immutable/assets/Share.BdSU-Snk.css"
+    ]
+  },
+  "_Share.js": {
+    "file": "chunks/Share.js",
+    "name": "Share",
+    "imports": [
+      "_utils.js",
+      "_ssr.js",
+      "_page.js",
+      "_switch.js",
+      "_index3.js",
+      "_lifecycle.js",
+      "_index2.js",
+      "_index7.js",
+      "_translations.js",
+      "_CaretLeft.js",
+      "_SparklePill.js",
+      "_client.js",
+      "_index5.js",
+      "_auth.js",
+      "_stores.js",
+      "_memoize.js",
+      "_index.js",
+      "_zod.js",
+      "_pocketbase.js",
+      "_index6.js",
+      "_Toaster.svelte_svelte_type_style_lang.js",
+      "_Check.js",
+      "_PaperPlane.js"
+    ],
+    "css": [
+      "_app/immutable/assets/Share.BdSU-Snk.css",
+      "_app/immutable/assets/Share.D0i0oang.css"
     ]
   },
   "_Share.svelte_svelte_type_style_lang.js": {
@@ -86,7 +136,7 @@
     "name": "SparklePill",
     "imports": [
       "_ssr.js",
-      "_utils2.js"
+      "_page.js"
     ],
     "assets": [
       "_app/immutable/assets/holo3.CNY6rpg_.jpg"
@@ -119,8 +169,7 @@
       "_ssr.js",
       "_page.js",
       "_switch.js",
-      "_index3.js",
-      "_utils2.js"
+      "_index3.js"
     ]
   },
   "_client.js": {
@@ -162,7 +211,6 @@
       "_index2.js",
       "_scheduler.js",
       "_client.js",
-      "_utils2.js",
       "_button.js"
     ]
   },
@@ -172,6 +220,10 @@
     "imports": [
       "_translations.js"
     ]
+  },
+  "_icon-folder.js": {
+    "file": "chunks/icon-folder.js",
+    "name": "icon-folder"
   },
   "_icon-steps.js": {
     "file": "chunks/icon-steps.js",
@@ -211,7 +263,6 @@
       "_ssr.js",
       "_page.js",
       "_switch.js",
-      "_utils2.js",
       "_SparklePill.js"
     ]
   },
@@ -221,12 +272,11 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_utils2.js",
+      "_page.js",
       "_switch.js",
       "_index2.js",
       "_lifecycle.js",
-      "_index3.js",
-      "_page.js"
+      "_index3.js"
     ]
   },
   "_index6.js": {
@@ -237,7 +287,6 @@
       "_ssr.js",
       "_page.js",
       "_switch.js",
-      "_utils2.js",
       "_index3.js"
     ],
     "css": [
@@ -254,7 +303,6 @@
       "_lifecycle.js",
       "_root.svelte_svelte_type_style_lang.js",
       "_index2.js",
-      "_utils2.js",
       "_switch.js",
       "_index3.js",
       "_scheduler.js"
@@ -359,7 +407,7 @@
       "_page.js"
     ],
     "css": [
-      "_app/immutable/assets/simplebar.CbbKpB0R.css"
+      "_app/immutable/assets/simplebar.Bg_aojde.css"
     ]
   },
   "_skeleton.js": {
@@ -368,7 +416,7 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_utils2.js"
+      "_page.js"
     ]
   },
   "_ssr.js": {
@@ -410,7 +458,6 @@
       "_utils.js",
       "_ssr.js",
       "_page.js",
-      "_utils2.js",
       "_index3.js",
       "_lifecycle.js",
       "_index2.js",
@@ -432,10 +479,6 @@
   },
   "_utils.js": {
     "file": "chunks/utils.js",
-    "name": "utils"
-  },
-  "_utils2.js": {
-    "file": "chunks/utils2.js",
     "name": "utils"
   },
   "_zod.js": {
@@ -630,10 +673,11 @@
       "_index4.js",
       "_helpers.js",
       "_button.js",
-      "_utils2.js",
       "_SparklePill.js",
+      "_icon-folder.js",
       "_icon-steps.js",
       "_PaperPlane.js",
+      "_HeartFilled.js",
       "_lifecycle.js"
     ],
     "css": [
@@ -776,7 +820,7 @@
       "_index3.js",
       "_index6.js",
       "_pocketbase.js",
-      "_utils2.js",
+      "_page.js",
       "_button.js",
       "_Check.js",
       "_stores.js"
@@ -835,10 +879,8 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_AppTopMenu.js",
       "_AppBottomMenu.js",
       "_lifecycle.js",
-      "_utils2.js",
       "_page.js",
       "_index3.js",
       "_index2.js",
@@ -873,7 +915,6 @@
       "_client.js",
       "_auth.js",
       "_helpers.js",
-      "_AppTopMenu.js",
       "_AppBottomMenu.js",
       "_index.js",
       "_index3.js",
@@ -881,7 +922,6 @@
       "_memoize.js",
       "_Toaster.svelte_svelte_type_style_lang.js",
       "_index4.js",
-      "_utils2.js",
       "_switch.js",
       "_CaretLeft.js"
     ],
@@ -919,9 +959,9 @@
       "_skeleton.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.C0O7MeJv.css",
       "_app/immutable/assets/dialog-content.CiZ0nAqS.css",
-      "_app/immutable/assets/Share.D0i0oang.css"
+      "_app/immutable/assets/Share.D0i0oang.css",
+      "_app/immutable/assets/FightDisplay.C0O7MeJv.css"
     ]
   },
   "src/routes/app/fights/[id]/respond/+page.server.ts": {
@@ -942,7 +982,6 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_AppTopMenu.js",
       "_AppBottomMenu.js",
       "_stores.js",
       "_index3.js",
@@ -953,16 +992,14 @@
       "_auth.js",
       "_memoize.js",
       "_index.js",
-      "_lifecycle.js",
-      "_switch.js",
-      "_CaretLeft.js",
+      "_ResponseMascot.js",
       "_zod.js",
+      "_icon-folder.js",
       "_icon-steps.js",
-      "_pocketbase.js",
-      "_SparklePill.js"
+      "_pocketbase.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.BG3GntSY.css"
+      "_app/immutable/assets/_page.Cwb1ZngV.css"
     ]
   },
   "src/routes/app/fights/create/+page.svelte": {
@@ -974,34 +1011,23 @@
       "_utils.js",
       "_switch.js",
       "_ssr.js",
-      "_AppTopMenu.js",
       "_AppBottomMenu.js",
       "_index5.js",
-      "_page.js",
-      "_index3.js",
-      "_lifecycle.js",
-      "_index2.js",
-      "_index7.js",
-      "_utils2.js",
+      "_Share.js",
       "_client.js",
       "_memoize.js",
+      "_index7.js",
       "_index.js",
       "_translations.js",
-      "_CaretLeft.js",
       "_zod.js",
+      "_icon-folder.js",
       "_icon-steps.js",
       "_pocketbase.js",
-      "_SparklePill.js",
       "_auth.js",
-      "_stores.js",
-      "_index6.js",
-      "_Toaster.svelte_svelte_type_style_lang.js",
-      "_Check.js",
-      "_PaperPlane.js"
+      "_page.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.B8L8-MMh.css",
-      "_app/immutable/assets/Share.D0i0oang.css"
+      "_app/immutable/assets/_page.CvIOBNHG.css"
     ]
   },
   "src/routes/app/selfempathy/+page.svelte": {
@@ -1010,6 +1036,7 @@
     "src": "src/routes/app/selfempathy/+page.svelte",
     "isEntry": true,
     "imports": [
+      "_utils.js",
       "_ssr.js",
       "_AppBottomMenu.js",
       "_index.js",
@@ -1020,10 +1047,114 @@
       "_memoize.js",
       "_translations.js",
       "_Toaster.svelte_svelte_type_style_lang.js",
-      "_pocketbase.js"
+      "_pocketbase.js",
+      "_auth.js",
+      "_index4.js",
+      "_switch.js",
+      "_CaretLeft.js",
+      "_HeartFilled.js"
     ],
     "css": [
       "_app/immutable/assets/dialog-content.CiZ0nAqS.css"
+    ]
+  },
+  "src/routes/app/selfempathy/[id]/+page.server.ts": {
+    "file": "entries/pages/app/selfempathy/_id_/_page.server.ts.js",
+    "name": "entries/pages/app/selfempathy/_id_/_page.server.ts",
+    "src": "src/routes/app/selfempathy/[id]/+page.server.ts",
+    "isEntry": true
+  },
+  "src/routes/app/selfempathy/[id]/+page.svelte": {
+    "file": "entries/pages/app/selfempathy/_id_/_page.svelte.js",
+    "name": "entries/pages/app/selfempathy/_id_/_page.svelte",
+    "src": "src/routes/app/selfempathy/[id]/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_utils.js",
+      "_lifecycle.js",
+      "_ssr.js",
+      "_translations.js",
+      "_page.js",
+      "_index3.js",
+      "_client.js",
+      "_auth.js",
+      "_pocketbase.js",
+      "_stores.js",
+      "_memoize.js",
+      "_index.js",
+      "_root.svelte_svelte_type_style_lang.js",
+      "_Toaster.svelte_svelte_type_style_lang.js",
+      "_skeleton.js"
+    ],
+    "css": [
+      "_app/immutable/assets/dialog-content.CiZ0nAqS.css",
+      "_app/immutable/assets/Share.D0i0oang.css",
+      "_app/immutable/assets/FightDisplay.C0O7MeJv.css"
+    ]
+  },
+  "src/routes/app/selfempathy/[id]/respond/+page.server.ts": {
+    "file": "entries/pages/app/selfempathy/_id_/respond/_page.server.ts.js",
+    "name": "entries/pages/app/selfempathy/_id_/respond/_page.server.ts",
+    "src": "src/routes/app/selfempathy/[id]/respond/+page.server.ts",
+    "isEntry": true,
+    "imports": [
+      "_pocketbase.js",
+      "_index.js"
+    ]
+  },
+  "src/routes/app/selfempathy/[id]/respond/+page.svelte": {
+    "file": "entries/pages/app/selfempathy/_id_/respond/_page.svelte.js",
+    "name": "entries/pages/app/selfempathy/_id_/respond/_page.svelte",
+    "src": "src/routes/app/selfempathy/[id]/respond/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_utils.js",
+      "_ssr.js",
+      "_AppBottomMenu.js",
+      "_stores.js",
+      "_index3.js",
+      "_index7.js",
+      "_page.js",
+      "_translations.js",
+      "_client.js",
+      "_auth.js",
+      "_memoize.js",
+      "_index.js",
+      "_ResponseMascot.js",
+      "_zod.js",
+      "_icon-folder.js",
+      "_icon-steps.js",
+      "_pocketbase.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.Cwb1ZngV.css"
+    ]
+  },
+  "src/routes/app/selfempathy/create/+page.svelte": {
+    "file": "entries/pages/app/selfempathy/create/_page.svelte.js",
+    "name": "entries/pages/app/selfempathy/create/_page.svelte",
+    "src": "src/routes/app/selfempathy/create/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_utils.js",
+      "_switch.js",
+      "_ssr.js",
+      "_AppBottomMenu.js",
+      "_index5.js",
+      "_Share.js",
+      "_client.js",
+      "_memoize.js",
+      "_index7.js",
+      "_index.js",
+      "_translations.js",
+      "_zod.js",
+      "_icon-steps.js",
+      "_pocketbase.js",
+      "_auth.js",
+      "_page.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.CvIOBNHG.css"
     ]
   }
 }

@@ -1,9 +1,8 @@
 import { c as compute_rest_props } from "./utils.js";
 import { c as create_ssr_component, v as validate_component } from "./ssr.js";
-import "./page.js";
+import { a as cn } from "./page.js";
 import { j as Button$1 } from "./switch.js";
 import { f as buttonVariants } from "./index3.js";
-import { c as cn } from "./utils2.js";
 const Button = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class", "variant", "size", "builders"]);
   let { class: className = void 0 } = $$props;

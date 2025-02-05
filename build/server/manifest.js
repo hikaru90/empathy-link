@@ -10,20 +10,23 @@ return {
 	assets: new Set(["connector.svg","favicon.png","feelings.js","hero/2phone.png","hero/2phone_lit.png","hero/bak/1phone.png","hero/bak/1phone_lit.png","hero/bak/2phone.png","hero/bak/2phone_lit.png","hero/bak/icon1.png","hero/bak/icon1_lit.png","hero/bak/icon2.png","hero/bak/icon2_lit.png","hero/bak/icon3.png","hero/bak/icon3_lit.png","hero/bak/icon4.png","hero/bak/icon4_lit.png","hero/icon1.png","hero/icon1_lit.png","hero/icon2.png","hero/icon2_lit.png","hero/icon3.png","hero/icon3_lit.png","hero/icon4.png","hero/icon4_lit.png","hero/phone_mobile.png","hero.bin","hero.gltf","holo3.jpg","Image_0.png","inverted-border.svg","iphone_mockup.png","needs.js","phone-icons-inverted.svg","phone-icons.svg","phone-lens.jpg","phone_frontal.png","screenshot-dashboard.png","screenshot-fight2.png","women.jpg"]),
 	mimeTypes: {".svg":"image/svg+xml",".png":"image/png",".js":"text/javascript",".bin":"application/octet-stream",".gltf":"model/gltf+json",".jpg":"image/jpeg"},
 	_: {
-		client: {"start":"_app/immutable/entry/start.veSG8Sao.js","app":"_app/immutable/entry/app.CAP5WgKA.js","imports":["_app/immutable/entry/start.veSG8Sao.js","_app/immutable/chunks/entry.Ctrs9mTK.js","_app/immutable/chunks/scheduler.BGpOBVyA.js","_app/immutable/entry/app.CAP5WgKA.js","_app/immutable/chunks/preload-helper.D6kgxu3v.js","_app/immutable/chunks/scheduler.BGpOBVyA.js","_app/immutable/chunks/index.wJhSdTM5.js"],"stylesheets":[],"fonts":[],"uses_env_dynamic_public":false},
+		client: {"start":"_app/immutable/entry/start.D9JFhSKa.js","app":"_app/immutable/entry/app.CRe-a88q.js","imports":["_app/immutable/entry/start.D9JFhSKa.js","_app/immutable/chunks/entry.DnNy0IhO.js","_app/immutable/chunks/scheduler.BmBrB_dT.js","_app/immutable/entry/app.CRe-a88q.js","_app/immutable/chunks/preload-helper.D6kgxu3v.js","_app/immutable/chunks/scheduler.BmBrB_dT.js","_app/immutable/chunks/index.BQZQ5DB3.js"],"stylesheets":[],"fonts":[],"uses_env_dynamic_public":false},
 		nodes: [
-			__memo(() => import('./chunks/0-CqXOKRZ1.js')),
-			__memo(() => import('./chunks/1-Di6gjktn.js')),
-			__memo(() => import('./chunks/2-qRfrIPr4.js')),
-			__memo(() => import('./chunks/3-DLLzHaa4.js')),
-			__memo(() => import('./chunks/4-D2Pz1aIA.js')),
-			__memo(() => import('./chunks/5-BQrBtcKD.js')),
-			__memo(() => import('./chunks/6-C_6YtdC7.js')),
-			__memo(() => import('./chunks/7-BF3sL4Ri.js')),
-			__memo(() => import('./chunks/8-BHBn5BaI.js')),
-			__memo(() => import('./chunks/9-Cf8Winy1.js')),
-			__memo(() => import('./chunks/10-BUsq1Xm4.js')),
-			__memo(() => import('./chunks/11-Czp_C2XU.js'))
+			__memo(() => import('./chunks/0-Ds-3rUe6.js')),
+			__memo(() => import('./chunks/1-B9-zTA0U.js')),
+			__memo(() => import('./chunks/2-Ljdm0RmG.js')),
+			__memo(() => import('./chunks/3-B_kUcHql.js')),
+			__memo(() => import('./chunks/4-CTRx4Tmj.js')),
+			__memo(() => import('./chunks/5-2VlqleVI.js')),
+			__memo(() => import('./chunks/6-CGtzU7Yq.js')),
+			__memo(() => import('./chunks/7-D5SBxHjR.js')),
+			__memo(() => import('./chunks/8-CN4mTwuy.js')),
+			__memo(() => import('./chunks/9-CjmefUkW.js')),
+			__memo(() => import('./chunks/10-CnPgZArA.js')),
+			__memo(() => import('./chunks/11-tXK9R8qm.js')),
+			__memo(() => import('./chunks/12-BULkhmU4.js')),
+			__memo(() => import('./chunks/13-DysrmoFG.js')),
+			__memo(() => import('./chunks/14-S3WdkuZ7.js'))
 		],
 		routes: [
 			{
@@ -129,6 +132,27 @@ return {
 				pattern: /^\/app\/selfempathy\/?$/,
 				params: [],
 				page: { layouts: [0,2,], errors: [1,,], leaf: 11 },
+				endpoint: null
+			},
+			{
+				id: "/app/selfempathy/create",
+				pattern: /^\/app\/selfempathy\/create\/?$/,
+				params: [],
+				page: { layouts: [0,2,], errors: [1,,], leaf: 12 },
+				endpoint: null
+			},
+			{
+				id: "/app/selfempathy/[id]",
+				pattern: /^\/app\/selfempathy\/([^/]+?)\/?$/,
+				params: [{"name":"id","optional":false,"rest":false,"chained":false}],
+				page: { layouts: [0,2,], errors: [1,,], leaf: 13 },
+				endpoint: null
+			},
+			{
+				id: "/app/selfempathy/[id]/respond",
+				pattern: /^\/app\/selfempathy\/([^/]+?)\/respond\/?$/,
+				params: [{"name":"id","optional":false,"rest":false,"chained":false}],
+				page: { layouts: [0,2,], errors: [1,,], leaf: 14 },
 				endpoint: null
 			}
 		],

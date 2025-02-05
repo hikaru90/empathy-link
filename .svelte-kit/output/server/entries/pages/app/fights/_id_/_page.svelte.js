@@ -15,6 +15,7 @@ import "../../../../../chunks/root.svelte_svelte_type_style_lang.js";
 /* empty css                                                                 */
 import "../../../../../chunks/Toaster.svelte_svelte_type_style_lang.js";
 /* empty css                                                        */
+/* empty css                                                               */
 import { S as Skeleton } from "../../../../../chunks/skeleton.js";
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $page, $$unsubscribe_page;

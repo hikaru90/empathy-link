@@ -1,7 +1,7 @@
 import { c as compute_rest_props, s as subscribe, a as null_to_empty } from "../../../../chunks/utils.js";
 import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object, a as add_attribute, v as validate_component, e as escape } from "../../../../chunks/ssr.js";
 import { S as Skeleton } from "../../../../chunks/skeleton.js";
-import "../../../../chunks/page.js";
+import { a as cn } from "../../../../chunks/page.js";
 import { p as pb } from "../../../../chunks/pocketbase.js";
 import { t } from "../../../../chunks/translations.js";
 import { e as endDate } from "../../../../chunks/dashboard.js";
@@ -9,8 +9,7 @@ import "../../../../chunks/client.js";
 import { u as user } from "../../../../chunks/auth.js";
 import "clsx";
 import { b as delay } from "../../../../chunks/helpers.js";
-import { A as AppTopMenu } from "../../../../chunks/AppTopMenu.js";
-import { A as AppBottomMenu } from "../../../../chunks/AppBottomMenu.js";
+import { A as AppTopMenu, a as AppBottomMenu } from "../../../../chunks/AppBottomMenu.js";
 import "../../../../chunks/index.js";
 import "../../../../chunks/index3.js";
 import "../../../../chunks/schema.js";
@@ -18,7 +17,6 @@ import "../../../../chunks/memoize.js";
 import "../../../../chunks/Toaster.svelte_svelte_type_style_lang.js";
 /* empty css                                                              */
 import { B as Button$1 } from "../../../../chunks/index4.js";
-import { c as cn } from "../../../../chunks/utils2.js";
 import { B as Button } from "../../../../chunks/switch.js";
 import { C as CaretLeft } from "../../../../chunks/CaretLeft.js";
 const Plus = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -55,15 +53,15 @@ const FightOverviewAll = create_ssr_component(($$result, $$props, $$bindings, sl
   let records = [];
   let page = 1;
   const fetchData = async () => {
-    const newRecords = await pb.collection("fights").getList(page, perPage, {
+    const newRecords2 = await pb.collection("fights").getList(page, perPage, {
       filter: `owner = '${$user.id}'`,
       sort: "-updated",
       expand: "responses"
     });
-    if (newRecords.items.length === 0)
+    if (newRecords2.items.length === 0)
       ;
     await delay(1e3);
-    records = [...records, ...newRecords.items];
+    records = [...records, ...newRecords2.items];
   };
   endDate.subscribe(async () => {
     console.log("endDate changed -> fetching data");
@@ -104,18 +102,20 @@ const ReceivedLinks = create_ssr_component(($$result, $$props, $$bindings, slots
         expand: "owner"
       });
       records = existingRecords;
-      console.log("existingRecords", existingRecords);
+      console.log("existingRecords", existingRecords.map((record) => record.id));
       openedFights = openedFights.filter((fightId) => !existingRecords.map((record) => record.id).includes(fightId));
       console.log("openedFights", openedFights);
       const filterString = openedFights.map((fightId) => `owner != '${$user.id}' && id = '${fightId}'`).join(" || ");
       console.log("filterString", filterString);
-      const newRecords = await pb.collection("fights").getFullList({
-        sort: "-created",
-        filter: filterString,
-        requestKey: "receivedLinks",
-        expand: "owner"
-      });
-      transferOpenedLinks(newRecords);
+      if (filterString) {
+        const newRecords2 = await pb.collection("fights").getFullList({
+          sort: "-created",
+          filter: filterString,
+          requestKey: "receivedLinks",
+          expand: "owner"
+        });
+        transferOpenedLinks(newRecords2);
+      }
       await delay(1e3);
       records = [...records, ...newRecords];
       console.log("newRecords", newRecords);
@@ -164,7 +164,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   $$result.css.add(css);
   $$unsubscribe_user();
   $$unsubscribe_t();
-  return `${$user ? `<div class="flex h-full flex-grow flex-col justify-between">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="max-container flex-grow pb-40"><div class="relative z-10 mb-8 flex flex-row items-start justify-between py-4 md:items-center md:bg-transparent md:pb-6"><h1 class="font-heading text-lg font-semibold">${escape($t("default.page.fight.heading"))}</h1></div> ${validate_component(ReceivedLinks, "ReceivedLinks").$$render($$result, { class: "mb-14" }, {}, {})} ${validate_component(FightOverviewAll, "FightOverviewAll").$$render($$result, {}, {}, {})} ${validate_component(AppBottomMenu, "AppBottomMenu").$$render($$result, {}, {}, {
+  return `${$user ? `<div class="flex h-full flex-grow flex-col justify-between overflow-hidden">${validate_component(AppTopMenu, "AppTopMenu").$$render($$result, {}, {}, {})} <div class="max-container flex-grow pb-40"><div class="relative z-10 mb-8 flex flex-row items-start justify-between py-4 md:items-center md:bg-transparent md:pb-6"><h1 class="font-heading text-lg font-semibold">${escape($t("default.page.fight.heading"))}</h1></div> ${validate_component(ReceivedLinks, "ReceivedLinks").$$render($$result, { class: "mb-14" }, {}, {})} ${validate_component(FightOverviewAll, "FightOverviewAll").$$render($$result, {}, {}, {})} ${validate_component(AppBottomMenu, "AppBottomMenu").$$render($$result, {}, {}, {
     default: () => {
       return `<div class="relative flex h-auto items-center justify-between"><a href="/app/dashboard" class="block">${validate_component(Button, "Button").$$render(
         $$result,
