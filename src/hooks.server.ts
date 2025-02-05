@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { serializeNonPOJOs } from '$scripts/helpers';
 import { pb } from '$scripts/pocketbase'
 import { PUBLIC_POSTHOG_KEY } from '$env/static/public';
+import { initializeUserSession, getUserSession } from '$lib/server/gemini';
+import { initializeUserSession as storeInitializeUserSession } from '$store/chatStore';
 const client = 'empathy_link'
 
 export const handle = async ({ event, resolve }) => {
@@ -22,7 +24,7 @@ export const handle = async ({ event, resolve }) => {
     posthogUserId = uuidv4();
     event.cookies.set(`${client}_user_id`, posthogUserId, {
       httpOnly: true,
-      sameSite: 'strict',
+			sameSite: 'strict',
       secure: true,
       path: '/',
       maxAge: 60 * 60 * 24 * 7 * 52 // 1 year
@@ -54,12 +56,14 @@ export const handle = async ({ event, resolve }) => {
 		event.locals.locale = langHeaders
 		// locale.set(langHeaders);
 	}
-
+		
 	event.locals.pb = pb;
 	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 
 	if (event.locals.pb.authStore.isValid) {
 		event.locals.user = serializeNonPOJOs(event.locals.pb.authStore.model);
+		const user = event.locals.pb.authStore.baseModel;
+		storeInitializeUserSession(user);
 	} else {
 		event.locals.user = undefined;
 	}

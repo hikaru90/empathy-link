@@ -16,12 +16,15 @@
 	import { getScrollbarWidth } from '$scripts/helpers';
 	import { page } from '$app/stores';
 	import { postHog, featureFlags } from '$store/posthog';
+	import  { PUBLIC_INIT_POSTHOG } from '$env/static/public';
 
 	export let data;
 
 	let currentPath: string;
-	featureFlags.set(data.featureFlags);
-	postHog.init(data.posthogId, data.featureFlags);
+	if(PUBLIC_INIT_POSTHOG === 'true') {
+		featureFlags.set(data.featureFlags);
+		postHog.init(data.posthogId, data.featureFlags);
+	}
 
 	if (browser) {
 		window.ResizeObserver = ResizeObserver;
@@ -30,8 +33,6 @@
 	let contentReady = false;
 	let lastKnownScrollPosition = 0;
 	let ticking = false;
-
-	console.log('+layout.svelte - user:', data.user);
 
 	const animationDuration = 400;
 

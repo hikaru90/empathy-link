@@ -26,19 +26,26 @@ export const dictionary = {
 		"/app/auth/register": [~5,[2]],
 		"/app/dashboard": [6,[2]],
 		"/app/fights": [7,[2]],
-		"/app/fights/create": [8,[2]],
-		"/app/fights/[id]": [~9,[2]],
-		"/app/fights/[id]/respond": [~10,[2]],
+		"/app/fights/create": [10,[2]],
+		"/app/fights/[id]": [~8,[2]],
+		"/app/fights/[id]/respond": [~9,[2]],
 		"/app/selfempathy": [11,[2]],
-		"/app/selfempathy/create": [12,[2]],
-		"/app/selfempathy/[id]": [~13,[2]],
-		"/app/selfempathy/[id]/respond": [~14,[2]]
+		"/app/selfempathy/create": [14,[2]],
+		"/app/selfempathy/[id]": [~12,[2]],
+		"/app/selfempathy/[id]/respond": [~13,[2]]
 	};
 
 export const hooks = {
 	handleError: (({ error }) => { console.error(error) }),
-
-	reroute: (() => {})
+	
+	reroute: (() => {}),
+	transport: {}
 };
+
+export const decoders = Object.fromEntries(Object.entries(hooks.transport).map(([k, v]) => [k, v.decode]));
+
+export const hash = false;
+
+export const decode = (type, value) => decoders[type](value);
 
 export { default as root } from '../root.svelte';
