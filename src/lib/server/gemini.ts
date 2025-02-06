@@ -1,21 +1,6 @@
 import { pb } from '$scripts/pocketbase';
-
 import { HarmBlockThreshold, HarmCategory, GoogleGenerativeAI } from '@google/generative-ai';
 import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
-
-interface User {
-  id: string;
-  email: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  emailVisibility: boolean;
-  verified: boolean;
-  created: string;
-  updated: string;
-  collectionId: '_pb_users_auth_';
-  collectionName: 'users';
-}
 
 // Initialize Gemini once
 const genAI = new GoogleGenerativeAI(PRIVATE_GEMINI_API_KEY);
@@ -51,9 +36,10 @@ const model = genAI.getGenerativeModel({
 
 // Store active user sessions
 export const userSessions = new Map();
+console.log('userSessions',userSessions);
 
-export function initializeUserSession(user: User) {
-  console.log('initializeUserSession');
+export function initializeUserSession(user: App.User) {
+  console.log('initializeUserSession from gemini');
   if (!userSessions.has(user.id)) {
     console.log('Creating new session for user:', user.id);
     const model = genAI.getGenerativeModel({
@@ -66,6 +52,7 @@ export function initializeUserSession(user: User) {
         - Help identify feelings and needs
         - Guide towards nonviolent communication practices
         - Keep previous context in mind when responding
+        - Don't change the language
       `,
     });
 
@@ -100,6 +87,7 @@ export function initializeUserSession(user: User) {
   } else {
     console.log('Session already exists for user:', user.id);
   }
+  console.log('userSessions',JSON.stringify(userSessions.get(user.id).params.history));
   return userSessions.get(user.id);
 }
 
@@ -107,37 +95,43 @@ export function getUserSession(userId: string) {
   return userSessions.get(userId);
 }
 
-// todo: change user memory to be a list of objects
-export const saveUserMemory = async (userId: string, memoryData: any) => {
-  try {
-      const existingRecord = await pb.collection('user_memory').getFirstListItem(`userId="${userId}"`);
-      if (existingRecord) {
-          await pb.collection('user_memory').update(existingRecord.id, memoryData);
-      } else {
-          await pb.collection('user_memory').create({ userId, ...memoryData });
-      }
-  } catch (error) {
-      console.error('Error saving memory:', error);
-  }
-}
+// // todo: change user memory to be a list of objects
+// export const saveUserMemory = async (userId: string, memoryData: any) => {
+//   try {
+//       const existingRecord = await pb.collection('user_memory').getFirstListItem(`userId="${userId}"`);
+//       if (existingRecord) {
+//           await pb.collection('user_memory').update(existingRecord.id, memoryData);
+//       } else {
+//           await pb.collection('user_memory').create({ userId, ...memoryData });
+//       }
+//   } catch (error) {
+//       console.error('Error saving memory:', error);
+//   }
+// }
 
-// todo: change user memory to be a list of objects
-export const loadUserMemory = async (userId: string) => {
-  try {
-      const record = await pb.collection('user_memory').getFirstListItem(`userId="${userId}"`);
-      return record || null;
-  } catch (error) {
-      console.error('No memory found:', error);
-      return null;
-  }
-}
+// // todo: change user memory to be a list of objects
+// export const loadUserMemory = async (userId: string) => {
+//   try {
+//       const record = await pb.collection('user_memory').getFirstListItem(`userId="${userId}"`);
+//       return record || null;
+//   } catch (error) {
+//       console.error('No memory found:', error);
+//       return null;
+//   }
+// }
 
-export async function sendMessage(message: string, history: Array<{ role: string; content: string }>) {
+export async function sendMessage(message: string, history: Array<{ role: string; content: string }>, user: App.User) {
+  console.log('sendMessage from gemini');
   // Convert the history to Gemini's expected format
   const formattedHistory = history.map(msg => ({
-    role: msg.role === 'user' ? 'user' : 'model',
+    role: msg.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: msg.content }]
   }));
+
+  // Ensure the first message is from user if history exists
+  if (formattedHistory.length > 0 && formattedHistory[0].role !== 'user') {
+    formattedHistory.shift(); // Remove the first message if it's not from user
+  }
 
   const chat = model.startChat({
     history: formattedHistory,
@@ -151,5 +145,6 @@ export async function sendMessage(message: string, history: Array<{ role: string
 
   const result = await chat.sendMessage(message);
   const response = await result.response;
+  console.log('userSessions',JSON.stringify(userSessions.get(user.id).params.history));
   return response.text();
 }

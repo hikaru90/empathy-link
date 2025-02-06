@@ -105,6 +105,7 @@ declare module '$env/static/private' {
  * ```
  */
 declare module '$env/static/public' {
+	export const PUBLIC_MESSAGE_LIMIT: string;
 	export const PUBLIC_INIT_POSTHOG: string;
 	export const PUBLIC_POSTHOG_KEY: string;
 }
@@ -211,6 +212,7 @@ declare module '$env/dynamic/private' {
  */
 declare module '$env/dynamic/public' {
 	export const env: {
+		PUBLIC_MESSAGE_LIMIT: string;
 		PUBLIC_INIT_POSTHOG: string;
 		PUBLIC_POSTHOG_KEY: string;
 		[key: `PUBLIC_${string}`]: string | undefined;

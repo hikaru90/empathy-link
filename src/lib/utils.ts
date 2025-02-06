@@ -2,10 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { cubicOut } from "svelte/easing";
 import type { TransitionConfig } from "svelte/transition";
-
-export function cn(...inputs: ClassValue[]) {
-    return twMerge(clsx(inputs));
-}
+import { browser } from '$app/environment';
 
 type FlyAndScaleParams = {
     y?: number;
@@ -13,6 +10,10 @@ type FlyAndScaleParams = {
     start?: number;
     duration?: number;
 };
+
+export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}
 
 export const flyAndScale = (
     node: Element,

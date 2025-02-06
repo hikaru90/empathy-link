@@ -1,5 +1,12 @@
-import { writable, get } from 'svelte/store';
 import { browser } from '$app/environment';
+import { PUBLIC_MESSAGE_LIMIT } from '$env/static/public';
+import { writable, get, type Writable } from 'svelte/store';
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
+}
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -15,7 +22,6 @@ const loadMessages = (): ChatMessage[] => {
     const stored = localStorage.getItem('chat_messages');
     if (stored) {
       const messages = JSON.parse(stored);
-      // Return only the last MESSAGE_LIMIT messages
       return messages.slice(-MESSAGE_LIMIT);
     }
   }
@@ -29,17 +35,36 @@ const loadUserId = () => {
   return null;
 };
 
-export const messages = writable<ChatMessage[]>(loadMessages());
+function createMessagesStore() {
+  const { subscribe, set, update } = writable<ChatMessage[]>(loadMessages());
+
+  return {
+    subscribe,
+    set,
+    addMessage: (role: 'user' | 'assistant', content: string) => {
+      update(msgs => {
+        const newMessage: ChatMessage = {
+          role,
+          content,
+          timestamp: Date.now()
+        };
+        const updatedMsgs = [...msgs, newMessage];
+        return updatedMsgs.slice(-MESSAGE_LIMIT);
+      });
+    },
+    clear: () => set([])
+  };
+}
+
+export const messages = createMessagesStore();
 export const userMemory = writable({});
 export const userId = writable(loadUserId());
 
 // Save messages to localStorage whenever they change
 messages.subscribe(msgs => {
   if (browser && msgs) {
-    // Only store the last MESSAGE_LIMIT messages
-    const limitedMsgs = msgs.slice(-MESSAGE_LIMIT);
-    localStorage.setItem('chat_messages', JSON.stringify(limitedMsgs));
-    console.log('messages saved to localStorage', limitedMsgs);
+    localStorage.setItem('chat_messages', JSON.stringify(msgs));
+    console.log('messages saved to localStorage', msgs);
   }
 });
 
@@ -51,61 +76,45 @@ userId.subscribe(id => {
   }
 });
 
-// Initialize user session with initial messages
-export function initializeUserSession(user: any) {
-  const currentUserId = get(userId);
-  const currentMessages = get(messages);
-  
-  if (!currentUserId || currentUserId !== user.id || currentMessages.length === 0) {
-    const initialMessages: ChatMessage[] = [
-      {
-        role: 'user',
-        content: `Hi, I'm ${user.firstName || user.id} and I'm here for NVC coaching.`,
-        timestamp: Date.now()
-      },
-      {
-        role: 'assistant',
-        content: `Hello! I understand you're here for NVC coaching. I'll help you explore your feelings and needs using nonviolent communication principles. Feel free to share what's on your mind.`,
-        timestamp: Date.now()
-      }
-    ];
-    
-    messages.set(initialMessages);
-    userId.set(user.id);
+export const saveMessagesToLocalStorage = (msgs: ChatMessage[]) => {
+  if (browser && msgs) {
+      // Only store the last PUBLIC_MESSAGE_LIMIT messages
+      const limitedMsgs = msgs.slice(-PUBLIC_MESSAGE_LIMIT);
+      localStorage.setItem('chat_messages', JSON.stringify(limitedMsgs));
+      console.log('messages saved to localStorage', limitedMsgs);
   }
-}
+};
 
-// Add a new message to the chat
-export function addMessage(role: 'user' | 'assistant', content: string) {
+export const addMessage = (messages: Writable<ChatMessage[]>, role: 'user' | 'assistant', content: string) => {
   const newMessage: ChatMessage = {
-    role,
-    content,
-    timestamp: Date.now()
+      role,
+      content,
+      timestamp: Date.now()
   };
   
   messages.update(msgs => {
-    const updatedMsgs = [...msgs, newMessage];
-    // Keep only the last MESSAGE_LIMIT messages
-    return updatedMsgs.slice(-MESSAGE_LIMIT);
+      const updatedMsgs = [...msgs, newMessage];
+      return updatedMsgs.slice(-PUBLIC_MESSAGE_LIMIT);
   });
-}
+};
 
-// Format timestamp for display
-export function formatTimestamp(timestamp: number): string {
+export const formatTimestamp = (timestamp: number): string => {
   const date = new Date(timestamp);
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
+};
 
-// Clear chat history
-export function clearChatHistory() {
+export const clearChatHistory = (messages: Writable<ChatMessage[]>, userId: Writable<string | null>) => {
   if (browser) {
-    localStorage.removeItem('chat_messages');
-    localStorage.removeItem('chat_user_id');
-    messages.set([]);
-    userId.set(null);
+      localStorage.removeItem('chat_messages');
+      localStorage.removeItem('chat_user_id');
+      messages.set([]);
+      userId.set(null);
   }
-}
+};
 
-messages.subscribe(msgs => {
-  console.log('messages', msgs);
-});
+export const saveUserIdToLocalStorage = (userId: string | null) => {
+  if (browser && userId) {
+      localStorage.setItem('chat_user_id', userId);
+      console.log('userId saved to localStorage', userId);
+  }
+};

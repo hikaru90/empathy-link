@@ -4,7 +4,7 @@ import { serializeNonPOJOs } from '$scripts/helpers';
 import { pb } from '$scripts/pocketbase'
 import { PUBLIC_POSTHOG_KEY } from '$env/static/public';
 import { initializeUserSession, getUserSession } from '$lib/server/gemini';
-import { initializeUserSession as storeInitializeUserSession } from '$store/chatStore';
+import { messages, userId } from '$store/chatStore';
 const client = 'empathy_link'
 
 export const handle = async ({ event, resolve }) => {
@@ -63,7 +63,7 @@ export const handle = async ({ event, resolve }) => {
 	if (event.locals.pb.authStore.isValid) {
 		event.locals.user = serializeNonPOJOs(event.locals.pb.authStore.model);
 		const user = event.locals.pb.authStore.baseModel;
-		storeInitializeUserSession(user);
+		initializeUserSession(user, messages, userId);
 	} else {
 		event.locals.user = undefined;
 	}
