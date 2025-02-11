@@ -8,8 +8,11 @@
 	"/api/ai/checkForJudgement": [
 		"src/routes/api/ai/checkForJudgement/+server.ts"
 	],
-	"/api/ai/selfempathyChat": [
-		"src/routes/api/ai/selfempathyChat/+server.ts"
+	"/api/ai/selfempathy/initChat": [
+		"src/routes/api/ai/selfempathy/initChat/+server.ts"
+	],
+	"/api/ai/selfempathy/sendMessage": [
+		"src/routes/api/ai/selfempathy/sendMessage/+server.ts"
 	],
 	"/api/mails/send": [
 		"src/routes/api/mails/send/+server.ts"

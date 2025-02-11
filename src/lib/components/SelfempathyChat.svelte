@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { messages, formatTimestamp, clearChatHistory, userId } from '$store/chatStore';
+	import { aiInstances, initChat } from '$store/chatStore';
+	import { formatTimestamp } from '$lib/utils';
 	import { onMount } from 'svelte';
 
 	let userMessage = '';
@@ -14,7 +15,7 @@
 	};
 
 	// Subscribe to messages store to scroll on new messages
-	$: if ($messages) {
+	$: if ($aiInstances.modules.selfempathy.history) {
 		// Use setTimeout to ensure DOM is updated
 		setTimeout(scrollToBottom, 0);
 	}
@@ -23,26 +24,26 @@
 		if (!userMessage.trim()) return;
 
 		isLoading = true;
-		messages.addMessage('user', userMessage);
+		aiInstances.addMessage('selfempathy', 'user', userMessage);
 		const messageToSend = userMessage;
 		userMessage = ''; // Clear input
 
 		try {
-			const response = await fetch('/api/ai/selfempathyChat', {
+			const response = await fetch('/api/ai/selfempathy/sendMessage', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
 					message: messageToSend,
-					history: $messages
+					history: $aiInstances.modules.selfempathy.history
 				})
 			});
 
 			const data = await response.json();
 			if (data.error) throw new Error(data.error);
 
-			messages.addMessage('assistant', data.response);
+			aiInstances.addMessage('selfempathy', 'assistant', data.response);
 		} catch (error) {
 			console.error('Failed to send message:', error);
 		} finally {
@@ -53,30 +54,26 @@
 	// Scroll to bottom on initial load
 	onMount(() => {
 		scrollToBottom();
+		initChat();
 	});
 </script>
 
-<button
-	on:click={() => clearChatHistory(messages, userId)}
->
-	x clear history
-</button>
 <div
-	class="relative flex h-full flex-col overflow-hidden rounded-lg border-b border-white/80 bg-[rgba(0,0,0,0.03)]"
+	class="h-full rounded-lg relative flex flex-col bg-[rgba(0,0,0,0.03)] border-b border-white/80 overflow-hidden"
 >
 	<div
 		bind:this={chatContainer}
-		class="chat-shadow h-full flex-grow overflow-y-auto scroll-smooth rounded-lg p-4"
+		class="h-full flex-grow p-4 chat-shadow rounded-lg overflow-y-auto scroll-smooth"
 	>
-		{#each $messages as message}
+		{#each $aiInstances.modules.selfempathy.history as message}
 			<div class="mb-4 {message.role === 'user' ? 'text-right' : 'text-left'}">
 				<div
-					class="inline-block rounded-lg p-3 {message.role === 'user'
+					class="inline-block p-3 rounded-lg {message.role === 'user'
 						? 'bg-blue-100'
 						: 'bg-gray-100'}"
 				>
 					<div class="text-sm">{message.content}</div>
-					<div class="mt-1 text-xs text-gray-500">{formatTimestamp(message.timestamp)}</div>
+					<div class="text-xs text-gray-500 mt-1">{formatTimestamp(message.timestamp)}</div>
 				</div>
 			</div>
 		{/each}
@@ -85,18 +82,18 @@
 		{/if}
 	</div>
 
-	<div class="border-t p-4">
+	<div class="p-4 border-t">
 		<form on:submit|preventDefault={handleSendMessage} class="flex gap-2">
 			<input
 				type="text"
 				bind:value={userMessage}
 				placeholder="Type your message..."
-				class="flex-grow rounded-lg border p-2"
+				class="flex-grow p-2 rounded-lg border"
 			/>
 			<button
 				type="submit"
 				disabled={isLoading}
-				class="rounded-lg bg-blue-500 px-4 py-2 text-white disabled:opacity-50"
+				class="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50"
 			>
 				Send
 			</button>
