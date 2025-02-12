@@ -10,10 +10,13 @@ interface ChatMessage {
   content: string;
   timestamp: number;
 }
+
 interface AIInstance {
+  id?: string;  // PocketBase record ID
   history: ChatMessage[];
   preferences: Record<string, any>;
 }
+
 interface AIInstances {
   modules: {
     selfempathy: AIInstance;
@@ -43,11 +46,35 @@ const loadInstances = (): AIInstances => {
 };
 
 function createAIInstancesStore() {
-  const { subscribe, set, update } = writable<AIInstances>(loadInstances());
+  const { subscribe, set, update } = writable<AIInstances>({
+    modules: {
+      selfempathy: {
+        history: [],
+        preferences: {}
+      },
+      fight: {
+        history: [],
+        preferences: {}
+      }
+    }
+  });
 
   return {
     subscribe,
     set,
+    setChat: (module: 'selfempathy' | 'fight', chatRecord: any) => {
+      update(instances => ({
+        ...instances,
+        modules: {
+          ...instances.modules,
+          [module]: {
+            id: chatRecord.id,
+            history: chatRecord.history,
+            preferences: chatRecord.preferences
+          }
+        }
+      }));
+    },
     addMessage: (module: 'selfempathy' | 'fight', role: 'user' | 'assistant', content: string) => {
       update(instances => {
         const newMessage: ChatMessage = {
@@ -89,8 +116,16 @@ export const aiInstances = createAIInstancesStore();
 export const userMemory = writable({});
 
 export const initChat = async () => {
-  await fetch('/api/ai/selfempathy/initChat', {
-    method: 'POST',
-    body: JSON.stringify({ user: get(user), systemInstruction, history: [] })
-  });
+  try{
+    const response = await fetch('/api/ai/selfempathy/initChat', {
+      method: 'POST',
+      body: JSON.stringify({ user: get(user), systemInstruction, history: [] })
+    });
+    const chatRecord = await response.json();
+    console.log('chatRecord',chatRecord);
+    return chatRecord.record;  // Return the chatId from the response
+  }catch(error){
+    console.error('Failed to initialize chat:', error);
+    return null;
+  }
 }

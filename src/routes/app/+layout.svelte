@@ -89,5 +89,5 @@
 <Toaster />
 
 <style lang="scss">
-	@import '../../assets/styles/style.scss';
+	@use '../../assets/styles/style.scss' as *;
 </style>

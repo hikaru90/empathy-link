@@ -6,5 +6,5 @@ import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
 export const genAI = new GoogleGenerativeAI(PRIVATE_GEMINI_API_KEY);
 
 // Store active user sessions
-export const chats = new Map();
-console.log('chats',chats);
+export const selfempathyChats = new Map();
+console.log('selfempathyChats',selfempathyChats);

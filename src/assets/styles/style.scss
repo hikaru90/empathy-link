@@ -1,5 +1,5 @@
-@import 'fonts.scss';
-@import 'animations.scss';
+@use 'fonts.scss' as *;
+@use 'animations.scss' as *;
 
 :global(html) {
 	// overflow:hidden;
