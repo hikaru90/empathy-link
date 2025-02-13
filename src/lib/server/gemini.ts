@@ -7,4 +7,8 @@ export const genAI = new GoogleGenerativeAI(PRIVATE_GEMINI_API_KEY);
 
 // Store active user sessions
 export const selfempathyChats = new Map();
-console.log('selfempathyChats',selfempathyChats);
+export const getIds = (array) => {
+  return Array.from(array.keys());
+};
+
+console.log('selfempathyChats',getIds(selfempathyChats));

@@ -3,19 +3,24 @@ import type { RequestHandler } from './$types';
 import { ClientResponseError } from 'pocketbase';
 import { genAI, selfempathyChats } from '$lib/server/gemini';
 import { HarmBlockThreshold, HarmCategory, SchemaType } from '@google/generative-ai';
+import { pb } from '$scripts/pocketbase'
+
+interface DbMessage {
+  role: 'user' | 'assistant';
+  content: string | { step: number; text: string };
+  timestamp: number;
+}
+
+interface GeminiMessage {
+  role: 'user' | 'model';
+  parts: Array<{ text: string }>;
+}
 
 export interface ChatRecord {
   id: string;
   user: string;
   module: string;
-  history: Array<{
-    role: 'user' | 'assistant';
-    content: {
-      step: number;
-      text: string;
-    }
-    timestamp: number;
-  }>;
+  history: Array<DbMessage>;
   preferences: Record<string, any>;
   created: string;
   updated: string;
@@ -37,14 +42,11 @@ const schema = {
   required: ["step", "text"],
 };
 
-const initModel = (systemInstruction: string) => {
-  return genAI.getGenerativeModel({
+const initModel = (history?: any[], systemInstruction?: string) => {
+  const model = genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
     systemInstruction: systemInstruction,
   });
-}
-const initChat = (history: any[], systemInstruction: string) => {
-  const model = initModel(systemInstruction);
   const chat = model.startChat({
     history: history,
     generationConfig: {
@@ -68,15 +70,65 @@ const initChat = (history: any[], systemInstruction: string) => {
   })
   return chat
 }
+const saveChatInMemory = (chatId: string, chat: any) => {
+  selfempathyChats.set(chatId, chat);
+}
+const initChatInDb = async (user: any) => {
+  // Create initial chat record
+  const chatData: Partial<ChatRecord> = {
+    user: user.id,
+    module: 'selfempathy',
+    history: [
+      {
+        role: 'user',
+        content: `Hi, I'm ${user.firstName || user.id} and I'm here for NVC coaching.`,
+        timestamp: Date.now()
+      },
+      {
+        role: 'assistant',
+        content: {
+          step: 1,
+          text: `Hello! I understand you're here for NVC coaching. I'll help you explore your feelings and needs using nonviolent communication principles. Feel free to share what's on your mind.`,
+        } ,
+        timestamp: Date.now()
+      }
+    ],
+    preferences: {}
+  };
+
+  const record = await pb.collection('chats').create(chatData);
+  console.log('Created new chat record:', record);
+  return record
+}
+const getChatFromDb = async (chatId: string) => {
+  console.log('getChatFromDb chatId',chatId);
+  const record = await pb.collection('chats').getOne(chatId);
+  return record
+}
+
+const formatHistoryForGemini = (history?: DbMessage[]): GeminiMessage[] => {
+  if (!history) return [];
+  
+  return history.map(msg => ({
+    role: msg.role === 'assistant' ? 'model' : 'user',
+    parts: [{
+      text: msg.role === 'assistant'
+        ? JSON.stringify(msg.content)
+        : typeof msg.content === 'string'
+          ? msg.content
+          : msg.content.text
+    }]
+  }));
+}
+
 const chatExistsInMemory = (chatId: string) => {
   return selfempathyChats.has(chatId);
 }
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   const { user, history, systemInstruction } = await request.json();
-  const pb = locals.pb;
 
-  console.log('RequestHandler initChat');
+  console.log('RequestHandler initChatInMemory');
   if (!user?.id) {
     return json(
       { error: 'User not authenticated' },
@@ -88,10 +140,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   console.log('initialize selfempathy userSession');
   try {
-    let existingChat;
+    let chatInDb;
 
     try {
-      existingChat = await pb.collection('chats').getFirstListItem(`user="${user.id}" && module="selfempathy"`);
+      chatInDb = await pb.collection('chats').getFirstListItem(`user="${user.id}" && module="selfempathy"`);
     } catch (err) {
       if (!(err instanceof ClientResponseError && err.status === 404)) {
         throw err;
@@ -102,50 +154,24 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     //else get the chat from db
     //create chat
 
-    if (!existingChat) {
-      console.log('Creating new chat for user:', user.id);
+    if (!chatInDb) {
 
-      const chat = initChat(history, systemInstruction);
+      const chat = initModel();
+      const chatInDb = await initChatInDb(user);
+      saveChatInMemory(chatInDb.id, chat);
 
-      // Create initial chat record
-      const chatData: Partial<ChatRecord> = {
-        user: user.id,
-        module: 'selfempathy',
-        history: [
-          {
-            role: 'user',
-            content: `Hi, I'm ${user.firstName || user.id} and I'm here for NVC coaching.`,
-            timestamp: Date.now()
-          },
-          {
-            role: 'assistant',
-            content: {
-              step: 1,
-              text: `Hello! I understand you're here for NVC coaching. I'll help you explore your feelings and needs using nonviolent communication principles. Feel free to share what's on your mind.`,
-            } ,
-            timestamp: Date.now()
-          }
-        ],
-        preferences: {}
-      };
-
-      const record = await pb.collection('chats').create(chatData);
-      console.log('Created new chat record:', record);
-
-      selfempathyChats.set(record.id, chat);
-
-      return json({ record: record });
+      return json({ record: chatInDb });
     } else {
-      // Chat already exists
-      const chat = initChat(history, systemInstruction);
+      // Chat already exists in db
+      const chat = initModel(formatHistoryForGemini(chatInDb.history), systemInstruction);
+      console.log('chat',JSON.stringify(chat._history));
+      saveChatInMemory(chatInDb.id, chat);
 
-      const chatHistory = await chat.getHistory();
-      console.log('chatHistory', chatHistory);
+      console.log('selfempathyChats',selfempathyChats);
+      // const chatHistory = await chat.getHistory();
 
-      console.log('Chat already exists for user:', user.id);
-      //todo: change back to returning the chat with values of existingChat
 
-      return json({ record: existingChat });
+      return json({ record: chatInDb });
     }
 
   } catch (error) {
