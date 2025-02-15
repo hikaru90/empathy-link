@@ -24,6 +24,7 @@
 		userMessage = ''; // Clear input
 
 		try {
+			console.log('sendMessage with history',chat.history);
 			const response = await fetch('/api/ai/selfempathy/sendMessage', {
 				method: 'POST',
 				headers: {
@@ -81,29 +82,17 @@
 		class="chat-shadow h-full flex-grow overflow-y-auto scroll-smooth rounded-lg p-4"
 	>
 		{#each chat.history as message}
-		{#if message.role === 'user'}
-		<div class="mb-4 text-right">
+		<!-- {JSON.stringify(message)} -->
+		<div class="mb-4 {message.role === 'user' ? 'text-right' : 'text-left'}">
 			<div
 				class="inline-block rounded-lg p-3 {message.role === 'user'
 					? 'bg-blue-100'
 					: 'bg-gray-100'}"
 			>
-				<div class="text-sm">{message.content}</div>
+				<div class="text-sm">{message.parts[0].text}</div>
 				<div class="mt-1 text-xs text-gray-500">{formatTimestamp(message.timestamp)}</div>
 			</div>
 		</div>
-		{:else}
-		<div class="mb-4 text-left">
-			<div
-				class="inline-block rounded-lg p-3 {message.role === 'user'
-					? 'bg-blue-100'
-					: 'bg-gray-100'}"
-			>
-				<div class="text-sm">{message.content.text}</div>
-				<div class="mt-1 text-xs text-gray-500">{formatTimestamp(message.timestamp)}</div>
-			</div>
-		</div>
-		{/if}
 			
 		{/each}
 		{#if isLoading}

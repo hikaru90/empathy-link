@@ -7,7 +7,7 @@ const systemInstruction = `You are an expert in nonviolent communication and try
 
 interface ChatMessage {
   role: 'user' | 'assistant';
-  content: string;
+  parts: { text: string }[];
   timestamp: number;
 }
 
@@ -79,7 +79,7 @@ function createAIInstancesStore() {
       update(instances => {
         const newMessage: ChatMessage = {
           role,
-          content,
+          parts: [{ text: content }],
           timestamp: Date.now()
         };
         

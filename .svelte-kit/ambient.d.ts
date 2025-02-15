@@ -5,9 +5,9 @@
 /// <reference types="@sveltejs/kit" />
 
 /**
- * Environment variables [loaded by Vite](https://vitejs.dev/guide/env-and-mode.html#env-files) from `.env` files and `process.env`. Like [`$env/dynamic/private`](https://svelte.dev/docs/kit/$env-dynamic-private), this module cannot be imported into client-side code. This module only includes variables that _do not_ begin with [`config.kit.env.publicPrefix`](https://svelte.dev/docs/kit/configuration#env) _and do_ start with [`config.kit.env.privatePrefix`](https://svelte.dev/docs/kit/configuration#env) (if configured).
+ * Environment variables [loaded by Vite](https://vitejs.dev/guide/env-and-mode.html#env-files) from `.env` files and `process.env`. Like [`$env/dynamic/private`](https://kit.svelte.dev/docs/modules#$env-dynamic-private), this module cannot be imported into client-side code. This module only includes variables that _do not_ begin with [`config.kit.env.publicPrefix`](https://kit.svelte.dev/docs/configuration#env) _and do_ start with [`config.kit.env.privatePrefix`](https://kit.svelte.dev/docs/configuration#env) (if configured).
  * 
- * _Unlike_ [`$env/dynamic/private`](https://svelte.dev/docs/kit/$env-dynamic-private), the values exported from this module are statically injected into your bundle at build time, enabling optimisations like dead code elimination.
+ * _Unlike_ [`$env/dynamic/private`](https://kit.svelte.dev/docs/modules#$env-dynamic-private), the values exported from this module are statically injected into your bundle at build time, enabling optimisations like dead code elimination.
  * 
  * ```ts
  * import { API_KEY } from '$env/static/private';
@@ -30,75 +30,116 @@ declare module '$env/static/private' {
 	export const PORT: string;
 	export const PRIVATE_BREVO_API_KEY: string;
 	export const PRIVATE_GEMINI_API_KEY: string;
-	export const NVM_INC: string;
-	export const TERM_PROGRAM: string;
-	export const NODE: string;
-	export const INIT_CWD: string;
-	export const NVM_CD_FLAGS: string;
-	export const TERM: string;
-	export const SHELL: string;
-	export const HOMEBREW_REPOSITORY: string;
-	export const TMPDIR: string;
-	export const npm_config_global_prefix: string;
-	export const TERM_PROGRAM_VERSION: string;
-	export const CURSOR_TRACE_ID: string;
-	export const ORIGINAL_XDG_CURRENT_DESKTOP: string;
-	export const MallocNanoZone: string;
+	export const ALLUSERSPROFILE: string;
+	export const APPDATA: string;
+	export const ChocolateyInstall: string;
+	export const ChocolateyLastPathUpdate: string;
+	export const CHROME_CRASHPAD_PIPE_NAME: string;
 	export const COLOR: string;
-	export const npm_config_noproxy: string;
-	export const npm_config_local_prefix: string;
-	export const PNPM_HOME: string;
-	export const NVM_DIR: string;
-	export const USER: string;
-	export const COMMAND_MODE: string;
-	export const npm_config_globalconfig: string;
-	export const SSH_AUTH_SOCK: string;
-	export const __CF_USER_TEXT_ENCODING: string;
-	export const npm_execpath: string;
-	export const PATH: string;
-	export const npm_package_json: string;
-	export const npm_config_engine_strict: string;
-	export const _: string;
-	export const LaunchInstanceID: string;
-	export const npm_config_userconfig: string;
-	export const npm_config_init_module: string;
-	export const __CFBundleIdentifier: string;
-	export const npm_command: string;
-	export const PWD: string;
-	export const npm_lifecycle_event: string;
-	export const EDITOR: string;
-	export const npm_package_name: string;
-	export const LANG: string;
-	export const npm_config_npm_version: string;
-	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
-	export const XPC_FLAGS: string;
-	export const npm_package_engines_node: string;
-	export const npm_config_node_gyp: string;
-	export const npm_package_version: string;
-	export const XPC_SERVICE_NAME: string;
-	export const SHLVL: string;
-	export const HOME: string;
-	export const VSCODE_GIT_ASKPASS_MAIN: string;
-	export const HOMEBREW_PREFIX: string;
-	export const npm_config_cache: string;
-	export const LOGNAME: string;
-	export const npm_lifecycle_script: string;
-	export const VSCODE_GIT_IPC_HANDLE: string;
-	export const NVM_BIN: string;
-	export const npm_config_user_agent: string;
-	export const VSCODE_GIT_ASKPASS_NODE: string;
-	export const GIT_ASKPASS: string;
-	export const INFOPATH: string;
-	export const HOMEBREW_CELLAR: string;
-	export const SECURITYSESSIONID: string;
-	export const npm_node_execpath: string;
-	export const npm_config_prefix: string;
 	export const COLORTERM: string;
+	export const CommonProgramFiles: string;
+	export const CommonProgramW6432: string;
+	export const COMPUTERNAME: string;
+	export const ComSpec: string;
+	export const CUDA_PATH: string;
+	export const CUDA_PATH_V11_2: string;
+	export const CURSOR_TRACE_ID: string;
+	export const DriverData: string;
+	export const EDITOR: string;
+	export const EFC_39408: string;
+	export const FPS_BROWSER_APP_PROFILE_STRING: string;
+	export const FPS_BROWSER_USER_PROFILE_STRING: string;
+	export const GDAL_DATA: string;
+	export const GDAL_DRIVER_PATH: string;
+	export const GDAL_VERSION: string;
+	export const GIT_ASKPASS: string;
+	export const HOME: string;
+	export const HOMEDRIVE: string;
+	export const HOMEPATH: string;
+	export const INIT_CWD: string;
+	export const INTEL_DEV_REDIST: string;
+	export const JAVA_HOME: string;
+	export const KUBECONFIG: string;
+	export const LANG: string;
+	export const LOCALAPPDATA: string;
+	export const LOGONSERVER: string;
+	export const MIC_LD_LIBRARY_PATH: string;
+	export const NODE: string;
 	export const NODE_ENV: string;
+	export const NODE_EXE: string;
+	export const NODE_PATH: string;
+	export const NPM_CLI_JS: string;
+	export const npm_command: string;
+	export const npm_config_cache: string;
+	export const npm_config_engine_strict: string;
+	export const npm_config_globalconfig: string;
+	export const npm_config_global_prefix: string;
+	export const npm_config_init_module: string;
+	export const npm_config_local_prefix: string;
+	export const npm_config_node_gyp: string;
+	export const npm_config_noproxy: string;
+	export const npm_config_npm_version: string;
+	export const npm_config_prefix: string;
+	export const npm_config_userconfig: string;
+	export const npm_config_user_agent: string;
+	export const npm_execpath: string;
+	export const npm_lifecycle_event: string;
+	export const npm_lifecycle_script: string;
+	export const npm_node_execpath: string;
+	export const npm_package_engines_node: string;
+	export const npm_package_json: string;
+	export const npm_package_name: string;
+	export const npm_package_version: string;
+	export const NPM_PREFIX_NPM_CLI_JS: string;
+	export const NUMBER_OF_PROCESSORS: string;
+	export const NVCUDASAMPLES11_2_ROOT: string;
+	export const NVCUDASAMPLES_ROOT: string;
+	export const NVM_HOME: string;
+	export const NVM_SYMLINK: string;
+	export const NVTOOLSEXT_PATH: string;
+	export const OneDrive: string;
+	export const OneDriveConsumer: string;
+	export const OPENSSL_CONF: string;
+	export const ORIGINAL_XDG_CURRENT_DESKTOP: string;
+	export const OS: string;
+	export const Path: string;
+	export const PATHEXT: string;
+	export const PNPM_HOME: string;
+	export const POSTGIS_ENABLE_OUTDB_RASTERS: string;
+	export const POSTGIS_GDAL_ENABLED_DRIVERS: string;
+	export const PROCESSOR_ARCHITECTURE: string;
+	export const PROCESSOR_IDENTIFIER: string;
+	export const PROCESSOR_LEVEL: string;
+	export const PROCESSOR_REVISION: string;
+	export const ProgramData: string;
+	export const ProgramFiles: string;
+	export const ProgramW6432: string;
+	export const PROJ_LIB: string;
+	export const PROMPT: string;
+	export const PSModulePath: string;
+	export const PUBLIC: string;
+	export const PYTHONPATH: string;
+	export const SESSIONNAME: string;
+	export const SystemDrive: string;
+	export const SystemRoot: string;
+	export const TEMP: string;
+	export const TERM_PROGRAM: string;
+	export const TERM_PROGRAM_VERSION: string;
+	export const TMP: string;
+	export const USERDOMAIN: string;
+	export const USERDOMAIN_ROAMINGPROFILE: string;
+	export const USERNAME: string;
+	export const USERPROFILE: string;
+	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
+	export const VSCODE_GIT_ASKPASS_MAIN: string;
+	export const VSCODE_GIT_ASKPASS_NODE: string;
+	export const VSCODE_GIT_IPC_HANDLE: string;
+	export const WebStorm: string;
+	export const windir: string;
 }
 
 /**
- * Similar to [`$env/static/private`](https://svelte.dev/docs/kit/$env-static-private), except that it only includes environment variables that begin with [`config.kit.env.publicPrefix`](https://svelte.dev/docs/kit/configuration#env) (which defaults to `PUBLIC_`), and can therefore safely be exposed to client-side code.
+ * Similar to [`$env/static/private`](https://kit.svelte.dev/docs/modules#$env-static-private), except that it only includes environment variables that begin with [`config.kit.env.publicPrefix`](https://kit.svelte.dev/docs/configuration#env) (which defaults to `PUBLIC_`), and can therefore safely be exposed to client-side code.
  * 
  * Values are replaced statically at build time.
  * 
@@ -107,13 +148,13 @@ declare module '$env/static/private' {
  * ```
  */
 declare module '$env/static/public' {
-	export const PUBLIC_MESSAGE_LIMIT: string;
-	export const PUBLIC_INIT_POSTHOG: string;
 	export const PUBLIC_POSTHOG_KEY: string;
+	export const PUBLIC_INIT_POSTHOG: string;
+	export const PUBLIC_MESSAGE_LIMIT: string;
 }
 
 /**
- * This module provides access to runtime environment variables, as defined by the platform you're running on. For example if you're using [`adapter-node`](https://github.com/sveltejs/kit/tree/main/packages/adapter-node) (or running [`vite preview`](https://svelte.dev/docs/kit/cli)), this is equivalent to `process.env`. This module only includes variables that _do not_ begin with [`config.kit.env.publicPrefix`](https://svelte.dev/docs/kit/configuration#env) _and do_ start with [`config.kit.env.privatePrefix`](https://svelte.dev/docs/kit/configuration#env) (if configured).
+ * This module provides access to runtime environment variables, as defined by the platform you're running on. For example if you're using [`adapter-node`](https://github.com/sveltejs/kit/tree/main/packages/adapter-node) (or running [`vite preview`](https://kit.svelte.dev/docs/cli)), this is equivalent to `process.env`. This module only includes variables that _do not_ begin with [`config.kit.env.publicPrefix`](https://kit.svelte.dev/docs/configuration#env) _and do_ start with [`config.kit.env.privatePrefix`](https://kit.svelte.dev/docs/configuration#env) (if configured).
  * 
  * This module cannot be imported into client-side code.
  * 
@@ -132,78 +173,119 @@ declare module '$env/dynamic/private' {
 		PORT: string;
 		PRIVATE_BREVO_API_KEY: string;
 		PRIVATE_GEMINI_API_KEY: string;
-		NVM_INC: string;
-		TERM_PROGRAM: string;
-		NODE: string;
-		INIT_CWD: string;
-		NVM_CD_FLAGS: string;
-		TERM: string;
-		SHELL: string;
-		HOMEBREW_REPOSITORY: string;
-		TMPDIR: string;
-		npm_config_global_prefix: string;
-		TERM_PROGRAM_VERSION: string;
-		CURSOR_TRACE_ID: string;
-		ORIGINAL_XDG_CURRENT_DESKTOP: string;
-		MallocNanoZone: string;
+		ALLUSERSPROFILE: string;
+		APPDATA: string;
+		ChocolateyInstall: string;
+		ChocolateyLastPathUpdate: string;
+		CHROME_CRASHPAD_PIPE_NAME: string;
 		COLOR: string;
-		npm_config_noproxy: string;
-		npm_config_local_prefix: string;
-		PNPM_HOME: string;
-		NVM_DIR: string;
-		USER: string;
-		COMMAND_MODE: string;
-		npm_config_globalconfig: string;
-		SSH_AUTH_SOCK: string;
-		__CF_USER_TEXT_ENCODING: string;
-		npm_execpath: string;
-		PATH: string;
-		npm_package_json: string;
-		npm_config_engine_strict: string;
-		_: string;
-		LaunchInstanceID: string;
-		npm_config_userconfig: string;
-		npm_config_init_module: string;
-		__CFBundleIdentifier: string;
-		npm_command: string;
-		PWD: string;
-		npm_lifecycle_event: string;
-		EDITOR: string;
-		npm_package_name: string;
-		LANG: string;
-		npm_config_npm_version: string;
-		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
-		XPC_FLAGS: string;
-		npm_package_engines_node: string;
-		npm_config_node_gyp: string;
-		npm_package_version: string;
-		XPC_SERVICE_NAME: string;
-		SHLVL: string;
-		HOME: string;
-		VSCODE_GIT_ASKPASS_MAIN: string;
-		HOMEBREW_PREFIX: string;
-		npm_config_cache: string;
-		LOGNAME: string;
-		npm_lifecycle_script: string;
-		VSCODE_GIT_IPC_HANDLE: string;
-		NVM_BIN: string;
-		npm_config_user_agent: string;
-		VSCODE_GIT_ASKPASS_NODE: string;
-		GIT_ASKPASS: string;
-		INFOPATH: string;
-		HOMEBREW_CELLAR: string;
-		SECURITYSESSIONID: string;
-		npm_node_execpath: string;
-		npm_config_prefix: string;
 		COLORTERM: string;
+		CommonProgramFiles: string;
+		CommonProgramW6432: string;
+		COMPUTERNAME: string;
+		ComSpec: string;
+		CUDA_PATH: string;
+		CUDA_PATH_V11_2: string;
+		CURSOR_TRACE_ID: string;
+		DriverData: string;
+		EDITOR: string;
+		EFC_39408: string;
+		FPS_BROWSER_APP_PROFILE_STRING: string;
+		FPS_BROWSER_USER_PROFILE_STRING: string;
+		GDAL_DATA: string;
+		GDAL_DRIVER_PATH: string;
+		GDAL_VERSION: string;
+		GIT_ASKPASS: string;
+		HOME: string;
+		HOMEDRIVE: string;
+		HOMEPATH: string;
+		INIT_CWD: string;
+		INTEL_DEV_REDIST: string;
+		JAVA_HOME: string;
+		KUBECONFIG: string;
+		LANG: string;
+		LOCALAPPDATA: string;
+		LOGONSERVER: string;
+		MIC_LD_LIBRARY_PATH: string;
+		NODE: string;
 		NODE_ENV: string;
+		NODE_EXE: string;
+		NODE_PATH: string;
+		NPM_CLI_JS: string;
+		npm_command: string;
+		npm_config_cache: string;
+		npm_config_engine_strict: string;
+		npm_config_globalconfig: string;
+		npm_config_global_prefix: string;
+		npm_config_init_module: string;
+		npm_config_local_prefix: string;
+		npm_config_node_gyp: string;
+		npm_config_noproxy: string;
+		npm_config_npm_version: string;
+		npm_config_prefix: string;
+		npm_config_userconfig: string;
+		npm_config_user_agent: string;
+		npm_execpath: string;
+		npm_lifecycle_event: string;
+		npm_lifecycle_script: string;
+		npm_node_execpath: string;
+		npm_package_engines_node: string;
+		npm_package_json: string;
+		npm_package_name: string;
+		npm_package_version: string;
+		NPM_PREFIX_NPM_CLI_JS: string;
+		NUMBER_OF_PROCESSORS: string;
+		NVCUDASAMPLES11_2_ROOT: string;
+		NVCUDASAMPLES_ROOT: string;
+		NVM_HOME: string;
+		NVM_SYMLINK: string;
+		NVTOOLSEXT_PATH: string;
+		OneDrive: string;
+		OneDriveConsumer: string;
+		OPENSSL_CONF: string;
+		ORIGINAL_XDG_CURRENT_DESKTOP: string;
+		OS: string;
+		Path: string;
+		PATHEXT: string;
+		PNPM_HOME: string;
+		POSTGIS_ENABLE_OUTDB_RASTERS: string;
+		POSTGIS_GDAL_ENABLED_DRIVERS: string;
+		PROCESSOR_ARCHITECTURE: string;
+		PROCESSOR_IDENTIFIER: string;
+		PROCESSOR_LEVEL: string;
+		PROCESSOR_REVISION: string;
+		ProgramData: string;
+		ProgramFiles: string;
+		ProgramW6432: string;
+		PROJ_LIB: string;
+		PROMPT: string;
+		PSModulePath: string;
+		PUBLIC: string;
+		PYTHONPATH: string;
+		SESSIONNAME: string;
+		SystemDrive: string;
+		SystemRoot: string;
+		TEMP: string;
+		TERM_PROGRAM: string;
+		TERM_PROGRAM_VERSION: string;
+		TMP: string;
+		USERDOMAIN: string;
+		USERDOMAIN_ROAMINGPROFILE: string;
+		USERNAME: string;
+		USERPROFILE: string;
+		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
+		VSCODE_GIT_ASKPASS_MAIN: string;
+		VSCODE_GIT_ASKPASS_NODE: string;
+		VSCODE_GIT_IPC_HANDLE: string;
+		WebStorm: string;
+		windir: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}
 }
 
 /**
- * Similar to [`$env/dynamic/private`](https://svelte.dev/docs/kit/$env-dynamic-private), but only includes variables that begin with [`config.kit.env.publicPrefix`](https://svelte.dev/docs/kit/configuration#env) (which defaults to `PUBLIC_`), and can therefore safely be exposed to client-side code.
+ * Similar to [`$env/dynamic/private`](https://kit.svelte.dev/docs/modules#$env-dynamic-private), but only includes variables that begin with [`config.kit.env.publicPrefix`](https://kit.svelte.dev/docs/configuration#env) (which defaults to `PUBLIC_`), and can therefore safely be exposed to client-side code.
  * 
  * Note that public dynamic environment variables must all be sent from the server to the client, causing larger network requests — when possible, use `$env/static/public` instead.
  * 
@@ -216,9 +298,9 @@ declare module '$env/dynamic/private' {
  */
 declare module '$env/dynamic/public' {
 	export const env: {
-		PUBLIC_MESSAGE_LIMIT: string;
-		PUBLIC_INIT_POSTHOG: string;
 		PUBLIC_POSTHOG_KEY: string;
+		PUBLIC_INIT_POSTHOG: string;
+		PUBLIC_MESSAGE_LIMIT: string;
 		[key: `PUBLIC_${string}`]: string | undefined;
 	}
 }
