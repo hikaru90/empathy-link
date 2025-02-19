@@ -6,7 +6,7 @@ import { HarmBlockThreshold, HarmCategory, SchemaType } from '@google/generative
 import { pb } from '$scripts/pocketbase';
 
 interface DbMessage {
-	role: 'user' | 'assistant';
+	role: 'user' | 'model';
 	parts: Array<{ text: string }>;
 	// content: string | { step: number; text: string };
 	timestamp: number;
@@ -80,13 +80,13 @@ const initDbHistory = (user: object) => {
 	];
 };
 
-const initModel = async (user?: object, systemInstruction?: string, history?: Array<DbMessage>) => {
+const initModel = async (user?: object, systemInstruction?: string) => {
 	const model = genAI.getGenerativeModel({
 		model: 'gemini-1.5-flash',
 		systemInstruction: systemInstruction
 	});
 	const chat = model.startChat({
-		history: initHistory(user!, history),
+		history: initHistory(user!, initDbHistory(user!)),
 		generationConfig: {
 			temperature: 0,
 			topP: 0.95,
@@ -111,28 +111,33 @@ const initModel = async (user?: object, systemInstruction?: string, history?: Ar
 		`Please greet the user and ask for the current state of mind.`
 	);
 	const response = await result.response;
-	const responseText = response.text();
+	const responseText = await response.text();
 	const responseJson = JSON.parse(responseText);
 	console.log('responseJson', responseJson);
 
+	// Create initial history with timestamps
+	const initialHistory = [
+		{
+			role: 'model',
+			parts: [{ text: responseJson.text }],
+      step: responseJson.step,
+			timestamp: Date.now()
+		}
+	];
+
+	chat._history = initialHistory;  // Store the history with timestamp
 	return chat;
 };
 const saveChatInMemory = (chatId: string, chat: any) => {
 	selfempathyChats.set(chatId, chat);
 };
 const initChatInDb = async (user: any, chat: any) => {
-	// Create initial chat record
 	let chatData: Partial<ChatRecord> = {
 		user: user.id,
 		module: 'selfempathy',
-		history: initDbHistory(user), // Use the DB format here
+		history: chat._history || [], // This will now include timestamps
 		preferences: {}
 	};
-	if (chat) {
-		console.log('chat',chat);
-		console.log('chat._history',chat._history);
-		chatData.history = chat._history;
-	}
 
 	const record = await pb.collection('chats').create(chatData);
 	console.log('Created new chat record:', record);
@@ -150,7 +155,7 @@ const formatHistoryForGemini = (history?: DbMessage[]): GeminiMessage[] => {
 	return history.map((msg) => {
 		console.log('msg', msg);
 		return {
-			role: msg.role === 'assistant' ? 'model' : 'user',
+			role: msg.role === 'model' ? 'model' : 'user',
 			// Remove JSON formatting characters without regex
 
 			parts: [
@@ -176,7 +181,7 @@ const formatHistoryForGemini = (history?: DbMessage[]): GeminiMessage[] => {
 				}
 			]
 			// parts: [{
-			//   text: msg.role === 'assistant'
+			//   text: msg.role === 'model'
 			//     ? JSON.stringify(msg.content)
 			//     : typeof msg.content === 'string'
 			//       ? msg.content
@@ -219,8 +224,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (!chatInDb) {
 			console.log('chat is not in db');
 
-			const chat = await initModel(user);
+			const chat = await initModel(user, systemInstruction);
+      console.log('chat from initModel', chat);
 			const chatInDb = await initChatInDb(user, chat);
+      console.log('chat from initChatInDb', chatInDb);
 			saveChatInMemory(chatInDb.id, chat);
 			// console.log('selfempathyChats', selfempathyChats);
 
@@ -229,8 +236,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			console.log('chat exists in db');
 			// Chat already exists in db
 			console.log('chatInDb.history', chatInDb.history);
-			const chat = initModel(user, systemInstruction, formatHistoryForGemini(chatInDb.history));
-			console.log('chat', JSON.stringify(chat._history));
+			const chat = initModel(user, systemInstruction);
+			console.log('chat from !chatInDb', JSON.stringify(chat));
 			saveChatInMemory(chatInDb.id, chat);
 
 			console.log('selfempathyChats', selfempathyChats);

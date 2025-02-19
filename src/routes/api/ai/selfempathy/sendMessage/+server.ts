@@ -5,6 +5,17 @@ import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
 import { pb } from '$scripts/pocketbase';
 import { genAI, selfempathyChats } from '$lib/server/gemini';
 
+const removeTimestamp = (chat: any) => {
+  let editedChat = chat
+  const newHistory = chat.params.history.map((msg: any) => {
+    delete msg.timestamp
+    return msg
+  })
+  editedChat.params.history = newHistory
+  editedChat._history = newHistory
+
+  return editedChat
+}
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { message, history, chatId } = await request.json();
 	const user = locals.user;
@@ -16,11 +27,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		// Convert the history to Gemini's expected format by removing ALL extra fields
 		const formattedHistory = history.map((msg) => ({
-			role: msg.role === 'assistant' ? 'model' : 'user',
+			role: msg.role === 'model' ? 'model' : 'user',
 			parts: msg.parts
 		}));
 
-		const chat = selfempathyChats.get(chatId);
+		let chat = await selfempathyChats.get(chatId);
+    chat = removeTimestamp(chat)
 		if (!chat) {
 			return json({ error: 'Chat not found' }, { status: 404 });
 		}
@@ -40,8 +52,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				timestamp: Date.now() 
 			},
 			{
-				role: 'assistant',
-				parts: [{ text: responseText }],
+				role: 'model',
+				parts: [{ text: responseJson.text }],
 				step: responseJson.step,
 				timestamp: Date.now()
 			}
