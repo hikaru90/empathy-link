@@ -50,10 +50,16 @@
 		}
 	}
 
+	const clearChat = async () => {
+		await pb.collection('chats').delete(chat.id);
+		chat = await initChat();
+	}
+
 	// Scroll to bottom on initial load
 	onMount(async () => {
 		scrollToBottom();
 		chat = await initChat();
+		console.log('chat',chat);
 
 		pb.collection('chats').subscribe(
 			chat.id,
@@ -77,6 +83,7 @@
 	});
 </script>
 
+<button on:click={clearChat}>clear chat</button>
 {#if chat}
 	<div
 		class="relative flex h-full flex-col overflow-hidden rounded-lg border-b border-white/80 bg-[rgba(0,0,0,0.03)]"

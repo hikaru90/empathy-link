@@ -48,45 +48,16 @@ const initHistory = (user: object, history?: Array<DbMessage>) => {
 		return formatHistoryForGemini(history);
 	}
 	return [
-		// {
-		// 	role: 'user',
-		// 	parts: [{ text: `Hi, I'm ${user.firstName || user.id}.` }]
-		// }
-		// {
-		// 	role: 'model',
-		// 	parts: [
-		// 		{
-		// 			text: `Hello ${user.firstName}\n What's on your mind right now?`
-		// 		}
-		// 	]
-		// }
 	];
 };
 
-const initDbHistory = (user: object) => {
-	return [
-		// {
-		// 	role: 'user',
-		// 	parts: [{ text: `Hi, I'm ${user.firstName || user.id}.` }]
-		// }
-		// {
-		// 	role: 'model',
-		// 	parts: [
-		// 		{
-		// 			text: `Hello ${user.firstName}\n What's on your mind right now?`
-		// 		}
-		// 	]
-		// }
-	];
-};
-
-const initModel = async (user?: object, systemInstruction?: string) => {
+const initModel = async (user?: object, systemInstruction?: string, history?: Array<DbMessage>) => {
 	const model = genAI.getGenerativeModel({
 		model: 'gemini-1.5-flash',
 		systemInstruction: systemInstruction
 	});
 	const chat = model.startChat({
-		history: initHistory(user!, initDbHistory(user!)),
+		history: initHistory(user!, history),
 		generationConfig: {
 			temperature: 0,
 			topP: 0.95,
@@ -198,12 +169,10 @@ const chatExistsInMemory = (chatId: string) => {
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { user, history, systemInstruction } = await request.json();
 
-	console.log('RequestHandler initChatInMemory');
 	if (!user?.id) {
 		return json({ error: 'User not authenticated' }, { status: 401 });
 	}
 
-	console.log('initialize selfempathy userSession');
 	try {
 		let chatInDb;
 
@@ -217,36 +186,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		//if chatExistsInMemory, return the chat
-		//else get the chat from db
-		//create chat
-
 		if (!chatInDb) {
-			console.log('chat is not in db');
-
 			const chat = await initModel(user, systemInstruction);
-      console.log('chat from initModel', chat);
 			const chatInDb = await initChatInDb(user, chat);
-      console.log('chat from initChatInDb', chatInDb);
 			saveChatInMemory(chatInDb.id, chat);
-			// console.log('selfempathyChats', selfempathyChats);
 
 			return json({ record: chatInDb });
 		} else {
-			console.log('chat exists in db');
-			// Chat already exists in db
-			console.log('chatInDb.history', chatInDb.history);
-			const chat = initModel(user, systemInstruction);
-			console.log('chat from !chatInDb', JSON.stringify(chat));
+      console.log('chatInDb.history',chatInDb.history);
+			const chat = await initModel(user, systemInstruction, chatInDb.history);
 			saveChatInMemory(chatInDb.id, chat);
-
-			console.log('selfempathyChats', selfempathyChats);
-			// const chatHistory = await chat.getHistory();
+      console.log('selfempathyChats',selfempathyChats);
 
 			return json({ record: chatInDb });
 		}
 	} catch (error) {
-		console.error('Failed to initialize chat:', error);
 		return json({ error: 'Failed to initialize chat' }, { status: 500 });
 	}
 };

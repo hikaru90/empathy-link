@@ -31,12 +31,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			parts: msg.parts
 		}));
 
-		let chat = await selfempathyChats.get(chatId);
+		let chat = selfempathyChats.get(chatId);
     chat = removeTimestamp(chat)
 		if (!chat) {
 			return json({ error: 'Chat not found' }, { status: 404 });
 		}
 
+    console.log('message',message);
 		// Send the message directly without modifying chat history
 		const result = await chat.sendMessage(message);
 		const response = await result.response;
