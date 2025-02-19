@@ -1,13 +1,17 @@
 <script lang="ts">
+	import { marked } from "marked";
 	import { initChat } from '$store/chatStore';
 	import { formatTimestamp } from '$lib/utils';
 	import { onDestroy, onMount } from 'svelte';
 	import { pb } from '$scripts/pocketbase'
 	import type { ChatRecord } from '$routes/api/ai/selfempathy/initChat/+server';
+	import { user } from '$store/auth';
 	let userMessage = '';
 	let isLoading = false;
 	let chatContainer: HTMLDivElement; // Reference to the chat container
 	let chat:ChatRecord;
+
+	$: chatWithoutFirstMessage = chat?.history ? chat.history.slice(1) : [];
 
 	// Function to scroll to bottom
 	const scrollToBottom = () => {
@@ -81,7 +85,7 @@
 		bind:this={chatContainer}
 		class="chat-shadow h-full flex-grow overflow-y-auto scroll-smooth rounded-lg p-4"
 	>
-		{#each chat.history as message}
+		{#each chatWithoutFirstMessage as message}
 		<!-- {JSON.stringify(message)} -->
 		<div class="mb-4 {message.role === 'user' ? 'text-right' : 'text-left'}">
 			<div
@@ -89,7 +93,7 @@
 					? 'bg-blue-100'
 					: 'bg-gray-100'}"
 			>
-				<div class="text-sm">{message.parts[0].text}</div>
+				<div class="text-sm">{@html marked(message.role === 'user' ? message.parts[0].text : JSON.parse(message.parts[0].text).text)}</div>
 				<div class="mt-1 text-xs text-gray-500">{formatTimestamp(message.timestamp)}</div>
 			</div>
 		</div>

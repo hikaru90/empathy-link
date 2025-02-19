@@ -14,30 +14,31 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	try {
-		// Convert the history to Gemini's expected format
+		// Convert the history to Gemini's expected format by removing ALL extra fields
 		const formattedHistory = history.map((msg) => ({
 			role: msg.role === 'assistant' ? 'model' : 'user',
-			parts: [{ text: msg.content }]
+			parts: msg.parts
 		}));
 
-		console.log('selfempathyChats', selfempathyChats);
-
 		const chat = selfempathyChats.get(chatId);
-		console.log('chat', chat);
+		if (!chat) {
+			return json({ error: 'Chat not found' }, { status: 404 });
+		}
 
-console.log('message',message);
-
+		// Send the message directly without modifying chat history
 		const result = await chat.sendMessage(message);
 		const response = await result.response;
-		console.log('response', response);
 		const responseText = response.text();
 		const responseJson = JSON.parse(responseText);
-		console.log('responseJson', responseJson);
 
-		// Update chat history in PocketBase
+		// Store in DB with full metadata (this format is only for our database)
 		const updatedHistory = [
 			...history,
-			{ role: 'user', parts: [{ text: message }], timestamp: Date.now() },
+			{ 
+				role: 'user', 
+				parts: [{ text: message }],
+				timestamp: Date.now() 
+			},
 			{
 				role: 'assistant',
 				parts: [{ text: responseText }],

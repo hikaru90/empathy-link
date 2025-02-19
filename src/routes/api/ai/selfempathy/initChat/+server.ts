@@ -45,27 +45,42 @@ const schema = {
 
 const initHistory = (user: object, history?: Array<DbMessage>) => {
 	if (history) {
-		return history;
+		return formatHistoryForGemini(history);
 	}
 	return [
-		{
-			role: 'user',
-			parts: [{ text: `Hi, I'm ${user.firstName || user.id} and I'm here for NVC coaching.` }],
-			timestamp: Date.now()
-		},
-		{
-			role: 'model',
-			parts: [
-				{
-					text: `Hello! I understand you're here for NVC coaching. I'll help you explore your feelings and needs using nonviolent communication principles. Feel free to share what's on your mind.`
-				}
-			],
-			timestamp: Date.now()
-		}
+		// {
+		// 	role: 'user',
+		// 	parts: [{ text: `Hi, I'm ${user.firstName || user.id}.` }]
+		// }
+		// {
+		// 	role: 'model',
+		// 	parts: [
+		// 		{
+		// 			text: `Hello ${user.firstName}\n What's on your mind right now?`
+		// 		}
+		// 	]
+		// }
 	];
 };
 
-const initModel = (user?: object, systemInstruction?: string, history?: Array<DbMessage>) => {
+const initDbHistory = (user: object) => {
+	return [
+		// {
+		// 	role: 'user',
+		// 	parts: [{ text: `Hi, I'm ${user.firstName || user.id}.` }]
+		// }
+		// {
+		// 	role: 'model',
+		// 	parts: [
+		// 		{
+		// 			text: `Hello ${user.firstName}\n What's on your mind right now?`
+		// 		}
+		// 	]
+		// }
+	];
+};
+
+const initModel = async (user?: object, systemInstruction?: string, history?: Array<DbMessage>) => {
 	const model = genAI.getGenerativeModel({
 		model: 'gemini-1.5-flash',
 		systemInstruction: systemInstruction
@@ -91,19 +106,33 @@ const initModel = (user?: object, systemInstruction?: string, history?: Array<Db
 			}
 		]
 	});
+
+	const result = await chat.sendMessage(
+		`Please greet the user and ask for the current state of mind.`
+	);
+	const response = await result.response;
+	const responseText = response.text();
+	const responseJson = JSON.parse(responseText);
+	console.log('responseJson', responseJson);
+
 	return chat;
 };
 const saveChatInMemory = (chatId: string, chat: any) => {
 	selfempathyChats.set(chatId, chat);
 };
-const initChatInDb = async (user: any) => {
+const initChatInDb = async (user: any, chat: any) => {
 	// Create initial chat record
-	const chatData: Partial<ChatRecord> = {
+	let chatData: Partial<ChatRecord> = {
 		user: user.id,
 		module: 'selfempathy',
-		history: initHistory(user),
+		history: initDbHistory(user), // Use the DB format here
 		preferences: {}
 	};
+	if (chat) {
+		console.log('chat',chat);
+		console.log('chat._history',chat._history);
+		chatData.history = chat._history;
+	}
 
 	const record = await pb.collection('chats').create(chatData);
 	console.log('Created new chat record:', record);
@@ -190,8 +219,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (!chatInDb) {
 			console.log('chat is not in db');
 
-			const chat = initModel(user);
-			const chatInDb = await initChatInDb(user);
+			const chat = await initModel(user);
+			const chatInDb = await initChatInDb(user, chat);
 			saveChatInMemory(chatInDb.id, chat);
 			// console.log('selfempathyChats', selfempathyChats);
 
