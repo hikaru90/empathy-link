@@ -59,7 +59,7 @@
 	onMount(async () => {
 		scrollToBottom();
 		chat = await initChat();
-		console.log('chat',chat);
+		console.log('chat in frontend',chat);
 
 		pb.collection('chats').subscribe(
 			chat.id,
