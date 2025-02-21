@@ -4,7 +4,20 @@ import { HarmBlockThreshold, HarmCategory, GoogleGenerativeAI } from '@google/ge
 import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
 import { pb } from '$scripts/pocketbase';
 import { genAI, selfempathyChats } from '$lib/server/gemini';
+import type { HistoryEntry } from '$routes/api/ai/selfempathy/initChat/+server';
+import { sendMessage } from '$lib/server/gemini';
 
+const removeTimestamp = (chat: any) => {
+  let editedChat = chat
+	console.log('editedChat',editedChat);
+  const newHistory = chat.params.history.map((msg: any) => {
+    delete msg.timestamp
+    return msg
+  })
+  editedChat.params.history = newHistory
+
+  return editedChat
+}
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { message, history, chatId } = await request.json();
 	const user = locals.user;
@@ -14,47 +27,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	try {
-		// Convert the history to Gemini's expected format by removing ALL extra fields
-		const formattedHistory = history.map((msg) => ({
-			role: msg.role === 'assistant' ? 'model' : 'user',
-			parts: msg.parts
-		}));
-
-		const chat = selfempathyChats.get(chatId);
+		let chat = selfempathyChats.get(chatId);
+    chat = removeTimestamp(chat)
 		if (!chat) {
 			return json({ error: 'Chat not found' }, { status: 404 });
 		}
 
-		// Send the message directly without modifying chat history
-		const result = await chat.sendMessage(message);
-		const response = await result.response;
-		const responseText = response.text();
-		const responseJson = JSON.parse(responseText);
-
-		// Store in DB with full metadata (this format is only for our database)
-		const updatedHistory = [
-			...history,
-			{ 
-				role: 'user', 
-				parts: [{ text: message }],
-				timestamp: Date.now() 
-			},
-			{
-				role: 'assistant',
-				parts: [{ text: responseText }],
-				step: responseJson.step,
-				timestamp: Date.now()
-			}
-		];
-
-		await pb.collection('chats').update(chatId, {
-			history: updatedHistory,
-			updated: new Date().toISOString()
-		});
+    const responseJson = await sendMessage(chatId,chat, message, history)
 
 		return json({ response: responseJson });
 	} catch (error) {
 		console.error('Chat error:', error);
-		return json({ error: 'Failed to process message' }, { status: 500 });
+		return json({ message: 'Failed to process message', error }, { status: 500 });
 	}
 };

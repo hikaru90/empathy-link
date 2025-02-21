@@ -1,31 +1,30 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { ClientResponseError } from 'pocketbase';
-import { genAI, selfempathyChats } from '$lib/server/gemini';
+import { genAI, selfempathyChats, sendMessage } from '$lib/server/gemini';
 import { HarmBlockThreshold, HarmCategory, SchemaType } from '@google/generative-ai';
 import { pb } from '$scripts/pocketbase';
+import type { GenerativeModel, ChatSession, Content } from '@google/generative-ai';
 
-interface DbMessage {
-	role: 'user' | 'assistant';
-	parts: Array<{ text: string }>;
-	// content: string | { step: number; text: string };
-	timestamp: number;
+
+export interface HistoryEntry {
+  role: 'user' | 'model';
+  parts: { text: string }[];
+  timestamp: number;
 }
 
-interface GeminiMessage {
-	role: 'user' | 'model';
-	parts: Array<{ text: string }>;
+export interface HistoryEntryWithFirstUser {
+  [0]: Extract<HistoryEntry, { role: 'user' }>;
+  [index: number]: HistoryEntry;
+  length: number;
 }
 
-export interface ChatRecord {
-	id: string;
-	user: string;
-	module: string;
-	history: Array<DbMessage>;
-	preferences: Record<string, any>;
-	created: string;
-	updated: string;
+export interface DbChatSession extends ChatSession {
+  user: string; // User ID
+  module: string; // Module identifier
+	history: HistoryEntry[];
 }
+
 
 const schema = {
 	description: 'Structured response of a step by step process',
@@ -43,96 +42,60 @@ const schema = {
 	required: ['step', 'text']
 };
 
-const initHistory = (user: object, history?: Array<DbMessage>) => {
+const initHistory = (user: object, history?: HistoryEntry[]) => {
 	if (history) {
 		return formatHistoryForGemini(history);
 	}
 	return [
-		// {
-		// 	role: 'user',
-		// 	parts: [{ text: `Hi, I'm ${user.firstName || user.id}.` }]
-		// }
-		// {
-		// 	role: 'model',
-		// 	parts: [
-		// 		{
-		// 			text: `Hello ${user.firstName}\n What's on your mind right now?`
-		// 		}
-		// 	]
-		// }
 	];
 };
 
-const initDbHistory = (user: object) => {
-	return [
-		// {
-		// 	role: 'user',
-		// 	parts: [{ text: `Hi, I'm ${user.firstName || user.id}.` }]
-		// }
-		// {
-		// 	role: 'model',
-		// 	parts: [
-		// 		{
-		// 			text: `Hello ${user.firstName}\n What's on your mind right now?`
-		// 		}
-		// 	]
-		// }
-	];
-};
-
-const initModel = async (user?: object, systemInstruction?: string, history?: Array<DbMessage>) => {
-	const model = genAI.getGenerativeModel({
-		model: 'gemini-1.5-flash',
-		systemInstruction: systemInstruction
-	});
-	const chat = model.startChat({
-		history: initHistory(user!, history),
-		generationConfig: {
-			temperature: 0,
-			topP: 0.95,
-			topK: 64,
-			maxOutputTokens: 8192,
-			responseMimeType: 'application/json',
-			responseSchema: schema
-		},
-		safetySettings: [
-			{
-				category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-				threshold: HarmBlockThreshold.BLOCK_NONE
+const initModel = async (user?: object, systemInstruction?: string, history?: HistoryEntry[]) => {
+	try {
+		const model = genAI.getGenerativeModel({
+			model: 'gemini-1.5-flash',
+			systemInstruction: systemInstruction
+		});
+		const testHistory = initHistory(user!, history);
+		console.log('testHistory', testHistory);
+		const chat = model.startChat({
+			history: initHistory(user!, history),
+			generationConfig: {
+				temperature: 0,
+				topP: 0.95,
+				topK: 64,
+				maxOutputTokens: 8192,
+				responseMimeType: 'application/json',
+				responseSchema: schema
 			},
-			{
-				category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-				threshold: HarmBlockThreshold.BLOCK_NONE
-			}
-		]
-	});
+			safetySettings: [
+				{
+					category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+					threshold: HarmBlockThreshold.BLOCK_NONE
+				},
+				{
+					category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+					threshold: HarmBlockThreshold.BLOCK_NONE
+				}
+			]
+		});
 
-	const result = await chat.sendMessage(
-		`Please greet the user and ask for the current state of mind.`
-	);
-	const response = await result.response;
-	const responseText = response.text();
-	const responseJson = JSON.parse(responseText);
-	console.log('responseJson', responseJson);
+		
 
-	return chat;
+		return chat;
+	} catch (err) {
+		console.error('error in initModel', err)
+	}
 };
 const saveChatInMemory = (chatId: string, chat: any) => {
 	selfempathyChats.set(chatId, chat);
 };
 const initChatInDb = async (user: any, chat: any) => {
-	// Create initial chat record
-	let chatData: Partial<ChatRecord> = {
+	let chatData: Partial<DbChatSession> = {
 		user: user.id,
 		module: 'selfempathy',
-		history: initDbHistory(user), // Use the DB format here
-		preferences: {}
+		history: chat.history || [], // This will now include timestamps
 	};
-	if (chat) {
-		console.log('chat',chat);
-		console.log('chat._history',chat._history);
-		chatData.history = chat._history;
-	}
 
 	const record = await pb.collection('chats').create(chatData);
 	console.log('Created new chat record:', record);
@@ -144,13 +107,15 @@ const getChatFromDb = async (chatId: string) => {
 	return record;
 };
 
-const formatHistoryForGemini = (history?: DbMessage[]): GeminiMessage[] => {
+const formatHistoryForGemini = (history?: HistoryEntry[]): Content[] => {
 	if (!history) return [];
+	if (history.length > 0 && history[0].role === 'model') {
+		history = history.slice(1);
+	}
 
 	return history.map((msg) => {
-		console.log('msg', msg);
 		return {
-			role: msg.role === 'assistant' ? 'model' : 'user',
+			role: msg.role,
 			// Remove JSON formatting characters without regex
 
 			parts: [
@@ -158,25 +123,25 @@ const formatHistoryForGemini = (history?: DbMessage[]): GeminiMessage[] => {
 					text:
 						typeof msg.parts[0].text === 'object'
 							? JSON.stringify(msg.parts[0].text)
-									.split('{')
-									.join('')
-									.split('}')
-									.join('')
-									.split('[')
-									.join('')
-									.split(']')
-									.join('')
-									.split('"')
-									.join('')
-									.split(';')
-									.join('')
-									.split(',')
-									.join(' ')
+								.split('{')
+								.join('')
+								.split('}')
+								.join('')
+								.split('[')
+								.join('')
+								.split(']')
+								.join('')
+								.split('"')
+								.join('')
+								.split(';')
+								.join('')
+								.split(',')
+								.join(' ')
 							: msg.parts[0].text
 				}
 			]
 			// parts: [{
-			//   text: msg.role === 'assistant'
+			//   text: msg.role === 'model'
 			//     ? JSON.stringify(msg.content)
 			//     : typeof msg.content === 'string'
 			//       ? msg.content
@@ -191,55 +156,49 @@ const chatExistsInMemory = (chatId: string) => {
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user, history, systemInstruction } = await request.json();
-
-	console.log('RequestHandler initChatInMemory');
-	if (!user?.id) {
-		return json({ error: 'User not authenticated' }, { status: 401 });
-	}
-
-	console.log('initialize selfempathy userSession');
 	try {
-		let chatInDb;
+		const { user, history, systemInstruction } = await request.json();
+
+		if (!user?.id) {
+			return json({ error: 'User not authenticated' }, { status: 401 });
+		}
 
 		try {
-			chatInDb = await pb
-				.collection('chats')
-				.getFirstListItem(`user="${user.id}" && module="selfempathy"`);
-		} catch (err) {
-			if (!(err instanceof ClientResponseError && err.status === 404)) {
-				throw err;
+			let chatInDb;
+
+			try {
+				chatInDb = await pb
+					.collection('chats')
+					.getFirstListItem(`user="${user.id}" && module="selfempathy"`);
+			} catch (err) {
+				if (!(err instanceof ClientResponseError && err.status === 404)) {
+					throw err;
+				}
 			}
-		}
 
-		//if chatExistsInMemory, return the chat
-		//else get the chat from db
-		//create chat
+			if (!chatInDb) {
+				const chat = await initModel(user, systemInstruction);
+				if(!chat) throw new Error('Failed to initialize chat');
+				const chatInDb = await initChatInDb(user, chat);
+				saveChatInMemory(chatInDb.id, chat);
 
-		if (!chatInDb) {
-			console.log('chat is not in db');
+				sendMessage(chatInDb.id, chat, `Please greet the user and ask for the current state of mind.`, []);
 
-			const chat = await initModel(user);
-			const chatInDb = await initChatInDb(user, chat);
-			saveChatInMemory(chatInDb.id, chat);
-			// console.log('selfempathyChats', selfempathyChats);
+				return json({ record: chatInDb });
+			} else {
+				console.log('chatInDb.history', chatInDb.history);
+				const chat = await initModel(user, systemInstruction, chatInDb.history);
+				console.log('chat from db', chat);
+				saveChatInMemory(chatInDb.id, chat);
+				console.log('selfempathyChats', selfempathyChats);
 
-			return json({ record: chatInDb });
-		} else {
-			console.log('chat exists in db');
-			// Chat already exists in db
-			console.log('chatInDb.history', chatInDb.history);
-			const chat = initModel(user, systemInstruction, formatHistoryForGemini(chatInDb.history));
-			console.log('chat', JSON.stringify(chat._history));
-			saveChatInMemory(chatInDb.id, chat);
-
-			console.log('selfempathyChats', selfempathyChats);
-			// const chatHistory = await chat.getHistory();
-
-			return json({ record: chatInDb });
+				return json({ record: chatInDb });
+			}
+		} catch (error) {
+			return json({ message: 'Failed to initialize chat', error }, { status: 500 });
 		}
 	} catch (error) {
-		console.error('Failed to initialize chat:', error);
-		return json({ error: 'Failed to initialize chat' }, { status: 500 });
+		console.error('error in initChat', error);
+		return json({ error: 'Failed to process request' }, { status: 500 });
 	}
 };
