@@ -93,6 +93,8 @@
 					? 'bg-blue-100'
 					: 'bg-gray-100'}"
 			>
+
+			
 				<div class="text-sm">{@html marked(message.role === 'user' ? message.parts[0].text : JSON.parse(message.parts[0].text).text)}</div>
 				<div class="mt-1 text-xs text-gray-500">{formatTimestamp(message.timestamp)}</div>
 			</div>
