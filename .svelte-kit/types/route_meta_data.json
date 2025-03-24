@@ -106,5 +106,10 @@
 		"src/routes/app/+layout.server.ts",
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
+	],
+	"/utility/shapes": [
+		"src/routes/utility/shapes/+page.js",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
 	]
 }
