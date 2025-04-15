@@ -9,12 +9,13 @@ import type { GenerativeModel, ChatSession } from '@google/generative-ai';
 export const genAI = new GoogleGenerativeAI(PRIVATE_GEMINI_API_KEY);
 
 export const selfempathyChats = new Map<string, ChatSession>();
+export const bullshiftChats = new Map<string, ChatSession>();
 
 export const getIds = (map: Map<string, ChatSession>) => {
   return Array.from(map.keys());
 };
 
-console.log('selfempathyChats',getIds(selfempathyChats));
+console.log('bullshiftChats',getIds(bullshiftChats));
 
 export const sendMessage = async (chatId: string, chat: ChatSession, message: string, history: HistoryEntry[]) => {
   try{

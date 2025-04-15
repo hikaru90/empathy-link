@@ -17,7 +17,8 @@ export const nodes = [
 	() => import('./nodes/13'),
 	() => import('./nodes/14'),
 	() => import('./nodes/15'),
-	() => import('./nodes/16')
+	() => import('./nodes/16'),
+	() => import('./nodes/17')
 ];
 
 export const server_loads = [0,2];
@@ -28,15 +29,16 @@ export const dictionary = {
 		"/app/auth/register": [~5,[2]],
 		"/app/dashboard": [6,[2]],
 		"/app/fights": [7,[2]],
-		"/app/fights/create": [10,[2]],
-		"/app/fights/[id]": [~8,[2]],
-		"/app/fights/[id]/respond": [~9,[2]],
+		"/app/fights/create": [8,[2]],
+		"/app/fights/[id]": [~9,[2]],
+		"/app/fights/[id]/respond": [~10,[2]],
 		"/app/selfempathy": [11,[2]],
-		"/app/selfempathy/create": [14,[2]],
-		"/app/selfempathy/[id]": [~12,[2]],
-		"/app/selfempathy/[id]/respond": [~13,[2]],
-		"/utility/shapes2": [16],
-		"/utility/shapes": [15]
+		"/app/selfempathy/create": [12,[2]],
+		"/app/selfempathy/[id]": [~13,[2]],
+		"/app/selfempathy/[id]/respond": [~14,[2]],
+		"/bullshift": [~15],
+		"/utility/shapes2": [17],
+		"/utility/shapes": [16]
 	};
 
 export const hooks = {

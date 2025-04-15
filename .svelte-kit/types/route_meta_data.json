@@ -5,6 +5,18 @@
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],
+	"/api/ai/bullshift/cleanup": [
+		"src/routes/api/ai/bullshift/cleanup/+server.ts"
+	],
+	"/api/ai/bullshift/initChat": [
+		"src/routes/api/ai/bullshift/initChat/+server.ts"
+	],
+	"/api/ai/bullshift/sendMessage": [
+		"src/routes/api/ai/bullshift/sendMessage/+server.ts"
+	],
+	"/api/ai/bullshift/send": [
+		"src/routes/api/ai/bullshift/send/+server.ts"
+	],
 	"/api/ai/checkForJudgement": [
 		"src/routes/api/ai/checkForJudgement/+server.ts"
 	],
@@ -104,6 +116,11 @@
 		"src/routes/app/selfempathy/[id]/respond/+page.server.ts",
 		"src/routes/app/+layout.ts",
 		"src/routes/app/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/bullshift": [
+		"src/routes/bullshift/+page.server.ts",
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],

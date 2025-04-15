@@ -25,6 +25,7 @@ const config = {
 				'2xs': '0.5rem'
 			},
 			colors: {
+				'bullshift': 'hsl(var(--bullshift) / <alpha-value>)',
 				'info-background': 'hsl(var(--info-background) / <alpha-value>)',
 				'info-foreground': 'hsl(var(--info-foreground) / <alpha-value>)',
 				'observation-background': 'hsl(var(--observation-background) / <alpha-value>)',
