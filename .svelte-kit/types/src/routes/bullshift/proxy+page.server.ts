@@ -1,6 +1,6 @@
 // @ts-nocheck
 import type { PageServerLoad } from './$types';
-import { genAI, bullshiftChats } from '$lib/server/gemini';
+import { ai, bullshiftChats } from '$lib/server/gemini';
 import { pb } from '$scripts/pocketbase';
 import { getModel, initChat } from '$lib/server/gemini';
 
@@ -28,9 +28,10 @@ export const load = async ({ locals }: Parameters<PageServerLoad>[0]) => {
 
         // Initialize Gemini chat if not in memory
         if (!bullshiftChats.has(chatRecord?.id)) {
-            const model = getModel(user, locale);
+            const model = await getModel(user, locale);
 
-            const chat = model.startChat({
+            const chat = ai.chats.create({
+                model: model.model,
                 history: chatRecord?.history || []
             });
 

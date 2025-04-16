@@ -1,10 +1,10 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { ClientResponseError } from 'pocketbase';
-import { genAI, selfempathyChats, sendMessage } from '$lib/server/gemini';
-import { HarmBlockThreshold, HarmCategory, SchemaType } from '@google/generative-ai';
+import { ai, selfempathyChats, sendMessage } from '$lib/server/gemini';
+import { HarmBlockThreshold, HarmCategory, SchemaType } from '@google/genai';
 import { pb } from '$scripts/pocketbase';
-import type { GenerativeModel, ChatSession, Content } from '@google/generative-ai';
+import type { Content } from '@google/genai';
 
 
 export interface HistoryEntry {
@@ -52,13 +52,13 @@ const initHistory = (user: object, history?: HistoryEntry[]) => {
 
 const initModel = async (user?: object, systemInstruction?: string, history?: HistoryEntry[]) => {
 	try {
-		const model = genAI.getGenerativeModel({
+		const model = ai.getGenerativeModel({
 			model: 'gemini-1.5-flash',
 			systemInstruction: systemInstruction
 		});
 		const testHistory = initHistory(user!, history);
 		console.log('testHistory', testHistory);
-		const chat = model.startChat({
+		const chat = ai.chats.create({
 			history: initHistory(user!, history),
 			generationConfig: {
 				temperature: 0,

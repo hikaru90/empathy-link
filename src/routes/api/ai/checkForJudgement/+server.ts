@@ -1,12 +1,12 @@
 import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
-import { HarmBlockThreshold, HarmCategory, GoogleGenerativeAI } from "@google/generative-ai";
+import { HarmBlockThreshold, HarmCategory, GoogleGenerativeAI } from "@google/genai";
 
-const genAI = new GoogleGenerativeAI(PRIVATE_GEMINI_API_KEY);
+const ai = new GoogleGenerativeAI(PRIVATE_GEMINI_API_KEY);
 
 export const POST = async ({ request }) => {
   const { text, lang } = await request.json();
 
-  const model = genAI.getGenerativeModel({
+  const model = ai.getGenerativeModel({
     model: "gemini-1.5-flash",
     systemInstruction: `you are an expert that is trained to identify if an observation contains a judgement based on nonviolent communication principles. You receive texts and answer if the observation contains a jugement or not. If it does, make a suggestion that doesn't. please make sure that the text really has to contain a judgment for you to point it out. Answer in ${lang}.`,
   });
@@ -35,7 +35,7 @@ export const POST = async ({ request }) => {
 
 
   try {
-    const chatSession = model.startChat({
+    const chatSession = ai.chats.create({
       generationConfig,
       safetySettings,
       history: [

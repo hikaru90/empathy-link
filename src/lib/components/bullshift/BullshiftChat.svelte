@@ -26,7 +26,8 @@
 			});
 			const data = await response.json();
 			if (data.error) throw new Error(data.error);
-			history = [...history, 
+			history = [
+				...history,
 				{ role: 'user', parts: [{ text: userMessage }], timestamp: Date.now() },
 				{ role: 'model', parts: [{ text: data.response }], timestamp: data.timestamp }
 			];
@@ -36,37 +37,37 @@
 		} finally {
 			isLoading = false;
 			setTimeout(() => {
-				scrollDown()
+				scrollDown();
 			}, 500);
 		}
 	};
 
 	const scrollDown = () => {
 		window.scroll({
-			top:document.body.scrollHeight,
-			left:0,
+			top: document.body.scrollHeight,
+			left: 0,
 			behavior: 'smooth'
 		});
 	};
 
 	const clearChat = async () => {
-		console.log('$user',$user);
+		console.log('$user', $user);
 		try {
 			const response = await fetch('/api/ai/bullshift/initChat', {
 				method: 'POST',
-				headers: { 
+				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({ user: $user, locale: $locale })
 			});
-			
+
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
-			
+
 			const data = await response.json();
 			if (data.error) throw new Error(data.error);
-			
+
 			// Update the chat ID and clear history
 			chatId = data.chatId;
 			history = [];
@@ -78,9 +79,8 @@
 
 	onMount(async () => {
 		// scrollToBottom();
-			scrollDown()
+		scrollDown();
 	});
-
 </script>
 
 <div class="flex justify-end">
@@ -94,13 +94,13 @@
 </div>
 {#if chatId}
 	<div class="">
-		<div bind:this={chatContainer} class="rounded-lg pb-36 pt-4 ">
-			<h1 class="text-2xl mb-3 font-light">
+		<div bind:this={chatContainer} class="rounded-lg pb-36 pt-4">
+			<h1 class="mb-3 text-2xl font-light">
 				Hi Alex, ich bin hier, um den ganzen Bullshit in deinem Leben zu durchbrechen.
 			</h1>
-			<h2 class="text-2xl text-black/40 mb-6 font-light">
-				Beschreib mir eine Situation, und ich helfe dir, sie zu verarbeiten.
-				Vertrau mir – wir schaffen das gemeinsam!
+			<h2 class="mb-6 text-2xl font-light text-black/40">
+				Beschreib mir eine Situation, und ich helfe dir, sie zu verarbeiten. Vertrau mir – wir
+				schaffen das gemeinsam!
 			</h2>
 			{#each history as message}
 				<!-- {JSON.stringify(message)} -->
@@ -112,16 +112,16 @@
 					>
 						<div class="text-sm">
 							{@html marked(
-								message.role === 'user' ? message.parts[0].text : message.parts[0].text
+								message.role === 'user' ? message.parts[0].text : JSON.parse(message.parts[0].text).response
 							)}
 						</div>
-				</div>
+					</div>
 				</div>
 			{/each}
 			{#if isLoading}
-			<div class="flex items-center justify-center">
-				<LoaderCircle class="size-6 animate-spin text-bullshift" />
-			</div>
+				<div class="flex items-center justify-center">
+					<LoaderCircle class="size-6 animate-spin text-bullshift" />
+				</div>
 			{/if}
 		</div>
 

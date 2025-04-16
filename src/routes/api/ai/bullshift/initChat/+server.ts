@@ -1,10 +1,10 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { ClientResponseError } from 'pocketbase';
-import { genAI, bullshiftChats, sendMessage } from '$lib/server/gemini';
-import { HarmBlockThreshold, HarmCategory, SchemaType } from '@google/generative-ai';
+import { ai, bullshiftChats, sendMessage } from '$lib/server/gemini';
+import { HarmBlockThreshold, HarmCategory } from '@google/genai';
 import { pb } from '$scripts/pocketbase';
-import type { GenerativeModel, ChatSession, Content } from '@google/generative-ai';
+import type { Content } from '@google/genai';
 import { initChat } from '$lib/server/gemini';
 
 
@@ -26,22 +26,6 @@ export interface DbChatSession extends ChatSession {
 	history: HistoryEntry[];
 }
 
-
-const schema = {
-	description: 'Structured response of a step by step process',
-	type: SchemaType.OBJECT,
-	properties: {
-		step: {
-			type: SchemaType.INTEGER,
-			description: 'Current step in this process'
-		},
-		text: {
-			type: SchemaType.STRING,
-			description: 'Content of the step'
-		}
-	},
-	required: ['step', 'text']
-};
 
 const initHistory = (user: object, history?: HistoryEntry[]) => {
 	if (history) {

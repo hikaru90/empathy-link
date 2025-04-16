@@ -17,9 +17,6 @@
 	"/api/ai/bullshift/send": [
 		"src/routes/api/ai/bullshift/send/+server.ts"
 	],
-	"/api/ai/bullshift/unusedsendMessage": [
-		"src/routes/api/ai/bullshift/unusedsendMessage/+server.ts"
-	],
 	"/api/ai/checkForJudgement": [
 		"src/routes/api/ai/checkForJudgement/+server.ts"
 	],

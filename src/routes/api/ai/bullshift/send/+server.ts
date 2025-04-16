@@ -7,7 +7,7 @@ import { pb } from '$scripts/pocketbase';
 export const POST: RequestHandler = async ({ request }) => {
     try {
         const { chatId, message } = await request.json();
-        
+
         if (!chatId || !message) {
             return json({ error: 'Missing required fields' }, { status: 400 });
         }
@@ -18,14 +18,13 @@ export const POST: RequestHandler = async ({ request }) => {
         }
 
         // Send message and get response
-        const result = await chat.sendMessage(message, );
-        const response = await result.response;
-        const text = response.text();
+        const result = await chat.sendMessage({message});
+        const text = result.text;
 
         // Update chat history in database if needed
         await pb.collection('chats').update(chatId, { history: await chat.getHistory() });
 
-        return json({ 
+        return json({
             response: text,
             timestamp: Date.now()
         });

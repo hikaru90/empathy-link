@@ -1,9 +1,9 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { HarmBlockThreshold, HarmCategory, GoogleGenerativeAI } from '@google/generative-ai';
+import { HarmBlockThreshold, HarmCategory, GoogleGenerativeAI } from '@google/genai';
 import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
 import { pb } from '$scripts/pocketbase';
-import { genAI, selfempathyChats } from '$lib/server/gemini';
+import { ai, selfempathyChats } from '$lib/server/gemini';
 import type { HistoryEntry } from '$routes/api/ai/selfempathy/initChat/+server';
 import { sendMessage } from '$lib/server/gemini';
 
