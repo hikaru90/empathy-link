@@ -4,9 +4,10 @@ import { serializeNonPOJOs } from '$scripts/helpers';
 import { pb } from '$scripts/pocketbase'
 import { PUBLIC_POSTHOG_KEY } from '$env/static/public';
 import { messages, userId } from '$store/chatStore';
+import { redirect, type Handle } from '@sveltejs/kit';
 const client = 'empathy_link'
 
-export const handle = async ({ event, resolve }) => {
+export const handle: Handle = async ({ event, resolve }) => {
 	let sessionToken = event.cookies.get(`${client}_session_id`);
   let posthogUserId = event.cookies.get(`${client}_user_id`);
 	if (!sessionToken) {
@@ -38,9 +39,6 @@ export const handle = async ({ event, resolve }) => {
 	event.locals.sessionToken = sessionToken;
 	event.locals.userId = posthogUserId;
 
-
-
-
 	console.log('hooks server handle');
 	const localeCookie = event.cookies.get('locale');
 	const langHeaders = event.request.headers.get('accept-language')?.split(',')[0].split('-')[0];
@@ -59,17 +57,40 @@ export const handle = async ({ event, resolve }) => {
 	event.locals.pb = pb;
 	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 
-	if (event.locals.pb.authStore.isValid) {
+	try {
+		// Verify the token is valid
+		if (event.locals.pb.authStore.isValid) {
+			await event.locals.pb.collection('users').authRefresh();
+		}
+		
+		// Check if this is an API route
+		if (event.url.pathname.startsWith('/api')) {
+			// If not authenticated and trying to access API, throw 401
+			if (!event.locals.pb.authStore.isValid) {
+				throw redirect(303, '/login');
+			}
+		}
+
+		// Set the user in the locals object
 		event.locals.user = serializeNonPOJOs(event.locals.pb.authStore.model);
 		const user = event.locals.pb.authStore.baseModel;
 		// initUserSession(user, messages, userId);
-	} else {
-		event.locals.user = undefined;
+
+		// Update the cookie
+		const response = await resolve(event);
+		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie());
+		
+		return response;
+	} catch (error) {
+		// Clear the cookie on any error
+		event.locals.pb.authStore.clear();
+		
+		if (event.url.pathname.startsWith('/api')) {
+			throw redirect(303, '/login');
+		}
+		
+		const response = await resolve(event);
+		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie());
+		return response;
 	}
-
-	const response = await resolve(event);
-
-	response.headers.set('set-cookie', event.locals.pb.authStore.exportToCookie({ secure: false }));
-	// console.log('hooks server handle response', response);
-	return response;
 };

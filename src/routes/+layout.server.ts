@@ -4,13 +4,18 @@ import { loadTranslations, locale } from '$lib/translations';
 // import { getCookie } from '$scripts/helpers';
 
 export const load = (async ({ fetch, url, locals }) => {
-	const postHogApi = await fetch(`/api/posthog/decide`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ userId: locals.posthogId })
-  }).then(r => r.json())
+	// const postHogApi = await fetch(`/api/posthog/decide`, {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json'
+  //   },
+  //   body: JSON.stringify({ userId: locals.posthogId })
+  // })
+  
+  // console.log('postHogApi',postHogApi);
+  // const postHogRes = await postHogApi.json();
+
+  // console.log('postHogRes',postHogRes);
 
 	await loadTranslations(locals.locale, url.pathname);
 
@@ -20,8 +25,8 @@ export const load = (async ({ fetch, url, locals }) => {
 		locale: locals.locale,
     sessionToken: locals.sessionToken,
     userId: locals.userId,
-    posthogId: locals.posthogId,
-    featureFlags: postHogApi.featureFlags || {}
+    // posthogId: locals.posthogId,
+    // featureFlags: postHogApi.featureFlags || {}
   };
 
 }) satisfies LayoutServerLoad;

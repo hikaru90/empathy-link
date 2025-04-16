@@ -2,10 +2,12 @@
 import type { PageServerLoad } from './$types';
 import { genAI, bullshiftChats } from '$lib/server/gemini';
 import { pb } from '$scripts/pocketbase';
+import { getModel, initChat } from '$lib/server/gemini';
 
 export const load = async ({ locals }: Parameters<PageServerLoad>[0]) => {
     const user = locals.user;
-    
+    const locale = locals.locale;
+
     if (!user?.id) {
         return {
             error: 'User not authenticated'
@@ -13,20 +15,25 @@ export const load = async ({ locals }: Parameters<PageServerLoad>[0]) => {
     }
 
     try {
-        let chatRecord = await pb
-            .collection('chats')
-            .getFirstListItem(`user="${user.id}" && module="bullshift"`);
+        let chatRecord = undefined;
+        try {
+            chatRecord = await pb.collection('chats').getFirstListItem(`user="${user.id}" && module="bullshift"`, {
+                sort: '-created',
+            });
+        } catch (error) {
+            console.log('No chat record found, creating a new one');
+            const initResponse = await initChat(user, locale);
+            chatRecord = await pb.collection('chats').getOne(initResponse.chatId);
+        }
 
         // Initialize Gemini chat if not in memory
-        if (!bullshiftChats.has(chatRecord.id)) {
-            const model = genAI.getGenerativeModel({
-                model: 'gemini-1.5-flash'
-            });
-            
+        if (!bullshiftChats.has(chatRecord?.id)) {
+            const model = getModel(user, locale);
+
             const chat = model.startChat({
-                history: chatRecord.history || []
+                history: chatRecord?.history || []
             });
-            
+
             bullshiftChats.set(chatRecord.id, chat);
         }
 

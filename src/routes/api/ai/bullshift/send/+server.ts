@@ -18,7 +18,7 @@ export const POST: RequestHandler = async ({ request }) => {
         }
 
         // Send message and get response
-        const result = await chat.sendMessage(message);
+        const result = await chat.sendMessage(message, );
         const response = await result.response;
         const text = response.text();
 

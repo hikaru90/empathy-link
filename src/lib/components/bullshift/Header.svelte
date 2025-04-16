@@ -17,7 +17,7 @@
 	<a href="/bullshift" class="flex size-8 items-center justify-center rounded-full bg-black">
     <Settings class="size-3 text-white" />
   </a>
-  <img src="/bullshift/bullshift-logo.svg" alt="Bullshift Logo" class="height-20" />
+  <img src="/bullshift/bullshift-logo.svg" alt="Bullshift Logo" class="h-5" />
   <button class="flex size-8 items-center justify-center rounded-full bg-black relative" on:click={() => isOpen = true}>
     <Bell class="size-3 text-white" />
     {#if notifications.length > 0 }

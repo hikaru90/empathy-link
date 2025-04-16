@@ -3,9 +3,10 @@
 	import { formatTimestamp } from '$lib/utils';
 	import { onDestroy, onMount } from 'svelte';
 	import { pb } from '$scripts/pocketbase';
-	import type { ChatRecord } from '$routes/api/ai/bullshift/initChat/+server';
 	import { user } from '$store/auth';
+	import { locale } from '$lib/translations';
 	import { SendHorizontal, RotateCcw } from 'lucide-svelte/icons';
+	import { LoaderCircle } from 'lucide-svelte/icons';
 
 	export let chatId: string;
 	export let history: any[] = [];
@@ -34,7 +35,9 @@
 			console.error('Failed to send message:', error);
 		} finally {
 			isLoading = false;
-			scrollDown()
+			setTimeout(() => {
+				scrollDown()
+			}, 500);
 		}
 	};
 
@@ -46,9 +49,32 @@
 		});
 	};
 
-	const clearChat = () => {
-		console.log('clearChat');
-	}
+	const clearChat = async () => {
+		console.log('$user',$user);
+		try {
+			const response = await fetch('/api/ai/bullshift/initChat', {
+				method: 'POST',
+				headers: { 
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ user: $user, locale: $locale })
+			});
+			
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			
+			const data = await response.json();
+			if (data.error) throw new Error(data.error);
+			
+			// Update the chat ID and clear history
+			chatId = data.chatId;
+			history = [];
+			userMessage = '';
+		} catch (error) {
+			console.error('Failed to clear chat:', error);
+		}
+	};
 
 	onMount(async () => {
 		// scrollToBottom();
@@ -68,26 +94,34 @@
 </div>
 {#if chatId}
 	<div class="">
-		<div bind:this={chatContainer} class="rounded-lg px-4 pb-36 pt-4 ">
+		<div bind:this={chatContainer} class="rounded-lg pb-36 pt-4 ">
+			<h1 class="text-2xl mb-3 font-light">
+				Hi Alex, ich bin hier, um den ganzen Bullshit in deinem Leben zu durchbrechen.
+			</h1>
+			<h2 class="text-2xl text-black/40 mb-6 font-light">
+				Beschreib mir eine Situation, und ich helfe dir, sie zu verarbeiten.
+				Vertrau mir – wir schaffen das gemeinsam!
+			</h2>
 			{#each history as message}
 				<!-- {JSON.stringify(message)} -->
 				<div class="mb-4 {message.role === 'user' ? 'text-right' : 'text-left'}">
 					<div
-						class="inline-block rounded-lg p-3 {message.role === 'user'
-							? 'bg-blue-100'
-							: 'bg-gray-100'}"
+						class="inline-block rounded-xl px-3 py-2 {message.role === 'user'
+							? 'border border-white'
+							: 'bg-white'}"
 					>
 						<div class="text-sm">
 							{@html marked(
 								message.role === 'user' ? message.parts[0].text : message.parts[0].text
 							)}
 						</div>
-						<div class="mt-1 text-xs text-gray-500">{formatTimestamp(message.timestamp)}</div>
-					</div>
+				</div>
 				</div>
 			{/each}
 			{#if isLoading}
-				<div class="text-center text-gray-500">Thinking...</div>
+			<div class="flex items-center justify-center">
+				<LoaderCircle class="size-6 animate-spin text-bullshift" />
+			</div>
 			{/if}
 		</div>
 
@@ -102,7 +136,7 @@
 				<button
 					type="submit"
 					disabled={isLoading}
-					class="-m-1 flex size-12 items-center justify-center rounded-full bg-bullshift text-white disabled:opacity-50"
+					class="-m-1 flex size-12 items-center justify-center rounded-full bg-bullshift text-black disabled:opacity-50"
 				>
 					<SendHorizontal class="" />
 				</button>

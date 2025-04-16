@@ -5,23 +5,24 @@ import { genAI, bullshiftChats, sendMessage } from '$lib/server/gemini';
 import { HarmBlockThreshold, HarmCategory, SchemaType } from '@google/generative-ai';
 import { pb } from '$scripts/pocketbase';
 import type { GenerativeModel, ChatSession, Content } from '@google/generative-ai';
+import { initChat } from '$lib/server/gemini';
 
 
 export interface HistoryEntry {
-  role: 'user' | 'model';
-  parts: { text: string }[];
-  timestamp: number;
+	role: 'user' | 'model';
+	parts: { text: string }[];
+	timestamp: number;
 }
 
 export interface HistoryEntryWithFirstUser {
-  [0]: Extract<HistoryEntry, { role: 'user' }>;
-  [index: number]: HistoryEntry;
-  length: number;
+	[0]: Extract<HistoryEntry, { role: 'user' }>;
+	[index: number]: HistoryEntry;
+	length: number;
 }
 
 export interface DbChatSession extends ChatSession {
-  user: string; // User ID
-  module: string; // Module identifier
+	user: string; // User ID
+	module: string; // Module identifier
 	history: HistoryEntry[];
 }
 
@@ -50,43 +51,6 @@ const initHistory = (user: object, history?: HistoryEntry[]) => {
 	];
 };
 
-const initModel = async (user?: object, systemInstruction?: string, history?: HistoryEntry[]) => {
-	try {
-		const model = genAI.getGenerativeModel({
-			model: 'gemini-1.5-flash',
-			systemInstruction: systemInstruction
-		});
-		const testHistory = initHistory(user!, history);
-		console.log('testHistory', testHistory);
-		const chat = model.startChat({
-			history: initHistory(user!, history),
-			generationConfig: {
-				temperature: 0,
-				topP: 0.95,
-				topK: 64,
-				maxOutputTokens: 8192,
-				responseMimeType: 'application/json',
-				responseSchema: schema
-			},
-			safetySettings: [
-				{
-					category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-					threshold: HarmBlockThreshold.BLOCK_NONE
-				},
-				{
-					category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-					threshold: HarmBlockThreshold.BLOCK_NONE
-				}
-			]
-		});
-
-		
-
-		return chat;
-	} catch (err) {
-		console.error('error in initModel', err)
-	}
-};
 const saveChatInMemory = (chatId: string, chat: any) => {
 	bullshiftChats.set(chatId, chat);
 };
@@ -152,53 +116,16 @@ const formatHistoryForGemini = (history?: HistoryEntry[]): Content[] => {
 };
 
 const chatExistsInMemory = (chatId: string) => {
-	return selfempathyChats.has(chatId);
+	return bullshiftChats.has(chatId);
 };
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request }) => {
 	try {
-		const { user, history, systemInstruction } = await request.json();
-
-		if (!user?.id) {
-			return json({ error: 'User not authenticated' }, { status: 401 });
-		}
-
-		try {
-			let chatInDb;
-
-			try {
-				chatInDb = await pb
-					.collection('chats')
-					.getFirstListItem(`user="${user.id}" && module="bullshift"`);
-			} catch (err) {
-				if (!(err instanceof ClientResponseError && err.status === 404)) {
-					throw err;
-				}
-			}
-
-			if (!chatInDb) {
-				const chat = await initModel(user, systemInstruction);
-				if(!chat) throw new Error('Failed to initialize chat');
-				await initChatInDb(user, chat);
-				saveChatInMemory(chatInDb.id, chat);
-				sendMessage(chatInDb.id, chat, `Please greet the user and ask for the current state of mind.`, []);
-				chatInDb = await getChatFromDb(chatInDb.id);
-
-				return json({ record: chatInDb });
-			} else {
-				console.log('chatInDb.history', chatInDb.history);
-				const chat = await initModel(user, systemInstruction, chatInDb.history);
-				console.log('chat from db', chat);
-				saveChatInMemory(chatInDb.id, chat);
-				console.log('selfempathyChats', selfempathyChats);
-
-				return json({ record: chatInDb });
-			}
-		} catch (error) {
-			return json({ message: 'Failed to initialize chat', error }, { status: 500 });
-		}
+		const { user, locale } = await request.json();
+		const result = await initChat(user, locale);
+		return json(result);
 	} catch (error) {
-		console.error('error in initChat', error);
-		return json({ error: 'Failed to process request' }, { status: 500 });
+		console.error('Failed to initialize chat:', error);
+		return json({ error: 'Failed to initialize chat' }, { status: 500 });
 	}
 };
