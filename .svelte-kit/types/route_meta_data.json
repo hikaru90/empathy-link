@@ -124,6 +124,16 @@
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],
+	"/bullshift/insights": [
+		"src/routes/bullshift/insights/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/bullshift/insights/[id]": [
+		"src/routes/bullshift/insights/[id]/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
 	"/utility/shapes2": [
 		"src/routes/utility/shapes2/+page.js",
 		"src/routes/+layout.ts",

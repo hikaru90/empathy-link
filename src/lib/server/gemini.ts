@@ -3,7 +3,7 @@ import { HarmBlockThreshold, HarmCategory, GoogleGenAI, Type } from '@google/gen
 import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
 import type { HistoryEntry } from '$routes/api/ai/selfempathy/initChat/+server';
 import type { ChatSession } from '@google/genai';
-
+import { shouldAnalyzeFeelings } from './tools';
 
 // Initialize Gemini once
 export const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
@@ -19,7 +19,6 @@ console.log('bullshiftChats', getIds(bullshiftChats));
 
 export const sendMessage = async (chatId: string, chat: ChatSession, message: string, history: HistoryEntry[]) => {
 	try {
-
 		console.log('message', message);
 		// Send the message directly without modifying chat history
 		const result = await chat.sendMessage(message);
@@ -29,23 +28,8 @@ export const sendMessage = async (chatId: string, chat: ChatSession, message: st
 		console.log('responseJson from sendMessage', responseJson);
 
 		// Store in DB with full metadata (this format is only for our database)
-		const updatedHistory = [
-			...history,
-			{
-				role: 'user',
-				parts: [{ text: message }],
-				timestamp: Date.now()
-			},
-			{
-				role: 'model',
-				parts: [{ text: responseJson.text }],
-				step: responseJson.step,
-				timestamp: Date.now()
-			}
-		];
-
 		await pb.collection('chats').update(chatId, {
-			history: updatedHistory,
+			history: await chat.getHistory(),
 			updated: new Date().toISOString()
 		});
 
@@ -66,6 +50,7 @@ export const getModel = async (user: object, locale: string) => {
 
 	return {
 		model: "gemini-1.5-flash",
+		temperature: 0.3,
 		config: {
 			systemInstruction: `You are speaking with user ${user.firstName}, You are a compassionate communication assistant trained in Nonviolent Communication (NVC). The user will describe a real-life situation, message, or conflict they want help with.
 
@@ -79,11 +64,15 @@ export const getModel = async (user: object, locale: string) => {
 			3. Explain your reasoning in simple terms (if helpful for the user).
 			4. Optionally, suggest an empathic or connection-building response the user could send, if the situation involves another person.
 
-			If a user asks for the available feelings or needs, respond with the feelings or needs in the right language grouped by their category. Use this data instead of coming up with your own:
-			- Available feelings in the system:
-			${JSON.stringify(feelings, null, 2)}
-			- Available needs in the system:
-			${JSON.stringify(needs, null, 2)}
+			You have access to the following tools:
+			- get_feelings: Search the feelings database for matching entries
+
+			If a user asks for the available feelings, use the search_feelings tool to get the data instead of coming up with your own. When using the tool, apply the following rules:
+			1. NEVER mention feelings not in the database
+			2. When asked about feelings:
+					a. First use the search_feelings tool
+					b. Base your response ONLY on the returned data
+			
 
 			When the user provides information, identify and extract:
 			1. Observations (what happened, without judgment)
@@ -92,17 +81,20 @@ export const getModel = async (user: object, locale: string) => {
 			4. Requests (a clear, doable request)
 			Format your response to include these elements in a structured way that can be easily parsed without including it in your text response.
 
-			Respond in the language with the locale ${locale}. Only switch if the user asks for it.
-			Always start by making the user feel understood and heard.
-			Aim for clarity, honesty, and empathy.
-			Avoid therapy jargon or excessive fluff.
-			Be concise, warm, and practical.
-			Only answer in the response field. The other ones are not visible to the user.
-			Don't combine multiple steps in one answer. Instead, guide the user through the steps one by one.
+			- Respond in the language with the locale ${locale}. Only switch if the user asks for it.
+			- Always start by making the user feel understood and heard.
+			- Aim for clarity, honesty, and empathy.
+			- Avoid therapy jargon or excessive fluff.
+			- Be concise, warm, and practical.
+			- You always respond in your specified JSON schema. Also, you only answer in the response field. The other ones are not visible to the user.
+			- Don't combine multiple steps in one answer. Instead, guide the user through the steps one by one.
+			- Maximum 2 newlines between paragraphs
+			- Never use more than 1 blank line
+			- Trim trailing whitespace
 			`,
 			responseMimeType: 'application/json',
 			responseSchema: {
-				type: 'object',
+				type: Type.OBJECT,
 				properties: {
 					insight: {
 						type: Type.OBJECT,
@@ -132,7 +124,7 @@ export const getModel = async (user: object, locale: string) => {
 						}
 					},
 					response: {
-						type: 'string',
+						type: Type.STRING,
 						description: 'The response text to show to the user'
 					}
 				},

@@ -18,7 +18,9 @@ export const nodes = [
 	() => import('./nodes/14'),
 	() => import('./nodes/15'),
 	() => import('./nodes/16'),
-	() => import('./nodes/17')
+	() => import('./nodes/17'),
+	() => import('./nodes/18'),
+	() => import('./nodes/19')
 ];
 
 export const server_loads = [0,2];
@@ -37,8 +39,10 @@ export const dictionary = {
 		"/app/selfempathy/[id]": [~12,[2]],
 		"/app/selfempathy/[id]/respond": [~13,[2]],
 		"/bullshift": [~15],
-		"/utility/shapes2": [17],
-		"/utility/shapes": [16]
+		"/bullshift/insights": [~16],
+		"/bullshift/insights/[id]": [~17],
+		"/utility/shapes2": [19],
+		"/utility/shapes": [18]
 	};
 
 export const hooks = {

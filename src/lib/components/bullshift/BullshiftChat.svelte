@@ -22,7 +22,7 @@
 			const response = await fetch('/api/ai/bullshift/send', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ chatId, message: userMessage })
+				body: JSON.stringify({ chatId, message: userMessage, userId: $user!.id })
 			});
 			const data = await response.json();
 			if (data.error) throw new Error(data.error);

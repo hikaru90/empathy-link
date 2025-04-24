@@ -1,0 +1,146 @@
+import { pb } from '$scripts/pocketbase';
+import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
+import { GoogleGenAI, Type } from '@google/genai';
+import { z } from 'zod';
+
+export const saveTrace = async (functionName: string, message: string, module: string, chatId: string, userId: string, response?: string) => {
+  try{
+    const trace = await pb.collection('traces').create({
+      functionName,
+      message,
+      response,
+      module: module,
+      chat: chatId,
+      user: userId,
+    });
+  } catch (error) {
+    console.error('Error saving trace:', error);
+  }
+};
+
+export const tools = {
+  // get_user_data: {
+  //   description: "Fetches user data from PocketBase",
+  //   parameters: { user_id: "string" },
+  //   execute: async (params) => {
+  //     const user = await pb.collection('users').getOne(params.user_id);
+  //     return user;
+  //   }
+  // },
+  // calculate: {
+  //   description: "Evaluates a mathematical expression",
+  //   parameters: { expression: "string" },
+  //   execute: ({ expression }) => {
+  //     try {
+  //       return eval(expression).toString();
+  //     } catch {
+  //       return "Calculation error";
+  //     }
+  //   }
+  // }
+  // indentifyFeelings: {
+  //   description: "Identify the feelings of the user",
+  //   parameters: z.object({
+  //     message: z.string().describe("The text message from the user"),
+  //   }),
+  //   execute: async (params: { message: string }) => {
+  //     // Use PocketBase's search capabilities
+  //     const results = await pb.collection('feelings').getList(1, params.limit, {
+  //       filter: `name ~ "${params.query}" || description ~ "${params.query}"`,
+  //       sort: '-created'
+  //     });
+
+  //     return results.items.map(item => ({
+  //       id: item.id,
+  //       name: item.name,
+  //       summary: `${item.description.slice(0, 100)}...`,
+  //       key_attributes: {
+  //         physical: item.physical_sensations.slice(0, 3),
+  //         triggers: item.common_triggers.slice(0, 3)
+  //       }
+  //     }));
+  //   }
+  // }
+};
+
+export const shouldAnalyzeFeelingsTool = async(message: string, chatId: string, userId: string): Promise<boolean> => {
+  const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
+  const model = {
+		model: "gemini-1.5-flash",
+		config: {
+			systemInstruction: `You are a tool in a chain of nonviolent communication ai steps. You are responsible for identifying if analyzing feelings in a message is needed. Please make sure to only return true if you think that there is a true feeling based on nonviolent communication in the message.
+      
+      You always respond in your specified JSON schema and only return a boolean value for the needsAnalysis field.`,
+			responseMimeType: 'application/json',
+			responseSchema: {
+				type: Type.OBJECT,
+				properties: {
+					needsAnalysis: {
+						type: Type.BOOLEAN,
+						description: 'Whether the message needs an analysis of feelings'
+					},
+				},
+				required: ['needsAnalysis']
+			},
+		},
+	}
+	const chat = ai.chats.create(model);
+  const result = await chat.sendMessage({message});
+  const response = result.text;
+  const responseJson = JSON.parse(response || '{}');
+
+  saveTrace('shouldAnalyzeFeelingsTool', message, 'bullshift', chatId, userId, response);
+
+  return responseJson.needsAnalysis;
+};
+
+export const analyzeAndSaveFeelings = async(message: string, chatId: string,userId: string) => {
+  const feelings = await pb.collection('feelings').getFullList({
+		sort: 'category,sort'
+	});
+
+  const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
+  const model = {
+    model: "gemini-1.5-flash",
+    config: {
+      systemInstruction: `You are a tool in a chain of nonviolent communication ai steps. You are responsible for analyzing the feelings of the user based on the following feelings: \n
+      ${feelings.map(feeling => feeling.nameEn).join(', ')}.
+
+      You always respond in your specified JSON schema and only return a lowercase array of strings in the feelings field. Make sure the feelings are returned in the language of the message.`,
+			responseMimeType: 'application/json',
+			responseSchema: {
+				type: Type.OBJECT,
+        properties: {
+          feelings: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.STRING,
+            },
+          },
+        },
+        required: ['feelings']
+      },
+    },
+  };
+  const chat = ai.chats.create(model);
+  const result = await chat.sendMessage({message});
+  const response = result.text;
+  const responseJson = JSON.parse(response || '{}');
+
+  console.log('feelings',responseJson.feelings);
+  let oldFeelings = [];
+  const chatRecord = await pb.collection('chats').getOne(chatId);
+  if(chatRecord.feelings){
+    oldFeelings = chatRecord.feelings;
+  }
+  let newFeelings = [...oldFeelings, ...responseJson.feelings];
+  newFeelings = [...new Set(newFeelings)];
+
+  await pb.collection('chats').update(chatId, {
+    feelings: newFeelings
+  });
+
+  saveTrace('analyzeAndSaveFeelings', message, 'bullshift', chatId, userId, response);
+
+  return responseJson.feelings;
+};

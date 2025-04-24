@@ -15,8 +15,10 @@ export const load = async ({ locals }: Parameters<PageServerLoad>[0]) => {
     }
 
     try {
+        console.log('initChat from pageServerLoad');
         let chatRecord = undefined;
         try {
+            console.log('getting chat record');
             chatRecord = await pb.collection('chats').getFirstListItem(`user="${user.id}" && module="bullshift"`, {
                 sort: '-created',
             });
@@ -29,11 +31,7 @@ export const load = async ({ locals }: Parameters<PageServerLoad>[0]) => {
         // Initialize Gemini chat if not in memory
         if (!bullshiftChats.has(chatRecord?.id)) {
             const model = await getModel(user, locale);
-
-            const chat = ai.chats.create({
-                model: model.model,
-                history: chatRecord?.history || []
-            });
+            const chat = ai.chats.create(model);
 
             bullshiftChats.set(chatRecord.id, chat);
         }
