@@ -7,7 +7,6 @@
 	import IconFeedback from '$assets/icons/icon-feedback.svg?raw';
 	import IconLearn from '$assets/icons/icon-learn.svg?raw';
 	import { get } from 'svelte/store';
-	import { page } from '$app/stores';
 	import IconEye from '$assets/icons/icon-eye.svg?raw';
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';

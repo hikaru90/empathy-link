@@ -11,6 +11,12 @@
 	"/api/ai/bullshift/clearChat": [
 		"src/routes/api/ai/bullshift/clearChat/+server.ts"
 	],
+	"/api/ai/bullshift/extractMemories": [
+		"src/routes/api/ai/bullshift/extractMemories/+server.ts"
+	],
+	"/api/ai/bullshift/flushMemory": [
+		"src/routes/api/ai/bullshift/flushMemory/+server.ts"
+	],
 	"/api/ai/bullshift/initChat": [
 		"src/routes/api/ai/bullshift/initChat/+server.ts"
 	],
@@ -131,6 +137,11 @@
 	],
 	"/bullshift/insights/[id]": [
 		"src/routes/bullshift/insights/[id]/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/bullshift/memory": [
+		"src/routes/bullshift/memory/+page.server.ts",
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],

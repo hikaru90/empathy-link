@@ -4,9 +4,9 @@
 	import * as Sheet from '$lib/components/ui/sheet';
 	import Cross1 from 'svelte-radix/Cross1.svelte';
 	import { t } from '$lib/translations';
-	import { backgroundColor, currentSection } from '$store/page';
+	import { backgroundColor } from '$store/page';
 	import { scrollToElement } from '$scripts/helpers';
-	import { HamburgerMenu, CaretRight, Person } from 'radix-icons-svelte';
+	import { HamburgerMenu, CaretRight } from 'radix-icons-svelte';
 	import { goto } from '$app/navigation';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Switch } from '$lib/components/ui/switch';

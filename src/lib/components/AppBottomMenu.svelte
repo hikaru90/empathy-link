@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { Sun, Moon } from 'radix-icons-svelte';
-	import { MixerVertical } from 'radix-icons-svelte';
 	import { toggleMode, mode } from 'mode-watcher';
 	import Locale from '$lib/components/Locale.svelte';
 	import { onMount } from 'svelte';

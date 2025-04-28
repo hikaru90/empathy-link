@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { t } from '$lib/translations';
-	import { BotMessageSquare, ChartColumnDecreasing, Book, Users } from 'lucide-svelte/icons';
+	import BotMessageSquare from 'lucide-svelte/icons/bot-message-square';
+	import ChartColumnDecreasing from 'lucide-svelte/icons/chart-column-decreasing';
+	import Book from 'lucide-svelte/icons/book';
+	import Users from 'lucide-svelte/icons/users';
 	import IconFolder from '$assets/icons/icon-folder.svg?raw';
 	import IconSelf from '$assets/icons/icon-self.svg?raw';
 	import IconFight from '$assets/icons/icon-fight.svg?raw';

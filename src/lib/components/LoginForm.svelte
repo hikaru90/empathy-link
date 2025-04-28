@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { redirect } from '@sveltejs/kit';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { formSchema, type FormSchema } from '$routes/app/auth/login/schema';
 	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { t } from '$lib/translations';
-	import SuperDebug from 'sveltekit-superforms';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
@@ -27,7 +25,8 @@
 			console.log('result', result);
 			if (result.type === 'failure') toast.error($t('default.page.login.toasts.error'));
 			if (result.type === 'success') {
-				// toast.success($t('default.page.login.toasts.success'));
+				toast.success($t('default.page.login.toasts.success'));
+				// goto('/bullshift');
 			}
 		}
 	});
@@ -71,7 +70,7 @@
 		<a href="/app/auth/register" class="text-sm hover:underline"
 			>{$t('default.page.login.switchToRegister')}</a
 		>
-		<Form.Button class="bg-primary text-muted">{$t('default.page.login.cta')}</Form.Button>
+		<Form.Button type="submit" class="bg-primary text-muted">{$t('default.page.login.cta')}</Form.Button>
 	</div>
 </form>
 

@@ -17,15 +17,15 @@ const config = {
 		adapter: adapter({
 			// default options are shown. On some platforms
 			// these options are set automatically — see below
-			pages: 'dist',
-			assets: 'dist',
-			fallback: null,
-			precompress: false,
+			// pages: 'dist',
+			// assets: 'dist',
+			// fallback: null,
+			// precompress: false,
 			// strict: true
-			strict: false,
-			prefetch: {
-				enabled: false,
-			}
+			// strict: false,
+			// prefetch: {
+			// 	enabled: false,
+			// }
 		}),
 		alias: {
 			$static: "static",

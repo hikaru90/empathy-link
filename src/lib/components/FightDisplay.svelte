@@ -6,7 +6,6 @@
 	import { locale } from '$lib/translations';
 	import { Check } from 'radix-icons-svelte';
 	import { user } from '$store/auth';
-	import { json } from '@sveltejs/kit';
 
 	export let record;
 	export let fight: object | undefined = undefined;

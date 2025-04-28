@@ -5,8 +5,9 @@
 	import { pb } from '$scripts/pocketbase';
 	import { user } from '$store/auth';
 	import { locale } from '$lib/translations';
-	import { SendHorizontal, RotateCcw } from 'lucide-svelte/icons';
-	import { LoaderCircle } from 'lucide-svelte/icons';
+	import SendHorizontal from 'lucide-svelte/icons/send-horizontal';
+	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
+	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 
 	export let chatId: string;
 	export let history: any[] = [];
@@ -50,6 +51,15 @@
 		});
 	};
 
+	const flushMemory = async () => {
+		await fetch('/api/ai/bullshift/flushMemory', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+	}
+
 	const clearChat = async () => {
 		console.log('$user', $user);
 		try {
@@ -77,13 +87,38 @@
 		}
 	};
 
+	const callMemoryExtraction = async () => {
+		try {
+			const response = await fetch('/api/ai/bullshift/extractMemories', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({})
+			});
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+
+		} catch (error) {
+			console.error('Failed to extract memories:', error);
+		}
+	}
+
 	onMount(async () => {
 		// scrollToBottom();
 		scrollDown();
 	});
 </script>
 
-<div class="flex justify-end">
+<div class="flex justify-between">
+	<button on:click={flushMemory} class="text-xs bg-black/30 px-2 py-1 text-black active:bg-red-500/50 rounded-full">
+		Flush Memory
+	</button>
+	<button on:click={callMemoryExtraction} class="text-xs bg-black/30 px-2 py-1 text-black active:bg-red-500/50 rounded-full">
+		Extract Memory
+	</button>
 	<button
 		on:click={clearChat}
 		class="flex items-center gap-1 rounded-full bg-black/30 px-2 py-1 text-xs text-black"

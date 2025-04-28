@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import { ai, bullshiftChats } from '$lib/server/gemini';
 import { pb } from '$scripts/pocketbase';
 import { getModel, initChat } from '$lib/server/gemini';
-
+import { redirect } from '@sveltejs/kit';
 export const load = async ({ locals, params }: Parameters<PageServerLoad>[0]) => {
     const user = locals.user;
     const locale = locals.locale;

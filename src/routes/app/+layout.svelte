@@ -64,7 +64,7 @@
 	});
 </script>
 
-{#key data.url}
+{#key data.route}
 	{#if !contentReady}
 		<div
 			in:blur={{ duration: animationDuration, delay: animationDuration }}

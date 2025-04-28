@@ -2,12 +2,16 @@ import type { PageServerLoad } from './$types';
 import { ai, bullshiftChats } from '$lib/server/gemini';
 import { pb } from '$scripts/pocketbase';
 import { getModel, initChat } from '$lib/server/gemini';
+import { redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals }) => {
     const user = locals.user;
     const locale = locals.locale;
 
     if (!user?.id) {
+
+        throw redirect(303, '/app/auth/login');
+
         return {
             error: 'User not authenticated'
         };
@@ -29,7 +33,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
         // Initialize Gemini chat if not in memory
         if (!bullshiftChats.has(chatRecord?.id)) {
-            const model = await getModel(user, locale);
+            const model = await getModel(user, locale, chatRecord?.history);
             const chat = ai.chats.create(model);
 
             bullshiftChats.set(chatRecord.id, chat);

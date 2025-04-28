@@ -1,8 +1,4 @@
 <script>
-	import { ChevronRight } from 'radix-icons-svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Sun, Moon } from 'radix-icons-svelte';
-	import { toggleMode } from 'mode-watcher';
 	import WebsiteMenu from '$lib/components/WebsiteMenu.svelte';
 	import AnimatedHeroBig from '$lib/components/AnimatedHeroBig.svelte';
 	import Locale from '$lib/components/Locale.svelte';

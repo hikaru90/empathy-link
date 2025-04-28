@@ -6,7 +6,6 @@
 	import { t, locale } from '$lib/translations';
 	import { startDate, endDate } from '$store/dashboard';
 	import { goto } from '$app/navigation';
-	import { CaretRight, Check, Cross2 } from 'radix-icons-svelte';
 	import { user } from '$store/auth';
 
 	let initialized = false;

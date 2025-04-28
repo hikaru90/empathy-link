@@ -1,14 +1,11 @@
 <script lang="ts">
 	import { Skeleton } from '$lib/components/ui/skeleton';
-	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { onMount } from 'svelte';
 	import { pb } from '$scripts/pocketbase';
 	import { t } from '$lib/translations';
 	import { endDate } from '$store/dashboard';
 	import { goto } from '$app/navigation';
 	import { CaretRight, Check, Cross2 } from 'radix-icons-svelte';
-	import SparklePill from '$lib/components/SparklePill.svelte';
-	import { Plus } from 'radix-icons-svelte';
 	import { delay } from '$scripts/helpers';
 	import { Switch } from '$lib/components/ui/switch';
 	import { Label } from '$lib/components/ui/label/index.js';

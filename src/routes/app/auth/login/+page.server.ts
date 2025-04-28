@@ -13,9 +13,9 @@ const redirectToFightOrDashboard = (
 	const loginRedirectTarget = cookies.get('loginRedirectTarget');
 
 	if (loginRedirectTarget) {
-		redirect(302, loginRedirectTarget);
+		throw redirect(302, loginRedirectTarget);
 	} else {
-		redirect(302, '/app/dashboard');
+		throw redirect(302, '/bullshift');
 	}
 };
 
@@ -23,7 +23,6 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 	if (locals.user) {
 		user.update((value) => locals.user);
 		console.log('redirecting');
-		console.log('PageServerLoad locals', locals);
 		redirectToFightOrDashboard(cookies);
 	}
 	return {

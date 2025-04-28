@@ -2,7 +2,7 @@ import { pb } from '$scripts/pocketbase';
 import { HarmBlockThreshold, HarmCategory, GoogleGenAI, Type } from '@google/genai';
 import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
 import type { HistoryEntry } from '$routes/api/ai/selfempathy/initChat/+server';
-import type { ChatSession } from '@google/genai';
+import type { ChatSession, CreateChatParameters } from '@google/genai';
 import { shouldAnalyzeFeelings } from './tools';
 
 // Initialize Gemini once
@@ -14,8 +14,6 @@ export const bullshiftChats = new Map<string, ChatSession>();
 export const getIds = (map: Map<string, ChatSession>) => {
 	return Array.from(map.keys());
 };
-
-console.log('bullshiftChats', getIds(bullshiftChats));
 
 export const sendMessage = async (chatId: string, chat: ChatSession, message: string, history: HistoryEntry[]) => {
 	try {
@@ -40,7 +38,7 @@ export const sendMessage = async (chatId: string, chat: ChatSession, message: st
 	}
 }
 
-export const getModel = async (user: object, locale: string) => {
+export const getModel = async (user: object, locale: string, history?: HistoryEntry[]) => {
 	const feelings = await pb.collection('feelings').getFullList({
 		sort: 'category,sort'
 	});
@@ -48,10 +46,10 @@ export const getModel = async (user: object, locale: string) => {
 		sort: 'category,sort'
 	});
 
-	return {
+	const model: CreateChatParameters = {
 		model: "gemini-1.5-flash",
-		temperature: 0.3,
 		config: {
+			temperature: 0.3,
 			systemInstruction: `You are speaking with user ${user.firstName}, You are a compassionate communication assistant trained in Nonviolent Communication (NVC). The user will describe a real-life situation, message, or conflict they want help with.
 
 			Your task is to:
@@ -64,25 +62,9 @@ export const getModel = async (user: object, locale: string) => {
 			3. Explain your reasoning in simple terms (if helpful for the user).
 			4. Optionally, suggest an empathic or connection-building response the user could send, if the situation involves another person.
 
-			You have access to the following tools:
-			- get_feelings: Search the feelings database for matching entries
-
-			If a user asks for the available feelings, use the search_feelings tool to get the data instead of coming up with your own. When using the tool, apply the following rules:
-			1. NEVER mention feelings not in the database
-			2. When asked about feelings:
-					a. First use the search_feelings tool
-					b. Base your response ONLY on the returned data
-			
-
-			When the user provides information, identify and extract:
-			1. Observations (what happened, without judgment)
-			2. Feelings (how the person feels)
-			3. Needs (the unmet need behind the feeling)
-			4. Requests (a clear, doable request)
-			Format your response to include these elements in a structured way that can be easily parsed without including it in your text response.
-
 			- Respond in the language with the locale ${locale}. Only switch if the user asks for it.
 			- Always start by making the user feel understood and heard.
+			- If the user didn't exactly follow the nvc steps, dont't ask of them to do so, or worse, let them repeat themselves. Instead, give them guidance and provide helpful suggestions.
 			- Aim for clarity, honesty, and empathy.
 			- Avoid therapy jargon or excessive fluff.
 			- Be concise, warm, and practical.
@@ -96,33 +78,6 @@ export const getModel = async (user: object, locale: string) => {
 			responseSchema: {
 				type: Type.OBJECT,
 				properties: {
-					insight: {
-						type: Type.OBJECT,
-						properties: {
-							observation: {
-								type: Type.STRING,
-								description: 'This is an internal Field. The observation the user made used for saving to a db',
-							},
-							feelings: {
-								type: Type.ARRAY,
-								items: {
-									type: Type.STRING,
-								},
-								description: 'This is an internal Field. The feelings the user is experiencing used for saving to a db',
-							},
-							needs: {
-								type: Type.ARRAY,
-								items: {
-									type: Type.STRING,
-								},
-								description: 'This is an internal Field. The needs the user is experiencing used for saving to a db',
-							},
-							request: {
-								type: Type.STRING,
-								description: 'This is an internal Field. The request the user is making used for saving to a db',
-							}
-						}
-					},
 					response: {
 						type: Type.STRING,
 						description: 'The response text to show to the user'
@@ -132,6 +87,12 @@ export const getModel = async (user: object, locale: string) => {
 			},
 		},
 	}
+
+	if (history) {
+		model.history = history;
+	}
+
+	return model
 }
 
 export const initChat = async (user: object, locale: string) => {

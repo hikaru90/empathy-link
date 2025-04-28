@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { Settings, Bell, Minus, Plus } from 'lucide-svelte/icons';
+	import Settings from 'lucide-svelte/icons/settings';
+	import Bell from 'lucide-svelte/icons/bell';
+	import Minus from 'lucide-svelte/icons/minus';
+	import Plus from 'lucide-svelte/icons/plus';
   import * as Drawer from "$lib/components/ui/drawer/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
 

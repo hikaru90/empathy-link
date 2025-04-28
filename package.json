@@ -7,6 +7,7 @@
 	},
 	"scripts": {
 		"dev": "vite dev --port 3000 --host",
+		"dev debug": "vite dev --port 3000 --host --debug",
 		"build": "rimraf build && rimraf .svelte-kit && vite build",
 		"buildprod": "vite -r dotenv/config build",
 		"preview": "vite preview",
@@ -70,6 +71,7 @@
 		"lucide-svelte": "^0.487.0",
 		"marked": "^15.0.7",
 		"mode-watcher": "^0.2.2",
+		"node-cron": "^3.0.3",
 		"openai": "^4.55.7",
 		"posthog-js": "^1.166.1",
 		"radix-icons-svelte": "^1.2.1",

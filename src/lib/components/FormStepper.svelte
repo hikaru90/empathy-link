@@ -2,8 +2,7 @@
 	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { createEventDispatcher } from 'svelte';
 	import { t } from '$lib/translations';
-	import { ArrowRight } from 'radix-icons-svelte';
-	import { CaretLeft } from 'radix-icons-svelte';
+	import { ArrowRight, CaretLeft } from 'radix-icons-svelte';
 
 	const dispatch = createEventDispatcher();
 

@@ -20,7 +20,6 @@
 		Clipboard,
 		EnvelopeClosed,
 		PaperPlane,
-		Trash,
 		Reset,
 		Check
 	} from 'radix-icons-svelte';

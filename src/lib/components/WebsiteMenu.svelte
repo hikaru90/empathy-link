@@ -1,23 +1,14 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { Sun, Moon, MixerVertical } from 'radix-icons-svelte';
+	import { Sun, Moon } from 'radix-icons-svelte';
 	import { toggleMode, mode } from 'mode-watcher';
-	import Locale from '$lib/components/Locale.svelte';
 	import { onMount } from 'svelte';
 	import Logo from '$lib/components/Logo.svelte';
-	import Avatar from '$lib/components/Avatar.svelte';
 	import { t } from '$lib/translations';
-	import { user } from '$store/auth';
-	import * as Popover from '$lib/components/ui/popover';
-	import { Switch } from '$lib/components/ui/switch';
-	import { Label } from '$lib/components/ui/label/index.js';
-	import * as Select from '$lib/components/ui/select/index.js';
 	import { locale, locales } from '$lib/translations';
 	import { setCookie, scrollToElement } from '$scripts/helpers';
 	import { goto } from '$app/navigation';
-	import { debounce } from '$scripts/helpers';
 	import { scroll, windowHeight, windowWidth, backgroundColor, currentSection } from '$store/page';
-	import backgroundImage from '$assets/images/holo3.jpg';
 	import WebsiteHamburgerMenu from '$lib/components/WebsiteHamburgerMenu.svelte';
 
 	let lastScrollValue = 0;

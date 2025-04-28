@@ -6,6 +6,23 @@ import { PUBLIC_POSTHOG_KEY } from '$env/static/public';
 import { messages, userId } from '$store/chatStore';
 import { redirect, type Handle } from '@sveltejs/kit';
 const client = 'empathy_link'
+import cron from 'node-cron';
+import { extractMemories } from '$lib/server/tools';
+
+// Only start cron if it hasn't already been started
+if (!(globalThis as any).__cronStarted) {
+  console.log('Starting cronjobs...');
+  
+  cron.schedule('*/0.1 * * * *', () => {
+    console.log('Running scheduled task every 10 seconds');
+    // your logic
+		if (process.env.NODE_ENV === 'production') {
+			extractMemories();
+		}
+  });
+
+  (globalThis as any).__cronStarted = true;
+}
 
 export const handle: Handle = async ({ event, resolve }) => {
 	let sessionToken = event.cookies.get(`${client}_session_id`);
@@ -67,7 +84,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		if (event.url.pathname.startsWith('/api')) {
 			// If not authenticated and trying to access API, throw 401
 			if (!event.locals.pb.authStore.isValid) {
-				throw redirect(303, '/login');
+				throw redirect(303, '/app/auth/login');
 			}
 		}
 

@@ -143,7 +143,7 @@
 	});
 </script>
 
-{#key data.url}
+{#key data.route}
 	<main
 		id="scrollContainer"
 		in:blur={{ duration: animationDuration, delay: animationDuration }}
