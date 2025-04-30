@@ -10,47 +10,47 @@ import cron from 'node-cron';
 import { extractMemories } from '$lib/server/tools';
 
 // Only start cron if it hasn't already been started
-if (!(globalThis as any).__cronStarted) {
-  console.log('Starting cronjobs...');
-  
-  cron.schedule('*/0.1 * * * *', () => {
-    console.log('Running scheduled task every 10 seconds');
-    // your logic
-		if (process.env.NODE_ENV === 'production') {
-			extractMemories();
-		}
-  });
+if (process.env.NODE_ENV === 'production') {
+	if (!(globalThis as any).__cronStarted) {
+		console.log('Starting cronjobs...');
 
-  (globalThis as any).__cronStarted = true;
+		cron.schedule('*/0.1 * * * *', () => {
+			console.log('Running scheduled task every 10 seconds');
+			// your logic
+			extractMemories();
+		});
+
+		(globalThis as any).__cronStarted = true;
+	}
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
 	let sessionToken = event.cookies.get(`${client}_session_id`);
-  let posthogUserId = event.cookies.get(`${client}_user_id`);
+	let posthogUserId = event.cookies.get(`${client}_user_id`);
 	if (!sessionToken) {
-    sessionToken = uuidv4();
-    event.cookies.set(`${client}_session_id`, sessionToken, {
-      httpOnly: true,
-      sameSite: 'strict',
-      secure: true,
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7 // 1 week
-    });
-  }
-	if (!posthogUserId) {
-    posthogUserId = uuidv4();
-    event.cookies.set(`${client}_user_id`, posthogUserId, {
-      httpOnly: true,
+		sessionToken = uuidv4();
+		event.cookies.set(`${client}_session_id`, sessionToken, {
+			httpOnly: true,
 			sameSite: 'strict',
-      secure: true,
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7 * 52 // 1 year
-    });
-  }
+			secure: true,
+			path: '/',
+			maxAge: 60 * 60 * 24 * 7 // 1 week
+		});
+	}
+	if (!posthogUserId) {
+		posthogUserId = uuidv4();
+		event.cookies.set(`${client}_user_id`, posthogUserId, {
+			httpOnly: true,
+			sameSite: 'strict',
+			secure: true,
+			path: '/',
+			maxAge: 60 * 60 * 24 * 7 * 52 // 1 year
+		});
+	}
 	// Retrieve PostHog cookie
-  let phCookie = event.cookies.get(`ph_${PUBLIC_POSTHOG_KEY}_posthog`);
-  phCookie = phCookie ? JSON.parse(phCookie) : null;
-  const posthogId = phCookie ? phCookie.distinct_id : posthogUserId;
+	let phCookie = event.cookies.get(`ph_${PUBLIC_POSTHOG_KEY}_posthog`);
+	phCookie = phCookie ? JSON.parse(phCookie) : null;
+	const posthogId = phCookie ? phCookie.distinct_id : posthogUserId;
 
 	event.locals.posthogId = posthogId;
 	event.locals.sessionToken = sessionToken;
@@ -70,7 +70,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		event.locals.locale = langHeaders
 		// locale.set(langHeaders);
 	}
-		
+
 	event.locals.pb = pb;
 	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 
@@ -79,7 +79,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		if (event.locals.pb.authStore.isValid) {
 			await event.locals.pb.collection('users').authRefresh();
 		}
-		
+
 		// Check if this is an API route
 		if (event.url.pathname.startsWith('/api')) {
 			// If not authenticated and trying to access API, throw 401
@@ -96,16 +96,16 @@ export const handle: Handle = async ({ event, resolve }) => {
 		// Update the cookie
 		const response = await resolve(event);
 		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie());
-		
+
 		return response;
 	} catch (error) {
 		// Clear the cookie on any error
 		event.locals.pb.authStore.clear();
-		
+
 		if (event.url.pathname.startsWith('/api')) {
 			throw redirect(303, '/login');
 		}
-		
+
 		const response = await resolve(event);
 		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie());
 		return response;

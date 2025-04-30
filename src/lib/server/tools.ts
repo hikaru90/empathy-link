@@ -1,6 +1,7 @@
 import { pb } from '$scripts/pocketbase';
 import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
 import { GoogleGenAI, Type } from '@google/genai';
+import type { GenerateContentResponse } from '@google/genai';
 import { z } from 'zod';
 
 export const extractMemories = async () => {
@@ -26,7 +27,7 @@ export const extractMemories = async () => {
       ${concatenatedHistory}
       `;
 
-      console.log('message',message);
+			console.log('message', message);
 
 			const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 			const model = {
@@ -101,29 +102,33 @@ export const extractMemories = async () => {
 
 			console.log('responseJson', responseJson);
 
-      for (const aspect of responseJson) {
-        try{
-          const aspectRecord = await pb.collection('memories').create({
-            user: userId,
-            type: aspect.aspectType,
-            key: aspect.key,
-            value: aspect.value,
-            confidence: aspect.confidence
-          });
-        }catch(error){
-          console.error('Error creating aspect record:', error);
-        }
-      }
+			for (const aspect of responseJson) {
+				try {
+					const aspectRecord = await pb.collection('memories').create({
+						user: userId,
+						type: aspect.aspectType,
+						key: aspect.key,
+						value: aspect.value,
+						confidence: aspect.confidence
+					});
+				} catch (error) {
+					console.error('Error creating aspect record:', error);
+				}
+			}
 
-      for(const chat of userChats){
-        try{
-          await pb.collection('chats').update(chat.id, {
-            memoryProcessed: true
-          });
-        }catch(error){
-          console.error('Error updating chat record:', error);
-        }
-      }
+			for (const chat of userChats) {
+				try {
+					await pb.collection('chats').update(chat.id, {
+						memoryProcessed: true
+					});
+				} catch (error) {
+					console.error('Error updating chat record:', error);
+				}
+			}
+
+			await pb.collection('memoryExtractionQueue').update(memory.id, {
+				status: 'done'
+			});
 
 			return responseJson;
 		}
@@ -149,16 +154,25 @@ export const saveTrace = async (
 	module: string,
 	chatId: string,
 	userId: string,
-	response?: string
+	response?: string,
+	result?: GenerateContentResponse,
+	systemInstruction?: string
 ) => {
 	try {
+
+		const inputTokenCount = result?.usageMetadata?.promptTokenCount;
+		const outputTokenCount = result?.usageMetadata?.candidatesTokenCount;
+
 		const trace = await pb.collection('traces').create({
 			functionName,
 			message,
 			response,
 			module: module,
 			chat: chatId,
-			user: userId
+			user: userId,
+			inputTokens: inputTokenCount,
+			outputTokens: outputTokenCount,
+			systemInstruction
 		});
 	} catch (error) {
 		console.error('Error saving trace:', error);
@@ -214,13 +228,15 @@ export const shouldAnalyzeFeelingsTool = async (
 	chatId: string,
 	userId: string
 ): Promise<boolean> => {
+	const systemInstruction = `You are a tool in a chain of nonviolent communication ai steps. You are responsible for identifying if analyzing feelings in a message is needed. Please make sure to only return true if you think that there is a true feeling based on nonviolent communication in the message.
+      
+	You always respond in your specified JSON schema and only return a boolean value for the needsAnalysis field.`;
+
 	const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 	const model = {
 		model: 'gemini-1.5-flash',
 		config: {
-			systemInstruction: `You are a tool in a chain of nonviolent communication ai steps. You are responsible for identifying if analyzing feelings in a message is needed. Please make sure to only return true if you think that there is a true feeling based on nonviolent communication in the message.
-      
-      You always respond in your specified JSON schema and only return a boolean value for the needsAnalysis field.`,
+			systemInstruction,
 			responseMimeType: 'application/json',
 			responseSchema: {
 				type: Type.OBJECT,
@@ -239,7 +255,7 @@ export const shouldAnalyzeFeelingsTool = async (
 	const response = result.text;
 	const responseJson = JSON.parse(response || '{}');
 
-	saveTrace('shouldAnalyzeFeelingsTool', message, 'bullshift', chatId, userId, response);
+	saveTrace('shouldAnalyzeFeelingsTool', message, 'bullshift', chatId, userId, response, result, systemInstruction);
 
 	return responseJson.needsAnalysis;
 };
@@ -248,15 +264,16 @@ export const analyzeAndSaveFeelings = async (message: string, chatId: string, us
 	const feelings = await pb.collection('feelings').getFullList({
 		sort: 'category,sort'
 	});
+	const systemInstruction = `You are a tool in a chain of nonviolent communication ai steps. You are responsible for analyzing the feelings of the user based on the following feelings: \n
+      ${feelings.map((feeling) => feeling.nameEn).join(', ')}.
+
+      You always respond in your specified JSON schema and only return a lowercase array of strings in the feelings field. Make sure the feelings are returned in the language of the message.`;
 
 	const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 	const model = {
 		model: 'gemini-1.5-flash',
 		config: {
-			systemInstruction: `You are a tool in a chain of nonviolent communication ai steps. You are responsible for analyzing the feelings of the user based on the following feelings: \n
-      ${feelings.map((feeling) => feeling.nameEn).join(', ')}.
-
-      You always respond in your specified JSON schema and only return a lowercase array of strings in the feelings field. Make sure the feelings are returned in the language of the message.`,
+			systemInstruction,
 			responseMimeType: 'application/json',
 			responseSchema: {
 				type: Type.OBJECT,
@@ -290,7 +307,7 @@ export const analyzeAndSaveFeelings = async (message: string, chatId: string, us
 		feelings: newFeelings
 	});
 
-	saveTrace('analyzeAndSaveFeelings', message, 'bullshift', chatId, userId, response);
+	saveTrace('analyzeAndSaveFeelings', message, 'bullshift', chatId, userId, response, result,systemInstruction);
 
 	return responseJson.feelings;
 };

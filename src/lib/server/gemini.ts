@@ -46,11 +46,7 @@ export const getModel = async (user: object, locale: string, history?: HistoryEn
 		sort: 'category,sort'
 	});
 
-	const model: CreateChatParameters = {
-		model: "gemini-1.5-flash",
-		config: {
-			temperature: 0.3,
-			systemInstruction: `You are speaking with user ${user.firstName}, You are a compassionate communication assistant trained in Nonviolent Communication (NVC). The user will describe a real-life situation, message, or conflict they want help with.
+	const systemInstruction = `You are speaking with user ${user.firstName}, You are a compassionate communication assistant trained in Nonviolent Communication (NVC). The user will describe a real-life situation, message, or conflict they want help with.
 
 			Your task is to:
 			1. Identify any judgments, assumptions, or blame in the input.
@@ -73,7 +69,13 @@ export const getModel = async (user: object, locale: string, history?: HistoryEn
 			- Maximum 2 newlines between paragraphs
 			- Never use more than 1 blank line
 			- Trim trailing whitespace
-			`,
+			`
+
+	const model: CreateChatParameters = {
+		model: "gemini-1.5-flash",
+		config: {
+			temperature: 0.3,
+			systemInstruction,
 			responseMimeType: 'application/json',
 			responseSchema: {
 				type: Type.OBJECT,
@@ -92,7 +94,7 @@ export const getModel = async (user: object, locale: string, history?: HistoryEn
 		model.history = history;
 	}
 
-	return model
+	return { model, systemInstruction }
 }
 
 export const initChat = async (user: object, locale: string) => {
@@ -103,12 +105,13 @@ export const initChat = async (user: object, locale: string) => {
 	});
 
 	// Initialize the chat in memory with the correct model
-	const model = await getModel(user, locale);
+	const {model, systemInstruction} = await getModel(user, locale);
 	const chat = ai.chats.create(model);
 	bullshiftChats.set(dbChat.id, chat);
 
 	return {
 		chatId: dbChat.id,
-		chat: chat
+		chat: chat,
+		systemInstruction
 	};
 }

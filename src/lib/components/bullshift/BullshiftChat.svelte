@@ -11,11 +11,11 @@
 
 	export let chatId: string;
 	export let history: any[] = [];
+	export let systemInstruction: string;
 
 	let userMessage = '';
 	let isLoading = false;
 	let chatContainer: HTMLDivElement;
-
 	const handleSendMessage = async () => {
 		if (!userMessage.trim()) return;
 		isLoading = true;
@@ -23,7 +23,7 @@
 			const response = await fetch('/api/ai/bullshift/send', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ chatId, message: userMessage, userId: $user!.id })
+				body: JSON.stringify({ chatId, message: userMessage, userId: $user!.id, systemInstruction })
 			});
 			const data = await response.json();
 			if (data.error) throw new Error(data.error);
@@ -112,6 +112,9 @@
 	});
 </script>
 
+<div class="text-xs">
+	{chatId}
+</div>
 <div class="flex justify-between">
 	<button on:click={flushMemory} class="text-xs bg-black/30 px-2 py-1 text-black active:bg-red-500/50 rounded-full">
 		Flush Memory

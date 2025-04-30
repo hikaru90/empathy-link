@@ -35,7 +35,7 @@
         {#if data.error}
           <p class="text-red-500">{data.error}</p>
         {:else}
-          <BullshiftChat class="relative" chatId={data.chatId} history={data.history} />
+          <BullshiftChat class="relative" chatId={data.chatId} history={data.history} systemInstruction={data.systemPrompt} />
         {/if}
       </div>
   </div>

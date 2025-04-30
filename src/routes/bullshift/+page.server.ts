@@ -20,6 +20,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     try {
         console.log('initChat from pageServerLoad');
         let chatRecord = undefined;
+        let systemPrompt = '';
         try {
             console.log('getting chat record');
             chatRecord = await pb.collection('chats').getFirstListItem(`user="${user.id}" && module="bullshift"`, {
@@ -29,11 +30,13 @@ export const load: PageServerLoad = async ({ locals }) => {
             console.log('No chat record found, creating a new one');
             const initResponse = await initChat(user, locale);
             chatRecord = await pb.collection('chats').getOne(initResponse.chatId);
+            systemPrompt = initResponse.systemInstruction;
         }
 
         // Initialize Gemini chat if not in memory
         if (!bullshiftChats.has(chatRecord?.id)) {
-            const model = await getModel(user, locale, chatRecord?.history);
+            const {model, systemInstruction} = await getModel(user, locale, chatRecord?.history);
+            systemPrompt = systemInstruction;
             const chat = ai.chats.create(model);
 
             bullshiftChats.set(chatRecord.id, chat);
@@ -41,7 +44,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 
         return {
             chatId: chatRecord.id,
-            history: chatRecord.history || []
+            history: chatRecord.history || [],
+            systemPrompt
         };
     } catch (error) {
         console.error('Error initializing chat:', error);

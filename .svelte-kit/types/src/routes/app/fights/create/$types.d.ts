@@ -15,3 +15,4 @@ type PageParentData = Omit<EnsureDefined<import('../../../$types.js').LayoutData
 
 export type PageServerData = null;
 export type PageData = Expand<PageParentData>;
+export type PageProps = { data: PageData }

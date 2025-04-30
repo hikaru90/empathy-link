@@ -24,7 +24,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
             filter: `chat = "${id}"`,
             sort: '-created'
         });
-        console.log('traces',traces);
         const record = await pb.collection('chats').getOne(id,{
         });
 

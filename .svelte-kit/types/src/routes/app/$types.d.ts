@@ -11,7 +11,7 @@ type OutputDataShape<T> = MaybeWithVoid<Omit<App.PageData, RequiredKeys<T>> & Pa
 type EnsureDefined<T> = T extends null | undefined ? {} : T;
 type OptionalUnion<U extends Record<string, any>, A extends keyof U = U extends U ? keyof U : never> = U extends unknown ? { [P in Exclude<A, keyof U>]?: never } & U : never;
 export type Snapshot<T = any> = Kit.Snapshot<T>;
-type LayoutRouteId = RouteId | "/app/auth/login" | "/app/auth/register" | "/app/dashboard" | "/app/fights" | "/app/fights/create" | "/app/fights/[id]" | "/app/fights/[id]/respond" | "/app/selfempathy" | "/app/selfempathy/create" | "/app/selfempathy/[id]" | "/app/selfempathy/[id]/respond"
+type LayoutRouteId = RouteId | "/app/auth/login" | "/app/auth/register" | "/app/dashboard" | "/app/fights" | "/app/fights/[id]" | "/app/fights/[id]/respond" | "/app/fights/create" | "/app/selfempathy" | "/app/selfempathy/[id]" | "/app/selfempathy/[id]/respond" | "/app/selfempathy/create"
 type LayoutParams = RouteParams & { id?: string }
 type LayoutServerParentData = EnsureDefined<import('../$types.js').LayoutServerData>;
 type LayoutParentData = EnsureDefined<import('../$types.js').LayoutData>;
@@ -22,4 +22,5 @@ export type LayoutServerData = Expand<OptionalUnion<EnsureDefined<Kit.LoadProper
 export type LayoutLoad<OutputData extends OutputDataShape<LayoutParentData> = OutputDataShape<LayoutParentData>> = Kit.Load<LayoutParams, LayoutServerData, LayoutParentData, OutputData, LayoutRouteId>;
 export type LayoutLoadEvent = Parameters<LayoutLoad>[0];
 export type LayoutData = Expand<Omit<LayoutParentData, keyof Kit.LoadProperties<Awaited<ReturnType<typeof import('../../../../../src/routes/app/+layout.js').load>>>> & OptionalUnion<EnsureDefined<Kit.LoadProperties<Awaited<ReturnType<typeof import('../../../../../src/routes/app/+layout.js').load>>>>>>;
+export type LayoutProps = { data: LayoutData; children: import("svelte").Snippet }
 export type RequestEvent = Kit.RequestEvent<RouteParams, RouteId>;

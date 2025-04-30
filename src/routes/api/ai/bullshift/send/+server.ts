@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { bullshiftChats } from '$lib/server/gemini';
 import { pb } from '$scripts/pocketbase';
 import { shouldAnalyzeFeelingsTool, analyzeAndSaveFeelings, saveTrace, queueMemoryExtraction } from '$lib/server/tools';
+import type { GenerateContentResponse } from '@google/genai';
 
 const sanitizeText = (text: string) => {
 	console.log('text', text);
@@ -17,7 +18,7 @@ const sanitizeText = (text: string) => {
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
-		const { chatId, message, userId } = await request.json();
+		const { chatId, message, userId, systemInstruction } = await request.json();
 
 		if (!chatId || !message) {
 			return json({ error: 'Missing required fields' }, { status: 400 });
@@ -28,25 +29,27 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json({ error: 'Chat session not found' }, { status: 404 });
 		}
 
-        await queueMemoryExtraction(userId, 'pending')
-			
+		await queueMemoryExtraction(userId, 'pending')
+
 		const shouldAnalyzeFeelings = await shouldAnalyzeFeelingsTool(message, chatId, userId);
 		if (shouldAnalyzeFeelings) {
 			await analyzeAndSaveFeelings(message, chatId, userId);
 		}
 
 		// Send message and get response
-		const result = await chat.sendMessage({ message });
+		const result: GenerateContentResponse = await chat.sendMessage({ message });
+		if (!result.text) throw new Error('No text in response');
 		const text = sanitizeText(result.text);
 
-		console.log('text', text);
+		
 		const history = await chat.getHistory();
 		console.log('history', history.slice(-1)[0].parts);
-
+		
 		// Update chat history in database if needed
 		await pb.collection('chats').update(chatId, { history: await chat.getHistory() });
-
-		saveTrace('sendMessage', message, 'bullshift', chatId, userId, text);
+		
+		console.log('systemInstruction',systemInstruction);
+		saveTrace('sendMessage', message, 'bullshift', chatId, userId, text, result, systemInstruction);
 
 		return json({
 			response: text,
