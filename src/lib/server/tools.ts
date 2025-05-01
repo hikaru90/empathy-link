@@ -10,7 +10,7 @@ export const extractMemories = async () => {
 			filter: `status = "pending"`,
 			sort: '-created'
 		});
-		console.log('memories', memories);
+		console.log('memories length', memories.length);
 		for (const memory of memories) {
 			const userId = memory.user;
 			const userChats = await pb.collection('chats').getFullList({
@@ -20,7 +20,12 @@ export const extractMemories = async () => {
 			console.log('userChats', userChats);
 			const concatenatedHistory = userChats.map((chat) => JSON.stringify(chat.history)).join('\n');
 
-			if (!concatenatedHistory) throw 'concatenatedHistory is empty, skipping memory extraction';
+			if (!concatenatedHistory) {
+				await pb.collection('memoryExtractionQueue').update(memory.id, {
+					status: 'done'
+				});
+				throw 'concatenatedHistory is empty, skipping memory extraction';
+			}
 
 			const message = `
       The chat history is:
@@ -126,12 +131,13 @@ export const extractMemories = async () => {
 				}
 			}
 
-			await pb.collection('memoryExtractionQueue').update(memory.id, {
+			const updatedMemory = await pb.collection('memoryExtractionQueue').update(memory.id, {
 				status: 'done'
 			});
 
-			return responseJson;
+			console.log('updatedMemory', updatedMemory);
 		}
+		return true;
 	} catch (error) {
 		console.error('Error extracting memories:', error);
 	}
@@ -139,6 +145,13 @@ export const extractMemories = async () => {
 
 export const queueMemoryExtraction = async (userId: string, status: string) => {
 	try {
+		const userMemoryExtractions = await pb.collection('memoryExtractionQueue').getFullList({
+			filter: `user = "${userId}" && status = "pending"`
+		});
+
+		if (userMemoryExtractions.length > 0) {
+			return;
+		}
 		const queueMemoryExtraction = await pb
 			.collection('memoryExtractionQueue')
 			.create({ user: userId, status: status });
@@ -159,7 +172,6 @@ export const saveTrace = async (
 	systemInstruction?: string
 ) => {
 	try {
-
 		const inputTokenCount = result?.usageMetadata?.promptTokenCount;
 		const outputTokenCount = result?.usageMetadata?.candidatesTokenCount;
 
@@ -255,7 +267,16 @@ export const shouldAnalyzeFeelingsTool = async (
 	const response = result.text;
 	const responseJson = JSON.parse(response || '{}');
 
-	saveTrace('shouldAnalyzeFeelingsTool', message, 'bullshift', chatId, userId, response, result, systemInstruction);
+	saveTrace(
+		'shouldAnalyzeFeelingsTool',
+		message,
+		'bullshift',
+		chatId,
+		userId,
+		response,
+		result,
+		systemInstruction
+	);
 
 	return responseJson.needsAnalysis;
 };
@@ -307,7 +328,16 @@ export const analyzeAndSaveFeelings = async (message: string, chatId: string, us
 		feelings: newFeelings
 	});
 
-	saveTrace('analyzeAndSaveFeelings', message, 'bullshift', chatId, userId, response, result,systemInstruction);
+	saveTrace(
+		'analyzeAndSaveFeelings',
+		message,
+		'bullshift',
+		chatId,
+		userId,
+		response,
+		result,
+		systemInstruction
+	);
 
 	return responseJson.feelings;
 };
