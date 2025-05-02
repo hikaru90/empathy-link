@@ -112,15 +112,15 @@
 	});
 </script>
 
-<div class="text-xs">
-	{chatId}
-</div>
 <div class="flex justify-between">
+	<a target="_blank" class="text-xs bg-black/30 px-2 py-1 text-black active:bg-blue-500/50 rounded-full" href={`/bullshift/insights/${chatId}`}>
+		Inspect Chat <span class="text-blue-300">↗</span>
+	</a>
 	<button on:click={flushMemory} class="text-xs bg-black/30 px-2 py-1 text-black active:bg-red-500/50 rounded-full">
-		Flush Memory
+		Flush Memory <span class="text-yellow-300">↡</span>
 	</button>
 	<button on:click={callMemoryExtraction} class="text-xs bg-black/30 px-2 py-1 text-black active:bg-red-500/50 rounded-full">
-		Extract Memory
+		Extract Memory <span class="text-green-300">↳</span>	
 	</button>
 	<button
 		on:click={clearChat}

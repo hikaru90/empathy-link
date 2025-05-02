@@ -2,8 +2,11 @@ import { pb } from '$scripts/pocketbase';
 import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
 import { GoogleGenAI, Type } from '@google/genai';
 import type { GenerateContentResponse } from '@google/genai';
+import type { State } from '$routes/api/ai/bullshift/send/+server';
 import { z } from 'zod';
+import type { HistoryEntry } from '$routes/api/ai/selfempathy/initChat/+server';
 
+// Memory Extraction
 export const extractMemories = async () => {
 	try {
 		const memories = await pb.collection('memoryExtractionQueue').getFullList({
@@ -142,7 +145,6 @@ export const extractMemories = async () => {
 		console.error('Error extracting memories:', error);
 	}
 };
-
 export const queueMemoryExtraction = async (userId: string, status: string) => {
 	try {
 		const userMemoryExtractions = await pb.collection('memoryExtractionQueue').getFullList({
@@ -160,7 +162,6 @@ export const queueMemoryExtraction = async (userId: string, status: string) => {
 		console.error('Error queueing memory extraction:', error);
 	}
 };
-
 export const saveTrace = async (
 	functionName: string,
 	message: string,
@@ -190,50 +191,192 @@ export const saveTrace = async (
 		console.error('Error saving trace:', error);
 	}
 };
-
 export const tools = {
-	// get_user_data: {
-	//   description: "Fetches user data from PocketBase",
-	//   parameters: { user_id: "string" },
-	//   execute: async (params) => {
-	//     const user = await pb.collection('users').getOne(params.user_id);
-	//     return user;
-	//   }
-	// },
-	// calculate: {
-	//   description: "Evaluates a mathematical expression",
-	//   parameters: { expression: "string" },
-	//   execute: ({ expression }) => {
-	//     try {
-	//       return eval(expression).toString();
-	//     } catch {
-	//       return "Calculation error";
-	//     }
-	//   }
-	// }
-	// indentifyFeelings: {
-	//   description: "Identify the feelings of the user",
-	//   parameters: z.object({
-	//     message: z.string().describe("The text message from the user"),
-	//   }),
-	//   execute: async (params: { message: string }) => {
-	//     // Use PocketBase's search capabilities
-	//     const results = await pb.collection('feelings').getList(1, params.limit, {
-	//       filter: `name ~ "${params.query}" || description ~ "${params.query}"`,
-	//       sort: '-created'
-	//     });
-	//     return results.items.map(item => ({
-	//       id: item.id,
-	//       name: item.name,
-	//       summary: `${item.description.slice(0, 100)}...`,
-	//       key_attributes: {
-	//         physical: item.physical_sensations.slice(0, 3),
-	//         triggers: item.common_triggers.slice(0, 3)
-	//       }
-	//     }));
-	//   }
-	// }
 };
+
+//Get current step
+export const defineCurrentStep = async (message: string, chatId: string, userId: string, state: State):Promise<State> => {
+	const systemInstruction = `You are a tool in a chain of nonviolent communication ai steps. You are presented with a message and a state of a chat.You are responsible for defining the current step of the chat. Your Job is to check if based on the state and the message it is time to get to the next step.
+	
+	The state you are working with is:
+	${JSON.stringify(state)}
+
+	The Steps are:
+	- observation
+	- feelings
+	- needs
+	- request
+
+	Please make sure to only return the current step of the chat in the currentStep field.
+	`;
+
+	const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
+	const model = {
+		model: 'gemini-1.5-flash',
+		config: {
+			systemInstruction,
+			responseMimeType: 'application/json',
+			responseSchema: {
+				type: Type.OBJECT,
+				properties: {
+					currentStep: {
+						type: Type.STRING,
+						enum: ["observation", "feelings", "needs", "request"],
+						description: 'The current Step of the Conversation'
+					}
+				},
+				required: ['currentStep']
+			}
+		}
+	};
+	const chat = ai.chats.create(model);
+	const result = await chat.sendMessage({ message });
+	const response = result.text;
+	const responseJson = JSON.parse(response || '{}');
+
+	state.currentStep = responseJson.currentStep
+
+	saveTrace(
+		'defineCurrentStep',
+		message,
+		'bullshift',
+		chatId,
+		userId,
+		response,
+		result,
+		systemInstruction
+	);
+
+	return state;
+};
+
+// Save State
+export const shouldSaveObservationTool = async (
+	message: string,
+	chatId: string,
+	userId: string,
+	state?: object
+): Promise<boolean> => {
+	const systemInstruction = `You are a tool in a chain of nonviolent communication ai steps. You are presented with a message and a state of a chat.You are responsible for identifying if extracting an observation in a message is needed. 
+	
+	The state you are working with is:
+
+	Please make sure to only return true if you think that all these criteria apply: 
+	- the observation is previously unknown
+      
+	For responding, you have the following rules:
+	- you always respond in your specified JSON schema 
+	- you only return a boolean value in the saveObservation field
+	`;
+
+	const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
+	const model = {
+		model: 'gemini-1.5-flash',
+		config: {
+			systemInstruction,
+			responseMimeType: 'application/json',
+			responseSchema: {
+				type: Type.OBJECT,
+				properties: {
+					saveObservation: {
+						type: Type.BOOLEAN,
+						description: 'Whether an observation should be extracted from the message'
+					}
+				},
+				required: ['saveObservation']
+			}
+		}
+	};
+	const chat = ai.chats.create(model);
+	const result = await chat.sendMessage({ message });
+	const response = result.text;
+	const responseJson = JSON.parse(response || '{}');
+
+	saveTrace(
+		'shouldSaveObservation',
+		message,
+		'bullshift',
+		chatId,
+		userId,
+		response,
+		result,
+		systemInstruction
+	);
+
+	return responseJson.saveObservation;
+};
+export const saveObservation = async (message: string, history: HistoryEntry[], chatId: string, userId: string, state: State) => {
+	const systemInstruction = `Your task is to guide the user through the observation step of the Nonviolent Communication (NVC) process. The user will tell you about a story or a situation. Your job is to extract the observation from the story.
+
+Goals:
+- Allow the user to vent and express their situation freely and naturally.
+- Gently explain the purpose of this step: clarifying the facts of what happened, without interpretation, judgment, or emotion.
+- Extract the observation: a clear, objective statement of the facts—just what was seen, heard, or otherwise perceived—according to NVC principles.
+
+Behavior:
+- Be empathetic and supportive while the user shares their situation.
+- Do NOT rush to interrupt or correct the user. Let them tell their story first.
+- After the user has shared enough, summarize the factual observation in a clear, neutral sentence.
+- If their description includes judgments, feelings, or assumptions, kindly rephrase it into an objective observation (e.g., instead of “My boss treated me unfairly,” focus on the fact: “Your boss told you your work was unsatisfactory in front of the team”).
+- If their description includes judgments, feelings, or assumptions, kindly rephrase it into an objective observation (e.g., instead of “My boss treated me unfairly,” focus on the fact: “Your boss told you your work was unsatisfactory in front of the team”).
+- if the user is not sharing a story, ask them what is on their mind.
+- if no observation can be made, don't save one and just respond to the user until something relevant comes up.
+
+Output:
+- Provide a brief, neutral summary of the observation to save to the database.
+- Optionally, explain briefly why this is the observation (to reinforce learning).
+- A response to send to the user.
+`
+
+const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
+	const model = {
+		model: 'gemini-1.5-flash',
+		config: {
+			systemInstruction,
+			responseMimeType: 'application/json',
+			responseSchema: {
+				type: Type.OBJECT,
+				properties: {
+					observation: {
+						type: Type.STRING,
+						description: 'The observation to save to the database'
+					},
+					observationExplanation: {
+						type: Type.STRING,
+						description: 'A short explanation of why this is the observation'
+					},
+					userResponse: {
+						type: Type.STRING,
+						description: 'The response of the user to the observation'
+					}
+				},
+				required: ['observation', 'observationExplanation', 'userResponse']
+			}
+		}
+	};
+	const chat = ai.chats.create(model);
+	const result = await chat.sendMessage({ message });
+	const response = result.text;
+	const responseJson = JSON.parse(response || '{}');
+
+	state.observation = responseJson.observation
+
+	console.log('saveObservation responseJson',responseJson);
+
+	saveTrace(
+		'saveObservation',
+		message,
+		'bullshift',
+		chatId,
+		userId,
+		response,
+		result,
+		systemInstruction
+	);
+
+	return {state, userResponse: responseJson.userResponse};
+};
+
 
 export const shouldAnalyzeFeelingsTool = async (
 	message: string,
@@ -280,7 +423,6 @@ export const shouldAnalyzeFeelingsTool = async (
 
 	return responseJson.needsAnalysis;
 };
-
 export const analyzeAndSaveFeelings = async (message: string, chatId: string, userId: string) => {
 	const feelings = await pb.collection('feelings').getFullList({
 		sort: 'category,sort'
