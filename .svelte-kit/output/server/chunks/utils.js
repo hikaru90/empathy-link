@@ -34,9 +34,7 @@ function get_store_value(store) {
 function compute_rest_props(props, keys) {
   const rest = {};
   keys = new Set(keys);
-  for (const k in props)
-    if (!keys.has(k) && k[0] !== "$")
-      rest[k] = props[k];
+  for (const k in props) if (!keys.has(k) && k[0] !== "$") rest[k] = props[k];
   return rest;
 }
 function null_to_empty(value) {
@@ -52,13 +50,13 @@ function split_css_unit(value) {
 }
 export {
   null_to_empty as a,
-  split_css_unit as b,
+  safe_not_equal as b,
   compute_rest_props as c,
   blank_object as d,
-  safe_not_equal as e,
-  is_function as f,
+  identity as e,
+  split_css_unit as f,
   get_store_value as g,
-  identity as i,
+  is_function as i,
   noop as n,
   run_all as r,
   subscribe as s

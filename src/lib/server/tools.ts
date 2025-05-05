@@ -6,6 +6,149 @@ import type { State } from '$routes/api/ai/bullshift/send/+server';
 import { z } from 'zod';
 import type { HistoryEntry } from '$routes/api/ai/selfempathy/initChat/+server';
 
+interface Chat {
+	id: string;
+	user: string;
+	module: string;
+	history: HistoryEntry[];
+	feelings: string[];
+	needs: string[];
+	memoryProcessed: boolean;
+	analyzed: boolean;
+	analysis: string;
+	created: string;
+	updated: string;
+}
+
+export const analyzeChat = async (chatId: string, userId: string) => {
+	try {
+
+		const chatRecord = await pb.collection('chats').getOne(chatId);
+		const concatenatedHistory = chatRecord.history
+			.map((chat: HistoryEntry) => JSON.stringify(chat))
+			.join('\n');
+
+			console.log('concatenatedHistory',concatenatedHistory);
+		const message = `
+      The chat history is:
+      ${concatenatedHistory}
+      `;
+
+		const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
+		const model = {
+			model: 'gemini-1.5-flash',
+			config: {
+				systemInstruction: `Your task is to analyze a completed chat session that follows the Nonviolent Communication (NVC) framework. The session consists of a conversation between a user and the AI, where the user works through a real-life situation by describing:
+			
+			- Observation (what happened)
+			- Feelings (emotions triggered)
+			- Needs (underlying needs)
+			- Request (desired outcome)
+
+			You must extract the following data from the full chat transcript:
+
+			1. title: A short, descriptive title summarizing the situation (max ~10 words).
+			2. observation: The factual observation as per NVC (objective, no judgment).
+			3. feelings: A list of distinct feelings the user expressed (single words, e.g., “angry”, “disappointed”).
+			4. needs: A list of distinct needs expressed (e.g., “recognition”, “security”).
+			5. request: The clearest actionable request made by the user (if any).
+
+			And compute the following numeric stats from the chat:
+			6. sentimentPolarity: Overall emotional polarity of the session (–1 = very negative, 0 = neutral, +1 = very positive).
+			7. intensityRatio: Proportion of high-intensity emotional expressions (0.0 to 1.0 scale).	
+			8. emotionalBalance: Ratio of positive to negative emotion mentions (float, e.g., 0.5 means 50% positive).
+			9. triggerCount: Number of distinct instances of conflict triggers or tension points (count of negative emotion peaks or conflict phrases).
+			10. resolutionCount: Number of messages where the user proposed or considered solutions or resolutions.
+			11. escalationRate: Proportion of messages that escalate emotional intensity or negativity (0.0 to 1.0 scale).
+			12. empathyRate: Proportion of messages where the user reflects, validates, or shows empathy toward others (0.0 to 1.0 scale).
+			13. messageLength: Average message length in words (float).
+			14. readabilityScore: Average readability score of the user’s messages (Flesch–Kincaid, float).
+
+			Important Notes:
+			- Keep feelings and needs lists concise (no duplicates, lowercase single words).
+			- Only save a request if a clear actionable request was made; otherwise return an empty string.
+			- The analysis should reflect only the user’s messages (ignore AI messages for emotional stats unless otherwise stated).
+			`,
+				responseMimeType: 'application/json',
+				responseSchema: {
+					type: Type.OBJECT,
+					properties: {
+						title: {
+							type: Type.STRING,
+							description: 'The title of the chat'
+						},
+						observation: {
+							type: Type.STRING,
+							description: 'The observation of the chat'
+						},
+						feelings: {
+							type: Type.ARRAY,
+							items: {
+								type: Type.STRING
+							}
+						},
+						needs: {
+							type: Type.ARRAY,
+							items: {
+								type: Type.STRING
+							}
+						},
+						request: {
+							type: Type.STRING,
+							description: 'The request of the chat'
+						},
+						sentimentPolarity: {
+							type: Type.NUMBER,
+							description: 'The sentiment polarity of the chat'
+						},
+						intensityRatio: {
+							type: Type.NUMBER,
+							description: 'The intensity ratio of the chat'
+						},
+						emotionalBalance: {
+							type: Type.NUMBER,
+							description: 'The emotional balance of the chat'
+						},
+						triggerCount: {
+							type: Type.NUMBER,
+							description: 'The trigger count of the chat'
+						},
+						resolutionCount: {
+							type: Type.NUMBER,
+							description: 'The resolution count of the chat'
+						},
+						escalationRate: {
+							type: Type.NUMBER,
+							description: 'The escalation rate of the chat'
+						},
+						empathyRate: {
+							type: Type.NUMBER,
+							description: 'The empathy rate of the chat'
+						},
+						messageLength: {
+							type: Type.NUMBER,
+							description: 'The message length of the chat'
+						},
+						readabilityScore: {
+							type: Type.NUMBER,
+							description: 'The readability score of the chat'
+						}
+					}
+				}
+			}
+		}
+		const chat = ai.chats.create(model);
+		const result = await chat.sendMessage({ message });
+		console.log('result',result);
+		const response = result.text;
+		const responseJson = JSON.parse(response || '{}');
+
+		return responseJson;
+	} catch (error) {
+		console.error('Error analyzing chat:', error);
+	}
+};
+
 // Memory Extraction
 export const extractMemories = async () => {
 	try {
@@ -191,11 +334,15 @@ export const saveTrace = async (
 		console.error('Error saving trace:', error);
 	}
 };
-export const tools = {
-};
+export const tools = {};
 
 //Get current step
-export const defineCurrentStep = async (message: string, chatId: string, userId: string, state: State):Promise<State> => {
+export const defineCurrentStep = async (
+	message: string,
+	chatId: string,
+	userId: string,
+	state: State
+): Promise<State> => {
 	const systemInstruction = `You are a tool in a chain of nonviolent communication ai steps. You are presented with a message and a state of a chat.You are responsible for defining the current step of the chat. Your Job is to check if based on the state and the message it is time to get to the next step.
 	
 	The state you are working with is:
@@ -221,7 +368,7 @@ export const defineCurrentStep = async (message: string, chatId: string, userId:
 				properties: {
 					currentStep: {
 						type: Type.STRING,
-						enum: ["observation", "feelings", "needs", "request"],
+						enum: ['observation', 'feelings', 'needs', 'request'],
 						description: 'The current Step of the Conversation'
 					}
 				},
@@ -234,7 +381,7 @@ export const defineCurrentStep = async (message: string, chatId: string, userId:
 	const response = result.text;
 	const responseJson = JSON.parse(response || '{}');
 
-	state.currentStep = responseJson.currentStep
+	state.currentStep = responseJson.currentStep;
 
 	saveTrace(
 		'defineCurrentStep',
@@ -305,7 +452,12 @@ export const shouldSaveObservationTool = async (
 
 	return responseJson.saveObservation;
 };
-export const saveObservation = async (message: string, history: HistoryEntry[], chatId: string, userId: string, state: State) => {
+export const saveObservation = async (
+	message: string,
+	chatId: string,
+	userId: string,
+	state: State
+) => {
 	const systemInstruction = `Your task is to guide the user through the observation step of the Nonviolent Communication (NVC) process. The user will tell you about a story or a situation. Your job is to extract the observation from the story.
 
 Goals:
@@ -326,9 +478,9 @@ Output:
 - Provide a brief, neutral summary of the observation to save to the database.
 - Optionally, explain briefly why this is the observation (to reinforce learning).
 - A response to send to the user.
-`
+`;
 
-const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
+	const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 	const model = {
 		model: 'gemini-1.5-flash',
 		config: {
@@ -344,13 +496,9 @@ const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 					observationExplanation: {
 						type: Type.STRING,
 						description: 'A short explanation of why this is the observation'
-					},
-					userResponse: {
-						type: Type.STRING,
-						description: 'The response of the user to the observation'
 					}
 				},
-				required: ['observation', 'observationExplanation', 'userResponse']
+				required: ['observation', 'observationExplanation']
 			}
 		}
 	};
@@ -359,9 +507,9 @@ const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 	const response = result.text;
 	const responseJson = JSON.parse(response || '{}');
 
-	state.observation = responseJson.observation
+	state.observation = responseJson.observation;
 
-	console.log('saveObservation responseJson',responseJson);
+	console.log('saveObservation responseJson', responseJson);
 
 	saveTrace(
 		'saveObservation',
@@ -374,9 +522,8 @@ const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 		systemInstruction
 	);
 
-	return {state, userResponse: responseJson.userResponse};
+	return { state };
 };
-
 
 export const shouldAnalyzeFeelingsTool = async (
 	message: string,

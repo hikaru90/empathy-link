@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { serializeNonPOJOs } from '$scripts/helpers';
 import { pb } from '$scripts/pocketbase'
 import { PUBLIC_POSTHOG_KEY } from '$env/static/public';
-import { messages, userId } from '$store/chatStore';
 import { redirect, type Handle } from '@sveltejs/kit';
 const client = 'empathy_link'
 import cron from 'node-cron';
@@ -29,7 +28,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	let posthogUserId = event.cookies.get(`${client}_user_id`);
 	if (!sessionToken) {
 		sessionToken = uuidv4();
-		event.cookies.set(`${client}_session_id`, sessionToken, {
+		event.cookies.set(`${client}_session_id`, sesspromptonToken, {
 			httpOnly: true,
 			sameSite: 'strict',
 			secure: true,

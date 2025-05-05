@@ -5,7 +5,6 @@
 	import { onMount, onDestroy } from 'svelte';
 
 	export let step: number;
-	export let stepName: string;
 	export let formSuccess: boolean;
 	export let speechBubbleContentArray: object[];
 	let speechBubbleIndex = 0;

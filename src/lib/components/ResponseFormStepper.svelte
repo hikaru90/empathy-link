@@ -11,7 +11,6 @@
 
 	let className: string | undefined = undefined;
 	export { className as class };
-	export let primaryButtonClass: string | undefined = undefined;
 
 	const toPrev = () => {
 		console.log('toPrev');

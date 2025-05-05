@@ -1,12 +1,11 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { ClientResponseError } from 'pocketbase';
-import { ai, bullshiftChats, sendMessage } from '$lib/server/gemini';
-import { HarmBlockThreshold, HarmCategory } from '@google/genai';
+import { bullshiftChats, initChat } from '$lib/server/gemini';
 import { pb } from '$scripts/pocketbase';
 import type { Content } from '@google/genai';
-import { initChat } from '$lib/server/gemini';
-
+import { analyzeChat } from '$lib/server/tools';
+import { z } from 'zod';
+import type { Chat } from '@google/genai';
 
 export interface HistoryEntry {
 	role: 'user' | 'model';
@@ -20,7 +19,7 @@ export interface HistoryEntryWithFirstUser {
 	length: number;
 }
 
-export interface DbChatSession extends ChatSession {
+export interface DbChatSession {
 	user: string; // User ID
 	module: string; // Module identifier
 	history: HistoryEntry[];
@@ -105,7 +104,38 @@ const chatExistsInMemory = (chatId: string) => {
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
-		const { user, locale } = await request.json();
+		console.log('analyzeChat server');
+		const { user, locale, chatId } = await request.json();
+
+		const analysis = await analyzeChat(chatId, user.id);
+		console.log('analysis', analysis);
+
+		const analysisSchema = z.object({
+			title: z.string(),
+			observation: z.string(),
+			feelings: z.array(z.string()),
+			needs: z.array(z.string()),
+			request: z.string(),
+			sentimentPolarity: z.number(),
+			intensityRatio: z.number(),
+			emotionalBalance: z.number(),
+			triggerCount: z.number(),
+			resolutionCount: z.number(),
+			escalationRate: z.number(),
+			empathyRate: z.number(),
+			messageLength: z.number(),
+			readabilityScore: z.number()
+		});
+
+		const validatedAnalysis = analysisSchema.parse(analysis);
+		if (!validatedAnalysis) {
+			throw new Error('Invalid analysis');
+		}
+
+		validatedAnalysis.user = user.id;
+		validatedAnalysis.chat = chatId;
+
+		const record = await pb.collection('analyses').create(validatedAnalysis);
 
 		const result = await initChat(user, locale);
 		return json(result);

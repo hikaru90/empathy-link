@@ -1,9 +1,18 @@
-import { json } from '@sveltejs/kit';
+import { json, text } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { bullshiftChats } from '$lib/server/gemini';
+import { bullshiftChats, getConfig, ai } from '$lib/server/gemini';
 import { pb } from '$scripts/pocketbase';
-import { shouldAnalyzeFeelingsTool, analyzeAndSaveFeelings, saveTrace, queueMemoryExtraction, shouldSaveObservationTool, defineCurrentStep, saveObservation } from '$lib/server/tools';
-import type { GenerateContentResponse } from '@google/genai';
+import {
+	shouldAnalyzeFeelingsTool,
+	analyzeAndSaveFeelings,
+	saveTrace,
+	queueMemoryExtraction,
+	shouldSaveObservationTool,
+	defineCurrentStep,
+	saveObservation
+} from '$lib/server/tools';
+import type { GenerateContentResponse, FunctionCallingConfigMode } from '@google/genai';
+import { user } from '$store/auth';
 
 export interface State {
 	currentStep: string;
@@ -15,6 +24,12 @@ export interface State {
 
 const sanitizeText = (text: string) => {
 	console.log('text', text);
+	if(text.includes('```json')) {
+		text = text.replace('```json', '').replace('```', '');
+	}
+	if(text.includes('```')) {
+		text = text.replace('```', '');
+	}
 	// Replace multiple newlines with single newline
 	let sanitized = text.replace(/\n{2,}/g, '\n');
 	// Replace multiple tabs with single tab
@@ -30,12 +45,11 @@ const initialState: State = {
 	feelings: [],
 	needs: [],
 	request: ''
-}
-
+};
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
-		const { chatId, message, userId, systemInstruction } = await request.json();
+		const { chatId, message, userId, systemInstruction, locale } = await request.json();
 
 		if (!chatId || !message) {
 			return json({ error: 'Missing required fields' }, { status: 400 });
@@ -45,53 +59,91 @@ export const POST: RequestHandler = async ({ request }) => {
 		if (!chatInMemory) {
 			return json({ error: 'Chat session not found' }, { status: 404 });
 		}
-		const chatInDb = await pb.collection('chats').getOne(chatId)
-		let state = chatInDb?.state || initialState
+		const chatInDb = await pb.collection('chats').getOne(chatId);
+		let state = chatInDb?.state || initialState;
 
-		await queueMemoryExtraction(userId, 'pending')
-
-		console.log('initial state', state);
-		state = await defineCurrentStep(message, chatId, userId, state)
-		console.log('state', state);
-
-		// switch (state.currentStep) {
-		// 	case 'observation':
-		// 		const {state: newState, userResponse} = await saveObservation(message, await chatInMemory.getHistory(), chatId, userId, state);
-		// 		state = newState
-		// 		console.log('userResponse',userResponse);
-		// 		break;
-		// 	case 'feelings':
-		// 		await analyzeAndSaveFeelings(message, chatId, userId);
-		// 		break;
-		// 	case 'needs':
-		// 		// await analyzeAndSaveNeeds(message, chatId, userId);
-		// 		break;
-		// 	case 'request':
-		// 		// await analyzeAndSaveRequest(message, chatId, userId);
-		// 		break;
-		// }
-
-		// const shouldSaveObservation = await shouldSaveObservationTool(message, chatId, userId, state);
-		// // if (shouldSaveObservation) {
-		// // 	await saveObservation(message, chatId, userId);
-		// // }
-
-		// const shouldAnalyzeFeelings = await shouldAnalyzeFeelingsTool(message, chatId, userId);
-		// if (shouldAnalyzeFeelings) {
-		// 	await analyzeAndSaveFeelings(message, chatId, userId);
-		// }
+		await queueMemoryExtraction(userId, 'pending');
 
 		// Send message and get response
-		const result: GenerateContentResponse = await chatInMemory.sendMessage({ message });
-		if (!result.text) throw new Error('No text in response');
-		const text = sanitizeText(result.text);
+		const response: GenerateContentResponse = await chatInMemory.sendMessage({ message });
+		if(!response.text) throw new Error('No text in response');
+		// const text = sanitizeText(response.text);
+
+		// if (response.functionCalls && response.functionCalls.length > 0) {
+		// 	//there was a function call
+		// 	for (const functionCall of response.functionCalls) {
+		// 		console.log('function called', functionCall);
+		// 		switch (functionCall.name) {
+		// 			case 'save_observation':
+		// 				const result = await saveObservation(
+		// 					functionCall!.args!.message as string,
+		// 					chatId,
+		// 					userId,
+		// 					state
+		// 				);
+		// 				if (!result) throw 'Error saving Observation';
+
+		// 				const toolOutputs = [
+		// 					{ role: 'model', parts: [{ functionCall }] },
+		// 					{
+		// 						role: 'user',
+		// 						parts: [
+		// 							{
+		// 								functionResponse: {
+		// 									name: functionCall.name,
+		// 									response: { result }
+		// 								}
+		// 							}
+		// 						]
+		// 					}
+		// 				];
+
+		// 				await chatInMemory.sendMessage({
+		// 					message: {
+		// 						functionCall
+		// 					}
+		// 				});
+		// 				const finalResponse: GenerateContentResponse = await chatInMemory.sendMessage({
+		// 					message: {
+		// 						functionResponse: {
+		// 							name: functionCall.name,
+		// 							response: { result }
+		// 						}
+		// 					}
+		// 				});
+		// 				console.log('finalResponse',JSON.stringify(finalResponse));
+		// 				if(!finalResponse.text) throw new Error('No text in response');
+		// 				text = sanitizeText(finalResponse.text);
+		// 				console.log('finalResponse in saveObservation', finalResponse);
+
+		// 				break;
+		// 			default:
+		// 				text = ''
+		// 				break;
+		// 		}
+		// 	}
+		// } else {
+		// 	//no function call
+		// 	console.log('No function call found in the response.');
+		// 	if(!response.text) throw new Error('No text in response');
+		// 	text = sanitizeText(response.text);
+		// }
+
 		await pb.collection('chats').update(chatId, { history: await chatInMemory.getHistory() });
 
-		console.log('systemInstruction', systemInstruction);
-		saveTrace('sendMessage', message, 'bullshift', chatId, userId, text, result, systemInstruction);
+		saveTrace(
+			'sendMessage',
+			message,
+			'bullshift',
+			chatId,
+			userId,
+			response.text,
+			response,
+			systemInstruction
+		);
 
 		return json({
-			response: text,
+			response: response.text,
 			timestamp: Date.now()
 		});
 	} catch (error) {

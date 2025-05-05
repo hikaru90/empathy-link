@@ -1,16 +1,19 @@
 import { g as get_store_value, c as compute_rest_props, s as subscribe } from "../../../../chunks/utils.js";
-import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute, e as escape, g as escape_attribute_value, v as validate_component, f as each } from "../../../../chunks/ssr.js";
-import { A as AppTopMenu, a as AppBottomMenu } from "../../../../chunks/AppBottomMenu.js";
+import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute, e as escape, g as escape_attribute_value, v as validate_component, b as each } from "../../../../chunks/ssr.js";
+import { A as AppTopMenu } from "../../../../chunks/AppTopMenu.js";
+import { A as AppBottomMenu } from "../../../../chunks/AppBottomMenu.js";
 import { s as setContext, g as getContext, c as createEventDispatcher } from "../../../../chunks/lifecycle.js";
 import { CalendarDateTime, CalendarDate, ZonedDateTime, parseZonedDateTime, parseDateTime, parseDate, getLocalTimeZone, getDayOfWeek, DateFormatter, startOfMonth, endOfMonth, isSameMonth, isSameDay, isToday } from "@internationalized/date";
-import { v as withGet, i as isBrowser, r as isHTMLElement, g as styleToString, o as omit, m as makeElement, k as addMeltEventListener, j as executeCallbacks, h as effect, l as kbd, n as createElHelpers, a as cn } from "../../../../chunks/page.js";
-import { i as chunk, t as toWritableStores, g as generateIds, o as overridable, j as isValidIndex, c as createBitAttrs, b as removeUndefined, d as getOptionUpdater, e as createDispatcher, f as buttonVariants } from "../../../../chunks/index3.js";
+import { w as withGet, i as isBrowser, a as isHTMLElement, s as styleToString, o as omit, m as makeElement, b as addMeltEventListener, e as executeCallbacks, d as effect, k as kbd, f as createElHelpers, c as cn } from "../../../../chunks/index3.js";
+import "dequal";
+import { c as chunk, t as toWritableStores, g as generateIds, o as overridable, i as isValidIndex, a as createBitAttrs, r as removeUndefined, b as getOptionUpdater, d as createDispatcher } from "../../../../chunks/dialog-close.js";
 import { w as writable, d as derived } from "../../../../chunks/index2.js";
 import { t as tick } from "../../../../chunks/scheduler.js";
+import { b as buttonVariants } from "../../../../chunks/index4.js";
 import { e as endDate, s as startDate } from "../../../../chunks/dashboard.js";
-import { R as Root, D as Dialog_content, a as Dialog_header, b as Dialog_title, c as Dialog_description } from "../../../../chunks/index6.js";
+import { R as Root, D as Dialog_content, a as Dialog_header, b as Dialog_title, c as Dialog_description } from "../../../../chunks/index9.js";
 import { t, l as locale } from "../../../../chunks/translations.js";
-import { B as Button } from "../../../../chunks/switch.js";
+import { B as Button } from "../../../../chunks/index5.js";
 import "clsx";
 import { S as Skeleton } from "../../../../chunks/skeleton.js";
 import { p as pb } from "../../../../chunks/pocketbase.js";
@@ -1258,52 +1261,29 @@ const Range_calendar$1 = create_ssr_component(($$result, $$props, $$bindings, sl
   const attrs = getAttrs("root");
   createDispatcher();
   let months = $localMonths;
-  if ($$props.placeholder === void 0 && $$bindings.placeholder && placeholder !== void 0)
-    $$bindings.placeholder(placeholder);
-  if ($$props.onPlaceholderChange === void 0 && $$bindings.onPlaceholderChange && onPlaceholderChange !== void 0)
-    $$bindings.onPlaceholderChange(onPlaceholderChange);
-  if ($$props.value === void 0 && $$bindings.value && value !== void 0)
-    $$bindings.value(value);
-  if ($$props.onValueChange === void 0 && $$bindings.onValueChange && onValueChange !== void 0)
-    $$bindings.onValueChange(onValueChange);
-  if ($$props.preventDeselect === void 0 && $$bindings.preventDeselect && preventDeselect !== void 0)
-    $$bindings.preventDeselect(preventDeselect);
-  if ($$props.minValue === void 0 && $$bindings.minValue && minValue !== void 0)
-    $$bindings.minValue(minValue);
-  if ($$props.maxValue === void 0 && $$bindings.maxValue && maxValue !== void 0)
-    $$bindings.maxValue(maxValue);
-  if ($$props.pagedNavigation === void 0 && $$bindings.pagedNavigation && pagedNavigation !== void 0)
-    $$bindings.pagedNavigation(pagedNavigation);
-  if ($$props.weekStartsOn === void 0 && $$bindings.weekStartsOn && weekStartsOn !== void 0)
-    $$bindings.weekStartsOn(weekStartsOn);
-  if ($$props.locale === void 0 && $$bindings.locale && locale2 !== void 0)
-    $$bindings.locale(locale2);
-  if ($$props.isDateUnavailable === void 0 && $$bindings.isDateUnavailable && isDateUnavailable !== void 0)
-    $$bindings.isDateUnavailable(isDateUnavailable);
-  if ($$props.isDateDisabled === void 0 && $$bindings.isDateDisabled && isDateDisabled !== void 0)
-    $$bindings.isDateDisabled(isDateDisabled);
-  if ($$props.disabled === void 0 && $$bindings.disabled && disabled !== void 0)
-    $$bindings.disabled(disabled);
-  if ($$props.readonly === void 0 && $$bindings.readonly && readonly !== void 0)
-    $$bindings.readonly(readonly);
-  if ($$props.fixedWeeks === void 0 && $$bindings.fixedWeeks && fixedWeeks !== void 0)
-    $$bindings.fixedWeeks(fixedWeeks);
-  if ($$props.calendarLabel === void 0 && $$bindings.calendarLabel && calendarLabel !== void 0)
-    $$bindings.calendarLabel(calendarLabel);
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.id === void 0 && $$bindings.id && id !== void 0)
-    $$bindings.id(id);
-  if ($$props.weekdayFormat === void 0 && $$bindings.weekdayFormat && weekdayFormat !== void 0)
-    $$bindings.weekdayFormat(weekdayFormat);
-  if ($$props.initialFocus === void 0 && $$bindings.initialFocus && initialFocus !== void 0)
-    $$bindings.initialFocus(initialFocus);
-  if ($$props.startValue === void 0 && $$bindings.startValue && startValue !== void 0)
-    $$bindings.startValue(startValue);
-  if ($$props.numberOfMonths === void 0 && $$bindings.numberOfMonths && numberOfMonths !== void 0)
-    $$bindings.numberOfMonths(numberOfMonths);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
+  if ($$props.placeholder === void 0 && $$bindings.placeholder && placeholder !== void 0) $$bindings.placeholder(placeholder);
+  if ($$props.onPlaceholderChange === void 0 && $$bindings.onPlaceholderChange && onPlaceholderChange !== void 0) $$bindings.onPlaceholderChange(onPlaceholderChange);
+  if ($$props.value === void 0 && $$bindings.value && value !== void 0) $$bindings.value(value);
+  if ($$props.onValueChange === void 0 && $$bindings.onValueChange && onValueChange !== void 0) $$bindings.onValueChange(onValueChange);
+  if ($$props.preventDeselect === void 0 && $$bindings.preventDeselect && preventDeselect !== void 0) $$bindings.preventDeselect(preventDeselect);
+  if ($$props.minValue === void 0 && $$bindings.minValue && minValue !== void 0) $$bindings.minValue(minValue);
+  if ($$props.maxValue === void 0 && $$bindings.maxValue && maxValue !== void 0) $$bindings.maxValue(maxValue);
+  if ($$props.pagedNavigation === void 0 && $$bindings.pagedNavigation && pagedNavigation !== void 0) $$bindings.pagedNavigation(pagedNavigation);
+  if ($$props.weekStartsOn === void 0 && $$bindings.weekStartsOn && weekStartsOn !== void 0) $$bindings.weekStartsOn(weekStartsOn);
+  if ($$props.locale === void 0 && $$bindings.locale && locale2 !== void 0) $$bindings.locale(locale2);
+  if ($$props.isDateUnavailable === void 0 && $$bindings.isDateUnavailable && isDateUnavailable !== void 0) $$bindings.isDateUnavailable(isDateUnavailable);
+  if ($$props.isDateDisabled === void 0 && $$bindings.isDateDisabled && isDateDisabled !== void 0) $$bindings.isDateDisabled(isDateDisabled);
+  if ($$props.disabled === void 0 && $$bindings.disabled && disabled !== void 0) $$bindings.disabled(disabled);
+  if ($$props.readonly === void 0 && $$bindings.readonly && readonly !== void 0) $$bindings.readonly(readonly);
+  if ($$props.fixedWeeks === void 0 && $$bindings.fixedWeeks && fixedWeeks !== void 0) $$bindings.fixedWeeks(fixedWeeks);
+  if ($$props.calendarLabel === void 0 && $$bindings.calendarLabel && calendarLabel !== void 0) $$bindings.calendarLabel(calendarLabel);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0) $$bindings.asChild(asChild);
+  if ($$props.id === void 0 && $$bindings.id && id !== void 0) $$bindings.id(id);
+  if ($$props.weekdayFormat === void 0 && $$bindings.weekdayFormat && weekdayFormat !== void 0) $$bindings.weekdayFormat(weekdayFormat);
+  if ($$props.initialFocus === void 0 && $$bindings.initialFocus && initialFocus !== void 0) $$bindings.initialFocus(initialFocus);
+  if ($$props.startValue === void 0 && $$bindings.startValue && startValue !== void 0) $$bindings.startValue(startValue);
+  if ($$props.numberOfMonths === void 0 && $$bindings.numberOfMonths && numberOfMonths !== void 0) $$bindings.numberOfMonths(numberOfMonths);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0) $$bindings.el(el);
   {
     if (id) {
       ids.calendar.set(id);
@@ -1396,14 +1376,10 @@ const Range_calendar_day$1 = create_ssr_component(($$result, $$props, $$bindings
   $$unsubscribe_isDateUnavailable = subscribe(isDateUnavailable, (value) => $isDateUnavailable = value);
   const attrs = getAttrs("day");
   createDispatcher();
-  if ($$props.date === void 0 && $$bindings.date && date !== void 0)
-    $$bindings.date(date);
-  if ($$props.month === void 0 && $$bindings.month && month !== void 0)
-    $$bindings.month(month);
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
+  if ($$props.date === void 0 && $$bindings.date && date !== void 0) $$bindings.date(date);
+  if ($$props.month === void 0 && $$bindings.month && month !== void 0) $$bindings.month(month);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0) $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0) $$bindings.el(el);
   builder = $cell(date, month);
   {
     Object.assign(builder, attrs);
@@ -1424,10 +1400,8 @@ const Range_calendar_grid$1 = create_ssr_component(($$result, $$props, $$binding
   const { elements: { grid }, getAttrs } = getCtx();
   $$unsubscribe_grid = subscribe(grid, (value) => $grid = value);
   const attrs = getAttrs("grid");
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0) $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0) $$bindings.el(el);
   builder = $grid;
   {
     Object.assign(builder, attrs);
@@ -1441,10 +1415,8 @@ const Range_calendar_grid_body$1 = create_ssr_component(($$result, $$props, $$bi
   let { el = void 0 } = $$props;
   const { getAttrs } = getCtx();
   const attrs = getAttrs("grid-body");
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0) $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0) $$bindings.el(el);
   return `${asChild ? `${slots.default ? slots.default({ attrs }) : ``}` : `<tbody${spread([escape_object($$restProps), escape_object(attrs)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({}) : ``}</tbody>`}`;
 });
 const Range_calendar_cell$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -1458,12 +1430,9 @@ const Range_calendar_cell$1 = create_ssr_component(($$result, $$props, $$binding
   const { helpers: { isDateDisabled, isDateUnavailable }, getAttrs } = getCtx();
   $$unsubscribe_isDateDisabled = subscribe(isDateDisabled, (value) => $isDateDisabled = value);
   $$unsubscribe_isDateUnavailable = subscribe(isDateUnavailable, (value) => $isDateUnavailable = value);
-  if ($$props.date === void 0 && $$bindings.date && date !== void 0)
-    $$bindings.date(date);
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
+  if ($$props.date === void 0 && $$bindings.date && date !== void 0) $$bindings.date(date);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0) $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0) $$bindings.el(el);
   attrs = {
     ...getAttrs("cell"),
     "aria-disabled": $isDateDisabled(date) || $isDateUnavailable(date),
@@ -1482,10 +1451,8 @@ const Range_calendar_grid_head$1 = create_ssr_component(($$result, $$props, $$bi
     ...getAttrs("grid-head"),
     "aria-hidden": true
   };
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0) $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0) $$bindings.el(el);
   return `${asChild ? `${slots.default ? slots.default({ attrs }) : ``}` : `<thead${spread([escape_object($$restProps), escape_object(attrs)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({}) : ``}</thead>`}`;
 });
 const Range_calendar_head_cell$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -1494,10 +1461,8 @@ const Range_calendar_head_cell$1 = create_ssr_component(($$result, $$props, $$bi
   let { el = void 0 } = $$props;
   const { getAttrs } = getCtx();
   const attrs = getAttrs("head-cell");
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0) $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0) $$bindings.el(el);
   return `${asChild ? `${slots.default ? slots.default({ attrs }) : ``}` : `<th${spread([escape_object($$restProps), escape_object(attrs)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({}) : ``}</th>`}`;
 });
 const Range_calendar_grid_row$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -1506,10 +1471,8 @@ const Range_calendar_grid_row$1 = create_ssr_component(($$result, $$props, $$bin
   let { el = void 0 } = $$props;
   const { getAttrs } = getCtx();
   const attrs = getAttrs("grid-row");
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0) $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0) $$bindings.el(el);
   return `${asChild ? `${slots.default ? slots.default({ attrs }) : ``}` : `<tr${spread([escape_object($$restProps), escape_object(attrs)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({ attrs }) : ``}</tr>`}`;
 });
 const Range_calendar_header$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -1518,10 +1481,8 @@ const Range_calendar_header$1 = create_ssr_component(($$result, $$props, $$bindi
   let { el = void 0 } = $$props;
   const { getAttrs } = getCtx();
   const attrs = getAttrs("header");
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0) $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0) $$bindings.el(el);
   return `${asChild ? `${slots.default ? slots.default({ attrs }) : ``}` : `<header${spread([escape_object($$restProps), escape_object(attrs)], {})}${add_attribute("this", el, 0)}>${slots.default ? slots.default({ attrs }) : ``}</header>`}`;
 });
 const Range_calendar_heading$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -1535,10 +1496,8 @@ const Range_calendar_heading$1 = create_ssr_component(($$result, $$props, $$bind
   $$unsubscribe_heading = subscribe(heading, (value) => $heading = value);
   $$unsubscribe_headingValue = subscribe(headingValue, (value) => $headingValue = value);
   const attrs = getAttrs("heading");
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0) $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0) $$bindings.el(el);
   builder = $heading;
   {
     Object.assign(builder, attrs);
@@ -1557,10 +1516,8 @@ const Range_calendar_next_button$1 = create_ssr_component(($$result, $$props, $$
   $$unsubscribe_nextButton = subscribe(nextButton, (value) => $nextButton = value);
   const attrs = getAttrs("next-button");
   createDispatcher();
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0) $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0) $$bindings.el(el);
   builder = $nextButton;
   {
     Object.assign(builder, attrs);
@@ -1578,10 +1535,8 @@ const Range_calendar_prev_button$1 = create_ssr_component(($$result, $$props, $$
   $$unsubscribe_prevButton = subscribe(prevButton, (value) => $prevButton = value);
   const attrs = getAttrs("prev-button");
   createDispatcher();
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0) $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0) $$bindings.el(el);
   builder = $prevButton;
   {
     Object.assign(builder, attrs);
@@ -1597,16 +1552,11 @@ const ChevronRight = create_ssr_component(($$result, $$props, $$bindings, slots)
   let { color = ctx.color || "currentColor" } = $$props;
   let { ariaLabel = "chevron right," } = $$props;
   let { withEvents = false } = $$props;
-  if ($$props.size === void 0 && $$bindings.size && size !== void 0)
-    $$bindings.size(size);
-  if ($$props.role === void 0 && $$bindings.role && role !== void 0)
-    $$bindings.role(role);
-  if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-    $$bindings.color(color);
-  if ($$props.ariaLabel === void 0 && $$bindings.ariaLabel && ariaLabel !== void 0)
-    $$bindings.ariaLabel(ariaLabel);
-  if ($$props.withEvents === void 0 && $$bindings.withEvents && withEvents !== void 0)
-    $$bindings.withEvents(withEvents);
+  if ($$props.size === void 0 && $$bindings.size && size !== void 0) $$bindings.size(size);
+  if ($$props.role === void 0 && $$bindings.role && role !== void 0) $$bindings.role(role);
+  if ($$props.color === void 0 && $$bindings.color && color !== void 0) $$bindings.color(color);
+  if ($$props.ariaLabel === void 0 && $$bindings.ariaLabel && ariaLabel !== void 0) $$bindings.ariaLabel(ariaLabel);
+  if ($$props.withEvents === void 0 && $$bindings.withEvents && withEvents !== void 0) $$bindings.withEvents(withEvents);
   return `${withEvents ? `<svg${spread(
     [
       { width: escape_attribute_value(size) },
@@ -1645,16 +1595,11 @@ const Calendar = create_ssr_component(($$result, $$props, $$bindings, slots) => 
   let { color = ctx.color || "currentColor" } = $$props;
   let { ariaLabel = "calendar," } = $$props;
   let { withEvents = false } = $$props;
-  if ($$props.size === void 0 && $$bindings.size && size !== void 0)
-    $$bindings.size(size);
-  if ($$props.role === void 0 && $$bindings.role && role !== void 0)
-    $$bindings.role(role);
-  if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-    $$bindings.color(color);
-  if ($$props.ariaLabel === void 0 && $$bindings.ariaLabel && ariaLabel !== void 0)
-    $$bindings.ariaLabel(ariaLabel);
-  if ($$props.withEvents === void 0 && $$bindings.withEvents && withEvents !== void 0)
-    $$bindings.withEvents(withEvents);
+  if ($$props.size === void 0 && $$bindings.size && size !== void 0) $$bindings.size(size);
+  if ($$props.role === void 0 && $$bindings.role && role !== void 0) $$bindings.role(role);
+  if ($$props.color === void 0 && $$bindings.color && color !== void 0) $$bindings.color(color);
+  if ($$props.ariaLabel === void 0 && $$bindings.ariaLabel && ariaLabel !== void 0) $$bindings.ariaLabel(ariaLabel);
+  if ($$props.withEvents === void 0 && $$bindings.withEvents && withEvents !== void 0) $$bindings.withEvents(withEvents);
   return `${withEvents ? `<svg${spread(
     [
       { width: escape_attribute_value(size) },
@@ -1692,16 +1637,11 @@ const Range_calendar = create_ssr_component(($$result, $$props, $$bindings, slot
   let { weekdayFormat = "short" } = $$props;
   let { startValue = void 0 } = $$props;
   let { class: className = void 0 } = $$props;
-  if ($$props.value === void 0 && $$bindings.value && value !== void 0)
-    $$bindings.value(value);
-  if ($$props.placeholder === void 0 && $$bindings.placeholder && placeholder !== void 0)
-    $$bindings.placeholder(placeholder);
-  if ($$props.weekdayFormat === void 0 && $$bindings.weekdayFormat && weekdayFormat !== void 0)
-    $$bindings.weekdayFormat(weekdayFormat);
-  if ($$props.startValue === void 0 && $$bindings.startValue && startValue !== void 0)
-    $$bindings.startValue(startValue);
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.value === void 0 && $$bindings.value && value !== void 0) $$bindings.value(value);
+  if ($$props.placeholder === void 0 && $$bindings.placeholder && placeholder !== void 0) $$bindings.placeholder(placeholder);
+  if ($$props.weekdayFormat === void 0 && $$bindings.weekdayFormat && weekdayFormat !== void 0) $$bindings.weekdayFormat(weekdayFormat);
+  if ($$props.startValue === void 0 && $$bindings.startValue && startValue !== void 0) $$bindings.startValue(startValue);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   let $$settled;
   let $$rendered;
   let previous_head = $$result.head;
@@ -1782,10 +1722,8 @@ const Range_calendar_cell = create_ssr_component(($$result, $$props, $$bindings,
   let $$restProps = compute_rest_props($$props, ["date", "class"]);
   let { date } = $$props;
   let { class: className = void 0 } = $$props;
-  if ($$props.date === void 0 && $$bindings.date && date !== void 0)
-    $$bindings.date(date);
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.date === void 0 && $$bindings.date && date !== void 0) $$bindings.date(date);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   return `${validate_component(Range_calendar_cell$1, "RangeCalendarPrimitive.Cell").$$render(
     $$result,
     Object.assign(
@@ -1809,12 +1747,9 @@ const Range_calendar_day = create_ssr_component(($$result, $$props, $$bindings, 
   let { date } = $$props;
   let { month } = $$props;
   let { class: className = void 0 } = $$props;
-  if ($$props.date === void 0 && $$bindings.date && date !== void 0)
-    $$bindings.date(date);
-  if ($$props.month === void 0 && $$bindings.month && month !== void 0)
-    $$bindings.month(month);
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.date === void 0 && $$bindings.date && date !== void 0) $$bindings.date(date);
+  if ($$props.month === void 0 && $$bindings.month && month !== void 0) $$bindings.month(month);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   return `${validate_component(Range_calendar_day$1, "RangeCalendarPrimitive.Day").$$render(
     $$result,
     Object.assign(
@@ -1853,8 +1788,7 @@ const Range_calendar_day = create_ssr_component(($$result, $$props, $$bindings, 
 const Range_calendar_grid = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
   let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   return `${validate_component(Range_calendar_grid$1, "RangeCalendarPrimitive.Grid").$$render(
     $$result,
     Object.assign(
@@ -1875,8 +1809,7 @@ const Range_calendar_grid = create_ssr_component(($$result, $$props, $$bindings,
 const Range_calendar_header = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
   let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   return `${validate_component(Range_calendar_header$1, "RangeCalendarPrimitive.Header").$$render(
     $$result,
     Object.assign(
@@ -1897,8 +1830,7 @@ const Range_calendar_header = create_ssr_component(($$result, $$props, $$binding
 const Range_calendar_months = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
   let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   return `<div${spread(
     [
       {
@@ -1912,8 +1844,7 @@ const Range_calendar_months = create_ssr_component(($$result, $$props, $$binding
 const Range_calendar_grid_row = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
   let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   return `${validate_component(Range_calendar_grid_row$1, "RangeCalendarPrimitive.GridRow").$$render($$result, Object.assign({}, { class: cn("flex", className) }, $$restProps), {}, {
     default: () => {
       return `${slots.default ? slots.default({}) : ``}`;
@@ -1923,8 +1854,7 @@ const Range_calendar_grid_row = create_ssr_component(($$result, $$props, $$bindi
 const Range_calendar_heading = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
   let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   return `${validate_component(Range_calendar_heading$1, "RangeCalendarPrimitive.Heading").$$render(
     $$result,
     Object.assign(
@@ -1945,8 +1875,7 @@ const Range_calendar_heading = create_ssr_component(($$result, $$props, $$bindin
 const Range_calendar_grid_body = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
   let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   return `${validate_component(Range_calendar_grid_body$1, "RangeCalendarPrimitive.GridBody").$$render($$result, Object.assign({}, { class: cn(className) }, $$restProps), {}, {
     default: () => {
       return `${slots.default ? slots.default({}) : ``}`;
@@ -1956,8 +1885,7 @@ const Range_calendar_grid_body = create_ssr_component(($$result, $$props, $$bind
 const Range_calendar_grid_head = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
   let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   return `${validate_component(Range_calendar_grid_head$1, "RangeCalendarPrimitive.GridHead").$$render($$result, Object.assign({}, { class: cn(className) }, $$restProps), {}, {
     default: () => {
       return `${slots.default ? slots.default({}) : ``}`;
@@ -1967,8 +1895,7 @@ const Range_calendar_grid_head = create_ssr_component(($$result, $$props, $$bind
 const Range_calendar_head_cell = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
   let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   return `${validate_component(Range_calendar_head_cell$1, "RangeCalendarPrimitive.HeadCell").$$render(
     $$result,
     Object.assign(
@@ -1989,8 +1916,7 @@ const Range_calendar_head_cell = create_ssr_component(($$result, $$props, $$bind
 const Range_calendar_next_button = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
   let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   return `${validate_component(Range_calendar_next_button$1, "RangeCalendarPrimitive.NextButton").$$render(
     $$result,
     Object.assign(
@@ -2016,16 +1942,11 @@ const ChevronLeft = create_ssr_component(($$result, $$props, $$bindings, slots) 
   let { color = ctx.color || "currentColor" } = $$props;
   let { ariaLabel = "chevron left," } = $$props;
   let { withEvents = false } = $$props;
-  if ($$props.size === void 0 && $$bindings.size && size !== void 0)
-    $$bindings.size(size);
-  if ($$props.role === void 0 && $$bindings.role && role !== void 0)
-    $$bindings.role(role);
-  if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-    $$bindings.color(color);
-  if ($$props.ariaLabel === void 0 && $$bindings.ariaLabel && ariaLabel !== void 0)
-    $$bindings.ariaLabel(ariaLabel);
-  if ($$props.withEvents === void 0 && $$bindings.withEvents && withEvents !== void 0)
-    $$bindings.withEvents(withEvents);
+  if ($$props.size === void 0 && $$bindings.size && size !== void 0) $$bindings.size(size);
+  if ($$props.role === void 0 && $$bindings.role && role !== void 0) $$bindings.role(role);
+  if ($$props.color === void 0 && $$bindings.color && color !== void 0) $$bindings.color(color);
+  if ($$props.ariaLabel === void 0 && $$bindings.ariaLabel && ariaLabel !== void 0) $$bindings.ariaLabel(ariaLabel);
+  if ($$props.withEvents === void 0 && $$bindings.withEvents && withEvents !== void 0) $$bindings.withEvents(withEvents);
   return `${withEvents ? `<svg${spread(
     [
       { width: escape_attribute_value(size) },
@@ -2059,8 +1980,7 @@ const ChevronLeft = create_ssr_component(($$result, $$props, $$bindings, slots) 
 const Range_calendar_prev_button = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
   let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   return `${validate_component(Range_calendar_prev_button$1, "RangeCalendarPrimitive.PrevButton").$$render(
     $$result,
     Object.assign(
@@ -2091,10 +2011,8 @@ const DaterangePicker = create_ssr_component(($$result, $$props, $$bindings, slo
   let { popoverOpen = false } = $$props;
   let value = { start: $startDate, end: $endDate };
   let startValue = void 0;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
-  if ($$props.popoverOpen === void 0 && $$bindings.popoverOpen && popoverOpen !== void 0)
-    $$bindings.popoverOpen(popoverOpen);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
+  if ($$props.popoverOpen === void 0 && $$bindings.popoverOpen && popoverOpen !== void 0) $$bindings.popoverOpen(popoverOpen);
   let $$settled;
   let $$rendered;
   let previous_head = $$result.head;
@@ -2102,8 +2020,7 @@ const DaterangePicker = create_ssr_component(($$result, $$props, $$bindings, slo
     $$settled = true;
     $$result.head = previous_head;
     {
-      if (value?.start, value?.end)
-        dispatch("rangeChanged", value);
+      if (value?.start, value?.end) dispatch("rangeChanged", value);
     }
     $$rendered = `<div${add_attribute("class", cn(className, "relative grid w-full gap-2"), 0)}> <button>${validate_component(Button, "Button").$$render(
       $$result,
@@ -2189,7 +2106,7 @@ const DaterangePicker = create_ssr_component(($$result, $$props, $$bindings, slo
 });
 const css$2 = {
   code: ".skeumorphic-button.svelte-5cv73o{transition:box-shadow 50ms;box-shadow:var(--skeumorphic-shadow-light)}",
-  map: null
+  map: `{"version":3,"file":"FightOverview.svelte","sources":["FightOverview.svelte"],"sourcesContent":["<script lang=\\"ts\\">import * as Table from \\"$lib/components/ui/table\\";\\nimport { Skeleton } from \\"$lib/components/ui/skeleton\\";\\nimport { onMount } from \\"svelte\\";\\nimport { pb } from \\"$scripts/pocketbase\\";\\nimport { t, locale } from \\"$lib/translations\\";\\nimport { startDate, endDate } from \\"$store/dashboard\\";\\nimport { goto } from \\"$app/navigation\\";\\nimport { user } from \\"$store/auth\\";\\nlet initialized = false;\\nlet pending = true;\\nlet records = [];\\nconst fetchData = async () => {\\n  const filter = \`owner = '\${$user.id}' && created >= \\"\${$startDate.toString()} 00:00:00\\" && created < \\"\${$endDate.add({ days: 1 }).toString()} 00:00:00\\"\`;\\n  console.log(\\"filter\\", filter);\\n  records = await pb.collection(\\"fights\\").getFullList({\\n    filter,\\n    sort: \\"-updated\\",\\n    expand: \\"responses\\"\\n  });\\n};\\nendDate.subscribe(async () => {\\n  console.log(\\"endDate changed -> fetching data\\");\\n  pending = true;\\n  await fetchData();\\n  setTimeout(() => {\\n    pending = false;\\n  }, 200);\\n});\\nconst gotoFight = (id) => {\\n  console.log(\\"gotoFight\\");\\n  goto(\`/app/fights/\${id}\`);\\n};\\nonMount(async () => {\\n  await fetchData();\\n  initialized = true;\\n  pending = false;\\n  console.log(\\"$user\\", $user);\\n});\\n<\/script>\\r\\n\\r\\n{#if !initialized}\\r\\n\\t<Skeleton class=\\"h-[20px] w-[100px] rounded-full\\" />\\r\\n{:else}\\r\\n<div class=\\"relative z-0\\">\\r\\n\\t<div style=\\"background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);\\" class=\\"absolute left-0 top-20 w-[500px] h-[500px] z-0 transform -translate-x-1/2 -translate-y-1/2 dark:opacity-10\\"></div>\\r\\n</div>\\r\\n\\t<div class=\\"relative z-10\\">\\r\\n\\t\\t<div\\r\\n\\t\\t\\tclass=\\"rounded-t-xl border-b border-black/5 bg-almostwhite dark:bg-muted px-5 pb-3 pt-4 shadow-2xl shadow-black/10\\"\\r\\n\\t\\t>\\r\\n\\t\\t\\t<h2 class=\\"text-md mb-2 font-bold\\">\\r\\n\\t\\t\\t\\t{$t('default.page.dashboard.fights.tableCaption')}\\r\\n\\t\\t\\t</h2>\\r\\n\\t\\t\\t<div class=\\"flex items-center text-2xs\\">\\r\\n\\t\\t\\t\\t<div class=\\"w-1/6\\">\\r\\n\\t\\t\\t\\t\\t{$t('default.page.dashboard.fights.table.round')}\\r\\n\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t<div class=\\"w-1/3\\">\\r\\n\\t\\t\\t\\t\\t{$t('default.page.dashboard.fights.table.partner')}\\r\\n\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t<div class=\\"w-1/4\\">\\r\\n\\t\\t\\t\\t\\t{$t('default.page.dashboard.fights.table.date')}\\r\\n\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t<div class=\\"w-1/6\\">\\r\\n\\t\\t\\t\\t\\t{$t('default.page.dashboard.fights.table.opened')}\\r\\n\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t<div class=\\"w-1/6\\"></div>\\r\\n\\t\\t\\t</div>\\r\\n\\t\\t</div>\\r\\n\\t\\t<div class=\\"rounded-b-xl bg-almostwhite dark:bg-muted px-4 pb-3 pt-2 shadow-2xl shadow-black/10\\">\\r\\n\\t\\t\\t{#each records as record}\\r\\n\\t\\t\\t\\t<button on:click={gotoFight(record.id)} class=\\"group w-full text-left flex items-center border-b border-black/5 py-2 sm:py-3 text-xs last:border-b-0\\">\\r\\n\\t\\t\\t\\t\\t<div class=\\"flex w-1/6\\">\\r\\n\\t\\t\\t\\t\\t\\t<div class=\\"scale-75 transform rounded-full bg-black/5 px-2.5 text-2xs font-bold\\">\\r\\n\\t\\t\\t\\t\\t\\t\\t{record.responses?.length + 1}\\r\\n\\t\\t\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t\\t<div class=\\"w-1/3 overflow-hidden mr-2 whitespace-nowrap\\">\\r\\n\\t\\t\\t\\t\\t\\t{record.name}\\r\\n\\t\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t\\t<div class=\\"w-1/4\\">\\r\\n\\t\\t\\t\\t\\t\\t{new Intl.DateTimeFormat('de-DE', {\\r\\n\\t\\t\\t\\t\\t\\t\\tmonth: 'short',\\r\\n\\t\\t\\t\\t\\t\\t\\tday: 'numeric'\\r\\n\\t\\t\\t\\t\\t\\t\\t// year: 'numeric',\\r\\n\\t\\t\\t\\t\\t\\t}).format(new Date(record.created))}\\r\\n\\t\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t\\t<div class=\\"w-1/6\\">\\r\\n\\t\\t\\t\\t\\t\\t{#if record.opened}\\r\\n\\t\\t\\t\\t\\t\\t\\t<Check class=\\"w-3 h-3 text-black dark:text-neon\\" />\\r\\n\\t\\t\\t\\t\\t\\t\\t{:else}\\r\\n\\t\\t\\t\\t\\t\\t\\t<Cross2 class=\\"w-3 h-3 text-black dark:text-neon\\" />\\r\\n\\t\\t\\t\\t\\t\\t{/if}\\r\\n\\t\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t\\t<div class=\\"w-1/6 flex justify-end\\">\\r\\n\\t\\t\\t\\t\\t\\t<div class=\\"skeumorphic-button rounded-full p-0.5\\">\\r\\n\\t\\t\\t\\t\\t\\t\\t<CaretRight class=\\"h-4 w-4 rounded-full group-hover:bg-neutral-300 group-hover:text-black\\" />\\r\\n\\t\\t\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t</button>\\r\\n\\t\\t\\t{/each}\\r\\n\\t\\t</div>\\r\\n\\t</div>\\r\\n{/if}\\r\\n\\r\\n<style lang=\\"scss\\">.skeumorphic-button {\\n  transition: box-shadow 50ms;\\n  box-shadow: var(--skeumorphic-shadow-light);\\n}</style>"],"names":[],"mappings":"AAyGmB,iCAAoB,CACrC,UAAU,CAAE,UAAU,CAAC,IAAI,CAC3B,UAAU,CAAE,IAAI,0BAA0B,CAC5C"}`
 };
 const FightOverview = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $user, $$unsubscribe_user;
@@ -2226,8 +2143,8 @@ const FightOverview = create_ssr_component(($$result, $$props, $$bindings, slots
   return `${`${validate_component(Skeleton, "Skeleton").$$render($$result, { class: "h-[20px] w-[100px] rounded-full" }, {}, {})}`}`;
 });
 const css$1 = {
-  code: ".solid-button{border-width:2px;border-color:hsl(var(--feelings-foreground) / 0);background-color:hsl(var(--feelings-foreground) / 0.6)\n}.solid-button:hover{border-color:hsl(var(--feelings-foreground) / 0.6);--tw-bg-opacity:1;background-color:hsl(var(--feelings-foreground) / var(--tw-bg-opacity))\n}.border-button{border-width:2px;border-color:hsl(var(--feelings-foreground) / 0.6);background-color:transparent;color:hsl(var(--feelings-foreground) / 0.6)\n}.border-button:hover{--tw-border-opacity:1;border-color:hsl(var(--feelings-foreground) / var(--tw-border-opacity));background-color:transparent;--tw-text-opacity:1;color:hsl(var(--feelings-foreground) / var(--tw-text-opacity))\n}",
-  map: null
+  code: ".solid-button{border-width:2px;border-color:hsl(var(--feelings-foreground) / 0);background-color:hsl(var(--feelings-foreground) / 0.6)\n}.solid-button:hover{border-color:hsl(var(--feelings-foreground) / 0.6);--tw-bg-opacity:1;background-color:hsl(var(--feelings-foreground) / var(--tw-bg-opacity, 1))\n}.border-button{border-width:2px;border-color:hsl(var(--feelings-foreground) / 0.6);background-color:transparent;color:hsl(var(--feelings-foreground) / 0.6)\n}.border-button:hover{--tw-border-opacity:1;border-color:hsl(var(--feelings-foreground) / var(--tw-border-opacity, 1));background-color:transparent;--tw-text-opacity:1;color:hsl(var(--feelings-foreground) / var(--tw-text-opacity, 1))\n}",
+  map: `{"version":3,"file":"FeelingsOverview.svelte","sources":["FeelingsOverview.svelte"],"sourcesContent":["<script lang=\\"ts\\">import * as Table from \\"$lib/components/ui/table\\";\\nimport { Skeleton } from \\"$lib/components/ui/skeleton\\";\\nimport { Button } from \\"$lib/components/ui/button\\";\\nimport { onMount } from \\"svelte\\";\\nimport { pb } from \\"$scripts/pocketbase\\";\\nimport { t, locale } from \\"$lib/translations\\";\\nimport { startDate, endDate } from \\"$store/dashboard\\";\\nimport { goto } from \\"$app/navigation\\";\\nimport { user } from \\"$store/auth\\";\\nimport { groupBy, sortByKey, generateHslaColors } from \\"$scripts/helpers\\";\\nimport Donut from \\"$lib/components/Donut.svelte\\";\\nlet initialized = false;\\nlet pending = true;\\nlet feelings = [];\\nlet colors = [];\\nlet displayPositiveFeelings = false;\\n$: data = feelings.map((entry) => {\\n  return {\\n    name: $locale === \\"en\\" ? entry.feeling.nameEN : entry.feeling.nameDE,\\n    count: entry.count\\n  };\\n});\\nconst fetchData = async () => {\\n  const filter = \`owner = '\${$user.id}' && created >= \\"\${$startDate.toString()} 00:00:00\\" && created < \\"\${$endDate.add({ days: 1 }).toString()} 00:00:00\\"\`;\\n  console.log(\\"filter\\", filter);\\n  const fights = await pb.collection(\\"fights\\").getFullList({\\n    filter,\\n    sort: \\"-updated\\",\\n    expand: \\"feelings\\",\\n    requestKey: \\"feelings\\"\\n  });\\n  const unsortedFeelings = groupFeelings(\\n    fights.map((entry) => entry.expand.feelings).flat(Infinity),\\n    \\"id\\"\\n  );\\n  feelings = sortByKey(unsortedFeelings, \\"count\\");\\n  console.log(\\"feelings.length\\", feelings.length);\\n  colors = generateHslaColors(1, 100, 56, feelings.length);\\n  console.log(\\"feelings\\", feelings);\\n};\\nendDate.subscribe(async () => {\\n  console.log(\\"endDate changed -> fetching data\\");\\n  pending = true;\\n  await fetchData();\\n  setTimeout(() => {\\n    pending = false;\\n  }, 200);\\n});\\nconst groupFeelings = (array, key) => {\\n  return Object.entries(\\n    array.reduce((result, currentValue) => {\\n      const groupKey = currentValue[key];\\n      result[groupKey] = result[groupKey] || [];\\n      result[groupKey].push(currentValue);\\n      return result;\\n    }, {})\\n  ).map(([feelingId, content]) => ({ feeling: content[0], count: content.length }));\\n};\\nconst gotoFight = (id) => {\\n  console.log(\\"gotoFight\\");\\n  goto(\`/app/fights/\${id}\`);\\n};\\nonMount(async () => {\\n  await fetchData();\\n  initialized = true;\\n  pending = false;\\n  console.log(\\"$user\\", $user);\\n});\\n<\/script>\\r\\n\\r\\n{#if !initialized}\\r\\n\\t<Skeleton class=\\"h-[20px] w-[100px] rounded-full\\" />\\r\\n{:else}\\r\\n\\t<div class=\\"relative\\">\\r\\n\\t\\t<div\\r\\n\\t\\t\\tstyle=\\"background: radial-gradient(circle at center, hsl(var(--feelings-background) / 1), transparent 67%);\\"\\r\\n\\t\\t\\tclass=\\"absolute right-0 top-60 z-0 h-[800px] w-[800px] translate-x-1/2 -translate-y-1/2 transform dark:opacity-40\\"\\r\\n\\t\\t></div>\\r\\n\\t\\t<div\\r\\n\\t\\t\\tclass=\\"relative z-10 rounded-lg bg-feelings-background dark:bg-muted text-feelings-foreground shadow-2xl shadow-black/10\\"\\r\\n\\t\\t>\\r\\n\\t\\t\\t<div class=\\"flex items-center justify-between px-4 pb-2 pt-3\\">\\r\\n\\t\\t\\t\\t<h2 class=\\"text-md mb-2 font-bold\\">\\r\\n\\t\\t\\t\\t\\t{$t('default.page.dashboard.feelings.heading')}\\r\\n\\t\\t\\t\\t</h2>\\r\\n\\t\\t\\t\\t<div class=\\"flex items-center gap-2\\">\\r\\n\\t\\t\\t\\t\\t<Button\\r\\n\\t\\t\\t\\t\\t\\ton:click={() => (displayPositiveFeelings = false)}\\r\\n\\t\\t\\t\\t\\t\\tclass=\\"{displayPositiveFeelings === false\\r\\n\\t\\t\\t\\t\\t\\t\\t? 'solid-button text-white'\\r\\n\\t\\t\\t\\t\\t\\t\\t: 'border-button'} h-7 rounded-full px-4 leading-tight transition\\"\\r\\n\\t\\t\\t\\t\\t>\\r\\n\\t\\t\\t\\t\\t\\t{$t('default.page.dashboard.feelings.negative')}\\r\\n\\t\\t\\t\\t\\t</Button>\\r\\n\\t\\t\\t\\t\\t<Button\\r\\n\\t\\t\\t\\t\\t\\ton:click={() => (displayPositiveFeelings = true)}\\r\\n\\t\\t\\t\\t\\t\\tclass=\\"{displayPositiveFeelings === true\\r\\n\\t\\t\\t\\t\\t\\t\\t? 'solid-button text-white'\\r\\n\\t\\t\\t\\t\\t\\t\\t: 'border-button'} h-7 rounded-full px-4 leading-tight\\"\\r\\n\\t\\t\\t\\t\\t>\\r\\n\\t\\t\\t\\t\\t\\t{$t('default.page.dashboard.feelings.positive')}\\r\\n\\t\\t\\t\\t\\t</Button>\\r\\n\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t</div>\\r\\n\\t\\t\\t<div class=\\"flex items-center justify-center\\">\\r\\n\\t\\t\\t\\t{#if feelings}\\r\\n\\t\\t\\t\\t\\t{#key feelings.length}\\r\\n\\t\\t\\t\\t\\t\\t<Donut {colors} {data} />\\r\\n\\t\\t\\t\\t\\t{/key}\\r\\n\\t\\t\\t\\t{/if}\\r\\n\\t\\t\\t</div>\\r\\n\\t\\t\\t<div class=\\"px-4 pb-3 pt-2\\">\\r\\n\\t\\t\\t\\t{#if feelings.length === 0}\\r\\n\\t\\t\\t\\t\\t{$t('default.page.dashboard.feelings.empty')}\\r\\n\\t\\t\\t\\t{:else}\\r\\n\\t\\t\\t\\t\\t{#each feelings as feeling, index}\\r\\n\\t\\t\\t\\t\\t\\t{#if displayPositiveFeelings === feeling.feeling.positive}\\r\\n\\t\\t\\t\\t\\t\\t\\t<div\\r\\n\\t\\t\\t\\t\\t\\t\\t\\tclass=\\"flex items-center justify-between border-b border-feelings-foreground/20 py-1 last:border-b-0\\"\\r\\n\\t\\t\\t\\t\\t\\t\\t>\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t<div class=\\"flex items-center gap-4\\">\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t<div\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t\\tstyle=\\"background-color: {colors[index]};\\"\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t\\tclass=\\"h-3 w-5 rounded-full\\"\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t></div>\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t<span>\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t{$locale === 'en' ? feeling.feeling.nameEN : feeling.feeling.nameDE}\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t</span>\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t<span>\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t{feeling.count}\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t</span>\\r\\n\\t\\t\\t\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t\\t\\t{/if}\\r\\n\\t\\t\\t\\t\\t{/each}\\r\\n\\t\\t\\t\\t{/if}\\r\\n\\t\\t\\t</div>\\r\\n\\t\\t</div>\\r\\n\\t</div>\\r\\n{/if}\\r\\n\\r\\n<style lang=\\"scss\\">:global(.solid-button) {\\n\\n    border-width: 2px;\\n\\n    border-color: hsl(var(--feelings-foreground) / 0);\\n\\n    background-color: hsl(var(--feelings-foreground) / 0.6)\\n}\\n\\n:global(.solid-button):hover {\\n\\n    border-color: hsl(var(--feelings-foreground) / 0.6);\\n\\n    --tw-bg-opacity: 1;\\n\\n    background-color: hsl(var(--feelings-foreground) / var(--tw-bg-opacity, 1))\\n}\\n\\n:global(.border-button) {\\n\\n    border-width: 2px;\\n\\n    border-color: hsl(var(--feelings-foreground) / 0.6);\\n\\n    background-color: transparent;\\n\\n    color: hsl(var(--feelings-foreground) / 0.6)\\n}\\n\\n:global(.border-button):hover {\\n\\n    --tw-border-opacity: 1;\\n\\n    border-color: hsl(var(--feelings-foreground) / var(--tw-border-opacity, 1));\\n\\n    background-color: transparent;\\n\\n    --tw-text-opacity: 1;\\n\\n    color: hsl(var(--feelings-foreground) / var(--tw-text-opacity, 1))\\n}</style>\\r\\n"],"names":[],"mappings":"AA6I2B,aAAe,CAEtC,YAAY,CAAE,GAAG,CAEjB,YAAY,CAAE,IAAI,IAAI,qBAAqB,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAEjD,gBAAgB,CAAE,IAAI,IAAI,qBAAqB,CAAC,CAAC,CAAC,CAAC,GAAG;AAC1D,CAEQ,aAAc,MAAO,CAEzB,YAAY,CAAE,IAAI,IAAI,qBAAqB,CAAC,CAAC,CAAC,CAAC,GAAG,CAAC,CAEnD,eAAe,CAAE,CAAC,CAElB,gBAAgB,CAAE,IAAI,IAAI,qBAAqB,CAAC,CAAC,CAAC,CAAC,IAAI,eAAe,CAAC,EAAE,CAAC;AAC9E,CAEQ,cAAgB,CAEpB,YAAY,CAAE,GAAG,CAEjB,YAAY,CAAE,IAAI,IAAI,qBAAqB,CAAC,CAAC,CAAC,CAAC,GAAG,CAAC,CAEnD,gBAAgB,CAAE,WAAW,CAE7B,KAAK,CAAE,IAAI,IAAI,qBAAqB,CAAC,CAAC,CAAC,CAAC,GAAG;AAC/C,CAEQ,cAAe,MAAO,CAE1B,mBAAmB,CAAE,CAAC,CAEtB,YAAY,CAAE,IAAI,IAAI,qBAAqB,CAAC,CAAC,CAAC,CAAC,IAAI,mBAAmB,CAAC,EAAE,CAAC,CAAC,CAE3E,gBAAgB,CAAE,WAAW,CAE7B,iBAAiB,CAAE,CAAC,CAEpB,KAAK,CAAE,IAAI,IAAI,qBAAqB,CAAC,CAAC,CAAC,CAAC,IAAI,iBAAiB,CAAC,EAAE,CAAC;AACrE"}`
 };
 const FeelingsOverview = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $user, $$unsubscribe_user;
@@ -2294,8 +2211,8 @@ const FeelingsOverview = create_ssr_component(($$result, $$props, $$bindings, sl
   return `${`${validate_component(Skeleton, "Skeleton").$$render($$result, { class: "h-[20px] w-[100px] rounded-full" }, {}, {})}`}`;
 });
 const css = {
-  code: ".solid-need-button{border-width:2px;border-color:hsl(var(--needs-foreground) / 0);background-color:hsl(var(--needs-foreground) / 0.6)\n}.solid-need-button:hover{border-color:hsl(var(--needs-foreground) / 0.6);--tw-bg-opacity:1;background-color:hsl(var(--needs-foreground) / var(--tw-bg-opacity))\n}.border-need-button{border-width:2px;border-color:hsl(var(--needs-foreground) / 0.6);background-color:transparent;color:hsl(var(--needs-foreground) / 0.6)\n}.border-need-button:hover{--tw-border-opacity:1;border-color:hsl(var(--needs-foreground) / var(--tw-border-opacity));background-color:transparent;--tw-text-opacity:1;color:hsl(var(--needs-foreground) / var(--tw-text-opacity))\n}",
-  map: null
+  code: ".solid-need-button{border-width:2px;border-color:hsl(var(--needs-foreground) / 0);background-color:hsl(var(--needs-foreground) / 0.6)\n}.solid-need-button:hover{border-color:hsl(var(--needs-foreground) / 0.6);--tw-bg-opacity:1;background-color:hsl(var(--needs-foreground) / var(--tw-bg-opacity, 1))\n}.border-need-button{border-width:2px;border-color:hsl(var(--needs-foreground) / 0.6);background-color:transparent;color:hsl(var(--needs-foreground) / 0.6)\n}.border-need-button:hover{--tw-border-opacity:1;border-color:hsl(var(--needs-foreground) / var(--tw-border-opacity, 1));background-color:transparent;--tw-text-opacity:1;color:hsl(var(--needs-foreground) / var(--tw-text-opacity, 1))\n}",
+  map: `{"version":3,"file":"NeedsOverview.svelte","sources":["NeedsOverview.svelte"],"sourcesContent":["<script lang=\\"ts\\">import * as Table from \\"$lib/components/ui/table\\";\\nimport { Skeleton } from \\"$lib/components/ui/skeleton\\";\\nimport { Button } from \\"$lib/components/ui/button\\";\\nimport { onMount } from \\"svelte\\";\\nimport { pb } from \\"$scripts/pocketbase\\";\\nimport { t, locale } from \\"$lib/translations\\";\\nimport { startDate, endDate } from \\"$store/dashboard\\";\\nimport { goto } from \\"$app/navigation\\";\\nimport { CaretRight, Check, Cross2 } from \\"radix-icons-svelte\\";\\nimport { user } from \\"$store/auth\\";\\nimport { groupBy, sortByKey, generateHslaColors } from \\"$scripts/helpers\\";\\nimport Donut from \\"$lib/components/Donut.svelte\\";\\nlet initialized = false;\\nlet pending = true;\\nlet needs = [];\\nlet colors = [];\\nlet displaySelfcenteredNeeds = false;\\n$: data = needs.map((entry) => {\\n  return { name: $locale === \\"en\\" ? entry.need.nameEN : entry.need.nameDE, count: entry.count };\\n});\\nconst fetchData = async () => {\\n  const filter = \`owner = '\${$user.id}' && created >= \\"\${$startDate.toString()} 00:00:00\\" && created < \\"\${$endDate.add({ days: 1 }).toString()} 00:00:00\\"\`;\\n  console.log(\\"filter\\", filter);\\n  const fights = await pb.collection(\\"fights\\").getFullList({\\n    filter,\\n    sort: \\"-updated\\",\\n    expand: \\"needs\\",\\n    requestKey: \\"needs\\"\\n  });\\n  const unsortedNeeds = groupNeeds(\\n    fights.map((entry) => entry.expand.needs).flat(Infinity),\\n    \\"id\\"\\n  );\\n  needs = sortByKey(unsortedNeeds, \\"count\\");\\n  colors = generateHslaColors(179, 100, 15, needs.length);\\n  console.log(\\"needs\\", needs);\\n};\\nendDate.subscribe(async () => {\\n  console.log(\\"endDate changed -> fetching data\\");\\n  pending = true;\\n  await fetchData();\\n  setTimeout(() => {\\n    pending = false;\\n  }, 200);\\n});\\nconst groupNeeds = (array, key) => {\\n  return Object.entries(\\n    array.reduce((result, currentValue) => {\\n      const groupKey = currentValue[key];\\n      result[groupKey] = result[groupKey] || [];\\n      result[groupKey].push(currentValue);\\n      return result;\\n    }, {})\\n  ).map(([needId, content]) => ({ need: content[0], count: content.length }));\\n};\\nconst gotoFight = (id) => {\\n  console.log(\\"gotoFight\\");\\n  goto(\`/app/fights/\${id}\`);\\n};\\nonMount(async () => {\\n  await fetchData();\\n  initialized = true;\\n  pending = false;\\n  console.log(\\"$user\\", $user);\\n});\\n<\/script>\\r\\n\\r\\n{#if !initialized}\\r\\n\\t<Skeleton class=\\"h-[20px] w-[100px] rounded-full\\" />\\r\\n{:else}\\r\\n\\t<div class=\\"relative\\">\\r\\n\\t\\t<div\\r\\n\\t\\t\\tstyle=\\"background: radial-gradient(circle at center, hsl(var(--needs-background) / 0.8), transparent 67%);\\"\\r\\n\\t\\t\\tclass=\\"absolute left-0 top-60 z-0 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 transform dark:opacity-40\\"\\r\\n\\t\\t></div>\\r\\n\\t\\t<div class=\\"relative z-10 rounded-lg bg-needs-background dark:bg-muted text-needs-foreground shadow-2xl shadow-black/10\\">\\r\\n\\t\\t\\t<div class=\\"flex items-center justify-between px-4 pb-2 pt-3\\">\\r\\n\\t\\t\\t\\t<h2 class=\\"text-md mb-2 font-bold\\">\\r\\n\\t\\t\\t\\t\\t{$t('default.page.dashboard.needs.heading')}\\r\\n\\t\\t\\t\\t</h2>\\r\\n\\t\\t\\t\\t<div class=\\"flex items-center gap-2\\">\\r\\n\\t\\t\\t\\t\\t<Button\\r\\n\\t\\t\\t\\t\\t\\ton:click={() => (displaySelfcenteredNeeds = false)}\\r\\n\\t\\t\\t\\t\\t\\tclass=\\"{displaySelfcenteredNeeds === false\\r\\n\\t\\t\\t\\t\\t\\t\\t? 'solid-need-button text-white'\\r\\n\\t\\t\\t\\t\\t\\t\\t: 'border-need-button'} h-7 rounded-full px-4 leading-tight transition\\"\\r\\n\\t\\t\\t\\t\\t>\\r\\n\\t\\t\\t\\t\\t\\t{$t('default.page.dashboard.needs.community')}\\r\\n\\t\\t\\t\\t\\t</Button>\\r\\n\\t\\t\\t\\t\\t<Button\\r\\n\\t\\t\\t\\t\\t\\ton:click={() => (displaySelfcenteredNeeds = true)}\\r\\n\\t\\t\\t\\t\\t\\tclass=\\"{displaySelfcenteredNeeds === true\\r\\n\\t\\t\\t\\t\\t\\t\\t? 'solid-need-button text-white'\\r\\n\\t\\t\\t\\t\\t\\t\\t: 'border-need-button'} h-7 rounded-full px-4 leading-tight\\"\\r\\n\\t\\t\\t\\t\\t>\\r\\n\\t\\t\\t\\t\\t\\t{$t('default.page.dashboard.needs.selfcentered')}\\r\\n\\t\\t\\t\\t\\t</Button>\\r\\n\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t</div>\\r\\n\\t\\t\\t<div class=\\"flex items-center justify-center\\">\\r\\n\\t\\t\\t\\t{#if needs}\\r\\n\\t\\t\\t\\t\\t{#key needs.length}\\r\\n\\t\\t\\t\\t\\t\\t<Donut {colors} {data} />\\r\\n\\t\\t\\t\\t\\t{/key}\\r\\n\\t\\t\\t\\t{/if}\\r\\n\\t\\t\\t</div>\\r\\n\\t\\t\\t<div class=\\"px-4 pb-3 pt-2\\">\\r\\n\\t\\t\\t\\t{#if needs.length === 0}\\r\\n\\t\\t\\t\\t\\t{$t('default.page.dashboard.needs.empty')}\\r\\n\\t\\t\\t\\t{:else}\\r\\n\\t\\t\\t\\t\\t{#each needs as need, index}\\r\\n\\t\\t\\t\\t\\t\\t{#if displaySelfcenteredNeeds === need.need.selfcentered}\\r\\n\\t\\t\\t\\t\\t\\t\\t<div\\r\\n\\t\\t\\t\\t\\t\\t\\t\\tclass=\\"flex items-center justify-between border-b border-needs-foreground/20 py-1 last:border-b-0\\"\\r\\n\\t\\t\\t\\t\\t\\t\\t>\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t<div class=\\"flex items-center gap-4\\">\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t<div\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t\\tstyle=\\"background-color: {colors[index]};\\"\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t\\tclass=\\"h-3 w-5 rounded-full\\"\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t></div>\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t<span>\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t{$locale === 'en' ? need.need.nameEN : need.need.nameDE}\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t</span>\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t<span>\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t{need.count}\\r\\n\\t\\t\\t\\t\\t\\t\\t\\t</span>\\r\\n\\t\\t\\t\\t\\t\\t\\t</div>\\r\\n\\t\\t\\t\\t\\t\\t{/if}\\r\\n\\t\\t\\t\\t\\t{/each}\\r\\n\\t\\t\\t\\t{/if}\\r\\n\\t\\t\\t</div>\\r\\n\\t\\t</div>\\r\\n\\t</div>\\r\\n{/if}\\r\\n\\r\\n<style lang=\\"scss\\">:global(.solid-need-button) {\\n\\n    border-width: 2px;\\n\\n    border-color: hsl(var(--needs-foreground) / 0);\\n\\n    background-color: hsl(var(--needs-foreground) / 0.6)\\n}\\n\\n:global(.solid-need-button):hover {\\n\\n    border-color: hsl(var(--needs-foreground) / 0.6);\\n\\n    --tw-bg-opacity: 1;\\n\\n    background-color: hsl(var(--needs-foreground) / var(--tw-bg-opacity, 1))\\n}\\n\\n:global(.border-need-button) {\\n\\n    border-width: 2px;\\n\\n    border-color: hsl(var(--needs-foreground) / 0.6);\\n\\n    background-color: transparent;\\n\\n    color: hsl(var(--needs-foreground) / 0.6)\\n}\\n\\n:global(.border-need-button):hover {\\n\\n    --tw-border-opacity: 1;\\n\\n    border-color: hsl(var(--needs-foreground) / var(--tw-border-opacity, 1));\\n\\n    background-color: transparent;\\n\\n    --tw-text-opacity: 1;\\n\\n    color: hsl(var(--needs-foreground) / var(--tw-text-opacity, 1))\\n}</style>\\r\\n"],"names":[],"mappings":"AAwI2B,kBAAoB,CAE3C,YAAY,CAAE,GAAG,CAEjB,YAAY,CAAE,IAAI,IAAI,kBAAkB,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAE9C,gBAAgB,CAAE,IAAI,IAAI,kBAAkB,CAAC,CAAC,CAAC,CAAC,GAAG;AACvD,CAEQ,kBAAmB,MAAO,CAE9B,YAAY,CAAE,IAAI,IAAI,kBAAkB,CAAC,CAAC,CAAC,CAAC,GAAG,CAAC,CAEhD,eAAe,CAAE,CAAC,CAElB,gBAAgB,CAAE,IAAI,IAAI,kBAAkB,CAAC,CAAC,CAAC,CAAC,IAAI,eAAe,CAAC,EAAE,CAAC;AAC3E,CAEQ,mBAAqB,CAEzB,YAAY,CAAE,GAAG,CAEjB,YAAY,CAAE,IAAI,IAAI,kBAAkB,CAAC,CAAC,CAAC,CAAC,GAAG,CAAC,CAEhD,gBAAgB,CAAE,WAAW,CAE7B,KAAK,CAAE,IAAI,IAAI,kBAAkB,CAAC,CAAC,CAAC,CAAC,GAAG;AAC5C,CAEQ,mBAAoB,MAAO,CAE/B,mBAAmB,CAAE,CAAC,CAEtB,YAAY,CAAE,IAAI,IAAI,kBAAkB,CAAC,CAAC,CAAC,CAAC,IAAI,mBAAmB,CAAC,EAAE,CAAC,CAAC,CAExE,gBAAgB,CAAE,WAAW,CAE7B,iBAAiB,CAAE,CAAC,CAEpB,KAAK,CAAE,IAAI,IAAI,kBAAkB,CAAC,CAAC,CAAC,CAAC,IAAI,iBAAiB,CAAC,EAAE,CAAC;AAClE"}`
 };
 const NeedsOverview = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $user, $$unsubscribe_user;
@@ -2366,8 +2283,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   $$unsubscribe_endDate = subscribe(endDate, (value) => $endDate = value);
   let { data } = $$props;
   let popoverOpen = false;
-  if ($$props.data === void 0 && $$bindings.data && data !== void 0)
-    $$bindings.data(data);
+  if ($$props.data === void 0 && $$bindings.data && data !== void 0) $$bindings.data(data);
   let $$settled;
   let $$rendered;
   let previous_head = $$result.head;

@@ -1,14 +1,12 @@
 const internal = new URL("sveltekit-internal://");
 function resolve(base, path) {
-  if (path[0] === "/" && path[1] === "/")
-    return path;
+  if (path[0] === "/" && path[1] === "/") return path;
   let url = new URL(base, internal);
   url = new URL(path, url);
   return url.protocol === internal.protocol ? url.pathname + url.search + url.hash : url.href;
 }
 function normalize_path(path, trailing_slash) {
-  if (path === "/" || trailing_slash === "ignore")
-    return path;
+  if (path === "/" || trailing_slash === "ignore") return path;
   if (trailing_slash === "never") {
     return path.endsWith("/") ? path.slice(0, -1) : path;
   } else if (trailing_slash === "always" && !path.endsWith("/")) {
@@ -25,17 +23,7 @@ function decode_params(params) {
   }
   return params;
 }
-const tracked_url_properties = (
-  /** @type {const} */
-  [
-    "href",
-    "pathname",
-    "search",
-    "toString",
-    "toJSON"
-  ]
-);
-function make_trackable(url, callback, search_params_callback) {
+function make_trackable(url, callback, search_params_callback, allow_hash = false) {
   const tracked = new URL(url);
   Object.defineProperty(tracked, "searchParams", {
     value: new Proxy(tracked.searchParams, {
@@ -54,6 +42,8 @@ function make_trackable(url, callback, search_params_callback) {
     enumerable: true,
     configurable: true
   });
+  const tracked_url_properties = ["href", "pathname", "search", "toString", "toJSON"];
+  if (allow_hash) tracked_url_properties.push("hash");
   for (const property of tracked_url_properties) {
     Object.defineProperty(tracked, property, {
       get() {
@@ -68,8 +58,11 @@ function make_trackable(url, callback, search_params_callback) {
     tracked[Symbol.for("nodejs.util.inspect.custom")] = (depth, opts, inspect) => {
       return inspect(url, opts);
     };
+    tracked.searchParams[Symbol.for("nodejs.util.inspect.custom")] = (depth, opts, inspect) => {
+      return inspect(url.searchParams, opts);
+    };
   }
-  {
+  if (!allow_hash) {
     disable_hash(tracked);
   }
   return tracked;
@@ -79,7 +72,7 @@ function disable_hash(url) {
   Object.defineProperty(url, "hash", {
     get() {
       throw new Error(
-        "Cannot access event.url.hash. Consider using `$page.url.hash` inside a component instead"
+        "Cannot access event.url.hash. Consider using `page.url.hash` inside a component instead"
       );
     }
   });
@@ -107,8 +100,7 @@ function has_data_suffix(pathname) {
   return pathname.endsWith(DATA_SUFFIX) || pathname.endsWith(HTML_DATA_SUFFIX);
 }
 function add_data_suffix(pathname) {
-  if (pathname.endsWith(".html"))
-    return pathname.replace(/\.html$/, HTML_DATA_SUFFIX);
+  if (pathname.endsWith(".html")) return pathname.replace(/\.html$/, HTML_DATA_SUFFIX);
   return pathname.replace(/\/$/, "") + DATA_SUFFIX;
 }
 function strip_data_suffix(pathname) {
@@ -119,11 +111,9 @@ function strip_data_suffix(pathname) {
 }
 function validator(expected) {
   function validate(module, file) {
-    if (!module)
-      return;
+    if (!module) return;
     for (const key in module) {
-      if (key[0] === "_" || expected.has(key))
-        continue;
+      if (key[0] === "_" || expected.has(key)) continue;
       const values = [...expected.values()];
       const hint = hint_for_supported_files(key, file?.slice(file.lastIndexOf("."))) ?? `valid exports are ${values.join(", ")}, or anything with a '_' prefix`;
       throw new Error(`Invalid export '${key}'${file ? ` in ${file}` : ""} (${hint})`);

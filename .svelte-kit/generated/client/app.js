@@ -21,7 +21,8 @@ export const nodes = [
 	() => import('./nodes/17'),
 	() => import('./nodes/18'),
 	() => import('./nodes/19'),
-	() => import('./nodes/20')
+	() => import('./nodes/20'),
+	() => import('./nodes/21')
 ];
 
 export const server_loads = [0,2];
@@ -32,19 +33,20 @@ export const dictionary = {
 		"/app/auth/register": [~5,[2]],
 		"/app/dashboard": [6,[2]],
 		"/app/fights": [7,[2]],
-		"/app/fights/create": [10,[2]],
-		"/app/fights/[id]": [~8,[2]],
-		"/app/fights/[id]/respond": [~9,[2]],
+		"/app/fights/create": [8,[2]],
+		"/app/fights/[id]": [~9,[2]],
+		"/app/fights/[id]/respond": [~10,[2]],
 		"/app/selfempathy": [11,[2]],
-		"/app/selfempathy/create": [14,[2]],
-		"/app/selfempathy/[id]": [~12,[2]],
-		"/app/selfempathy/[id]/respond": [~13,[2]],
+		"/app/selfempathy/create": [12,[2]],
+		"/app/selfempathy/[id]": [~13,[2]],
+		"/app/selfempathy/[id]/respond": [~14,[2]],
 		"/bullshift": [~15],
 		"/bullshift/insights": [~16],
 		"/bullshift/insights/[id]": [~17],
 		"/bullshift/memory": [~18],
-		"/utility/shapes2": [20],
-		"/utility/shapes": [19]
+		"/bullshift/stats": [~19],
+		"/utility/shapes2": [21],
+		"/utility/shapes": [20]
 	};
 
 export const hooks = {

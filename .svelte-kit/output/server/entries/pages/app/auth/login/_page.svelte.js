@@ -1,18 +1,20 @@
 import { c as compute_rest_props, s as subscribe } from "../../../../../chunks/utils.js";
 import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute, v as validate_component, e as escape } from "../../../../../chunks/ssr.js";
 import { F as Form_button, M as Menu } from "../../../../../chunks/form-button.js";
-import "../../../../../chunks/index.js";
-import { g as getFormField, a as getDataFsError, b as generateId, F as Form_field, C as Control, c as Form_label, I as Input, d as Form_field_errors } from "../../../../../chunks/index5.js";
+import { g as getFormField, a as generateId, b as getDataFsError, F as Form_field, C as Control, c as Form_label, I as Input, d as Form_field_errors } from "../../../../../chunks/index8.js";
 import { f as formSchema } from "../../../../../chunks/schema.js";
 import "../../../../../chunks/client.js";
-import { s as superForm } from "../../../../../chunks/memoize.js";
+import "ts-deepmerge";
+import { s as superForm } from "../../../../../chunks/formData.js";
+import "../../../../../chunks/index.js";
+import "memoize-weak";
 import { z as zodClient } from "../../../../../chunks/zod.js";
 import { t } from "../../../../../chunks/translations.js";
 import { a as toast } from "../../../../../chunks/Toaster.svelte_svelte_type_style_lang.js";
-import "../../../../../chunks/index3.js";
-import { R as Root, D as Dialog_content, a as Dialog_header, b as Dialog_title, c as Dialog_description } from "../../../../../chunks/index6.js";
+import "../../../../../chunks/index4.js";
+import { R as Root, D as Dialog_content, a as Dialog_header, b as Dialog_title, c as Dialog_description } from "../../../../../chunks/index9.js";
 import "../../../../../chunks/pocketbase.js";
-import { a as cn } from "../../../../../chunks/page.js";
+import { c as cn } from "../../../../../chunks/index3.js";
 import { B as Button } from "../../../../../chunks/button.js";
 import { C as Check } from "../../../../../chunks/Check.js";
 import { p as page } from "../../../../../chunks/stores.js";
@@ -27,12 +29,9 @@ const Description = create_ssr_component(($$result, $$props, $$bindings, slots) 
   let { id = generateId() } = $$props;
   let { asChild = false } = $$props;
   let { el = void 0 } = $$props;
-  if ($$props.id === void 0 && $$bindings.id && id !== void 0)
-    $$bindings.id(id);
-  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0)
-    $$bindings.asChild(asChild);
-  if ($$props.el === void 0 && $$bindings.el && el !== void 0)
-    $$bindings.el(el);
+  if ($$props.id === void 0 && $$bindings.id && id !== void 0) $$bindings.id(id);
+  if ($$props.asChild === void 0 && $$bindings.asChild && asChild !== void 0) $$bindings.asChild(asChild);
+  if ($$props.el === void 0 && $$bindings.el && el !== void 0) $$bindings.el(el);
   {
     descriptionId.set(id);
   }
@@ -49,8 +48,7 @@ const Description = create_ssr_component(($$result, $$props, $$bindings, slots) 
 const Form_description = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
   let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
   return `${validate_component(Description, "FormPrimitive.Description").$$render(
     $$result,
     Object.assign(
@@ -80,18 +78,16 @@ const LoginForm = create_ssr_component(($$result, $$props, $$bindings, slots) =>
     validators: zodClient(formSchema),
     onResult: ({ result }) => {
       console.log("result", result);
-      if (result.type === "failure")
-        toast.error($t("default.page.login.toasts.error"));
-      if (result.type === "success")
-        ;
+      if (result.type === "failure") toast.error($t("default.page.login.toasts.error"));
+      if (result.type === "success") {
+        toast.success($t("default.page.login.toasts.success"));
+      }
     }
   });
   const { form: formData, errors, enhance, delayed, message, constraints, reset } = form;
   $$unsubscribe_formData = subscribe(formData, (value) => $formData = value);
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
-  if ($$props.data === void 0 && $$bindings.data && data !== void 0)
-    $$bindings.data(data);
+  if ($$props.class === void 0 && $$bindings.class && className !== void 0) $$bindings.class(className);
+  if ($$props.data === void 0 && $$bindings.data && data !== void 0) $$bindings.data(data);
   let $$settled;
   let $$rendered;
   let previous_head = $$result.head;
@@ -146,11 +142,19 @@ const LoginForm = create_ssr_component(($$result, $$props, $$bindings, slots) =>
           }
         })} ${validate_component(Form_field_errors, "Form.FieldErrors").$$render($$result, {}, {}, {})}`;
       }
-    })} <div class="flex items-center justify-between"><a href="/app/auth/register" class="text-sm hover:underline">${escape($t("default.page.login.switchToRegister"))}</a> ${validate_component(Form_button, "Form.Button").$$render($$result, { class: "bg-primary text-muted" }, {}, {
-      default: () => {
-        return `${escape($t("default.page.login.cta"))}`;
+    })} <div class="flex items-center justify-between"><a href="/app/auth/register" class="text-sm hover:underline">${escape($t("default.page.login.switchToRegister"))}</a> ${validate_component(Form_button, "Form.Button").$$render(
+      $$result,
+      {
+        type: "submit",
+        class: "bg-primary text-muted"
+      },
+      {},
+      {
+        default: () => {
+          return `${escape($t("default.page.login.cta"))}`;
+        }
       }
-    })}</div></form> ${validate_component(Root, "Dialog.Root").$$render(
+    )}</div></form> ${validate_component(Root, "Dialog.Root").$$render(
       $$result,
       {
         preventScroll: false,
@@ -209,8 +213,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   const verifyMail = $page.url.searchParams.get("verifyMail");
   console.log("verifyMail", verifyMail);
   console.log("login page");
-  if ($$props.data === void 0 && $$bindings.data && data !== void 0)
-    $$bindings.data(data);
+  if ($$props.data === void 0 && $$bindings.data && data !== void 0) $$bindings.data(data);
   $$unsubscribe_page();
   $$unsubscribe_t();
   return `<div class="flex h-full flex-grow flex-col justify-between"><div class="flex-grow">${validate_component(Menu, "Menu").$$render($$result, {}, {}, {})} <div class="max-container relative"><div class="w-full flex flex-col items-center justify-center py-32">${verifyMail ? `<div class="max-container relative"><div class="text-white">${escape($t("default.page.login.verifyMail"))}</div></div>` : ``} <h1 class="font-heading font-bold text-2xl">${escape($t("default.page.login.heading"))}</h1> ${validate_component(LoginForm, "LoginForm").$$render(

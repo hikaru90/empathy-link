@@ -20,7 +20,7 @@
 		{
 			slug: 'chat',
 			heading: 'Chat',
-			path: '/bullshift/',
+			path: '/bullshift',
 			icon: BotMessageSquare,
 			available: true
 		},
@@ -46,6 +46,10 @@
 			available: true
 		}
 	];
+
+	const isCurrentRoute = (path: string) => {
+		return $page.data.route === path;
+	};
 
 	t.subscribe((value) => {
 		const newMenuItems = menuItems.map((entry) => {
@@ -83,14 +87,14 @@
 						? ''
 						: 'pointer-events-none'}"
 				>
-					<div class="size-8 fill-black flex items-center justify-center">
+					<div class="size-8 flex items-center justify-center {isCurrentRoute(item.path) ? 'text-black' : 'text-black/60'}">
 						<svelte:component this={item.icon} class="size-5" />
 					</div>
-					<span class="text-2xs lg:mt-2 lg:text-xs">
+					<span class="text-2xs lg:mt-2 lg:text-xs {isCurrentRoute(item.path) ? 'text-black' : 'text-black/60'}">
 						{item.heading}
 					</span>
 				</a>
-				{#if $page.data.route.includes(item.path)}
+				{#if isCurrentRoute(item.path)}
 					<div class="absolute -bottom-2 flex justify-center">
 						<div class="h-1 w-1 rounded-full bg-bullshift"></div>
 					</div>

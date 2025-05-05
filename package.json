@@ -5,10 +5,11 @@
 	"engines": {
 		"node": ">=20.10.0"
 	},
+	"prepare": "svelte-kit sync",
 	"scripts": {
 		"dev": "vite dev --port 3000 --host",
 		"dev debug": "vite dev --port 3000 --host --debug",
-		"build": "rimraf build && rimraf .svelte-kit && vite build",
+		"build": "rimraf build && rimraf .svelte-kit && svelte-kit sync && vite build",
 		"buildprod": "vite -r dotenv/config build",
 		"preview": "vite preview",
 		"test": "playwright test",

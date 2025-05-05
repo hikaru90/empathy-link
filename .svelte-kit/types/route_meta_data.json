@@ -5,6 +5,9 @@
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],
+	"/api/ai/bullshift/analyzeChat": [
+		"src/routes/api/ai/bullshift/analyzeChat/+server.ts"
+	],
 	"/api/ai/bullshift/cleanup": [
 		"src/routes/api/ai/bullshift/cleanup/+server.ts"
 	],
@@ -142,6 +145,11 @@
 	],
 	"/bullshift/memory": [
 		"src/routes/bullshift/memory/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/bullshift/stats": [
+		"src/routes/bullshift/stats/+page.server.ts",
 		"src/routes/+layout.ts",
 		"src/routes/+layout.server.ts"
 	],

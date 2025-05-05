@@ -53,8 +53,4 @@
 	.icon {
 		@apply absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 transform flex items-center justify-center;
 	}
-	.skeumorphic-button {
-		transition: box-shadow 50ms;
-		box-shadow: var(--skeumorphic-shadow-light);
-	}
 </style>

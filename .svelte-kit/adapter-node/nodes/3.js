@@ -1,8 +1,0 @@
-
-
-export const index = 3;
-let component_cache;
-export const component = async () => component_cache ??= (await import('../entries/pages/_page.svelte.js')).default;
-export const imports = ["_app/immutable/nodes/3.Dgt5QR5Y.js","_app/immutable/chunks/scheduler.BmBrB_dT.js","_app/immutable/chunks/index.BQZQ5DB3.js","_app/immutable/chunks/switch.fB03Cpk5.js","_app/immutable/chunks/helpers.g8wrkI0H.js","_app/immutable/chunks/entry.DnNy0IhO.js","_app/immutable/chunks/preload-helper.D6kgxu3v.js","_app/immutable/chunks/index.Bj_hiVz4.js","_app/immutable/chunks/button.D_ITeu-i.js","_app/immutable/chunks/CaretRight.4QcEA5-H.js","_app/immutable/chunks/button.BlP37tcM.js","_app/immutable/chunks/icon-folder.CBGieXVr.js","_app/immutable/chunks/icon-learn.DB5MBh20.js","_app/immutable/chunks/icon-steps.dGSELuxl.js","_app/immutable/chunks/PaperPlane.CDcRMlbn.js","_app/immutable/chunks/HeartFilled.DtRci7Nx.js","_app/immutable/chunks/module.B9UjFE2l.js"];
-export const stylesheets = ["_app/immutable/assets/3.DRvJ0bS5.css","_app/immutable/assets/switch.kHZku1PE.css","_app/immutable/assets/helpers.Bq721S71.css"];
-export const fonts = [];

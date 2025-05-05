@@ -63,6 +63,14 @@ function createToastState() {
   }
   function dismiss(id) {
     if (id === void 0) {
+      toasts.update((prev) => prev.map((toast2) => ({ ...toast2, dismiss: true })));
+      return;
+    }
+    toasts.update((prev) => prev.map((toast2) => toast2.id === id ? { ...toast2, dismiss: true } : toast2));
+    return id;
+  }
+  function remove(id) {
+    if (id === void 0) {
       toasts.set([]);
       return;
     }
@@ -167,6 +175,7 @@ function createToastState() {
     create,
     addToast,
     dismiss,
+    remove,
     message,
     error,
     success,

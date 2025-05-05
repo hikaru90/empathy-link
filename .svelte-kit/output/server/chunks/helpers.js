@@ -7,8 +7,7 @@ const generateHslaColors = (hue, saturation, lightness, length) => {
   const colors = [];
   for (let i = 1; i < length + 1; i++) {
     let opacity = i / (length - 1);
-    if (length === 1)
-      opacity = 1;
+    if (length === 1) opacity = 1;
     const hslaColor = `hsla(${hue}, ${saturation}%, ${lightness}%, ${opacity})`;
     colors.push(hslaColor);
   }

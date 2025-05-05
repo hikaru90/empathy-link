@@ -1,4 +1,5 @@
-import { d as derived, r as readable } from "./index2.js";
+import "dequal";
+import { d as derived, w as writable, r as readable } from "./index2.js";
 import { g as get_store_value } from "./utils.js";
 import { o as onDestroy } from "./lifecycle.js";
 function styleToString(style) {
@@ -21,8 +22,100 @@ function styleToString(style) {
     transform: "translateX(-100%)"
   })
 });
+function portalAttr(portal) {
+  if (portal !== null) {
+    return "";
+  }
+  return void 0;
+}
+function lightable(value) {
+  function subscribe(run) {
+    run(value);
+    return () => {
+    };
+  }
+  return { subscribe };
+}
+const hiddenAction = (obj) => {
+  return new Proxy(obj, {
+    get(target, prop, receiver) {
+      return Reflect.get(target, prop, receiver);
+    },
+    ownKeys(target) {
+      return Reflect.ownKeys(target).filter((key) => key !== "action");
+    }
+  });
+};
+const isFunctionWithParams = (fn) => {
+  return typeof fn === "function";
+};
+makeElement("empty");
+function makeElement(name, args) {
+  const { stores, action, returned } = args ?? {};
+  const derivedStore = (() => {
+    if (stores && returned) {
+      return derived(stores, (values) => {
+        const result = returned(values);
+        if (isFunctionWithParams(result)) {
+          const fn = (...args2) => {
+            return hiddenAction({
+              ...result(...args2),
+              [`data-melt-${name}`]: "",
+              action: action ?? noop$1
+            });
+          };
+          fn.action = action ?? noop$1;
+          return fn;
+        }
+        return hiddenAction({
+          ...result,
+          [`data-melt-${name}`]: "",
+          action: action ?? noop$1
+        });
+      });
+    } else {
+      const returnedFn = returned;
+      const result = returnedFn?.();
+      if (isFunctionWithParams(result)) {
+        const resultFn = (...args2) => {
+          return hiddenAction({
+            ...result(...args2),
+            [`data-melt-${name}`]: "",
+            action: action ?? noop$1
+          });
+        };
+        resultFn.action = action ?? noop$1;
+        return lightable(resultFn);
+      }
+      return lightable(hiddenAction({
+        ...result,
+        [`data-melt-${name}`]: "",
+        action: action ?? noop$1
+      }));
+    }
+  })();
+  const actionFn = action ?? (() => {
+  });
+  actionFn.subscribe = derivedStore.subscribe;
+  return actionFn;
+}
+function createElHelpers(prefix) {
+  const name = (part) => part ? `${prefix}-${part}` : prefix;
+  const attribute = (part) => `data-melt-${prefix}${part ? `-${part}` : ""}`;
+  const selector = (part) => `[data-melt-${prefix}${part ? `-${part}` : ""}]`;
+  const getEl = (part) => document.querySelector(selector(part));
+  return {
+    name,
+    attribute,
+    selector,
+    getEl
+  };
+}
 const isBrowser = typeof document !== "undefined";
 const isFunction = (v) => typeof v === "function";
+function isElement(element) {
+  return element instanceof Element;
+}
 function isHTMLElement$1(element) {
   return element instanceof HTMLElement;
 }
@@ -82,6 +175,78 @@ function withMelt(handler) {
     return handler(event);
   };
 }
+const safeOnDestroy = (fn) => {
+  try {
+    onDestroy(fn);
+  } catch {
+    return fn;
+  }
+};
+function omit(obj, ...keys) {
+  const result = {};
+  for (const key of Object.keys(obj)) {
+    if (!keys.includes(key)) {
+      result[key] = obj[key];
+    }
+  }
+  return result;
+}
+function withGet(store) {
+  return {
+    ...store,
+    get: () => get_store_value(store)
+  };
+}
+withGet.writable = function(initial) {
+  const internal = writable(initial);
+  let value = initial;
+  return {
+    subscribe: internal.subscribe,
+    set(newValue) {
+      internal.set(newValue);
+      value = newValue;
+    },
+    update(updater) {
+      const newValue = updater(value);
+      internal.set(newValue);
+      value = newValue;
+    },
+    get() {
+      return value;
+    }
+  };
+};
+withGet.derived = function(stores, fn) {
+  const subscribers = /* @__PURE__ */ new Map();
+  const get = () => {
+    const values = Array.isArray(stores) ? stores.map((store) => store.get()) : stores.get();
+    return fn(values);
+  };
+  const subscribe = (subscriber) => {
+    const unsubscribers = [];
+    const storesArr = Array.isArray(stores) ? stores : [stores];
+    storesArr.forEach((store) => {
+      unsubscribers.push(store.subscribe(() => {
+        subscriber(get());
+      }));
+    });
+    subscriber(get());
+    subscribers.set(subscriber, unsubscribers);
+    return () => {
+      const unsubscribers2 = subscribers.get(subscriber);
+      if (unsubscribers2) {
+        for (const unsubscribe of unsubscribers2) {
+          unsubscribe();
+        }
+      }
+      subscribers.delete(subscriber);
+    };
+  };
+  return {
+    get,
+    subscribe
+  };
+};
 const kbd = {
   ALT: "Alt",
   ARROW_DOWN: "ArrowDown",
@@ -119,55 +284,20 @@ const kbd = {
   A: "a",
   P: "p"
 };
-const safeOnDestroy = (fn) => {
-  try {
-    onDestroy(fn);
-  } catch {
-    return fn();
-  }
-};
-function derivedWithUnsubscribe(stores, fn) {
-  let unsubscribers = [];
-  const onUnsubscribe = (cb) => {
-    unsubscribers.push(cb);
-  };
-  const unsubscribe = () => {
-    unsubscribers.forEach((fn2) => fn2());
-    unsubscribers = [];
-  };
-  const derivedStore = derived(stores, ($storeValues) => {
-    unsubscribe();
-    return fn($storeValues, onUnsubscribe);
-  });
-  safeOnDestroy(unsubscribe);
-  const subscribe = (...args) => {
-    const unsub = derivedStore.subscribe(...args);
-    return () => {
-      unsub();
-      unsubscribe();
-    };
-  };
-  return {
-    ...derivedStore,
-    subscribe
-  };
-}
 function effect(stores, fn) {
-  const unsub = derivedWithUnsubscribe(stores, (stores2, onUnsubscribe) => {
-    return {
-      stores: stores2,
-      onUnsubscribe
-    };
-  }).subscribe(({ stores: stores2, onUnsubscribe }) => {
-    const returned = fn(stores2);
-    if (returned) {
-      onUnsubscribe(returned);
-    }
-  });
+  let cb = void 0;
+  const destroy = derived(stores, (stores2) => {
+    cb?.();
+    cb = fn(stores2);
+  }).subscribe(noop$1);
+  const unsub = () => {
+    destroy();
+    cb?.();
+  };
   safeOnDestroy(unsub);
   return unsub;
 }
-const documentClickStore = readable(void 0, (set) => {
+readable(void 0, (set) => {
   function clicked(event) {
     set(event);
     set(void 0);
@@ -178,40 +308,6 @@ const documentClickStore = readable(void 0, (set) => {
   });
   return unsubscribe;
 });
-const useClickOutside = (node, config = {}) => {
-  let options = { enabled: true, ...config };
-  function isEnabled() {
-    return typeof options.enabled === "boolean" ? options.enabled : get_store_value(options.enabled);
-  }
-  const unsubscribe = documentClickStore.subscribe((e) => {
-    if (!isEnabled() || !e || e.target === node) {
-      return;
-    }
-    const composedPath = e.composedPath();
-    if (composedPath.includes(node))
-      return;
-    if (options.ignore) {
-      if (isFunction(options.ignore)) {
-        if (options.ignore(e))
-          return;
-      } else if (Array.isArray(options.ignore)) {
-        if (options.ignore.length > 0 && options.ignore.some((ignoreEl) => {
-          return ignoreEl && (e.target === ignoreEl || composedPath.includes(ignoreEl));
-        }))
-          return;
-      }
-    }
-    options.handler?.(e);
-  });
-  return {
-    update(params) {
-      options = { ...options, ...params };
-    },
-    destroy() {
-      unsubscribe();
-    }
-  };
-};
 const documentEscapeKeyStore$1 = readable(void 0, (set) => {
   function keydown(event) {
     if (event && event.key === kbd.ESCAPE) {
@@ -271,6 +367,50 @@ const useEscapeKeydown = (node, config = {}) => {
     }
   };
 };
+({
+  prefix: "",
+  disabled: readable(false),
+  required: readable(false),
+  name: readable(void 0)
+});
+const defaults = {
+  isDateDisabled: void 0,
+  isDateUnavailable: void 0,
+  value: void 0,
+  preventDeselect: false,
+  numberOfMonths: 1,
+  pagedNavigation: false,
+  weekStartsOn: 0,
+  fixedWeeks: false,
+  calendarLabel: "Event Date",
+  locale: "en",
+  minValue: void 0,
+  maxValue: void 0,
+  disabled: false,
+  readonly: false,
+  weekdayFormat: "narrow"
+};
+({
+  isDateDisabled: void 0,
+  isDateUnavailable: void 0,
+  value: void 0,
+  positioning: {
+    placement: "bottom"
+  },
+  closeOnEscape: true,
+  closeOnOutsideClick: true,
+  onOutsideClick: void 0,
+  preventScroll: false,
+  forceVisible: false,
+  locale: "en",
+  granularity: void 0,
+  disabled: false,
+  readonly: false,
+  minValue: void 0,
+  maxValue: void 0,
+  weekdayFormat: "narrow",
+  ...omit(defaults, "isDateDisabled", "isDateUnavailable", "value", "locale", "disabled", "readonly", "minValue", "maxValue", "weekdayFormat")
+});
 function noop() {
 }
 function addEventListener(target, event, handler, options) {
@@ -331,18 +471,24 @@ function isHTMLElement(el) {
 }
 export {
   isFunction as a,
-  executeCallbacks as b,
-  useClickOutside as c,
-  isBrowser as d,
-  effect as e,
-  addMeltEventListener as f,
-  chain as g,
-  addEventListener as h,
+  isElement as b,
+  addEventListener$1 as c,
+  effect as d,
+  executeCallbacks as e,
+  createElHelpers as f,
+  addMeltEventListener as g,
+  isBrowser as h,
   isHTMLElement$1 as i,
-  handleEscapeKeydown as j,
+  chain as j,
   kbd as k,
-  noop as l,
+  addEventListener as l,
+  makeElement as m,
   noop$1 as n,
+  omit as o,
+  portalAttr as p,
+  handleEscapeKeydown as q,
+  noop as r,
   styleToString as s,
-  useEscapeKeydown as u
+  useEscapeKeydown as u,
+  withGet as w
 };

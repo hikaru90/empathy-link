@@ -1,11 +1,12 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { initChat } from '../initChat/+server';
+import { initChat } from '$lib/server/gemini';
 import { ai, bullshiftChats } from '$lib/server/gemini';
 
-export const POST: RequestHandler = async () => {
+export const POST: RequestHandler = async ({request}) => {
     try {
-        const result = await initChat();
+        const { user, locale } = await request.json();
+        const result = await initChat(user, locale);
         
         return json({
             success: true,

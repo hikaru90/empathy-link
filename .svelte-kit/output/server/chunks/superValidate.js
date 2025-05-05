@@ -1,5 +1,6 @@
-import { p as parseRequest, m as mergeDefaults, a as mapErrors, r as replaceInvalidDefaults, b as splitPath, t as traversePath } from "./memoize.js";
+import { p as parseRequest, m as mergeDefaults, a as mapErrors, r as replaceInvalidDefaults, b as splitPath, t as traversePath } from "./formData.js";
 import { f as fail } from "./index.js";
+import "ts-deepmerge";
 async function superValidate(data, adapter, options) {
   if (data && "superFormValidationLibrary" in data) {
     options = adapter;
@@ -47,21 +48,12 @@ async function superValidate(data, adapter, options) {
   return output;
 }
 function setError(form, path, error, options) {
-  if (error == void 0 || typeof error !== "string" && !Array.isArray(error)) {
-    options = error;
-    error = path;
-    path = "";
-  }
   if (options === void 0)
     options = {};
   const errArr = Array.isArray(error) ? error : [error];
   if (!form.errors)
     form.errors = {};
-  if (path === null || path === "") {
-    if (!form.errors._errors)
-      form.errors._errors = [];
-    form.errors._errors = options.overwrite ? errArr : form.errors._errors.concat(errArr);
-  } else {
+  {
     const realPath = splitPath(path);
     const leaf = traversePath(form.errors, realPath, ({ parent, key, value }) => {
       if (value === void 0)
