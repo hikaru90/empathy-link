@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import SlidersVertical from 'lucide-svelte/icons/sliders-vertical'
-	import { toggleMode, mode } from 'mode-watcher';
 	import { onMount } from 'svelte';
 	import Logo from '$lib/components/Logo.svelte';
 	import Avatar from '$lib/components/Avatar.svelte';
@@ -37,8 +36,6 @@
 			locale.update(() => event.value);
 		}
 	};
-
-	$: darkMode = $mode === 'dark';
 
 	const handleScroll = (value) => {
 			if (value > scrollValue) {
@@ -95,10 +92,6 @@
 								</Select.Content>
 								<Select.Input name="favoriteFruit" />
 							</Select.Root>
-						</div>
-						<div class="flex items-center space-x-2">
-							<Switch id="lightMode" bind:checked={darkMode} on:click={toggleMode} />
-							<Label for="lightMode">Dark Mode</Label>
 						</div>
 					</Popover.Content>
 				</Popover.Root>

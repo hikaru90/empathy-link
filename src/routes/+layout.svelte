@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { t, initialized, locale } from '$lib/translations';
 	import '$src/app.pcss';
-	import { ModeWatcher } from 'mode-watcher';
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { blur } from 'svelte/transition';
 	import { Toaster } from '$lib/components/ui/sonner';
@@ -163,7 +162,6 @@
 				in:blur={{ duration: animationDuration, delay: animationDuration }}
 				out:blur={{ duration: animationDuration }}
 			>
-				<ModeWatcher />
 				<slot />
 			</div>
 			<!-- {#if data.user}

@@ -7,7 +7,6 @@
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Switch } from '$lib/components/ui/switch';
-	import { toggleMode, mode } from 'mode-watcher';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { locale } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
@@ -19,7 +18,6 @@
 		{ value: 'de', label: 'German' }
 	];
 
-	$: darkMode = $mode === 'dark';
 
 	const handleSelect = (selected: { value: string } | undefined) => {
 		if (selected) {
@@ -71,15 +69,6 @@
 						</Select.Content>
 						<Select.Input name="favoriteFruit" />
 					</Select.Root>
-				</div>
-				<div class="flex items-center space-x-2">
-					<Switch
-						id="lightMode"
-						bind:checked={darkMode}
-						on:click={toggleMode}
-						class="bg-gray-500"
-					/>
-					<Label for="lightMode">Dark Mode</Label>
 				</div>
 			</div>
 			<Sheet.Footer class="w-full">

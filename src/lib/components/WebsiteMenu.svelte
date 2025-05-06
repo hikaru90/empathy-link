@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import Sun from 'lucide-svelte/icons/sun'
-	import Moon from 'lucide-svelte/icons/moon'
-	import { toggleMode, mode } from 'mode-watcher';
 	import { onMount } from 'svelte';
 	import Logo from '$lib/components/Logo.svelte';
 	import { t } from '$lib/translations';
-	import { locale, locales } from '$lib/translations';
+	import { locale } from '$lib/translations';
 	import { setCookie, scrollToElement } from '$scripts/helpers';
 	import { goto } from '$app/navigation';
 	import { scroll, windowHeight, windowWidth, backgroundColor, currentSection } from '$store/page';
@@ -29,7 +26,6 @@
 		}
 	};
 
-	$: darkMode = $mode === 'dark';
 	$: scrollbarWidth = () => {
 		const scrollDiv = document.createElement('div');
 
@@ -123,17 +119,6 @@
 				{/each}
 			</div>
 			<div class="flex w-1 items-center justify-end gap-4">
-				<div>
-					<Button on:click={toggleMode} variant="outline" size="icon" class="size-9">
-						<Sun
-							class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
-						/>
-						<Moon
-							class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
-						/>
-						<span class="sr-only">Toggle theme</span>
-					</Button>
-				</div>
 				<Button
 					on:click={() => goto('/app/auth/login')}
 					variant="outline"

@@ -11,7 +11,6 @@
 	import { goto } from '$app/navigation';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Switch } from '$lib/components/ui/switch';
-	import { toggleMode, mode } from 'mode-watcher';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { locale, locales } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
@@ -23,8 +22,6 @@
 		{ value: 'en', label: 'English' },
 		{ value: 'de', label: 'German' }
 	];
-
-	$: darkMode = $mode === 'dark';
 
 	const handleSelect: (event: SelectedChangeEvent) => void = (event) => {
 		if (event) {
@@ -90,15 +87,6 @@
 					</Select.Content>
 					<Select.Input name="favoriteFruit" />
 				</Select.Root>
-				<div class="mb-4 flex items-center space-x-2">
-					<Switch
-						id="lightMode"
-						bind:checked={darkMode}
-						on:click={toggleMode}
-						class="bg-gray-500"
-					/>
-					<Label for="lightMode">Dark Mode</Label>
-				</div>
 				<div class="mb-3 border-b border-gray-300/30 dark:border-gray-300/20"></div>
 				<Button on:click={() => goto('/app/auth/login')} variant="outline" class="w-full font-bold dark:text-black rounded-lg">
 					{$t('default.page.login.heading')}

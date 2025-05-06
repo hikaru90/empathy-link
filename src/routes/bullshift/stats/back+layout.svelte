@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { t, initialized } from '$lib/translations';
 	import '$src/app.pcss';
-	import { ModeWatcher } from 'mode-watcher';
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { blur } from 'svelte/transition';
 	import { Toaster } from '$lib/components/ui/sonner';
@@ -79,7 +78,6 @@
 			out:blur={{ duration: animationDuration }}
 			class="app/layout bg-background min-h-svh"
 		>
-			<ModeWatcher />
 			<slot />
 		</div>
 

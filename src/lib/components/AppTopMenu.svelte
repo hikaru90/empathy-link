@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button-op1/index.js';
-	import { toggleMode, mode } from 'mode-watcher';
 	import Locale from '$lib/components/Locale.svelte';
 	import { onMount } from 'svelte';
 	import Logo from '$lib/components/Logo.svelte';
@@ -38,7 +37,6 @@
 		}
 	};
 
-	$: darkMode = $mode === 'dark';
 
 	// const handleScroll = (value) => {
 	// 		if (value > scrollValue) {
