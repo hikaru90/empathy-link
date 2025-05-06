@@ -2,7 +2,7 @@ import "dequal";
 import "./index3.js";
 import { q as getCtx, d as createDispatcher, D as Dialog, u as Dialog_close } from "./dialog-close.js";
 import { c as compute_rest_props, s as subscribe } from "./utils.js";
-import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute } from "./ssr.js";
+import { c as create_ssr_component, s as spread, a as add_attribute, h as escape_object } from "./ssr.js";
 import { tv } from "tailwind-variants";
 import "clsx";
 const Dialog_trigger = create_ssr_component(($$result, $$props, $$bindings, slots) => {

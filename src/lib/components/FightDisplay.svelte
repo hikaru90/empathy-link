@@ -4,7 +4,7 @@
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import IconSteps from '$assets/icons/icon-steps.svg?raw';
 	import { locale } from '$lib/translations';
-	import { Check } from 'radix-icons-svelte';
+	import Check from 'lucide-svelte/icons/check'
 	import { user } from '$store/auth';
 
 	export let record;

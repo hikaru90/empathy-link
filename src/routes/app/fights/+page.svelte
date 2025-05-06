@@ -2,16 +2,14 @@
 	import FightOverviewAll from '$lib/components/FightOverviewAll.svelte';
 	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
 	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
-	import type { PageData } from '../../app/fights/$types.js';
-	import LoginForm from '$lib/components/LoginForm.svelte';
 	import { t } from '$lib/translations';
 	import { Button as SparkleButton } from '$lib/components/ui/button-sparkle';
-	import { Plus } from 'radix-icons-svelte';
+	import Plus from 'lucide-svelte/icons/plus'
 	import { user } from '$store/auth';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button-op1/index.js';
-	import { CaretLeft } from 'radix-icons-svelte';
+	import ChevronLeft from 'lucide-svelte/icons/chevron-left'
 	import { backgroundColor } from '$store/page';
 	import ReceivedLinks from '$lib/components/ReceivedLinks.svelte';
 
@@ -42,7 +40,7 @@
 							decoration="dark-op1"
 							class="flex items-center border-neutral-900 bg-neutral-800 px-1.5 text-sm text-zinc-200"
 						>
-							<CaretLeft class="h-4 w-4 rounded-full" />
+							<ChevronLeft class="h-4 w-4 rounded-full" />
 						</Button>
 					</a>
 					<a href="/app/fights/create" class="skeumorphic-button-dark inline-block rounded-full mr-1 md:mr-0.5">

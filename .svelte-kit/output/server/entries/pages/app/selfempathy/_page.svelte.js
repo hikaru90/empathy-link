@@ -21,8 +21,8 @@ import { u as user } from "../../../../chunks/auth.js";
 import "../../../../chunks/page.js";
 import { B as Button$1 } from "../../../../chunks/index6.js";
 import { B as Button } from "../../../../chunks/index5.js";
-import { C as CaretLeft } from "../../../../chunks/CaretLeft.js";
-import { H as HeartFilled } from "../../../../chunks/HeartFilled.js";
+import { C as Chevron_left } from "../../../../chunks/chevron-left.js";
+import { H as Heart } from "../../../../chunks/heart.js";
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $user, $$unsubscribe_user;
   let $t, $$unsubscribe_t;
@@ -41,7 +41,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
         {},
         {
           default: () => {
-            return `${validate_component(CaretLeft, "CaretLeft").$$render($$result, { class: "h-4 w-4 rounded-full" }, {}, {})}`;
+            return `${validate_component(Chevron_left, "ChevronLeft").$$render($$result, { class: "h-4 w-4 rounded-full" }, {}, {})}`;
           }
         }
       )}</a> <a href="/app/selfempathy/create" class="skeumorphic-button-dark inline-block rounded-full mr-1 md:mr-0.5">${validate_component(Button$1, "SparkleButton").$$render(
@@ -52,7 +52,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
         {},
         {
           default: () => {
-            return `${escape($t("default.page.selfempathy.create"))} ${validate_component(HeartFilled, "HeartFilled").$$render(
+            return `${escape($t("default.page.selfempathy.create"))} ${validate_component(Heart, "Heart").$$render(
               $$result,
               {
                 class: "h-4 w-4 text-red-600\r\n							"

@@ -1,15 +1,10 @@
 import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
-import { HarmBlockThreshold, HarmCategory, GoogleGenerativeAI } from "@google/genai";
+import { HarmBlockThreshold, HarmCategory, GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenerativeAI(PRIVATE_GEMINI_API_KEY);
+const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY});
 
 export const POST = async ({ request }) => {
   const { text, lang } = await request.json();
-
-  const model = ai.getGenerativeModel({
-    model: "gemini-1.5-flash",
-    systemInstruction: `you are an expert that is trained to identify if an observation contains a judgement based on nonviolent communication principles. You receive texts and answer if the observation contains a jugement or not. If it does, make a suggestion that doesn't. please make sure that the text really has to contain a judgment for you to point it out. Answer in ${lang}.`,
-  });
 
   const safetySettings = [
     {
@@ -22,22 +17,21 @@ export const POST = async ({ request }) => {
     },
   ];
 
-  const generationConfig = {
-    temperature: 0,
-    topP: 0.95,
-    topK: 64,
-    maxOutputTokens: 8192,
-    responseMimeType: "text/plain",
-  };
-
   console.log('text', text);
   console.log('lang', lang);
 
 
   try {
     const chatSession = ai.chats.create({
-      generationConfig,
-      safetySettings,
+      model: "gemini-2.0-flash",
+      config: {
+        temperature: 0,
+        topP: 0.95,
+        topK: 64,
+        maxOutputTokens: 8192,
+        responseMimeType: "text/plain",
+        safetySettings,
+      },
       history: [
       ],
     });
@@ -47,11 +41,10 @@ export const POST = async ({ request }) => {
     // const result = await model.generateContent(lang === 'en' ? enPromt : dePromt);
     console.log('result', result);
     console.log('typeof result', typeof result);
-    const response = result.response;
-    const resText = response.text();
+    const text = result.text;
     console.log(text);
 
-    return new Response(JSON.stringify({ result: resText }), {
+    return new Response(JSON.stringify({ result: text }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',

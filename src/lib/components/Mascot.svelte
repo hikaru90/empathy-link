@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { ChevronUp, ChevronDown } from 'radix-icons-svelte';
+	import ChevronUp from 'lucide-svelte/icons/chevron-up'
+	import ChevronDown from 'lucide-svelte/icons/chevron-down'
 	import backgroundImage from '$assets/images/holo3.jpg';
 	import { t, locale } from '$lib/translations';
 	import { onMount, onDestroy } from 'svelte';

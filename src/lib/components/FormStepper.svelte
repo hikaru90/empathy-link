@@ -2,7 +2,8 @@
 	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { createEventDispatcher } from 'svelte';
 	import { t } from '$lib/translations';
-	import { ArrowRight, CaretLeft } from 'radix-icons-svelte';
+	import ArrowRight from 'lucide-svelte/icons/arrow-right'
+	import ChevronLeft from 'lucide-svelte/icons/chevron-left'
 
 	const dispatch = createEventDispatcher();
 
@@ -35,7 +36,7 @@
 			decoration="dark-op1"
 			class="flex items-center border-neutral-900 bg-neutral-800 px-1.5 text-sm text-zinc-200"
 		>
-			<CaretLeft class="h-4 w-4 rounded-full" />
+			<ChevronLeft class="h-4 w-4 rounded-full" />
 		</Button>
 	</div>
 	{#if checkForJudgement}

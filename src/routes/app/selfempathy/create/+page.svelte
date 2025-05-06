@@ -67,10 +67,3 @@
 			</div>
 	</div>
 </div>
-
-<style lang="scss">
-	.chat-shadow{
-		border: 1px solid rgba(255,255,255,0.2);
-		box-shadow: inset 0 2px 2px 0 rgba(0, 0, 0, 0.1), inset 0 -2px 2px 0 rgba(255, 255, 255, 0.2);
-	}
-</style>

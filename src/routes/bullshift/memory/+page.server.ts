@@ -1,9 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { ai, bullshiftChats } from '$lib/server/gemini';
-import { pb } from '$scripts/pocketbase';
-import { getModel, initChat } from '$lib/server/gemini';
-import { redirect } from '@sveltejs/kit';
-import { Chat } from '@google/genai';
+import { bullshiftChats } from '$lib/server/gemini';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const user = locals.user;

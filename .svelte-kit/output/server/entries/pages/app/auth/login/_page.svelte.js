@@ -1,7 +1,7 @@
 import { c as compute_rest_props, s as subscribe } from "../../../../../chunks/utils.js";
-import { c as create_ssr_component, s as spread, h as escape_object, a as add_attribute, v as validate_component, e as escape } from "../../../../../chunks/ssr.js";
+import { c as create_ssr_component, s as spread, a as add_attribute, h as escape_object, v as validate_component, e as escape } from "../../../../../chunks/ssr.js";
 import { F as Form_button, M as Menu } from "../../../../../chunks/form-button.js";
-import { g as getFormField, a as generateId, b as getDataFsError, F as Form_field, C as Control, c as Form_label, I as Input, d as Form_field_errors } from "../../../../../chunks/index8.js";
+import { g as getFormField, a as generateId, b as getDataFsError, F as Form_field, C as Control, c as Form_label, I as Input, d as Form_field_errors } from "../../../../../chunks/input.js";
 import { f as formSchema } from "../../../../../chunks/schema.js";
 import "../../../../../chunks/client.js";
 import "ts-deepmerge";
@@ -12,11 +12,11 @@ import { z as zodClient } from "../../../../../chunks/zod.js";
 import { t } from "../../../../../chunks/translations.js";
 import { a as toast } from "../../../../../chunks/Toaster.svelte_svelte_type_style_lang.js";
 import "../../../../../chunks/index4.js";
-import { R as Root, D as Dialog_content, a as Dialog_header, b as Dialog_title, c as Dialog_description } from "../../../../../chunks/index9.js";
+import { R as Root, D as Dialog_content, a as Dialog_header, b as Dialog_title, c as Dialog_description } from "../../../../../chunks/index8.js";
 import "../../../../../chunks/pocketbase.js";
 import { c as cn } from "../../../../../chunks/index3.js";
 import { B as Button } from "../../../../../chunks/button.js";
-import { C as Check } from "../../../../../chunks/Check.js";
+import { C as Check } from "../../../../../chunks/check.js";
 import { p as page } from "../../../../../chunks/stores.js";
 const Description = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let descriptionAttrs;
@@ -138,7 +138,7 @@ const LoginForm = create_ssr_component(($$result, $$props, $$bindings, slots) =>
           }
         })} ${validate_component(Form_description, "Form.Description").$$render($$result, {}, {}, {
           default: () => {
-            return `<a role="button" tabindex="0" class="text-sm text-muted-foreground hover:underline">${escape($t("default.page.login.forgotPassword.question"))}</a>`;
+            return `<button tabindex="0" class="text-sm text-muted-foreground hover:underline">${escape($t("default.page.login.forgotPassword.question"))}</button>`;
           }
         })} ${validate_component(Form_field_errors, "Form.FieldErrors").$$render($$result, {}, {}, {})}`;
       }

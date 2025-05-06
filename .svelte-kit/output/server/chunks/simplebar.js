@@ -1,7 +1,7 @@
 import { s as subscribe, n as noop, c as compute_rest_props } from "./utils.js";
-import { c as create_ssr_component, a as add_attribute, b as each, d as add_styles, f as merge_ssr_styles, e as escape, v as validate_component, m as missing_component, s as spread, g as escape_attribute_value, h as escape_object } from "./ssr.js";
+import { c as create_ssr_component, a as add_attribute, b as each, d as add_styles, v as validate_component, e as escape, f as merge_ssr_styles, m as missing_component, s as spread, g as escape_attribute_value, h as escape_object } from "./ssr.js";
 import { o as onDestroy } from "./lifecycle.js";
-import { c as cn, t as toastState, u as useEffect } from "./Toaster.svelte_svelte_type_style_lang.js";
+import { t as toastState, u as useEffect, c as cn } from "./Toaster.svelte_svelte_type_style_lang.js";
 import { d as derivedMode } from "./page.js";
 const Icon = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let { type = "success" } = $$props;
@@ -49,7 +49,7 @@ const Toast = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     info: "",
     loading: ""
   };
-  const { toasts, heights, removeHeight, setHeight, remove } = toastState;
+  const { toasts, heights, removeHeight, remove } = toastState;
   $$unsubscribe_toasts = subscribe(toasts, (value) => $toasts = value);
   $$unsubscribe_heights = subscribe(heights, (value) => $heights = value);
   let { toast } = $$props;
@@ -249,7 +249,7 @@ const Toaster = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let { toastOptions = {} } = $$props;
   let { offset = null } = $$props;
   let { dir = getDocumentDirection() } = $$props;
-  const { toasts, heights, reset } = toastState;
+  const { toasts, heights } = toastState;
   $$unsubscribe_toasts = subscribe(toasts, (value) => $toasts = value);
   $$unsubscribe_heights = subscribe(heights, (value) => $heights = value);
   let expanded = false;

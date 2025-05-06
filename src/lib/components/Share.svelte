@@ -13,16 +13,14 @@
 	import { z } from 'zod';
 	import { get } from 'svelte/store';
 	import { page } from '$app/stores';
-	import {
-		CaretLeft,
-		Share1,
-		Cross1,
-		Clipboard,
-		EnvelopeClosed,
-		PaperPlane,
-		Reset,
-		Check
-	} from 'radix-icons-svelte';
+	import ChevronLeft from 'lucide-svelte/icons/chevron-left'
+	import Share2 from 'lucide-svelte/icons/share-2'
+	import X from 'lucide-svelte/icons/x'
+	import Clipboard from 'lucide-svelte/icons/clipboard'
+	import Mail from 'lucide-svelte/icons/mail'
+	import SendHorizontal from 'lucide-svelte/icons/send-horizontal'
+	import RotateCcw from 'lucide-svelte/icons/rotate-ccw'
+	import Check from 'lucide-svelte/icons/check'
 	import * as Drawer from '$lib/components/ui/drawer';
 	import { copy } from 'svelte-copy';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -159,7 +157,7 @@
 			decoration="dark-op1"
 			class="flex items-center border-neutral-900 bg-neutral-800 px-1.5 text-sm text-zinc-200"
 		>
-			<CaretLeft class="h-4 w-4 rounded-full" />
+			<ChevronLeft class="h-4 w-4 rounded-full" />
 		</Button>
 	</a>
 
@@ -180,7 +178,7 @@
 			class="flex items-center gap-2 border-neutral-900 bg-red-700 text-sm text-zinc-200 hover:bg-red-800"
 		>
 			{$t('default.page.fight.unresolve')}
-			<Reset class="-mr-2" />
+			<RotateCcw class="-mr-2" />
 		</Button>
 		{/if}
 		<Button
@@ -189,7 +187,7 @@
 			class="flex items-center gap-2 border-neutral-900 bg-neutral-800 text-sm text-zinc-200"
 		>
 			{$t('default.menu.share.cta')}
-			<Share1 class="-mr-1" />
+			<Share2 class="-mr-1" />
 		</Button>
 	</div>
 </div>
@@ -204,7 +202,7 @@
 					<div class="label bg-feelings-background">
 						<div class="icon fill-feelings-foreground">
 							<!-- {@html row.icon} -->
-							<Cross1 class="text-red-600" />
+							<X class="text-red-600" />
 						</div>
 					</div>
 				</Drawer.Close>
@@ -227,7 +225,7 @@
 				<button
 					on:click={() => ((drawerOpen = false), (dialogOpen = true))}
 					class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm"
-					>{$t('default.menu.share.mailLink')} <EnvelopeClosed /></button
+					>{$t('default.menu.share.mailLink')} <Mail /></button
 				>
 			</div>
 		</Drawer.Footer>
@@ -262,7 +260,7 @@
 					</Form.Field>
 					<div class="flex w-full justify-end">
 						<Button type="submit" class="flex items-center gap-3"
-							>{$t('default.menu.share.cta')} <PaperPlane /></Button
+							>{$t('default.menu.share.cta')} <SendHorizontal /></Button
 						>
 					</div>
 				</form>

@@ -1,4 +1,4 @@
-import { d as derived, w as writable } from "./index2.js";
+import { w as writable, d as derived } from "./index2.js";
 let timeoutAction;
 let timeoutEnable;
 function withoutTransition(action) {

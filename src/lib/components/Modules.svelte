@@ -75,10 +75,3 @@
 		</div>
 	</div>
 </div>
-
-<style lang="scss">
-	.skeumorphic-button {
-		transition: box-shadow 50ms;
-		box-shadow: var(--skeumorphic-shadow-light);
-	}
-</style>

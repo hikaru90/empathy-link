@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { Sun, Moon } from 'radix-icons-svelte';
+	import Sun from 'lucide-svelte/icons/sun'
+	import Moon from 'lucide-svelte/icons/moon'
 	import { toggleMode, mode } from 'mode-watcher';
 	import { onMount } from 'svelte';
 	import Logo from '$lib/components/Logo.svelte';

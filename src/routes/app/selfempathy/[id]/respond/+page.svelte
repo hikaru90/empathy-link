@@ -37,7 +37,8 @@
 	import { serializeNonPOJOs, groupBy, setCookie, deleteCookie } from '$scripts/helpers';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import ResponseMascot from '$lib/components/ResponseMascot.svelte';
-	import { Cross1, QuestionMarkCircled } from 'radix-icons-svelte';
+	import CircleHelp from 'lucide-svelte/icons/circle-help'
+	import X from 'lucide-svelte/icons/x'
 	import { backgroundColor } from '$store/page';
 	import { browser } from '$app/environment';
 	import { user } from '$store/auth';
@@ -467,7 +468,7 @@
 								on:click={() => (drawerOpen = true)}
 								variant="ghost"
 								class="mb-6 flex w-full items-center justify-start gap-2"
-								><QuestionMarkCircled />
+								><CircleHelp />
 								{$t('default.page.respond.steps.greeting.explanationCta')}</Button
 							>
 						</div>
@@ -707,7 +708,7 @@
 				<Drawer.Title>{$t('default.page.respond.explanationTitle')}</Drawer.Title>
 				<!-- <Drawer.Description>This action cannot be undone.</Drawer.Description> -->
 				<Drawer.Close>
-					<Cross1 class="text-red-600" />
+					<X class="text-red-600" />
 				</Drawer.Close>
 			</div>
 		</Drawer.Header>

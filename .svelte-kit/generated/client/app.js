@@ -21,8 +21,7 @@ export const nodes = [
 	() => import('./nodes/17'),
 	() => import('./nodes/18'),
 	() => import('./nodes/19'),
-	() => import('./nodes/20'),
-	() => import('./nodes/21')
+	() => import('./nodes/20')
 ];
 
 export const server_loads = [0,2];
@@ -45,7 +44,6 @@ export const dictionary = {
 		"/bullshift/insights/[id]": [~17],
 		"/bullshift/memory": [~18],
 		"/bullshift/stats": [~19],
-		"/utility/shapes2": [21],
 		"/utility/shapes": [20]
 	};
 

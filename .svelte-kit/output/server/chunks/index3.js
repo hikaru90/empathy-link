@@ -55,10 +55,6 @@ function disabledAttr(disabled) {
   return disabled ? true : void 0;
 }
 ({
-  type: "hidden",
-  "aria-hidden": true,
-  hidden: true,
-  tabIndex: -1,
   style: styleToString({
     position: "absolute",
     opacity: 0,
@@ -331,7 +327,6 @@ const kbd = {
   BACKSPACE: "Backspace",
   CAPS_LOCK: "CapsLock",
   CONTROL: "Control",
-  DELETE: "Delete",
   END: "End",
   ENTER: "Enter",
   ESCAPE: "Escape",
@@ -353,11 +348,7 @@ const kbd = {
   PAGE_UP: "PageUp",
   SHIFT: "Shift",
   SPACE: " ",
-  TAB: "Tab",
-  CTRL: "Control",
-  ASTERISK: "*",
-  A: "a",
-  P: "p"
+  TAB: "Tab"
 };
 const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
 const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
@@ -551,9 +542,9 @@ export {
   isHTMLElement as a,
   addMeltEventListener as b,
   cn as c,
-  effect as d,
+  createElHelpers as d,
   executeCallbacks as e,
-  createElHelpers as f,
+  effect as f,
   disabledAttr as g,
   getElementByMeltId as h,
   isBrowser as i,
@@ -569,9 +560,9 @@ export {
   styleToString as s,
   isElementDisabled as t,
   useEscapeKeydown as u,
-  createHiddenInput as v,
+  isHTMLInputElement as v,
   withGet as w,
-  safeOnMount as x,
-  isHTMLInputElement as y,
+  createHiddenInput as x,
+  safeOnMount as y,
   buttonVariants as z
 };

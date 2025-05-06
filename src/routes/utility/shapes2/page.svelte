@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import P5 from 'p5';
-	import { Width } from 'radix-icons-svelte';
-	import { draw } from 'svelte/transition';
 
 	let p: P5 | undefined;
 	let canvasParent: HTMLDivElement | undefined;

@@ -1,7 +1,7 @@
 import { s as subscribe } from "../../../../../chunks/utils.js";
 import { c as create_ssr_component, a as add_attribute, v as validate_component, e as escape } from "../../../../../chunks/ssr.js";
 import { F as Form_button, M as Menu } from "../../../../../chunks/form-button.js";
-import { F as Form_field, C as Control, c as Form_label, I as Input, d as Form_field_errors } from "../../../../../chunks/index8.js";
+import { F as Form_field, C as Control, c as Form_label, I as Input, d as Form_field_errors } from "../../../../../chunks/input.js";
 import { f as formSchema } from "../../../../../chunks/schema.js";
 import "../../../../../chunks/client.js";
 import "ts-deepmerge";

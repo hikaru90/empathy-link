@@ -214,7 +214,7 @@ var u = Object.getOwnPropertyDescriptors;
 var s = Object.getOwnPropertySymbols;
 var f = Object.prototype.hasOwnProperty, P = Object.prototype.propertyIsEnumerable;
 var i = (r, o, e) => o in r ? n(r, o, { enumerable: true, configurable: true, writable: true, value: e }) : r[o] = e, p = (r, o) => {
-  for (var e in o) f.call(o, e) && i(r, e, o[e]);
+  for (var e in o || (o = {})) f.call(o, e) && i(r, e, o[e]);
   if (s) for (var e of s(o)) P.call(o, e) && i(r, e, o[e]);
   return r;
 }, d = (r, o) => M(r, u(o));

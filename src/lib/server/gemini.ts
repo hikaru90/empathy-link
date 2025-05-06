@@ -1,10 +1,7 @@
 import { pb } from '$scripts/pocketbase';
 import {
-	HarmBlockThreshold,
-	HarmCategory,
 	GoogleGenAI,
 	Type,
-	FunctionCallingConfigMode
 } from '@google/genai';
 import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
 import type { HistoryEntry } from '$routes/api/ai/selfempathy/initChat/+server';

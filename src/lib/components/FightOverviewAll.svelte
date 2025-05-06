@@ -6,10 +6,12 @@
 	import { t } from '$lib/translations';
 	import { endDate } from '$store/dashboard';
 	import { goto } from '$app/navigation';
-	import { CaretRight, Check, Cross2 } from 'radix-icons-svelte';
+	import ChevronRight from 'lucide-svelte/icons/chevron-right'
+	import Check from 'lucide-svelte/icons/check'
+	import X from 'lucide-svelte/icons/x'
+	import Plus from 'lucide-svelte/icons/plus'
 	import { user } from '$store/auth';
 	import SparklePill from '$lib/components/SparklePill.svelte';
-	import { Plus } from 'radix-icons-svelte';
 	import { delay } from '$scripts/helpers';
 	import { Switch } from '$lib/components/ui/switch';
 	import { Label } from '$lib/components/ui/label/index.js';
@@ -121,7 +123,7 @@
 								</div>
 								{:else}
 								<div class="rounded-full text-red-600/80 p-1 text-2xs">
-									<Cross2 class="size-3" />
+									<X class="size-3" />
 								</div>
 							{/if}
 						</div>
@@ -139,12 +141,12 @@
 							{#if record.opened}
 								<Check class="h-3 w-3 text-black" />
 							{:else}
-								<Cross2 class="h-3 w-3 text-black" />
+								<X class="h-3 w-3 text-black" />
 							{/if}
 						</div>
 						<div class="flex w-1/6 justify-end">
 							<div class="skeumorphic-button rounded-full p-0.5">
-								<CaretRight
+								<ChevronRight
 									class="h-4 w-4 rounded-full group-hover:bg-neutral-300 group-hover:text-black"
 								/>
 							</div>

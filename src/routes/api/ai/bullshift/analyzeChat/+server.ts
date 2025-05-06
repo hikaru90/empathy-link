@@ -5,7 +5,6 @@ import { pb } from '$scripts/pocketbase';
 import type { Content } from '@google/genai';
 import { analyzeChat } from '$lib/server/tools';
 import { z } from 'zod';
-import type { Chat } from '@google/genai';
 
 export interface HistoryEntry {
 	role: 'user' | 'model';
@@ -127,7 +126,12 @@ export const POST: RequestHandler = async ({ request }) => {
 			readabilityScore: z.number()
 		});
 
-		const validatedAnalysis = analysisSchema.parse(analysis);
+		interface Analysis extends z.infer<typeof analysisSchema> {
+			user?: string;
+			chat?: string;
+		}
+
+		const validatedAnalysis:Analysis = analysisSchema.parse(analysis);
 		if (!validatedAnalysis) {
 			throw new Error('Invalid analysis');
 		}

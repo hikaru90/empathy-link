@@ -11,7 +11,8 @@
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import IconSteps from '$assets/icons/icon-steps.svg?raw';
-	import { PaperPlane, HeartFilled } from 'radix-icons-svelte';
+	import SendHorizontal from 'lucide-svelte/icons/send-horizontal'
+	import Heart from 'lucide-svelte/icons/heart'
 
 	let menuItems = [
 		{
@@ -96,13 +97,13 @@
 		<div class="step5 flex items-center justify-center rounded-full p-[1em] shadow-lg">
 			<div class="flex w-full items-center justify-between fill-observation-foreground">
 				<div class="h-[0.5em] w-[3em] rounded bg-slate-600"></div>
-				<PaperPlane class="text-slate-500" />
+				<SendHorizontal class="text-slate-500" />
 			</div>
 		</div>
 
 		<div class="absolute flex h-full w-full items-center justify-center pb-[3em]">
 			<div class="heart">
-				<HeartFilled class="size-[5em] text-red-400" />
+				<Heart class="size-[5em] text-red-400" />
 			</div>
 		</div>
 	</div>

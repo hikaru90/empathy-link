@@ -10,7 +10,7 @@ return {
 	assets: new Set(["bullshift/bullshift-logo.svg","connector.svg","favicon.png","feelings.js","hero/2phone.png","hero/2phone_lit.png","hero/bak/1phone.png","hero/bak/1phone_lit.png","hero/bak/2phone.png","hero/bak/2phone_lit.png","hero/bak/icon1.png","hero/bak/icon1_lit.png","hero/bak/icon2.png","hero/bak/icon2_lit.png","hero/bak/icon3.png","hero/bak/icon3_lit.png","hero/bak/icon4.png","hero/bak/icon4_lit.png","hero/icon1.png","hero/icon1_lit.png","hero/icon2.png","hero/icon2_lit.png","hero/icon3.png","hero/icon3_lit.png","hero/icon4.png","hero/icon4_lit.png","hero/phone_mobile.png","hero.bin","hero.gltf","holo3.jpg","Image_0.png","inverted-border-white.svg","inverted-border.svg","iphone_mockup.png","needs.js","phone-icons-inverted.svg","phone-icons.svg","phone-lens.jpg","phone_frontal.png","screenshot-dashboard.png","screenshot-fight2.png","shapes/shape1.svg","shapes/shape10.svg","shapes/shape11.svg","shapes/shape12.svg","shapes/shape2.svg","shapes/shape3.svg","shapes/shape4.svg","shapes/shape5.svg","shapes/shape6.svg","shapes/shape7.svg","shapes/shape8.svg","shapes/shape9.svg","women.jpg"]),
 	mimeTypes: {".svg":"image/svg+xml",".png":"image/png",".js":"text/javascript",".bin":"application/octet-stream",".gltf":"model/gltf+json",".jpg":"image/jpeg"},
 	_: {
-		client: null,
+		client: {start:"_app/immutable/entry/start.DHk1fZtn.js",app:"_app/immutable/entry/app.CZRKOQqp.js",imports:["_app/immutable/entry/start.DHk1fZtn.js","_app/immutable/chunks/C-UKQIQA.js","_app/immutable/chunks/VyIzUtk4.js","_app/immutable/entry/app.CZRKOQqp.js","_app/immutable/chunks/C1FmrZbK.js","_app/immutable/chunks/VyIzUtk4.js","_app/immutable/chunks/Deb2Hck3.js"],stylesheets:[],fonts:[],uses_env_dynamic_public:false},
 		nodes: [
 			__memo(() => import('./nodes/0.js')),
 			__memo(() => import('./nodes/1.js')),
@@ -32,8 +32,7 @@ return {
 			__memo(() => import('./nodes/17.js')),
 			__memo(() => import('./nodes/18.js')),
 			__memo(() => import('./nodes/19.js')),
-			__memo(() => import('./nodes/20.js')),
-			__memo(() => import('./nodes/21.js'))
+			__memo(() => import('./nodes/20.js'))
 		],
 		routes: [
 			{
@@ -261,13 +260,6 @@ return {
 				endpoint: null
 			},
 			{
-				id: "/utility/shapes2",
-				pattern: /^\/utility\/shapes2\/?$/,
-				params: [],
-				page: { layouts: [0,], errors: [1,], leaf: 21 },
-				endpoint: null
-			},
-			{
 				id: "/utility/shapes",
 				pattern: /^\/utility\/shapes\/?$/,
 				params: [],
@@ -275,6 +267,7 @@ return {
 				endpoint: null
 			}
 		],
+		prerendered_routes: new Set([]),
 		matchers: async () => {
 			
 			return {  };

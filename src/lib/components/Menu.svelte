@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { MixerVertical } from 'radix-icons-svelte';
+	import SlidersVertical from 'lucide-svelte/icons/sliders-vertical'
 	import { toggleMode, mode } from 'mode-watcher';
 	import { onMount } from 'svelte';
 	import Logo from '$lib/components/Logo.svelte';
@@ -77,7 +77,7 @@
 			<div class="flex items-center gap-4">
 				<Popover.Root>
 					<Popover.Trigger>
-						<MixerVertical class="h-5 w-5" />
+						<SlidersVertical class="h-5 w-5" />
 					</Popover.Trigger>
 					<Popover.Content class="mt-[10px] w-40 bg-background">
 						<div class="mb-3 border-b border-gray-300/60 pb-3 dark:border-gray-300/20">

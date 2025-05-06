@@ -8,7 +8,8 @@
 	import { goto } from '$app/navigation';
 	import { backgroundColor } from '$store/page';
 	import { onMount } from 'svelte';
-	import { CaretLeft, Plus, HeartFilled } from 'radix-icons-svelte';
+	import ChevronLeft from 'lucide-svelte/icons/chevron-left'
+	import Heart from 'lucide-svelte/icons/heart'
 	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { Button as SparkleButton } from '$lib/components/ui/button-sparkle';
 
@@ -38,7 +39,7 @@
 							decoration="dark-op1"
 							class="flex items-center border-neutral-900 bg-neutral-800 px-1.5 text-sm text-zinc-200"
 						>
-							<CaretLeft class="h-4 w-4 rounded-full" />
+							<ChevronLeft class="h-4 w-4 rounded-full" />
 						</Button>
 					</a>
 					<a href="/app/selfempathy/create" class="skeumorphic-button-dark inline-block rounded-full mr-1 md:mr-0.5">
@@ -46,7 +47,7 @@
 							class="flex items-center justify-between gap-10 rounded-full pl-5 pr-3 font-bold text-black dark:shadow-gray-300/30"
 						>
 							{$t('default.page.selfempathy.create')}
-							<HeartFilled class="h-4 w-4 text-red-600
+							<Heart class="h-4 w-4 text-red-600
 							" />
 						</SparkleButton>
 					</a>

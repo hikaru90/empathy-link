@@ -2,18 +2,14 @@
 	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import Cross1 from 'svelte-radix/Cross1.svelte';
 	import Exit from 'svelte-radix/Exit.svelte';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { enhance } from '$app/forms';
-	import { Person } from 'radix-icons-svelte';
+	import User from 'lucide-svelte/icons/user'
 	import { t } from '$lib/translations';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
-	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Switch } from '$lib/components/ui/switch';
 	import { toggleMode, mode } from 'mode-watcher';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { locale, locales } from '$lib/translations';
+	import { locale } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
 	import { user } from '$store/auth';
 	import backgroundImage from '$assets/images/holo3.jpg';
@@ -25,10 +21,10 @@
 
 	$: darkMode = $mode === 'dark';
 
-	const handleSelect: (event: SelectedChangeEvent) => void = (event) => {
-		if (event) {
-			setCookie('locale', event.value);
-			locale.update(() => event.value);
+	const handleSelect = (selected: { value: string } | undefined) => {
+		if (selected) {
+			setCookie('locale', selected.value);
+			locale.update(() => selected.value);
 		}
 	};
 </script>
@@ -40,7 +36,7 @@
 			builders={[builder]}
 			class="-mr-2 flex items-center justify-center border-neutral-200 bg-background p-1.5 text-sm text-neutral-800 transition hover:bg-offwhite dark:border-neutral-800 dark:bg-muted dark:text-white"
 		>
-			<Person class="h-4 w-4" />
+			<User class="h-4 w-4" />
 		</Button>
 	</Sheet.Trigger>
 	<Sheet.Content side="right" class="z-[1003] flex flex-col border-muted">
@@ -92,8 +88,8 @@
 						<div
 							class="flex size-7 items-center justify-center rounded-full bg-muted text-xs font-bold uppercase tracking-[-0.12em] relative z-10"
 						>
-							{$user.firstName.charAt(0)}
-							{$user.lastName.charAt(0)}
+							{$user?.firstName.charAt(0)}
+							{$user?.lastName.charAt(0)}
 						</div>
 						<div
 							style="background-image: url('{backgroundImage}'); background-size: 400% 400%"
@@ -102,11 +98,11 @@
 					</div>
 					<div class="flex flex-col">
 						<div class="font-bold">
-							{$user.firstName}
-							{$user.lastName}
+							{$user?.firstName}
+							{$user?.lastName}
 						</div>
 						<div class="text-sm -mt-1">
-							{$user.email}
+							{$user?.email}
 						</div>
 					</div>
 				</div>

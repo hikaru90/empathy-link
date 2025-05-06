@@ -8,6 +8,7 @@ const client = 'empathy_link'
 import cron from 'node-cron';
 import { extractMemories } from '$lib/server/tools';
 
+
 // Only start cron if it hasn't already been started
 if (process.env.NODE_ENV === 'production') {
 	if (!(globalThis as any).__cronStarted) {
@@ -28,7 +29,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	let posthogUserId = event.cookies.get(`${client}_user_id`);
 	if (!sessionToken) {
 		sessionToken = uuidv4();
-		event.cookies.set(`${client}_session_id`, sesspromptonToken, {
+		event.cookies.set(`${client}_session_id`, sessionToken, {
 			httpOnly: true,
 			sameSite: 'strict',
 			secure: true,
@@ -47,8 +48,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 		});
 	}
 	// Retrieve PostHog cookie
-	let phCookie = event.cookies.get(`ph_${PUBLIC_POSTHOG_KEY}_posthog`);
-	phCookie = phCookie ? JSON.parse(phCookie) : null;
+	const phCookieString: string | undefined = event.cookies.get(`ph_${PUBLIC_POSTHOG_KEY}_posthog`);
+	const phCookie: { distinct_id: string } | undefined = phCookieString ? JSON.parse(phCookieString) : undefined;
 	const posthogId = phCookie ? phCookie.distinct_id : posthogUserId;
 
 	event.locals.posthogId = posthogId;
@@ -88,7 +89,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 
 		// Set the user in the locals object
-		event.locals.user = serializeNonPOJOs(event.locals.pb.authStore.model);
+		event.locals.user = serializeNonPOJOs(event.locals.pb.authStore.model) as App.User;
 		const user = event.locals.pb.authStore.baseModel;
 		// initUserSession(user, messages, userId);
 

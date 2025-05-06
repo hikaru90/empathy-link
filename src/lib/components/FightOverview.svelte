@@ -7,10 +7,13 @@
 	import { startDate, endDate } from '$store/dashboard';
 	import { goto } from '$app/navigation';
 	import { user } from '$store/auth';
+	import Check from 'lucide-svelte/icons/check';
+	import X from 'lucide-svelte/icons/x';
+	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 
 	let initialized = false;
 	let pending = true;
-	let records = [];
+	let records: any[] = [];
 
 	const fetchData = async () => {
 		const filter = `owner = '${$user.id}' && created >= "${$startDate.toString()} 00:00:00" && created < "${$endDate.add({ days: 1 }).toString()} 00:00:00"`;
@@ -96,12 +99,12 @@
 						{#if record.opened}
 							<Check class="w-3 h-3 text-black dark:text-neon" />
 							{:else}
-							<Cross2 class="w-3 h-3 text-black dark:text-neon" />
+							<X class="w-3 h-3 text-black dark:text-neon" />
 						{/if}
 					</div>
 					<div class="w-1/6 flex justify-end">
 						<div class="skeumorphic-button rounded-full p-0.5">
-							<CaretRight class="h-4 w-4 rounded-full group-hover:bg-neutral-300 group-hover:text-black" />
+							<ChevronRight class="h-4 w-4 rounded-full group-hover:bg-neutral-300 group-hover:text-black" />
 						</div>
 					</div>
 				</button>

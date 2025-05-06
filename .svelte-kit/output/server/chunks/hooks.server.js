@@ -3,7 +3,6 @@ import { v4 } from "uuid";
 import { c as serializeNonPOJOs } from "./helpers.js";
 import { p as pb } from "./pocketbase.js";
 import { P as PUBLIC_POSTHOG_KEY } from "./public.js";
-import "./auth.js";
 import { r as redirect } from "./index.js";
 import cron from "node-cron";
 import { e as extractMemories } from "./tools.js";
@@ -43,8 +42,8 @@ const handle = async ({ event, resolve }) => {
       // 1 year
     });
   }
-  let phCookie = event.cookies.get(`ph_${PUBLIC_POSTHOG_KEY}_posthog`);
-  phCookie = phCookie ? JSON.parse(phCookie) : null;
+  const phCookieString = event.cookies.get(`ph_${PUBLIC_POSTHOG_KEY}_posthog`);
+  const phCookie = phCookieString ? JSON.parse(phCookieString) : void 0;
   const posthogId = phCookie ? phCookie.distinct_id : posthogUserId;
   event.locals.posthogId = posthogId;
   event.locals.sessionToken = sessionToken;

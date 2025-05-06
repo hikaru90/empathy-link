@@ -1,10 +1,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { ClientResponseError } from 'pocketbase';
-import { ai, bullshiftChats, sendMessage } from '$lib/server/gemini';
-import { HarmBlockThreshold, HarmCategory } from '@google/genai';
+import { bullshiftChats } from '$lib/server/gemini';
 import { pb } from '$scripts/pocketbase';
-import type { Content } from '@google/genai';
+import type { Content, Chat } from '@google/genai';
 import { initChat } from '$lib/server/gemini';
 
 
@@ -20,7 +18,7 @@ export interface HistoryEntryWithFirstUser {
 	length: number;
 }
 
-export interface DbChatSession extends ChatSession {
+export interface DbChatSession{
 	user: string; // User ID
 	module: string; // Module identifier
 	history: HistoryEntry[];

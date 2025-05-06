@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import P5 from 'p5';
-	import { Width } from 'radix-icons-svelte';
 
 	let canvasParent;
 	const noiseStrength = 100;

@@ -2,9 +2,9 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { ClientResponseError } from 'pocketbase';
 import { ai, selfempathyChats, sendMessage } from '$lib/server/gemini';
-import { HarmBlockThreshold, HarmCategory, SchemaType } from '@google/genai';
+import { HarmBlockThreshold, HarmCategory, Type } from '@google/genai';
 import { pb } from '$scripts/pocketbase';
-import type { Content } from '@google/genai';
+import type { Content, Chat } from '@google/genai';
 
 
 export interface HistoryEntry {
@@ -19,23 +19,24 @@ export interface HistoryEntryWithFirstUser {
   length: number;
 }
 
-export interface DbChatSession extends ChatSession {
+export interface DbChatSession {
   user: string; // User ID
   module: string; // Module identifier
-	history: HistoryEntry[];
+  history: HistoryEntry[];
+  // Add any other properties you need from Chat here, if necessary
 }
 
 
 const schema = {
 	description: 'Structured response of a step by step process',
-	type: SchemaType.OBJECT,
+	type: Type.OBJECT,
 	properties: {
 		step: {
-			type: SchemaType.INTEGER,
+			type: Type.INTEGER,
 			description: 'Current step in this process'
 		},
 		text: {
-			type: SchemaType.STRING,
+			type: Type.STRING,
 			description: 'Content of the step'
 		}
 	},
@@ -52,32 +53,30 @@ const initHistory = (user: object, history?: HistoryEntry[]) => {
 
 const initModel = async (user?: object, systemInstruction?: string, history?: HistoryEntry[]) => {
 	try {
-		const model = ai.getGenerativeModel({
-			model: 'gemini-1.5-flash',
-			systemInstruction: systemInstruction
-		});
 		const testHistory = initHistory(user!, history);
 		console.log('testHistory', testHistory);
 		const chat = ai.chats.create({
-			history: initHistory(user!, history),
-			generationConfig: {
+			model: 'gemini-1.5-flash',
+			config: {
+				systemInstruction: systemInstruction,
 				temperature: 0,
 				topP: 0.95,
 				topK: 64,
 				maxOutputTokens: 8192,
 				responseMimeType: 'application/json',
-				responseSchema: schema
+				responseSchema: schema,
+				safetySettings: [
+					{
+						category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+						threshold: HarmBlockThreshold.BLOCK_NONE
+					},
+					{
+						category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+						threshold: HarmBlockThreshold.BLOCK_NONE
+					}
+				]
 			},
-			safetySettings: [
-				{
-					category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-					threshold: HarmBlockThreshold.BLOCK_NONE
-				},
-				{
-					category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-					threshold: HarmBlockThreshold.BLOCK_NONE
-				}
-			]
+			history: initHistory(user!, history),
 		});
 
 		

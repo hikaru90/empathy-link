@@ -1,18 +1,12 @@
-import { json, text } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { bullshiftChats, getConfig, ai } from '$lib/server/gemini';
+import { bullshiftChats } from '$lib/server/gemini';
 import { pb } from '$scripts/pocketbase';
 import {
-	shouldAnalyzeFeelingsTool,
-	analyzeAndSaveFeelings,
 	saveTrace,
 	queueMemoryExtraction,
-	shouldSaveObservationTool,
-	defineCurrentStep,
-	saveObservation
 } from '$lib/server/tools';
-import type { GenerateContentResponse, FunctionCallingConfigMode } from '@google/genai';
-import { user } from '$store/auth';
+import type { GenerateContentResponse } from '@google/genai';
 
 export interface State {
 	currentStep: string;

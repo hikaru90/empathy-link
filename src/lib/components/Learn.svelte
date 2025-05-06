@@ -76,32 +76,10 @@
 		transition: box-shadow 50ms;
 		box-shadow: var(--skeumorphic-shadow-light);
 	}
-	.label {
-		box-shadow: /*inset 0 0 4px rgba(0, 0, 0, 0.4),*/ -4px -4px 8px 0 rgba(white, 1);
-		@apply relative h-5 w-5 flex-shrink-0 rounded-full border border-white;
-	}
-	.label:after {
-		content: '';
-		box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.4);
-		@apply block h-full w-full rounded-full;
-	}
-	.icon {
-		@apply absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 transform;
-	}
 
 	:global(.card-root) {
 		box-shadow:
 			-5px -5px 5px rgba(255, 255, 255, 0.9),
 			5px 5px 5px rgba(0, 0, 0, 0.1);
-	}
-
-	.need {
-		@apply relative z-10 inline;
-
-		&:before {
-			content: '';
-			@apply absolute left-0 top-0 h-full w-full;
-			z-index: -1; /* Ensure the background is behind the text */
-		}
 	}
 </style>

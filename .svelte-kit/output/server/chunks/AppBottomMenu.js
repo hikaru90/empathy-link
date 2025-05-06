@@ -7,8 +7,8 @@ import "dequal";
 import "./index3.js";
 import "clsx";
 import "./index7.js";
-import "./client.js";
 import "./auth.js";
+import "./client.js";
 const AppBottomMenu = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$unsubscribe_mode;
   let $t, $$unsubscribe_t;

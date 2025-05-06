@@ -1,22 +1,21 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { t } from '$lib/translations';
 	import BotMessageSquare from 'lucide-svelte/icons/bot-message-square';
 	import ChartColumnDecreasing from 'lucide-svelte/icons/chart-column-decreasing';
 	import Book from 'lucide-svelte/icons/book';
 	import Users from 'lucide-svelte/icons/users';
-	import IconFolder from '$assets/icons/icon-folder.svg?raw';
-	import IconSelf from '$assets/icons/icon-self.svg?raw';
-	import IconFight from '$assets/icons/icon-fight.svg?raw';
-	import IconFeedback from '$assets/icons/icon-feedback.svg?raw';
-	import IconLearn from '$assets/icons/icon-learn.svg?raw';
-	import { get } from 'svelte/store';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
 
-	export let user;
+	type MenuItem = {
+		slug: string;
+		heading: string;
+		path: string;
+		icon: typeof BotMessageSquare;
+		available: boolean;
+		name?: string;
+	};
 
-	let menuItems = [
+	let menuItems: MenuItem[] = [
 		{
 			slug: 'chat',
 			heading: 'Chat',
@@ -110,19 +109,3 @@
 		{/each}
 	</div>
 </div>
-
-<style lang="scss">
-	// .inverted-border:before{
-	//   @apply w-4 h-40 rounded-bl-full md:w-8 absolute -z-10 top-0 left-0 transform -translate-y-full pointer-events-none;
-	//   content: '';
-	//   box-shadow: 0 50px 0 0 black;
-	// }
-	// .inverted-border:after{
-	//   @apply w-4 h-40 rounded-br-full md:w-8 absolute -z-10 top-0 right-0 transform -translate-y-full pointer-events-none;
-	//   content: '';
-	//   box-shadow: 0 50px 0 0 black;
-	// }
-	.inverted-border-white {
-		@apply fill-white;
-	}
-</style>

@@ -9,7 +9,7 @@
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Check } from 'radix-icons-svelte';
+	import Check from 'lucide-svelte/icons/check'
 	import { pb } from '$scripts/pocketbase';
 
 	let className: string | undefined = undefined;
@@ -56,12 +56,10 @@
 			<Input {...attrs} bind:value={$formData.password} type="password" />
 		</Form.Control>
 		<Form.Description
-			><a
-				role="button"
+			><button 
 				tabindex="0"
 				on:click={() => (resetPassordDialogOpen = true)}
-				class="text-sm text-muted-foreground hover:underline">{$t('default.page.login.forgotPassword.question')}</a
-			></Form.Description
+				class="text-sm text-muted-foreground hover:underline">{$t('default.page.login.forgotPassword.question')}</button></Form.Description
 		>
 		<Form.FieldErrors />
 	</Form.Field>

@@ -3,7 +3,6 @@ import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
 import { GoogleGenAI, Type } from '@google/genai';
 import type { GenerateContentResponse } from '@google/genai';
 import type { State } from '$routes/api/ai/bullshift/send/+server';
-import { z } from 'zod';
 import type { HistoryEntry } from '$routes/api/ai/selfempathy/initChat/+server';
 
 interface Chat {
