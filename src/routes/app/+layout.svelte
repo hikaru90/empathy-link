@@ -41,7 +41,6 @@
 			document.getElementById('scrollContainer')?.addEventListener('scroll', handleScroll);
 			window?.addEventListener('resize', handleResize);
 		}
-		backgroundColor.set('bg-black');
 	});
 
 	onNavigate((navigation) => {
@@ -81,7 +80,7 @@
 			<slot />
 		</div>
 
-		<AppMenu user={data.user} />
+		<!-- <AppMenu user={data.user} /> -->
 	{/if}
 {/key}
 <Toaster />

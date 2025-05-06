@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { marked } from 'marked';
-	import { formatTimestamp } from '$lib/utils';
-	import { onDestroy, onMount } from 'svelte';
-	import { pb } from '$scripts/pocketbase';
+	import { onMount } from 'svelte';
 	import { user } from '$store/auth';
 	import { locale } from '$lib/translations';
 	import SendHorizontal from 'lucide-svelte/icons/send-horizontal';
@@ -13,10 +11,14 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import * as Popover from '$lib/components/ui/popover';
+	import { cn } from '$lib/utils';
 
 	export let chatId: string;
 	export let history: any[] = [];
 	export let systemInstruction: string;
+
+	let className: string | undefined = undefined;
+	export { className as class };
 
 	let userMessage = '';
 	let isLoading = false;
@@ -64,7 +66,6 @@
 			behavior: 'smooth'
 		});
 	};
-
 	const flushMemory = async () => {
 		await fetch('/api/ai/bullshift/flushMemory', {
 			method: 'POST',
@@ -73,7 +74,6 @@
 			}
 		});
 	};
-
 	const clearChat = async () => {
 		console.log('$user', $user);
 		try {
@@ -100,7 +100,6 @@
 			console.error('Failed to clear chat:', error);
 		}
 	};
-
 	const analyzeChat = async () => {
 		console.log('$user', $user);
 		try {
@@ -127,7 +126,6 @@
 			console.error('Failed to clear chat:', error);
 		}
 	};
-
 	const callMemoryExtraction = async () => {
 		try {
 			const response = await fetch('/api/ai/bullshift/extractMemories', {
@@ -145,7 +143,6 @@
 			console.error('Failed to extract memories:', error);
 		}
 	};
-
 	const safelyParseJSON = (jsonString: string) => {
 		try {
 			return JSON.parse(jsonString);
@@ -160,7 +157,7 @@
 	});
 </script>
 
-<div class="flex justify-between">
+<div class={cn(className, 'flex justify-between')}>
 	<Popover.Root>
 		<Popover.Trigger>
 			<div class="flex items-center gap-2 rounded-full bg-black px-3 py-1 text-xs text-offwhite">

@@ -46,9 +46,6 @@ declare module '$env/static/private' {
 	export const CURSOR_TRACE_ID: string;
 	export const DriverData: string;
 	export const EDITOR: string;
-	export const EFC_2292: string;
-	export const FPS_BROWSER_APP_PROFILE_STRING: string;
-	export const FPS_BROWSER_USER_PROFILE_STRING: string;
 	export const GDAL_DATA: string;
 	export const GDAL_DRIVER_PATH: string;
 	export const GDAL_VERSION: string;
@@ -119,7 +116,6 @@ declare module '$env/static/private' {
 	export const PSModulePath: string;
 	export const PUBLIC: string;
 	export const PYTHONPATH: string;
-	export const SESSIONNAME: string;
 	export const SystemDrive: string;
 	export const SystemRoot: string;
 	export const TEMP: string;
@@ -189,9 +185,6 @@ declare module '$env/dynamic/private' {
 		CURSOR_TRACE_ID: string;
 		DriverData: string;
 		EDITOR: string;
-		EFC_2292: string;
-		FPS_BROWSER_APP_PROFILE_STRING: string;
-		FPS_BROWSER_USER_PROFILE_STRING: string;
 		GDAL_DATA: string;
 		GDAL_DRIVER_PATH: string;
 		GDAL_VERSION: string;
@@ -262,7 +255,6 @@ declare module '$env/dynamic/private' {
 		PSModulePath: string;
 		PUBLIC: string;
 		PYTHONPATH: string;
-		SESSIONNAME: string;
 		SystemDrive: string;
 		SystemRoot: string;
 		TEMP: string;

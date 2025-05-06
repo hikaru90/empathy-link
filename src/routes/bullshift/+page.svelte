@@ -34,7 +34,7 @@
 		<div class="flex h-full w-full flex-col">
 			{#if data.error}
 				<p class="text-red-500">{data.error}</p>
-			{:else}
+			{:else if data.chatId && data.systemPrompt}
 				<BullshiftChat
 					class="relative"
 					chatId={data.chatId}
