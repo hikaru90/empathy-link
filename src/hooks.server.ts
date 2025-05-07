@@ -5,24 +5,7 @@ import { pb } from '$scripts/pocketbase'
 import { PUBLIC_POSTHOG_KEY } from '$env/static/public';
 import { redirect, type Handle } from '@sveltejs/kit';
 const client = 'empathy_link'
-import cron from 'node-cron';
-import { extractMemories } from '$lib/server/tools';
 
-
-// Only start cron if it hasn't already been started
-if (process.env.NODE_ENV === 'production') {
-	if (!(globalThis as any).__cronStarted) {
-		console.log('Starting cronjobs...');
-
-		cron.schedule('*/0.1 * * * *', () => {
-			console.log('Running scheduled task every 10 seconds');
-			// your logic
-			extractMemories();
-		});
-
-		(globalThis as any).__cronStarted = true;
-	}
-}
 
 export const handle: Handle = async ({ event, resolve }) => {
 	let sessionToken = event.cookies.get(`${client}_session_id`);
