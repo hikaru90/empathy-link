@@ -40,6 +40,8 @@ export const load: PageServerLoad = async ({ locals }) => {
             const chat = ai.chats.create(model);
 
             bullshiftChats.set(chatRecord.id, chat);
+        }else{
+            systemPrompt = await bullshiftChats.get(chatRecord.id)?.config?.systemInstruction
         }
 
         return {

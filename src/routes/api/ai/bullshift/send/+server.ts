@@ -61,67 +61,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		// Send message and get response
 		const response: GenerateContentResponse = await chatInMemory.sendMessage({ message });
 		if(!response.text) throw new Error('No text in response');
-		// const text = sanitizeText(response.text);
 
-		// if (response.functionCalls && response.functionCalls.length > 0) {
-		// 	//there was a function call
-		// 	for (const functionCall of response.functionCalls) {
-		// 		console.log('function called', functionCall);
-		// 		switch (functionCall.name) {
-		// 			case 'save_observation':
-		// 				const result = await saveObservation(
-		// 					functionCall!.args!.message as string,
-		// 					chatId,
-		// 					userId,
-		// 					state
-		// 				);
-		// 				if (!result) throw 'Error saving Observation';
-
-		// 				const toolOutputs = [
-		// 					{ role: 'model', parts: [{ functionCall }] },
-		// 					{
-		// 						role: 'user',
-		// 						parts: [
-		// 							{
-		// 								functionResponse: {
-		// 									name: functionCall.name,
-		// 									response: { result }
-		// 								}
-		// 							}
-		// 						]
-		// 					}
-		// 				];
-
-		// 				await chatInMemory.sendMessage({
-		// 					message: {
-		// 						functionCall
-		// 					}
-		// 				});
-		// 				const finalResponse: GenerateContentResponse = await chatInMemory.sendMessage({
-		// 					message: {
-		// 						functionResponse: {
-		// 							name: functionCall.name,
-		// 							response: { result }
-		// 						}
-		// 					}
-		// 				});
-		// 				console.log('finalResponse',JSON.stringify(finalResponse));
-		// 				if(!finalResponse.text) throw new Error('No text in response');
-		// 				text = sanitizeText(finalResponse.text);
-		// 				console.log('finalResponse in saveObservation', finalResponse);
-
-		// 				break;
-		// 			default:
-		// 				text = ''
-		// 				break;
-		// 		}
-		// 	}
-		// } else {
-		// 	//no function call
-		// 	console.log('No function call found in the response.');
-		// 	if(!response.text) throw new Error('No text in response');
-		// 	text = sanitizeText(response.text);
-		// }
 
 		await pb.collection('chats').update(chatId, { history: await chatInMemory.getHistory() });
 

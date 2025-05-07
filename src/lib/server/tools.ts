@@ -19,15 +19,27 @@ interface Chat {
 	updated: string;
 }
 
-export const analyzeChat = async (chatId: string, userId: string) => {
+export const analyzeChat = async (chatId: string, userId: string, locale: string) => {
 	try {
+		const feelingsRecords = await pb.collection('feelings').getFullList({
+			sort: 'category,sort'
+		})
+		const feelings = feelingsRecords.map((feeling) => {
+			return feeling[`name${locale.toUpperCase()}`]
+		});
+		const needsRecords = await pb.collection('needs').getFullList({
+			sort: 'category,sort'
+		})
+		const needs = needsRecords.map((need) => {
+			return need[`name${locale.toUpperCase()}`]
+		});
 
 		const chatRecord = await pb.collection('chats').getOne(chatId);
 		const concatenatedHistory = chatRecord.history
 			.map((chat: HistoryEntry) => JSON.stringify(chat))
 			.join('\n');
 
-			console.log('concatenatedHistory',concatenatedHistory);
+		console.log('concatenatedHistory', concatenatedHistory);
 		const message = `
       The chat history is:
       ${concatenatedHistory}
@@ -44,12 +56,18 @@ export const analyzeChat = async (chatId: string, userId: string) => {
 			- Needs (underlying needs)
 			- Request (desired outcome)
 
+			This is the feelings list you know:
+				${feelings.join(', ')}
+
+			This is the needs list you know:
+				${needs.join(', ')}
+
 			You must extract the following data from the full chat transcript:
 
 			1. title: A short, descriptive title summarizing the situation (max ~10 words).
 			2. observation: The factual observation as per NVC (objective, no judgment).
-			3. feelings: A list of distinct feelings the user expressed (single words, e.g., “angry”, “disappointed”).
-			4. needs: A list of distinct needs expressed (e.g., “recognition”, “security”).
+			3. feelings: A selection from the feelings list matching the users feelings.
+			4. needs: A selection from the needs list matching the users needs.
 			5. request: The clearest actionable request made by the user (if any).
 
 			And compute the following numeric stats from the chat:
@@ -61,12 +79,15 @@ export const analyzeChat = async (chatId: string, userId: string) => {
 			11. escalationRate: Proportion of messages that escalate emotional intensity or negativity (0.0 to 1.0 scale).
 			12. empathyRate: Proportion of messages where the user reflects, validates, or shows empathy toward others (0.0 to 1.0 scale).
 			13. messageLength: Average message length in words (float).
-			14. readabilityScore: Average readability score of the user’s messages (Flesch–Kincaid, float).
+			14. readabilityScore: Average readability score of the user's messages (Flesch–Kincaid, float).
 
-			Important Notes:
+			Rules:
+			- The analysis should reflect only the user's messages (ignore AI messages for emotional stats unless otherwise stated).
+			- When analyzing feelings, exclusively use the feelings list.
+			- When analyzing needs, exclusively use the needs list.
+			- IMPORTANT: you **must not** output any feeling or need that is not in the lists below. If no exact match exists, map the user’s expression to the single closest term from the list.  
 			- Keep feelings and needs lists concise (no duplicates, lowercase single words).
 			- Only save a request if a clear actionable request was made; otherwise return an empty string.
-			- The analysis should reflect only the user’s messages (ignore AI messages for emotional stats unless otherwise stated).
 			`,
 				responseMimeType: 'application/json',
 				responseSchema: {
@@ -83,14 +104,16 @@ export const analyzeChat = async (chatId: string, userId: string) => {
 						feelings: {
 							type: Type.ARRAY,
 							items: {
-								type: Type.STRING
-							}
+								type: Type.STRING,
+							},
+							description: 'The feelings of the user based on the feelings list'
 						},
 						needs: {
 							type: Type.ARRAY,
 							items: {
-								type: Type.STRING
-							}
+								type: Type.STRING,
+							},
+							description: 'The needs of the user based on the needs list'
 						},
 						request: {
 							type: Type.STRING,
@@ -138,7 +161,7 @@ export const analyzeChat = async (chatId: string, userId: string) => {
 		}
 		const chat = ai.chats.create(model);
 		const result = await chat.sendMessage({ message });
-		console.log('result',result);
+		console.log('result', result);
 		const response = result.text;
 		const responseJson = JSON.parse(response || '{}');
 

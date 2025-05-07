@@ -28,19 +28,25 @@
 	});
 </script>
 
-<div>
+<div class="">
 	<Header />
-	<div class="max-container py-16">
+	<div class="max-container py-16 ">
 		<div class="flex h-full w-full flex-col">
 			{#if data.error}
 				<p class="text-red-500">{data.error}</p>
-			{:else if data.chatId && data.systemPrompt}
+			
+				{:else if data.chatId && data.systemPrompt}
+			 
 				<BullshiftChat
 					class="relative"
 					chatId={data.chatId}
 					history={data.history}
 					systemInstruction={data.systemPrompt}
 				/>
+				{:else}
+				<div>
+					Something went wrong. chatId: {!!data.chatId}, systemPrompt: {!!data.systemPrompt}
+				</div>
 			{/if}
 		</div>
 	</div>

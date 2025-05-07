@@ -12,7 +12,7 @@ type EnsureDefined<T> = T extends null | undefined ? {} : T;
 type OptionalUnion<U extends Record<string, any>, A extends keyof U = U extends U ? keyof U : never> = U extends unknown ? { [P in Exclude<A, keyof U>]?: never } & U : never;
 export type Snapshot<T = any> = Kit.Snapshot<T>;
 type PageParentData = EnsureDefined<LayoutData>;
-type LayoutRouteId = RouteId | "/" | "/app/auth/login" | "/app/auth/register" | "/app/dashboard" | "/app/fights" | "/app/fights/create" | "/app/fights/[id]" | "/app/fights/[id]/respond" | "/app/selfempathy" | "/app/selfempathy/create" | "/app/selfempathy/[id]" | "/app/selfempathy/[id]/respond" | "/bullshift" | "/bullshift/insights" | "/bullshift/insights/[id]" | "/bullshift/memory" | "/bullshift/stats" | "/utility/shapes" | null
+type LayoutRouteId = RouteId | "/" | "/app/auth/login" | "/app/auth/register" | "/app/dashboard" | "/app/fights" | "/app/fights/[id]" | "/app/fights/[id]/respond" | "/app/fights/create" | "/app/selfempathy" | "/app/selfempathy/[id]" | "/app/selfempathy/[id]/respond" | "/app/selfempathy/create" | "/bullshift" | "/bullshift/insights" | "/bullshift/insights/[id]" | "/bullshift/memory" | "/bullshift/stats" | "/utility/shapes" | null
 type LayoutParams = RouteParams & { id?: string }
 type LayoutServerParentData = EnsureDefined<{}>;
 type LayoutParentData = EnsureDefined<{}>;

@@ -8,8 +8,6 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { scroll, windowHeight, windowWidth, backgroundColor } from '$store/page';
 	import { browser } from '$app/environment';
-	import 'simplebar';
-	import 'simplebar/dist/simplebar.css';
 	import ResizeObserver from 'resize-observer-polyfill';
 	import { onNavigate } from '$app/navigation';
 	import { getScrollbarWidth } from '$scripts/helpers';
@@ -50,6 +48,30 @@
 	// 		document.body.classList.add(value);
 	// 	}
 	// });
+
+	function setLangAttribute() {
+		if (browser) {
+			const currentLocale = $locale;
+			document.documentElement.lang = currentLocale;
+		}
+	}
+
+	$: {
+		if (browser) {
+			setLangAttribute();
+		}
+	}
+
+	onNavigate((navigation) => {
+		if (!document.startViewTransition) return;
+
+		return new Promise((resolve) => {
+			document.startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+		});
+	});
 
 	onMount(() => {
 		handleResize();
@@ -108,31 +130,6 @@
 			};
 		}
 	});
-	// onDestroy(unsubscribe);
-
-	function setLangAttribute() {
-		if (browser) {
-			const currentLocale = $locale;
-			document.documentElement.lang = currentLocale;
-		}
-	}
-
-	$: {
-		if (browser) {
-			setLangAttribute();
-		}
-	}
-
-	onNavigate((navigation) => {
-		if (!document.startViewTransition) return;
-
-		return new Promise((resolve) => {
-			document.startViewTransition(async () => {
-				resolve();
-				await navigation.complete;
-			});
-		});
-	});
 
 	onDestroy(() => {
 		if (browser) {
@@ -158,7 +155,7 @@
 				<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
 			</div>
 		{:else}
-			<div
+			<div class="min-h-svh"
 				in:blur={{ duration: animationDuration, delay: animationDuration }}
 				out:blur={{ duration: animationDuration }}
 			>

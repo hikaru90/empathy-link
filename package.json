@@ -78,7 +78,6 @@
 		"openai": "^4.55.7",
 		"posthog-js": "^1.166.1",
 		"resize-observer-polyfill": "^1.5.1",
-		"simplebar": "^6.2.5",
 		"svelte-radix": "^1.1.0",
 		"tailwind-merge": "^2.2.2",
 		"tailwind-variants": "^0.2.1",

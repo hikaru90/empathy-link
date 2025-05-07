@@ -11,13 +11,11 @@ export interface HistoryEntry {
 	parts: { text: string }[];
 	timestamp: number;
 }
-
 export interface HistoryEntryWithFirstUser {
 	[0]: Extract<HistoryEntry, { role: 'user' }>;
 	[index: number]: HistoryEntry;
 	length: number;
 }
-
 export interface DbChatSession {
 	user: string; // User ID
 	module: string; // Module identifier
@@ -32,7 +30,6 @@ const initHistory = (user: object, history?: HistoryEntry[]) => {
 	return [
 	];
 };
-
 const saveChatInMemory = (chatId: string, chat: any) => {
 	bullshiftChats.set(chatId, chat);
 };
@@ -52,7 +49,6 @@ const getChatFromDb = async (chatId: string) => {
 	const record = await pb.collection('chats').getOne(chatId);
 	return record;
 };
-
 const formatHistoryForGemini = (history?: HistoryEntry[]): Content[] => {
 	if (!history) return [];
 	if (history.length > 0 && history[0].role === 'model') {
@@ -96,7 +92,6 @@ const formatHistoryForGemini = (history?: HistoryEntry[]): Content[] => {
 		};
 	});
 };
-
 const chatExistsInMemory = (chatId: string) => {
 	return bullshiftChats.has(chatId);
 };
@@ -106,7 +101,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		console.log('analyzeChat server');
 		const { user, locale, chatId } = await request.json();
 
-		const analysis = await analyzeChat(chatId, user.id);
+		const analysis = await analyzeChat(chatId, user.id, locale);
 		console.log('analysis', analysis);
 
 		const analysisSchema = z.object({

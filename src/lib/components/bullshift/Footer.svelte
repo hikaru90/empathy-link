@@ -5,7 +5,7 @@
 	import Book from 'lucide-svelte/icons/book';
 	import Users from 'lucide-svelte/icons/users';
 	import { page } from '$app/stores';
-
+	import { onMount } from 'svelte';
 	type MenuItem = {
 		slug: string;
 		heading: string;
@@ -45,6 +45,7 @@
 			available: true
 		}
 	];
+	let footerVisible = false;
 
 	const isCurrentRoute = (path: string) => {
 		return $page.data.route === path;
@@ -58,6 +59,7 @@
 		});
 		menuItems = [...newMenuItems];
 	});
+
 </script>
 
 <!-- <div class="inverted-border fixed bottom-0 left-0 w-full bg-black text-gray-200 px-4 pb-4 pt-2 z-[1002]"> -->

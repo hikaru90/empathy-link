@@ -8,8 +8,6 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { scroll, windowHeight, windowWidth, backgroundColor } from '$store/page';
 	import { browser } from '$app/environment';
-	import 'simplebar';
-	import 'simplebar/dist/simplebar.css';
 	import ResizeObserver from 'resize-observer-polyfill';
 	import { onNavigate } from '$app/navigation';
 	import { getScrollbarWidth } from '$scripts/helpers';

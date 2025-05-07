@@ -24,12 +24,12 @@
 
 <div class="pt-16">
 	<Header />
-	<div class="flex h-full w-full flex-col">
+	<div class="flex h-full w-full flex-col overflow-hidden">
 		{#if data.error}
 			<p class="text-red-500">{data.error}</p>
 		{:else}
 			<div
-				class="scroll-snap-x scroll-snap-mandatory hidden-scrollbar mb-4 flex gap-1 overflow-x-auto px-5"
+				class="scroll-snap-x scroll-snap-mandatory hidden-scrollbar mb-4 flex gap-1 overflow-x-auto px-5 justify-center text-sm md:text-base"
 			>
 				{#each menu as item}
 					<button
