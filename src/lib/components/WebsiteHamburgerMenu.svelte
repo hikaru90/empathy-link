@@ -2,7 +2,7 @@
 	import { Button } from '$lib/components/ui/button-sparkle';
 	import { Button as ButtonOp1 } from '$lib/components/ui/button-op1/index.js';
 	import * as Sheet from '$lib/components/ui/sheet';
-	import Cross1 from 'svelte-radix/Cross1.svelte';
+	import X from 'lucide-svelte/icons/x';
 	import { t } from '$lib/translations';
 	import { backgroundColor } from '$store/page';
 	import { scrollToElement } from '$scripts/helpers';
@@ -54,7 +54,7 @@
 					decoration="floating-op1"
 					class="-mr-2 flex items-center justify-center border-neutral-200 bg-background p-1.5 text-sm text-neutral-800 transition hover:bg-offwhite dark:border-neutral-800 dark:bg-muted dark:text-white"
 				>
-					<Cross1 class="size-4 text-red-600" />
+					<X class="size-4 text-red-600" />
 				</ButtonOp1>
 			</Sheet.Close>
 		</Sheet.Header>

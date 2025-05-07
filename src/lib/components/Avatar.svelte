@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button-op1/index.js';
-	import Cross1 from 'svelte-radix/Cross1.svelte';
-	import Exit from 'svelte-radix/Exit.svelte';
+	import X from 'lucide-svelte/icons/x';
+	import LogOut from 'lucide-svelte/icons/log-out';
 	import User from 'lucide-svelte/icons/user'
 	import { t } from '$lib/translations';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
@@ -47,7 +47,7 @@
 					decoration="floating-op1"
 					class="-mr-2 flex items-center justify-center border-neutral-200 bg-background p-1.5 text-sm text-neutral-800 transition hover:bg-offwhite dark:border-neutral-800 dark:bg-muted dark:text-white"
 				>
-					<Cross1 class="size-4 text-red-600" />
+					<X class="size-4 text-red-600" />
 				</Button>
 			</Sheet.Close>
 		</Sheet.Header>
@@ -104,7 +104,7 @@
 							class="flex !h-10 w-full items-center justify-between gap-3 border-offwhite bg-orange-900 text-red-300 data-[highlighted]:bg-red-200 data-[highlighted]:text-red-500"
 						>
 							{$t('default.menu.profile.logout')}
-							<Exit class="size-3" /></Button
+							<LogOut class="size-3" /></Button
 						>
 					</button>
 				</form>

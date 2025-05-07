@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { t, locale } from '$lib/translations';
-	import IconPlus from 'svelte-radix/Plus.svelte';
+	import Plus from 'lucide-svelte/icons/plus';
 	import IconEye from '$assets/icons/icon-eye.svg?raw';
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
@@ -87,7 +87,7 @@
 								<div
 									class="ml-2 lg:ml-10 flex w-6 h-6 lg:h-8 lg:w-8 flex-shrink-0 items-center justify-center rounded-full bg-black text-white/60 shadow-md"
 								>
-									<IconPlus />
+									<Plus />
 								</div>
 							</div>
 						</div>

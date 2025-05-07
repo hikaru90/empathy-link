@@ -1,51 +1,86 @@
 <script lang="ts">
-	import Settings from 'lucide-svelte/icons/settings';
+	import UserRoundCog from 'lucide-svelte/icons/user-round-cog';
 	import Bell from 'lucide-svelte/icons/bell';
 	import Minus from 'lucide-svelte/icons/minus';
 	import Plus from 'lucide-svelte/icons/plus';
-  import * as Drawer from "$lib/components/ui/drawer/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
+	import * as Drawer from '$lib/components/ui/drawer/index.js';
+	// import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '$lib/components/ui/button-op1/index.js';
+	import { t } from '$lib/translations';
+	import LogOut from 'lucide-svelte/icons/log-out';
 
-  const notifications = [
-    {
-      id: 1,
-      title: 'New message',
-      message: 'You have a new message',
-    },
-  ];
-  let isOpen = false;
+	const notifications = [
+		{
+			id: 1,
+			title: 'New message',
+			message: 'You have a new message'
+		}
+	];
+
+	let isOpen = false;
+	let userMenuIsOpen = false;
 </script>
 
-<nav class="flex items-center justify-between p-4 absolute top-0 left-0 w-full">
-	<a href="/bullshift" class="flex size-8 items-center justify-center rounded-full bg-black">
-    <Settings class="size-3 text-white" />
-  </a>
-  <img src="/bullshift/bullshift-logo.svg" alt="Bullshift Logo" class="h-5" />
-  <button class="flex size-8 items-center justify-center rounded-full bg-black relative" on:click={() => isOpen = true}>
-    <Bell class="size-3 text-white" />
-    {#if notifications.length > 0 }
-      <div class="absolute top-1 right-1 bg-bullshift text-white rounded-full text-xs size-3 flex items-center justify-center transform translate-x-1/2 -translate-y-1/2">
-        
-      </div>
-    {/if}
-  </button>
+<nav class="absolute left-0 top-0 flex w-full items-center justify-between p-4">
+	<button
+		class="flex size-8 items-center justify-center rounded-full bg-black"
+		on:click={() => (userMenuIsOpen = true)}
+	>
+		<UserRoundCog class="size-3 text-white" />
+	</button>
+	<img src="/bullshift/bullshift-logo.svg" alt="Bullshift Logo" class="h-5" />
+	<button
+		class="relative flex size-8 items-center justify-center rounded-full bg-black"
+		on:click={() => (isOpen = true)}
+	>
+		<Bell class="size-3 text-white" />
+		{#if notifications.length > 0}
+			<div
+				class="absolute right-1 top-1 flex size-3 -translate-y-1/2 translate-x-1/2 transform items-center justify-center rounded-full bg-bullshift text-xs text-white"
+			></div>
+		{/if}
+	</button>
 </nav>
-<Drawer.Root bind:open={isOpen}>
-  <Drawer.Content class="bottom-0">
-    <div class="mx-auto w-full max-w-sm">
-      <Drawer.Header class="mt-4">
-        <Drawer.Title>Benachrichtigungen</Drawer.Title>
-      </Drawer.Header>
-      <div class="p-4 pb-24">
-        {#each notifications as notification}
-          <div class="flex flex-col items-center justify-between bg-black/10 rounded-lg px-4 py-2">
-            <div class="text-sm font-medium">{notification.title}</div>
-            <div class="text-sm text-muted-foreground">{notification.message}</div>
-          </div>
-        {/each}
-      </div>
-    </div>
-  </Drawer.Content>
+<!-- user menu -->
+<Drawer.Root bind:open={userMenuIsOpen}>
+	<Drawer.Content class="bottom-0">
+		<div class="mx-auto w-full max-w-sm">
+			<Drawer.Header class="mt-4">
+				<Drawer.Title>Nutzer</Drawer.Title>
+			</Drawer.Header>
+			<div class="p-4 pb-24">
+				<form action="/app/auth/logout" method="POST" class="w-full">
+					<button type="submit" class="w-full">
+						<Button
+							wrapperClass="w-full"
+							decoration="floating-op1"
+							class="flex !h-10 w-full items-center justify-between gap-3 border-offwhite bg-orange-900 text-red-300 data-[highlighted]:bg-red-200 data-[highlighted]:text-red-500"
+						>
+							{$t('default.menu.profile.logout')}
+							<LogOut class="size-3" /></Button
+						>
+					</button>
+				</form>
+			</div>
+		</div>
+	</Drawer.Content>
 </Drawer.Root>
 
-
+<!-- notifications menu -->
+<Drawer.Root bind:open={isOpen}>
+	<Drawer.Content class="bottom-0">
+		<div class="mx-auto w-full max-w-sm">
+			<Drawer.Header class="mt-4">
+				<Drawer.Title>Benachrichtigungen</Drawer.Title>
+			</Drawer.Header>
+			<div class="p-4 pb-24">
+				{#each notifications as notification}
+					<div class="flex flex-col items-center justify-between rounded-lg bg-black/10 px-4 py-2">
+						<div class="text-sm font-medium">{notification.title}</div>
+						<div class="text-sm text-muted-foreground">{notification.message}</div>
+					</div>
+				{/each}
+			</div>
+		</div>
+	</Drawer.Content>
+</Drawer.Root>

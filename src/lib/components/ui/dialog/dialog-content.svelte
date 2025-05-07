@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Dialog as DialogPrimitive } from "bits-ui";
-	import Cross1 from "svelte-radix/Cross1.svelte";
+	import X from 'lucide-svelte/icons/x';
 	import * as Dialog from "./index.js";
 	import { cn, flyAndScale } from "$lib/utils.js";
 
@@ -32,7 +32,7 @@
 		<div class="label bg-feelings-background">
 			<div class="icon fill-feelings-foreground">
 				<!-- {@html row.icon} -->
-				<Cross1 class="text-red-600" />
+				<X class="text-red-600" />
 			</div>
 		</div>
 			<span class="sr-only">Close</span>
