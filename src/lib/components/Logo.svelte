@@ -1,7 +1,11 @@
 <script lang="ts">
   import SparklePill from '$lib/components/SparklePill.svelte'
 
-  export let simplified:boolean = false;
+  interface Props {
+    simplified?: boolean;
+  }
+
+  let { simplified = false }: Props = $props();
 </script>
 
 {#if simplified}

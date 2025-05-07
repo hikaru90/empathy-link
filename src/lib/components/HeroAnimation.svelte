@@ -14,7 +14,7 @@
 	import SendHorizontal from 'lucide-svelte/icons/send-horizontal'
 	import Heart from 'lucide-svelte/icons/heart'
 
-	let menuItems = [
+	let menuItems = $state([
 		{
 			slug: 'home',
 			name: get(t)('default.menu.bar.home'),
@@ -50,7 +50,7 @@
 			icon: IconLearn,
 			available: false
 		}
-	];
+	]);
 	t.subscribe((value) => {
 		const newMenuItems = menuItems.map((entry) => {
 			const translation = value(`default.menu.bar.${entry.slug}`);

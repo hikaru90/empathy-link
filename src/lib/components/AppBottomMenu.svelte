@@ -15,15 +15,20 @@
 	import { scroll } from '$store/page';
 	import { goto } from '$app/navigation';
 	import { debounce } from '$scripts/helpers'
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
 
-	let navbarHeight = 96;
+	let { children }: Props = $props();
+
+	let navbarHeight = $state(96);
 	let scrollValue = 0;
 	let scrollingUp = false;
 
-	$: menuItems = [
+	let menuItems = $derived([
 		{ label: $t('default.page.home.nav') },
 		{ label: $t('default.page.contact.nav') }
-	];
+	]);
 
 	const langs = [
 		{ value: 'en', label: 'English' },
@@ -62,5 +67,5 @@
 	 bind:clientHeight={navbarHeight}
 	 class="fixed left-3 right-3 bottom-[72px] lg:bottom-[86px] z-[100] rounded-full p-2 backdrop-blur-lg backdrop-brightness-[0.3] shadow-xl shadow-black/20 dark:shadow-white/10 dark:shadow-2xl max-w-[1200px] mx-auto"
 	 >
-	 <slot/>
+	 {@render children?.()}
 </div>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { createEventDispatcher } from 'svelte';
 	import Calendar from 'lucide-svelte/icons/calendar';
 	import type { DateRange } from 'bits-ui';
@@ -23,18 +25,24 @@
 		dateStyle: 'medium'
 	});
 
-	let className: string | undefined = undefined;
-	export { className as class };
-	export let popoverOpen = false;
+	
+	interface Props {
+		class?: string | undefined;
+		popoverOpen?: boolean;
+	}
 
-	let value: DateRange | undefined = {
+	let { class: className = undefined, popoverOpen = $bindable(false) }: Props = $props();
+
+	let value: DateRange | undefined = $state({
 		start: $startDate,
 		end: $endDate
-	};
+	});
 
-	let startValue: DateValue | undefined = undefined;
+	let startValue: DateValue | undefined = $state(undefined);
 
-	$: if ((value?.start, value?.end)) dispatch('rangeChanged', value);
+	run(() => {
+		if ((value?.start, value?.end)) dispatch('rangeChanged', value);
+	});
 </script>
 
 <div class={cn(className, 'relative grid w-full gap-2')}>
@@ -75,7 +83,7 @@
   </Popover.Root> -->
 
 	<button
-		on:click={() => {
+		onclick={() => {
 			if (!popoverOpen) popoverOpen = !popoverOpen;
 		}}
 	>

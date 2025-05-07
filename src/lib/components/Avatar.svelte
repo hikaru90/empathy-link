@@ -28,15 +28,17 @@
 </script>
 
 <Sheet.Root>
-	<Sheet.Trigger asChild let:builder class="">
-		<Button
-			decoration="floating-op1"
-			builders={[builder]}
-			class="-mr-2 flex items-center justify-center border-neutral-200 bg-background p-1.5 text-sm text-neutral-800 transition hover:bg-offwhite dark:border-neutral-800 dark:bg-muted dark:text-white"
-		>
-			<User class="h-4 w-4" />
-		</Button>
-	</Sheet.Trigger>
+	<Sheet.Trigger asChild  class="">
+		{#snippet children({ builder })}
+				<Button
+				decoration="floating-op1"
+				builders={[builder]}
+				class="-mr-2 flex items-center justify-center border-neutral-200 bg-background p-1.5 text-sm text-neutral-800 transition hover:bg-offwhite dark:border-neutral-800 dark:bg-muted dark:text-white"
+			>
+				<User class="h-4 w-4" />
+			</Button>
+					{/snippet}
+		</Sheet.Trigger>
 	<Sheet.Content side="right" class="z-[1003] flex flex-col border-muted">
 		<Sheet.Header
 			class="flex flex-row items-center justify-between border-b border-black/10 px-5 py-2"

@@ -6,14 +6,30 @@
 	type $$Props = Props;
 	type $$Events = Events;
 
-	let className: $$Props['class'] = undefined;
-	export let variant: $$Props['variant'] = 'default';
-	export let size: $$Props['size'] = 'default';
-	export let builders: $$Props['builders'] = [];
-	export { className as class };
-	export let decoration: string = 'default';
-	export let wrapperClass: string;
-	export let noInnerShadow: boolean = false;
+	
+	interface Props_1 {
+		class?: $$Props['class'];
+		variant?: $$Props['variant'];
+		size?: $$Props['size'];
+		builders?: $$Props['builders'];
+		decoration?: string;
+		wrapperClass: string;
+		noInnerShadow?: boolean;
+		children?: import('svelte').Snippet;
+		[key: string]: any
+	}
+
+	let {
+		class: className = undefined,
+		variant = 'default',
+		size = 'default',
+		builders = [],
+		decoration = 'default',
+		wrapperClass,
+		noInnerShadow = false,
+		children,
+		...rest
+	}: Props_1 = $props();
 </script>
 
 {#if decoration === 'op1'}
@@ -31,8 +47,8 @@
 					{builders}
 					class="h-[45.4px] rounded-[2px] px-2 text-black"
 					type="button"
-					{...$$restProps}
-					on:click
+					{...rest}
+					onclick
 					on:keydown
 				>
 					<div
@@ -41,7 +57,7 @@
 							'skeumorphic-button h-[29.4px] rounded-full border-2 border-offwhite bg-offwhite text-black transition duration-700 '
 						)}
 					>
-						<slot />
+						{@render children?.()}
 					</div>
 				</ButtonPrimitive.Root>
 			</div>
@@ -54,8 +70,8 @@
 				{builders}
 				class="p-1.5 w-full"
 				type="button"
-				{...$$restProps}
-				on:click
+				{...rest}
+				onclick
 				on:keydown
 			>
 				<div
@@ -64,7 +80,7 @@
 						'skeumorphic-button-dark h-[29.4px] w-full rounded-full border-2 transition duration-700 '
 					)}
 				>
-					<slot />
+					{@render children?.()}
 				</div>
 			</ButtonPrimitive.Root>
 		</div>
@@ -76,8 +92,8 @@
 				{builders}
 				class="w-full p-1.5"
 				type="button"
-				{...$$restProps}
-				on:click
+				{...rest}
+				onclick
 				on:keydown
 			>
 				<div
@@ -87,7 +103,7 @@
 						noInnerShadow ? 'skeumorphic-button-no-inner-shadow' : 'skeumorphic-button'
 					)}
 				>
-					<slot />
+					{@render children?.()}
 				</div>
 			</ButtonPrimitive.Root>
 		</div>
@@ -97,8 +113,8 @@
 		{builders}
 		class="h-[45.4px] rounded-[2px] px-2 text-black"
 		type="button"
-		{...$$restProps}
-		on:click
+		{...rest}
+		onclick
 		on:keydown
 	>
 		<div
@@ -107,7 +123,7 @@
 				'skeumorphic-button h-[29.4px] rounded-full border-2 border-offwhite bg-offwhite text-black transition duration-700 dark:hover:bg-muted'
 			)}
 		>
-			<slot />
+			{@render children?.()}
 		</div>
 	</ButtonPrimitive.Root>
 {/if}

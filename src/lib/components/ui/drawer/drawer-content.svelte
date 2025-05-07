@@ -5,8 +5,14 @@
 
 	type $$Props = DrawerPrimitive.ContentProps;
 
-	let className: $$Props["class"] = undefined;
-	export { className as class };
+	interface Props {
+		class?: $$Props["class"];
+		children?: import('svelte').Snippet;
+		[key: string]: any
+	}
+
+	let { class: className = undefined, children, ...rest }: Props = $props();
+	
 </script>
 
 <DrawerPrimitive.Portal>
@@ -16,9 +22,9 @@
 			"fixed inset-x-0 bottom-[68px] z-[1001] mt-24 flex h-auto flex-col rounded-t-[16px] border bg-offwhite",
 			className
 		)}
-		{...$$restProps}
+		{...rest}
 		>
 		<div class="mx-auto mt-3 -mb-3 h-1 w-16 rounded-full bg-black bg-opacity-10"></div>
-		<slot />
+		{@render children?.()}
 	</DrawerPrimitive.Content>
 </DrawerPrimitive.Portal>

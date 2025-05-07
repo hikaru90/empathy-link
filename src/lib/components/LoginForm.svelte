@@ -12,11 +12,15 @@
 	import Check from 'lucide-svelte/icons/check'
 	import { pb } from '$scripts/pocketbase';
 
-	let className: string | undefined = undefined;
-	export { className as class };
-	export let data: SuperValidated<Infer<FormSchema>>;
+	
+	interface Props {
+		class?: string | undefined;
+		data: SuperValidated<Infer<FormSchema>>;
+	}
 
-	let resetPassordDialogOpen = false;
+	let { class: className = undefined, data }: Props = $props();
+
+	let resetPassordDialogOpen = $state(false);
 
 	const form = superForm(data, {
 		resetForm: false,
@@ -43,22 +47,26 @@
 <!-- <SuperDebug data={formData} /> -->
 <form method="POST" use:enhance class={className}>
 	<Form.Field {form} name="email">
-		<Form.Control let:attrs>
-			<Form.Label>{$t('default.page.login.form.email.label')}</Form.Label>
-			<Input {...attrs} bind:value={$formData.email} type="email" />
-		</Form.Control>
+		<Form.Control >
+			{#snippet children({ attrs })}
+						<Form.Label>{$t('default.page.login.form.email.label')}</Form.Label>
+				<Input {...attrs} bind:value={$formData.email} type="email" />
+								{/snippet}
+				</Form.Control>
 		<!-- <Form.Description>This is your public display name.</Form.Description> -->
 		<Form.FieldErrors />
 	</Form.Field>
 	<Form.Field {form} name="password">
-		<Form.Control let:attrs>
-			<Form.Label>{$t('default.page.login.form.password.label')}</Form.Label>
-			<Input {...attrs} bind:value={$formData.password} type="password" />
-		</Form.Control>
+		<Form.Control >
+			{#snippet children({ attrs })}
+						<Form.Label>{$t('default.page.login.form.password.label')}</Form.Label>
+				<Input {...attrs} bind:value={$formData.password} type="password" />
+								{/snippet}
+				</Form.Control>
 		<Form.Description
 			><button 
 				tabindex="0"
-				on:click={() => (resetPassordDialogOpen = true)}
+				onclick={() => (resetPassordDialogOpen = true)}
 				class="text-sm text-muted-foreground hover:underline">{$t('default.page.login.forgotPassword.question')}</button></Form.Description
 		>
 		<Form.FieldErrors />
@@ -81,7 +89,7 @@
 			<Dialog.Description>
 				{$t('default.page.login.forgotPassword.description')}
 				<div class="mt-4 flex justify-end">
-					<Button on:click={resetPassword} class="flex items-center gap-3 bg-muted-dark"
+					<Button onclick={resetPassword} class="flex items-center gap-3 bg-muted-dark"
 						>{$t('default.page.login.forgotPassword.heading')}
 						<Check class="text-needs-background" /></Button
 					>

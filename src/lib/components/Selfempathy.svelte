@@ -6,7 +6,7 @@
 	import IconLearn from '$assets/icons/icon-learn.svg?raw';
 	import PhoneMockup from '$lib/components/PhoneMockup.svelte'
 
-	let moduleName:string|undefined = undefined
+	let moduleName:string|undefined = $state(undefined)
   locale.subscribe((value) => {
 		moduleName = value === 'en' ? 'Module' : 'Modul'
 	});

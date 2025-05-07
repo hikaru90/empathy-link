@@ -11,7 +11,7 @@
 		text: string;
 	}
 
-	$: modules = [
+	let modules = $derived([
 		{
 			heading: $t('default.page.home.components.modules.modules.selfempathy'),
 			icon: IconSelf,
@@ -32,7 +32,7 @@
 			icon: IconLearn,
 			delayed: true
 		}
-	];
+	]);
 </script>
 
 <div class="mb-40 flex flex-col items-center">

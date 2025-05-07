@@ -1,8 +1,8 @@
 <script>
 	import { quantize, interpolateReds, pie, arc } from 'd3';
 
-	export let data;
-  export let colors;
+	/** @type {{data: any, colors: any}} */
+	let { data, colors = $bindable() } = $props();
 	const width = 250; // the outer width of the chart, in pixels
 	const height = width; // the outer height of the chart, in pixels
 	const percent = true; // format values as percentages (true/false)

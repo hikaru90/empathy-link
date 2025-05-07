@@ -15,15 +15,20 @@
 	import { scroll } from '$store/page';
 	import { goto } from '$app/navigation';
 	import { debounce } from '$scripts/helpers'
+	interface Props {
+		submenu?: import('svelte').Snippet;
+	}
 
-	let navbarHeight = 96;
+	let { submenu }: Props = $props();
+
+	let navbarHeight = $state(96);
 	let scrollValue = 0;
 	let scrollingUp = false;
 
-	$: menuItems = [
+	let menuItems = $derived([
 		{ label: $t('default.page.home.nav') },
 		{ label: $t('default.page.contact.nav') }
-	];
+	]);
 
 	const langs = [
 		{ value: 'en', label: 'English' },
@@ -75,11 +80,11 @@
 						<Avatar />
 					</div>
 				{:else}
-					<Button on:click={() => goto('/app/auth/login')} decoration="op1" class="dark:text-white">
+					<Button onclick={() => goto('/app/auth/login')} decoration="op1" class="dark:text-white">
 						{$t('default.page.login.heading')}
 					</Button>
 				{/if}
 			</div>
 		</nav>
-	<slot name="submenu" />
+	{@render submenu?.()}
 </div>

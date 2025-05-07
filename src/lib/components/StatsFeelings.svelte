@@ -11,11 +11,15 @@
 	import { groupBy, sortByKey, generateHslaColors } from '$scripts/helpers';
 	import Donut from '$lib/components/Donut.svelte';
 
-	export let data;
+	interface Props {
+		data: any;
+	}
+
+	let { data }: Props = $props();
 
 	let pending = true;
 	let colors = generateHslaColors(1, 100, 56, data.length);
-	let showMore = false;
+	let showMore = $state(false);
 
 	onMount(async () => {
 		pending = false;
@@ -67,9 +71,9 @@
 				{/each}
 				<div class="flex justify-center pt-4">
 					{#if !showMore}
-					<button on:click={() => (showMore = true)} class="text-xs rounded-full border border-feelings-foreground/20 px-2 py-1">Mehr anzeigen</button>
+					<button onclick={() => (showMore = true)} class="text-xs rounded-full border border-feelings-foreground/20 px-2 py-1">Mehr anzeigen</button>
 					{:else}
-					<button on:click={() => (showMore = false)} class="text-xs rounded-full border border-feelings-foreground/20 px-2 py-1">Weniger anzeigen</button>
+					<button onclick={() => (showMore = false)} class="text-xs rounded-full border border-feelings-foreground/20 px-2 py-1">Weniger anzeigen</button>
 					{/if}
 				</div>
 			{/if}

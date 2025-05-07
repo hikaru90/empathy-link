@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { preventDefault } from 'svelte/legacy';
+
 	import { marked } from 'marked';
 	import { onMount } from 'svelte';
 	import { user } from '$store/auth';
@@ -13,17 +15,26 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import { cn } from '$lib/utils';
 
-	export let chatId: string;
-	export let history: any[] = [];
-	export let systemInstruction: string;
 
-	let className: string | undefined = undefined;
-	export { className as class };
+	interface Props {
+		chatId: string;
+		history?: any[];
+		systemInstruction: string;
+		class?: string | undefined;
+	}
 
-	let userMessage = '';
-	let isLoading = false;
-	let chatContainer: HTMLDivElement;
-	let chatTerminationModalVisible = false;
+	let {
+		chatId = $bindable(),
+		history = $bindable([]),
+		systemInstruction,
+		class: className = undefined
+	}: Props = $props();
+	
+
+	let userMessage = $state('');
+	let isLoading = $state(false);
+	let chatContainer: HTMLDivElement = $state();
+	let chatTerminationModalVisible = $state(false);
 
 	const handleSendMessage = async () => {
 		if (!userMessage.trim()) return;
@@ -101,6 +112,7 @@
 		}
 	};
 	const analyzeChat = async () => {
+		console.log('analyzeChat');
 		console.log('$user', $user);
 		try {
 			const response = await fetch('/api/ai/bullshift/analyzeChat', {
@@ -175,13 +187,13 @@
 				>
 			</a>
 			<button
-				on:click={flushMemory}
+				onclick={flushMemory}
 				class="flex items-center justify-between gap-2 rounded-full bg-black px-2 py-1 text-xs text-offwhite active:bg-red-500/50"
 			>
 				Flush Memory <span class="text-yellow-300">↡</span>
 			</button>
 			<button
-				on:click={callMemoryExtraction}
+				onclick={callMemoryExtraction}
 				class="flex items-center justify-between gap-2 rounded-full bg-black px-2 py-1 text-xs text-offwhite active:bg-red-500/50"
 			>
 				Extract Memory <span class="text-green-300">↳</span>
@@ -189,7 +201,7 @@
 		</Popover.Content>
 	</Popover.Root>
 	<button
-		on:click={clearChat}
+		onclick={clearChat}
 		class="flex items-center gap-1 rounded-full bg-black/30 px-2 py-1 text-xs text-black"
 	>
 		Neuer Chat
@@ -242,7 +254,7 @@
 		</div>
 
 		<div class="fixed bottom-16 left-0 right-0 bg-background px-4 pb-6 pt-4">
-			<form on:submit|preventDefault={handleSendMessage} class="flex gap-4">
+			<form onsubmit={preventDefault(handleSendMessage)} class="flex gap-4">
 				<input
 					type="text"
 					bind:value={userMessage}
@@ -262,7 +274,7 @@
 	{#if history.length > 0}
 		<button
 			class="fixed bottom-36 left-1/2 flex -translate-x-1/2 transform items-center gap-2 rounded-full bg-black px-3 py-1 text-sm text-offwhite"
-			on:click={() => {
+			onclick={() => {
 				chatTerminationModalVisible = true;
 			}}
 		>
@@ -282,7 +294,7 @@
 					<Button
 						variant="outline"
 						class="bg-transparent shadow-none"
-						on:click={() => {
+						onclick={() => {
 							chatTerminationModalVisible = false;
 							clearChat();
 						}}
@@ -291,7 +303,7 @@
 					</Button>
 					<Button
 						class="flex-grow bg-bullshift"
-						on:click={() => {
+						onclick={() => {
 							chatTerminationModalVisible = false;
 							analyzeChat();
 						}}

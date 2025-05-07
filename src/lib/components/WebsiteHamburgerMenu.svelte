@@ -15,8 +15,12 @@
 	import { locale, locales } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
 
-	export let menuItems: any;
-	let dialogOpen = false;
+	interface Props {
+		menuItems: any;
+	}
+
+	let { menuItems }: Props = $props();
+	let dialogOpen = $state(false);
 
 	const langs = [
 		{ value: 'en', label: 'English' },
@@ -41,7 +45,7 @@
 </script>
 
 <Sheet.Root bind:open={dialogOpen}>
-	<button on:click={() => (dialogOpen = true)} class="flex items-center">
+	<button onclick={() => (dialogOpen = true)} class="flex items-center">
 		<Menu class="size-6" />
 	</button>
 	<Sheet.Content class="{$backgroundColor} z-[1003] flex flex-col border-muted">
@@ -49,7 +53,7 @@
 			class="flex flex-row items-center justify-between border-b border-black/10 px-5 py-2.5"
 		>
 			<Sheet.Title class="pt-0.5">{$t('default.menu.title')}</Sheet.Title>
-			<Sheet.Close class="!m-0" on:click={() => (dialogOpen = false)}>
+			<Sheet.Close class="!m-0" onclick={() => (dialogOpen = false)}>
 				<ButtonOp1
 					decoration="floating-op1"
 					class="-mr-2 flex items-center justify-center border-neutral-200 bg-background p-1.5 text-sm text-neutral-800 transition hover:bg-offwhite dark:border-neutral-800 dark:bg-muted dark:text-white"
@@ -62,7 +66,7 @@
 			<div class="mb-10 flex flex-col items-start gap-2">
 				{#each menuItems as item}
 					<button
-						on:click={scrollToTarget(item.target)}
+						onclick={scrollToTarget(item.target)}
 						class="flex w-full items-center justify-between gap-2 text-lg font-bold"
 					>
 						{item.label}
@@ -88,7 +92,7 @@
 					<Select.Input name="favoriteFruit" />
 				</Select.Root>
 				<div class="mb-3 border-b border-gray-300/30 dark:border-gray-300/20"></div>
-				<Button on:click={() => goto('/app/auth/login')} variant="outline" class="w-full font-bold dark:text-black rounded-lg">
+				<Button onclick={() => goto('/app/auth/login')} variant="outline" class="w-full font-bold dark:text-black rounded-lg">
 					{$t('default.page.login.heading')}
 				</Button>
 			</div>

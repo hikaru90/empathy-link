@@ -2,10 +2,14 @@
 	import backgroundImage from '$assets/images/holo3.jpg';
   import { cn } from "$lib/utils.js";
 
-	export let fast = false;
 
-  let className:string|undefined = undefined;
-	export { className as class };
+	interface Props {
+		fast?: boolean;
+		class?: string|undefined;
+	}
+
+	let { fast = false, class: className = undefined }: Props = $props();
+	
 </script>
 
 <div

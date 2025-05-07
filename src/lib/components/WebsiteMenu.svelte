@@ -10,9 +10,9 @@
 	import WebsiteHamburgerMenu from '$lib/components/WebsiteHamburgerMenu.svelte';
 
 	let lastScrollValue = 0;
-	let menuIsVisible = true;
+	let menuIsVisible = $state(true);
 	const scrollThreshold = 50;
-	let scrollbarOffset = 16;
+	let scrollbarOffset = $state(16);
 
 	const langs = [
 		{ value: 'en', label: 'English' },
@@ -26,7 +26,7 @@
 		}
 	};
 
-	$: scrollbarWidth = () => {
+	let scrollbarWidth = $derived(() => {
 		const scrollDiv = document.createElement('div');
 
 		// Apply styles to ensure it has a scrollbar
@@ -47,15 +47,15 @@
 
 		scrollbarOffset = scrollbarWidth;
 		return scrollbarWidth;
-	};
-	$: menuItems = () => [
+	});
+	let menuItems = $derived(() => [
 		{ label: $t('default.menu.sections.the4steps'), target: 'stepsTarget' },
 		{ label: $t('default.menu.sections.modules'), target: 'modulesTarget' },
 		{ label: $t('default.menu.sections.selfempathy'), target: 'selfempathyTarget' },
 		{ label: $t('default.menu.sections.fight'), target: 'fightTarget' },
 		{ label: $t('default.menu.sections.feedback'), target: 'feedbackTarget' },
 		{ label: $t('default.menu.sections.learn'), target: 'learnTarget' }
-	];
+	]);
 
 	const scrollToTarget = (target) => {
 		const targetDiv = document.getElementById(target);
@@ -103,7 +103,7 @@
 			</a>
 			<div class="hidden items-center gap-7 lg:flex">
 				{#each menuItems() as item}
-					<button on:click={scrollToTarget(item.target)} class="group relative">
+					<button onclick={scrollToTarget(item.target)} class="group relative">
 						<div
 							class="shadow-x absolute -bottom-1 -left-3 -right-3 -top-1 z-0 rounded-md bg-white-background/30 opacity-0 shadow-md transition-opacity group-hover:opacity-100"
 						></div>
@@ -120,7 +120,7 @@
 			</div>
 			<div class="flex w-1 items-center justify-end gap-4">
 				<Button
-					on:click={() => goto('/app/auth/login')}
+					onclick={() => goto('/app/auth/login')}
 					variant="outline"
 					class="hidden font-bold lg:block"
 				>

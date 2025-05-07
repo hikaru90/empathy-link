@@ -8,11 +8,24 @@
 	type $$Props = Props;
 	type $$Events = Events;
 
-	let className: $$Props['class'] = undefined;
-	export let variant: $$Props['variant'] = 'default';
-	export let size: $$Props['size'] = 'default';
-	export let builders: $$Props['builders'] = [];
-	export { className as class };
+	interface Props_1 {
+		class?: $$Props['class'];
+		variant?: $$Props['variant'];
+		size?: $$Props['size'];
+		builders?: $$Props['builders'];
+		children?: import('svelte').Snippet;
+		[key: string]: any
+	}
+
+	let {
+		class: className = undefined,
+		variant = 'default',
+		size = 'default',
+		builders = [],
+		children,
+		...rest
+	}: Props_1 = $props();
+	
 
 	const getRandomValue = (min, max) => {
 		return Math.round(Math.random() * (max - min) + min);
@@ -53,8 +66,8 @@
 	style="background-image: url('{backgroundImage}'); background-size: 300% 300%;"
 	class={cn(buttonVariants({ variant, size, className }),'animate-bg-hover-fast group relative transition ease-in px-5 py-4 lg:px-6 lg:py-4', className)}
 	type="button"
-	{...$$restProps}
-	on:click
+	{...rest}
+	onclick
 	on:keydown
 >
 	<div
@@ -79,7 +92,7 @@
 			</div>
 		{/each}
 	</div>
-	<slot />
+	{@render children?.()}
 </ButtonPrimitive.Root>
 
 <style>

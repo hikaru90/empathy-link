@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import P5 from 'p5';
 
-	let canvasParent;
+	let canvasParent = $state();
 	const noiseStrength = 100;
 	const blurNoise = false;
 	const drawColorGradient = true;

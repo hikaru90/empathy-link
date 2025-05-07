@@ -1,20 +1,24 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { onMount } from 'svelte';
 	import P5 from 'p5';
 
 	let p: P5 | undefined;
-	let canvasParent: HTMLDivElement | undefined;
+	let canvasParent: HTMLDivElement | undefined = $state();
 	let canvas: Element | undefined;
-	let w: number | undefined;
+	let w: number | undefined = $state();
 	let h: number | undefined;
-	let currentImageId = 1;
+	let currentImageId = $state(1);
 	const noiseStrength = 100;
 	const blurNoise = false;
 	const drawColorGradient = true;
 
-	$: if (w !== undefined) {
-		console.log('Width changed:', w);
-	}
+	run(() => {
+		if (w !== undefined) {
+			console.log('Width changed:', w);
+		}
+	});
 
 	const colors = [
 		'#F0BADA', // Red
@@ -171,10 +175,10 @@
 </script>
 
 <div class="flex h-[100px] w-full items-center justify-center gap-2">
-	<button on:click={drawCanvas} class="bg-blue-500 text-white p-2 rounded-md">
+	<button onclick={drawCanvas} class="bg-blue-500 text-white p-2 rounded-md">
 		Redraw
 	</button>
-	<button on:click={downloadImage} class="bg-green-500 text-white p-2 rounded-md">
+	<button onclick={downloadImage} class="bg-green-500 text-white p-2 rounded-md">
 		Download
 	</button>
 </div>

@@ -3,7 +3,11 @@
 	import type { PageData } from './$types.js';
 	import RegisterForm from '$lib/components/RegisterForm.svelte';
 	import { t } from '$lib/translations';
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	console.log('login page');
 </script>

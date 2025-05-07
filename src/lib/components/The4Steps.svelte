@@ -14,7 +14,7 @@
 		text: string;
 	}
 
-	$: cards = [
+	let cards = $derived([
 		{
 			heading: $t('default.page.home.components.the4steps.steps.observation.heading'),
 			color: 'observation-foreground',
@@ -43,7 +43,7 @@
 			icon: IconSteps,
 			text: $t('default.page.home.components.the4steps.steps.request.text')
 		}
-	];
+	]);
 </script>
 
 <div class="flex flex-col items-center mb-40 pt-12 md:pt-0">

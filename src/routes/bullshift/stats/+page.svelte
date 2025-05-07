@@ -3,7 +3,11 @@
 	import Footer from '$lib/components/bullshift/Footer.svelte';
 	import StatsOverview from '$lib/components/StatsOverview.svelte';
 	import type { PageData } from './$types';
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	const menu = [
 		{
@@ -19,7 +23,7 @@
 			slug: 'insights'
 		},
 	];
-	let currentSlug = menu[0].slug;
+	let currentSlug = $state(menu[0].slug);
 </script>
 
 <div class="pt-16">
@@ -36,7 +40,7 @@
 						class="rounded-full px-3 py-0.5 {currentSlug === item.slug
 							? 'bg-black text-offwhite'
 							: 'border-2 border-black text-black'}"
-						on:click={() => (currentSlug = item.slug)}
+						onclick={() => (currentSlug = item.slug)}
 					>
 						{item.label}
 					</button>

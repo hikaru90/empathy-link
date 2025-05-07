@@ -11,9 +11,13 @@
 	import X from 'lucide-svelte/icons/x';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 
-	export let data;
+	interface Props {
+		data: any;
+	}
 
-	let initialized = false;
+	let { data }: Props = $props();
+
+	let initialized = $state(false);
 	let pending = true;
 	let records: any[] = [];
 
@@ -22,7 +26,7 @@
 		goto(`/app/fights/${id}`);
 	};
 
-	let showMore = false;
+	let showMore = $state(false);
 
 	onMount(async () => {
 		initialized = true;
@@ -60,7 +64,7 @@
 			{#each data as record, index}
 				{#if showMore || index < 3}
 					<button
-						on:click={gotoFight(record.id)}
+						onclick={gotoFight(record.id)}
 						class="group flex w-full items-center border-b border-black/5 py-2 text-left text-xs last:border-b-0 sm:py-3"
 					>
 						<div class="w-1/6">
@@ -86,13 +90,13 @@
 			<div class="flex justify-center pt-4">
 				{#if !showMore}
 					<button
-						on:click={() => (showMore = true)}
+						onclick={() => (showMore = true)}
 						class="rounded-full border border-needs-foreground/20 px-2 py-1 text-xs"
 						>Mehr anzeigen</button
 					>
 				{:else}
 					<button
-						on:click={() => (showMore = false)}
+						onclick={() => (showMore = false)}
 						class="rounded-full border border-needs-foreground/20 px-2 py-1 text-xs"
 						>Weniger anzeigen</button
 					>

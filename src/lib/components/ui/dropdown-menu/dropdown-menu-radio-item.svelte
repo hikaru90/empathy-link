@@ -6,9 +6,15 @@
 	type $$Props = DropdownMenuPrimitive.RadioItemProps;
 	type $$Events = DropdownMenuPrimitive.RadioItemEvents;
 
-	let className: $$Props["class"] = undefined;
-	export let value: DropdownMenuPrimitive.RadioItemProps["value"];
-	export { className as class };
+	interface Props {
+		class?: $$Props["class"];
+		value: DropdownMenuPrimitive.RadioItemProps["value"];
+		children?: import('svelte').Snippet;
+		[key: string]: any
+	}
+
+	let { class: className = undefined, value, children, ...rest }: Props = $props();
+	
 </script>
 
 <DropdownMenuPrimitive.RadioItem
@@ -17,8 +23,8 @@
 		className
 	)}
 	{value}
-	{...$$restProps}
-	on:click
+	{...rest}
+	onclick
 	on:keydown
 	on:focusin
 	on:focusout
@@ -31,5 +37,5 @@
 			<Dot class="h-4 w-4 fill-current" />
 		</DropdownMenuPrimitive.RadioIndicator>
 	</span>
-	<slot />
+	{@render children?.()}
 </DropdownMenuPrimitive.RadioItem>

@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
-	export let step: number;
-	export let steps: object[];
-	export let stepBackground: string;
+	interface Props {
+		step: number;
+		steps: object[];
+		stepBackground: string;
+	}
+
+	let { step, steps, stepBackground }: Props = $props();
 
 	const dispatch = createEventDispatcher();
 </script>
@@ -17,7 +21,7 @@
 			{#each steps as entry, index}
 			{#if !entry.hidden}
 				<button
-					on:click={() => dispatch('changeStep', { step: index + 1 })}
+					onclick={() => dispatch('changeStep', { step: index + 1 })}
 					type="button"
 					class="group {`bg-${stepBackground}-background`} dark:bg-background flex-grow rounded-[2px] shadow transition duration-500"
 				>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { preventDefault } from 'svelte/legacy';
+
 	import { marked } from 'marked';
 	import { initChat } from '$store/chatStore';
 	import { formatTimestamp } from '$lib/utils';
@@ -6,12 +8,12 @@
 	import { pb } from '$scripts/pocketbase';
 	import type { ChatRecord } from '$routes/api/ai/selfempathy/initChat/+server';
 	import { user } from '$store/auth';
-	let userMessage = '';
-	let isLoading = false;
-	let chatContainer: HTMLDivElement; // Reference to the chat container
-	let chat: ChatRecord;
+	let userMessage = $state('');
+	let isLoading = $state(false);
+	let chatContainer: HTMLDivElement = $state(); // Reference to the chat container
+	let chat: ChatRecord = $state();
 
-	$: chatWithoutFirstMessage = chat?.history ? chat.history.slice(1) : [];
+	let chatWithoutFirstMessage = $derived(chat?.history ? chat.history.slice(1) : []);
 
 	// Function to scroll to bottom
 	const scrollToBottom = () => {
@@ -83,7 +85,7 @@
 	});
 </script>
 
-<button on:click={clearChat}>clear chat</button>
+<button onclick={clearChat}>clear chat</button>
 {#if chat}
 	<div
 		class="relative flex h-full flex-col overflow-hidden rounded-lg border-b border-white/80 bg-[rgba(0,0,0,0.03)]"
@@ -117,7 +119,7 @@
 		</div>
 
 		<div class="border-t p-4">
-			<form on:submit|preventDefault={handleSendMessage} class="flex gap-2">
+			<form onsubmit={preventDefault(handleSendMessage)} class="flex gap-2">
 				<input
 					type="text"
 					bind:value={userMessage}

@@ -15,15 +15,19 @@
 	import { cn } from '$lib/utils';
 	import { user } from '$store/auth';
 
-	let className: string | undefined = undefined;
-	export { className as class };
+	interface Props {
+		class?: string | undefined;
+	}
 
-	let initialized = false;
+	let { class: className = undefined }: Props = $props();
+	
+
+	let initialized = $state(false);
 	let pending = true;
-	let records: object[] = [];
+	let records: object[] = $state([]);
 	let page = 1;
 	let endReached = false;
-	let displayResolved = true;
+	let displayResolved = $state(true);
 
 	let openedFights: string[] = [];
 
@@ -75,7 +79,7 @@
 		}
 	};
 
-	$: filteredRecords = displayResolved ? records : records.filter((record) => !record.resolved);
+	let filteredRecords = $derived(displayResolved ? records : records.filter((record) => !record.resolved));
 
   const transferOpenedLinks = (records) => {
       console.log('transferRecords', records);
@@ -143,7 +147,7 @@
 						<Switch
 							id="lightMode"
 							bind:checked={displayResolved}
-							on:click={() => (displayResolved = !displayResolved)}
+							onclick={() => (displayResolved = !displayResolved)}
 							class="scale-75 transform bg-gray-500"
 						/>
 						<Label for="lightMode" class="cursor-pointer"
@@ -173,7 +177,7 @@
 				<div>
 					{#each filteredRecords as record}
 						<button
-							on:click={gotoFight(record.id)}
+							onclick={gotoFight(record.id)}
 							class="group flex w-full items-center border-b border-black/5 py-2 text-left text-xs last:border-b-0 sm:py-3"
 						>
 							<div class="flex w-1/6">

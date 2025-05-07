@@ -8,7 +8,11 @@
 	import StatsChatOverview from './StatsChatOverview.svelte';
 
 
-	export let data;
+	interface Props {
+		data: any;
+	}
+
+	let { data }: Props = $props();
 
 	const getFeelings = () => {
 		const feelings = data.analyses.map((analysis) => {

@@ -10,8 +10,12 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
-	export let data: PageData;
-	let popoverOpen = false;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let popoverOpen = $state(false);
 
 	const updateStore = (payload) => {
 		// console.log('updateStore',payload.detail);
@@ -41,7 +45,7 @@
 					class="relative z-10 mb-8 flex flex-row items-center justify-between py-4 md:items-center md:bg-transparent md:pb-6"
 				>
 					<h1 class="font-heading text-lg font-semibold">Dashboard</h1>
-					<button on:click={() => popoverOpen = true}
+					<button onclick={() => popoverOpen = true}
 						class="mb-0.5 rounded-full bg-neutral-600 py-0.5 text-center text-2xs text-neutral-300 px-2"
 					>
 						{new Intl.DateTimeFormat('de-DE', {

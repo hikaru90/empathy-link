@@ -11,18 +11,18 @@
 	import { groupBy, sortByKey, generateHslaColors } from '$scripts/helpers';
 	import Donut from '$lib/components/Donut.svelte';
 
-	let initialized = false;
+	let initialized = $state(false);
 	let pending = true;
-	let feelings = [];
-	let colors = [];
-	let displayPositiveFeelings = false;
+	let feelings = $state([]);
+	let colors = $state([]);
+	let displayPositiveFeelings = $state(false);
 
-	$: data = feelings.map((entry) => {
+	let data = $derived(feelings.map((entry) => {
 		return {
 			name: $locale === 'en' ? entry.feeling.nameEN : entry.feeling.nameDE,
 			count: entry.count
 		};
-	});
+	}));
 
 	const fetchData = async () => {
 		const filter = `owner = '${$user.id}' && created >= "${$startDate.toString()} 00:00:00" && created < "${$endDate.add({ days: 1 }).toString()} 00:00:00"`;
@@ -96,7 +96,7 @@
 				</h2>
 				<div class="flex items-center gap-2">
 					<Button
-						on:click={() => (displayPositiveFeelings = false)}
+						onclick={() => (displayPositiveFeelings = false)}
 						class="{displayPositiveFeelings === false
 							? 'solid-button text-white'
 							: 'border-button'} h-7 rounded-full px-4 leading-tight transition"
@@ -104,7 +104,7 @@
 						{$t('default.page.dashboard.feelings.negative')}
 					</Button>
 					<Button
-						on:click={() => (displayPositiveFeelings = true)}
+						onclick={() => (displayPositiveFeelings = true)}
 						class="{displayPositiveFeelings === true
 							? 'solid-button text-white'
 							: 'border-button'} h-7 rounded-full px-4 leading-tight"

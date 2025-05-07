@@ -7,11 +7,15 @@
 
 	const dispatch = createEventDispatcher();
 
-	export let step: number;
-	export let checkForJudgement: boolean;
 
-	let className: string | undefined = undefined;
-	export { className as class };
+	interface Props {
+		step: number;
+		checkForJudgement: boolean;
+		class?: string | undefined;
+	}
+
+	let { step, checkForJudgement, class: className = undefined }: Props = $props();
+	
 
 	const toPrev = () => {
 		console.log('toPrev');
@@ -31,7 +35,7 @@
 			: 'max-w-0 opacity-0'} group relative transform overflow-visible"
 	>
 		<Button
-			on:click={toPrev}
+			onclick={toPrev}
 			decoration="dark-op1"
 			class="flex items-center border-neutral-900 bg-neutral-800 px-1.5 text-sm text-zinc-200"
 		>
@@ -40,7 +44,7 @@
 	</div>
 	{#if checkForJudgement}
 		<Button
-			on:click={handleJudgementCheck}
+			onclick={handleJudgementCheck}
 			decoration="dark-op1"
 			wrapperClass="w-full"
 			class="flex w-full items-center gap-2 border-neutral-900 bg-neutral-800 text-sm text-zinc-200"

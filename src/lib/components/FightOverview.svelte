@@ -11,9 +11,9 @@
 	import X from 'lucide-svelte/icons/x';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 
-	let initialized = false;
+	let initialized = $state(false);
 	let pending = true;
-	let records: any[] = [];
+	let records: any[] = $state([]);
 
 	const fetchData = async () => {
 		const filter = `owner = '${$user.id}' && created >= "${$startDate.toString()} 00:00:00" && created < "${$endDate.add({ days: 1 }).toString()} 00:00:00"`;
@@ -79,7 +79,7 @@
 		</div>
 		<div class="rounded-b-xl bg-almostwhite dark:bg-muted px-4 pb-3 pt-2 shadow-2xl shadow-black/10">
 			{#each records as record}
-				<button on:click={gotoFight(record.id)} class="group w-full text-left flex items-center border-b border-black/5 py-2 sm:py-3 text-xs last:border-b-0">
+				<button onclick={gotoFight(record.id)} class="group w-full text-left flex items-center border-b border-black/5 py-2 sm:py-3 text-xs last:border-b-0">
 					<div class="flex w-1/6">
 						<div class="scale-75 transform rounded-full bg-black/5 px-2.5 text-2xs font-bold">
 							{record.responses?.length + 1}

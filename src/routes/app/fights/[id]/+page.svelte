@@ -16,17 +16,17 @@
 	import { goto } from '$app/navigation';
 	import { backgroundColor } from '$store/page';
 
-	let initialized = false;
+	let initialized = $state(false);
 	let pending = true;
-	let record = undefined;
-	let responses = [];
-	let confirmDeletion = false;
+	let record = $state(undefined);
+	let responses = $state([]);
+	let confirmDeletion = $state(false);
 
-	$: id = $page.params.id;
-	$: daysAgoIntl = () => {
+	let id = $derived($page.params.id);
+	let daysAgoIntl = $derived(() => {
 		if (!initialized) return '...';
 		return daysAgo(record.created);
-	};
+	});
 
 	const fetchData = async () => {
 		pb.collection('fights').subscribe(
@@ -124,7 +124,7 @@
 
 					{#if !confirmDeletion}
 						<Button
-							on:click={() => (confirmDeletion = true)}
+							onclick={() => (confirmDeletion = true)}
 							decoration="floating-op1"
 							class="-mr-2 -mt-2 flex items-center justify-center border-red-400 bg-red-600 px-1.5 text-sm text-white transition hover:bg-offwhite"
 						>
@@ -132,7 +132,7 @@
 						</Button>
 					{:else}
 						<Button
-							on:click={deleteFight}
+							onclick={deleteFight}
 							decoration="floating-op1"
 							class="-mr-2 -mt-2 flex items-center justify-center border-red-400 bg-red-600 px-1.5 text-sm text-white transition hover:bg-offwhite"
 						>

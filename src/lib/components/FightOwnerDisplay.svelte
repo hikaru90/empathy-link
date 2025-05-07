@@ -2,8 +2,12 @@
 	import { user } from '$store/auth';
 	import backgroundImage from '$assets/images/holo3.jpg';
 
-	export let record;
-	export let adversary;
+	interface Props {
+		record: any;
+		adversary: any;
+	}
+
+	let { record, adversary }: Props = $props();
 </script>
 
 <div class="relative z-10">

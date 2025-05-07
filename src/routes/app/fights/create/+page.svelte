@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { run, createBubbler, preventDefault } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
 	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
 	import * as Form from '$lib/components/ui/form';
@@ -32,9 +35,9 @@
 	import { backgroundColor } from '$store/page';
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
-	let feelings = [];
-	let needs = [];
-	let checkJudgement;
+	let feelings = $state([]);
+	let needs = $state([]);
+	let checkJudgement = $state();
 
 	const steps = [
 		zod(schemaStep1),
@@ -43,12 +46,12 @@
 		zod(schemaStep4),
 		zod(lastStep)
 	];
-	let step = 1;
-	let formSubmitted = false;
-	let formSuccess = false;
-	let checkForJudgement = false;
-	let id: string;
-	let createdRecord: object;
+	let step = $state(1);
+	let formSubmitted = $state(false);
+	let formSuccess = $state(false);
+	let checkForJudgement = $state(false);
+	let id: string = $state();
+	let createdRecord: object = $state();
 
 	const updateBackgroundColor = (step: number) => {
 		const color = `bg-${stepConstructor[step - 1].slug}-background`
@@ -57,11 +60,13 @@
 	};
 
 
-	$: () => {
-		if (step === 2) checkForJudgement = true;
-	};
-	$: options.validators = steps[step - 1];
-	$: currentBackgroundColor = updateBackgroundColor(step);
+	run(() => {
+		() => {
+			if (step === 2) checkForJudgement = true;
+		};
+	});
+	let options.validators = $derived(steps[step - 1]);
+	let currentBackgroundColor = $derived(updateBackgroundColor(step));
 
 	const speechBubbleContentArray = [
 		{ step: 1, content: [$t('default.page.fight.create.info')] },
@@ -162,13 +167,13 @@
 		validateForm,
 		options,
 		updateForm
-	} = form;
+	} = $state(form);
 
 	formData.subscribe((value) => {
 		console.log('form was updated', value);
 	});
 
-	let stepConstructor = [
+	let stepConstructor = $state([
 		{
 			slug: 'info',
 			name: get(t)('default.page.fights.form.general.steps.info'),
@@ -211,7 +216,7 @@
 			invertedTextColor: false,
 			hidden: true
 		}
-	];
+	]);
 	t.subscribe((value) => {
 		const newSteps = stepConstructor.map((entry) => {
 			const translation = value(`default.page.fights.form.general.steps.${entry.slug}`);
@@ -311,7 +316,7 @@
 	<AppTopMenu />
 	<div class="max-container relative flex flex-grow flex-col pb-40">
 		<form
-			on:submit|preventDefault
+			onsubmit={preventDefault(bubble('submit'))}
 			use:enhance
 			class="-mt-1 flex h-full flex-grow flex-col pb-[74px]"
 		>
@@ -334,22 +339,26 @@
 					{#if step === 1}
 						<div class="form-content">
 							<Form.Field {form} name="name">
-								<Form.Control let:attrs>
-									<Form.Label class="form-label "
-										>{$t('default.page.fights.form.name.label')}</Form.Label
-									>
-									<Input {...attrs} bind:value={$formData.name} />
-								</Form.Control>
+								<Form.Control >
+									{#snippet children({ attrs })}
+																<Form.Label class="form-label "
+											>{$t('default.page.fights.form.name.label')}</Form.Label
+										>
+										<Input {...attrs} bind:value={$formData.name} />
+																								{/snippet}
+														</Form.Control>
 								<!-- <Form.Description>This is your public display name.</Form.Description> -->
 								<Form.FieldErrors />
 							</Form.Field>
 							<Form.Field {form} name="title">
-								<Form.Control let:attrs>
-									<Form.Label class="form-label "
-										>{$t('default.page.fights.form.title.label')}</Form.Label
-									>
-									<Input {...attrs} bind:value={$formData.title} />
-								</Form.Control>
+								<Form.Control >
+									{#snippet children({ attrs })}
+																<Form.Label class="form-label "
+											>{$t('default.page.fights.form.title.label')}</Form.Label
+										>
+										<Input {...attrs} bind:value={$formData.title} />
+																								{/snippet}
+														</Form.Control>
 								<!-- <Form.Description>This is your public display name.</Form.Description> -->
 								<Form.FieldErrors />
 							</Form.Field>
@@ -357,17 +366,19 @@
 					{:else if step === 2}
 						<div class="form-content">
 							<Form.Field {form} name="observation">
-								<Form.Control let:attrs>
-									<Form.Label class="form-label"
-										>{$t('default.page.fights.form.observation.label')}</Form.Label
-									>
-									<Textarea
-										{...attrs}
-										on:input={() => (checkForJudgement = true)}
-										bind:value={$formData.observation}
-										class="min-h-60"
-									/>
-								</Form.Control>
+								<Form.Control >
+									{#snippet children({ attrs })}
+																		<Form.Label class="form-label"
+											>{$t('default.page.fights.form.observation.label')}</Form.Label
+										>
+										<Textarea
+											{...attrs}
+											on:input={() => (checkForJudgement = true)}
+											bind:value={$formData.observation}
+											class="min-h-60"
+										/>
+																										{/snippet}
+																</Form.Control>
 								<!-- <Form.Description>This is your public display name.</Form.Description> -->
 								<Form.FieldErrors />
 							</Form.Field>
@@ -375,59 +386,61 @@
 					{:else if step === 3}
 						<div class="form-content">
 							<Form.Field {form} name="feelings">
-								<Form.Control let:attrs>
-									<Form.Label class="form-label"
-										>{$t('default.page.fights.form.feelings.label')}</Form.Label
-									>
-									<ToggleGroup.Root
-										type="multiple"
-										{...attrs}
-										bind:value={$formData.feelings}
-										class="flex flex-col gap-4"
-									>
-										{#if feelings.length > 0}
-											<div class="">
-												{#each feelings as positive}
-													<div
-														class="text-{stepConstructor[step - 1]
-															.slug}-foreground mb-1 mt-3 flex items-center gap-3 text-xs"
-													>
-														{positive.category === 'true'
-															? $t('default.page.fights.form.general.goodFeelings')
-															: $t('default.page.fights.form.general.badFeelings')}
+								<Form.Control >
+									{#snippet children({ attrs })}
+																				<Form.Label class="form-label"
+											>{$t('default.page.fights.form.feelings.label')}</Form.Label
+										>
+										<ToggleGroup.Root
+											type="multiple"
+											{...attrs}
+											bind:value={$formData.feelings}
+											class="flex flex-col gap-4"
+										>
+											{#if feelings.length > 0}
+												<div class="">
+													{#each feelings as positive}
 														<div
-															class="border-b border-{stepConstructor[step - 1]
-																.slug}-foreground mr-2 flex-grow border-opacity-20"
-														></div>
-													</div>
-													<div class="-mx-1 flex w-full flex-wrap justify-start transition-all">
-														{#each positive.content as category}
-															{#each category.content as feeling}
-																<button
-																	type="button"
-																	on:click={toggleFeelingsCatgeory(feeling, category.category)}
-																	class="{categoryIsVisible(feeling, category) ||
-																	$formData.feelings.includes(feeling.id)
-																		? 'pointer-events-auto max-w-[300px] p-1 opacity-100'
-																		: 'pointer-events-none m-0 max-w-0 p-0 opacity-0'} transition-all"
-																>
-																	<ToggleGroup.Item
-																		value={feeling.id}
-																		class="{feeling.nameEN === category.category
-																			? `bg-white/40 dark:bg-muted font-bold`
-																			: 'border border-white/40 dark:border-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-feelings-foreground dark:data-[state=on]:bg-feelings-foreground max-w-[300px]"
+															class="text-{stepConstructor[step - 1]
+																.slug}-foreground mb-1 mt-3 flex items-center gap-3 text-xs"
+														>
+															{positive.category === 'true'
+																? $t('default.page.fights.form.general.goodFeelings')
+																: $t('default.page.fights.form.general.badFeelings')}
+															<div
+																class="border-b border-{stepConstructor[step - 1]
+																	.slug}-foreground mr-2 flex-grow border-opacity-20"
+															></div>
+														</div>
+														<div class="-mx-1 flex w-full flex-wrap justify-start transition-all">
+															{#each positive.content as category}
+																{#each category.content as feeling}
+																	<button
+																		type="button"
+																		onclick={toggleFeelingsCatgeory(feeling, category.category)}
+																		class="{categoryIsVisible(feeling, category) ||
+																		$formData.feelings.includes(feeling.id)
+																			? 'pointer-events-auto max-w-[300px] p-1 opacity-100'
+																			: 'pointer-events-none m-0 max-w-0 p-0 opacity-0'} transition-all"
 																	>
-																		{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
-																	</ToggleGroup.Item>
-																</button>
+																		<ToggleGroup.Item
+																			value={feeling.id}
+																			class="{feeling.nameEN === category.category
+																				? `bg-white/40 dark:bg-muted font-bold`
+																				: 'border border-white/40 dark:border-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-feelings-foreground dark:data-[state=on]:bg-feelings-foreground max-w-[300px]"
+																		>
+																			{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
+																		</ToggleGroup.Item>
+																	</button>
+																{/each}
 															{/each}
-														{/each}
-													</div>
-												{/each}
-											</div>
-										{/if}
-									</ToggleGroup.Root>
-								</Form.Control>
+														</div>
+													{/each}
+												</div>
+											{/if}
+										</ToggleGroup.Root>
+																												{/snippet}
+																		</Form.Control>
 								<!-- <Form.Description>This is your public display name.</Form.Description> -->
 								<Form.FieldErrors />
 							</Form.Field>
@@ -435,43 +448,45 @@
 					{:else if step === 4}
 						<div class="form-content">
 							<Form.Field {form} name="needs">
-								<Form.Control let:attrs>
-									<Form.Label class="form-label"
-										>{$t('default.page.fights.form.needs.label')}</Form.Label
-									>
-									<ToggleGroup.Root
-										type="multiple"
-										{...attrs}
-										bind:value={$formData.needs}
-										class=""
-									>
-										{#if needs.length > 0}
-											<div class="-m-1 flex w-full flex-wrap justify-start transition-all">
-												{#each needs as category}
-													{#each category.content as need}
-														<button
-															type="button"
-															on:click={toggleNeedsCatgeory(need, category.category)}
-															class="{categoryIsVisible(need, category) ||
-															$formData.needs.includes(need.id)
-																? 'pointer-events-auto max-h-60 max-w-[1000px] p-1 opacity-100'
-																: 'pointer-events-none m-0 max-h-0 max-w-0 p-0 opacity-0'} transition-all"
-														>
-															<ToggleGroup.Item
-																value={need.id}
-																class="{need.nameEN === category.category
-																? `bg-white/40 dark:bg-muted font-bold`
-																: 'border border-white/40 dark:border-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-needs-foreground dark:data-[state=on]:bg-needs-foreground max-w-[300px]"
+								<Form.Control >
+									{#snippet children({ attrs })}
+																						<Form.Label class="form-label"
+											>{$t('default.page.fights.form.needs.label')}</Form.Label
+										>
+										<ToggleGroup.Root
+											type="multiple"
+											{...attrs}
+											bind:value={$formData.needs}
+											class=""
+										>
+											{#if needs.length > 0}
+												<div class="-m-1 flex w-full flex-wrap justify-start transition-all">
+													{#each needs as category}
+														{#each category.content as need}
+															<button
+																type="button"
+																onclick={toggleNeedsCatgeory(need, category.category)}
+																class="{categoryIsVisible(need, category) ||
+																$formData.needs.includes(need.id)
+																	? 'pointer-events-auto max-h-60 max-w-[1000px] p-1 opacity-100'
+																	: 'pointer-events-none m-0 max-h-0 max-w-0 p-0 opacity-0'} transition-all"
 															>
-																{$locale === 'de' ? need.nameDE : need.nameEN}
-															</ToggleGroup.Item>
-														</button>
+																<ToggleGroup.Item
+																	value={need.id}
+																	class="{need.nameEN === category.category
+																	? `bg-white/40 dark:bg-muted font-bold`
+																	: 'border border-white/40 dark:border-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-needs-foreground dark:data-[state=on]:bg-needs-foreground max-w-[300px]"
+																>
+																	{$locale === 'de' ? need.nameDE : need.nameEN}
+																</ToggleGroup.Item>
+															</button>
+														{/each}
 													{/each}
-												{/each}
-											</div>
-										{/if}
-									</ToggleGroup.Root>
-								</Form.Control>
+												</div>
+											{/if}
+										</ToggleGroup.Root>
+																														{/snippet}
+																				</Form.Control>
 								<!-- <Form.Description>This is your public display name.</Form.Description> -->
 								<Form.FieldErrors />
 							</Form.Field>
@@ -479,12 +494,14 @@
 					{:else if !formSubmitted}
 						<div class="form-content">
 							<Form.Field {form} name="request">
-								<Form.Control let:attrs>
-									<Form.Label class="form-label"
-										>{$t('default.page.fights.form.request.label')}</Form.Label
-									>
-									<Textarea {...attrs} bind:value={$formData.request} class="min-h-60" />
-								</Form.Control>
+								<Form.Control >
+									{#snippet children({ attrs })}
+																								<Form.Label class="form-label"
+											>{$t('default.page.fights.form.request.label')}</Form.Label
+										>
+										<Textarea {...attrs} bind:value={$formData.request} class="min-h-60" />
+																																{/snippet}
+																						</Form.Control>
 								<!-- <Form.Description>This is your public display name.</Form.Description> -->
 								<Form.FieldErrors />
 							</Form.Field>

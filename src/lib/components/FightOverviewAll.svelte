@@ -16,13 +16,13 @@
 	import { Switch } from '$lib/components/ui/switch';
 	import { Label } from '$lib/components/ui/label/index.js';
 
-	let initialized = false;
-	let pending = true;
-	let records: object[] = [];
+	let initialized = $state(false);
+	let pending = $state(true);
+	let records: object[] = $state([]);
 	let page = 1;
 	const perPage = 5;
-	let endReached = false;
-	let displayResolved = true;
+	let endReached = $state(false);
+	let displayResolved = $state(true);
 
 	const fetchData = async () => {
 		pending = true;
@@ -37,7 +37,7 @@
 		pending = false;
 	};
 
-	$: filteredRecords = displayResolved ? records : records.filter((record) => !record.resolved);
+	let filteredRecords = $derived(displayResolved ? records : records.filter((record) => !record.resolved));
 
 	endDate.subscribe(async () => {
 		console.log('endDate changed -> fetching data');
@@ -85,7 +85,7 @@
 					<Switch
 						id="lightMode"
 						bind:checked={displayResolved}
-						on:click={() => (displayResolved = !displayResolved)}
+						onclick={() => (displayResolved = !displayResolved)}
 						class="bg-gray-500 transform scale-75"
 						/>
 						<Label for="lightMode" class="cursor-pointer">{$t('default.page.fights.displayResolved')}</Label>
@@ -113,7 +113,7 @@
 			<div>
 				{#each filteredRecords as record}
 					<button
-						on:click={gotoFight(record.id)}
+						onclick={gotoFight(record.id)}
 						class="group flex w-full items-center border-b border-black/5 py-2 text-left text-xs last:border-b-0 sm:py-3"
 					>
 						<div class="flex w-1/6">
@@ -159,7 +159,7 @@
 					<Button
 						decoration="floating-op1"
 						noInnerShadow
-						on:click={loadMore}
+						onclick={loadMore}
 						class="gap-3 border-neutral-100 bg-almostwhite text-black hover:bg-almostwhite dark:border-neutral-800 dark:bg-muted dark:text-white"
 					>
 						<SparklePill

@@ -1,11 +1,20 @@
 <script lang="ts">
   import { cn } from "$lib/utils.js";
   
-  let className: string | undefined = undefined;
-	export { className as class };
-  export let mockup
-  export let color
-  export let inverted = false
+	
+  interface Props {
+    class?: string | undefined;
+    mockup: any;
+    color: any;
+    inverted?: boolean;
+  }
+
+  let {
+    class: className = undefined,
+    mockup,
+    color,
+    inverted = false
+  }: Props = $props();
  
 </script>
 

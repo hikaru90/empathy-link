@@ -15,8 +15,13 @@
 		window.ResizeObserver = ResizeObserver;
 	}
 
-	export let data;
-	let contentReady = false;
+	interface Props {
+		data: any;
+		children?: import('svelte').Snippet;
+	}
+
+	let { data, children }: Props = $props();
+	let contentReady = $state(false);
 
 	console.log('+layout.svelte - user:', data.user);
 
@@ -75,7 +80,7 @@
 			out:blur={{ duration: animationDuration }}
 			class="app/layout bg-background min-h-svh"
 		>
-			<slot />
+			{@render children?.()}
 		</div>
 
 		<!-- <AppMenu user={data.user} /> -->

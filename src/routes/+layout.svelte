@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { t, initialized, locale } from '$lib/translations';
 	import '$src/app.pcss';
 	import SparklePill from '$lib/components/SparklePill.svelte';
@@ -15,7 +17,12 @@
 	import { postHog, featureFlags } from '$store/posthog';
 	import  { PUBLIC_INIT_POSTHOG } from '$env/static/public';
 
-	export let data;
+	interface Props {
+		data: any;
+		children?: import('svelte').Snippet;
+	}
+
+	let { data, children }: Props = $props();
 
 	let currentPath: string;
 	if(PUBLIC_INIT_POSTHOG === 'true') {
@@ -27,7 +34,7 @@
 		window.ResizeObserver = ResizeObserver;
 	}
 
-	let contentReady = false;
+	let contentReady = $state(false);
 	let lastKnownScrollPosition = 0;
 	let ticking = false;
 
@@ -56,11 +63,11 @@
 		}
 	}
 
-	$: {
+	run(() => {
 		if (browser) {
 			setLangAttribute();
 		}
-	}
+	});
 
 	onNavigate((navigation) => {
 		if (!document.startViewTransition) return;
@@ -159,7 +166,7 @@
 				in:blur={{ duration: animationDuration, delay: animationDuration }}
 				out:blur={{ duration: animationDuration }}
 			>
-				<slot />
+				{@render children?.()}
 			</div>
 			<!-- {#if data.user}
 				<AppMenu />

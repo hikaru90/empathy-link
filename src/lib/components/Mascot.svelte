@@ -1,15 +1,21 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import ChevronUp from 'lucide-svelte/icons/chevron-up'
 	import ChevronDown from 'lucide-svelte/icons/chevron-down'
 	import backgroundImage from '$assets/images/holo3.jpg';
 	import { t, locale } from '$lib/translations';
 	import { onMount, onDestroy } from 'svelte';
 
-	export let step: number;
-	export let formSuccess: boolean;
-	export let speechBubbleContentArray: object[];
-	let speechBubbleIndex = 0;
-	let thinking = false
+	interface Props {
+		step: number;
+		formSuccess: boolean;
+		speechBubbleContentArray: object[];
+	}
+
+	let { step, formSuccess, speechBubbleContentArray }: Props = $props();
+	let speechBubbleIndex = $state(0);
+	let thinking = $state(false)
 
 	// $: speechBubbleContent = step === 6 && !formSuccess ? speechBubbleContentArray.find(el => el.step === 6)!.errorContent : speechBubbleContentArray.find(el => el.step === step)!.content
 
@@ -22,18 +28,10 @@
 		}
 	}
 
-	$: speechBubbleContent = getSpeechBubbleContent(formSuccess, step)
 	
 	
-	let speechBubbleElement: HTMLElement;
+	let speechBubbleElement: HTMLElement = $state();
 	let typingTimeoutId: number;
-	$: step, speechBubbleIndex = 0;
-	$: {
-		if (speechBubbleElement) {
-			console.log('inside if speechBubbleElement');
-			typeText(speechBubbleElement, speechBubbleContent[speechBubbleIndex], 30); // Adjust speed as needed
-		}
-	}
 
 	const typeText = (element: HTMLElement, text: string, speed: number) => {
 		try{
@@ -115,6 +113,19 @@
 			clearTimeout(typingTimeoutId);
 		}
 	});
+	let speechBubbleContent;
+	run(() => {
+		speechBubbleContent = getSpeechBubbleContent(formSuccess, step)
+	});
+	run(() => {
+		step, speechBubbleIndex = 0;
+	});
+	run(() => {
+		if (speechBubbleElement) {
+			console.log('inside if speechBubbleElement');
+			typeText(speechBubbleElement, speechBubbleContent[speechBubbleIndex], 30); // Adjust speed as needed
+		}
+	});
 </script>
 
 <div class="mt-4 flex items-start gap-2">
@@ -149,13 +160,13 @@
 			{#if speechBubbleContent.length > 1}
 			<div class="flex justify-end text-2xs">
 				<div class="-mr-1 flex flex-col items-center gap-0.5">
-					<button on:click={() => decreaseIndex()} class="chevron">
+					<button onclick={() => decreaseIndex()} class="chevron">
 						<ChevronUp class="size-2.5" />
 					</button>
 					<!-- <div class="flex size-4 flex-shrink-0 items-center justify-center py-1">
 						{speechBubbleIndex + 1}/{speechBubbleContent.length}
 					</div> -->
-					<button on:click={() => increaseIndex()} class="chevron">
+					<button onclick={() => increaseIndex()} class="chevron">
 						<ChevronDown class="size-2.5" />
 					</button>
 				</div>
@@ -165,9 +176,9 @@
 	</div>
 </div>
 
-<!-- <button on:click={() => checkJudgement()}>Check Judgement</button> -->
+<!-- <button onclick={() => checkJudgement()}>Check Judgement</button> -->
 
-<!-- <button on:click={() => addSpeechBubbleText()}>Add Text</button> -->
+<!-- <button onclick={() => addSpeechBubbleText()}>Add Text</button> -->
 
 <style lang="scss">
 	.triangle {

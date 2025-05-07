@@ -7,8 +7,12 @@
 	import Check from 'lucide-svelte/icons/check'
 	import { user } from '$store/auth';
 
-	export let record;
-	export let fight: object | undefined = undefined;
+	interface Props {
+		record: any;
+		fight?: object | undefined;
+	}
+
+	let { record, fight = undefined }: Props = $props();
 	// export let adversary;
 
 	console.log('record', record);

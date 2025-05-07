@@ -2,8 +2,12 @@
   import { cn } from "$lib/utils.js";
   import HeroAnimation from '$lib/components/HeroAnimation.svelte';
 
-  export let className:string|undefined = undefined;
-	export { className as class };
+  interface Props {
+    class?: string|undefined;
+  }
+
+  let { class: className = undefined }: Props = $props();
+	
 </script>
 
 <div class="text-[7px] md:text-[12px] lg:text-[16px]">

@@ -17,21 +17,21 @@
 		}
 	];
 
-	let isOpen = false;
-	let userMenuIsOpen = false;
+	let isOpen = $state(false);
+	let userMenuIsOpen = $state(false);
 </script>
 
 <nav class="absolute left-0 top-0 flex w-full items-center justify-between p-4">
 	<button
 		class="flex size-8 items-center justify-center rounded-full bg-black"
-		on:click={() => (userMenuIsOpen = true)}
+		onclick={() => (userMenuIsOpen = true)}
 	>
 		<UserRoundCog class="size-3 text-white" />
 	</button>
 	<img src="/bullshift/bullshift-logo.svg" alt="Bullshift Logo" class="h-5" />
 	<button
 		class="relative flex size-8 items-center justify-center rounded-full bg-black"
-		on:click={() => (isOpen = true)}
+		onclick={() => (isOpen = true)}
 	>
 		<Bell class="size-3 text-white" />
 		{#if notifications.length > 0}

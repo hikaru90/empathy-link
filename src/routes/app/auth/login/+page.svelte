@@ -5,7 +5,11 @@
 	import { t } from '$lib/translations';
 	import { page } from '$app/stores';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	const verifyMail = $page.url.searchParams.get('verifyMail');
 	console.log('verifyMail', verifyMail);

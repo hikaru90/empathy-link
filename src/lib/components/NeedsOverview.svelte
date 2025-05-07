@@ -11,15 +11,15 @@
 	import { groupBy, sortByKey, generateHslaColors } from '$scripts/helpers';
 	import Donut from '$lib/components/Donut.svelte';
 
-	let initialized = false;
+	let initialized = $state(false);
 	let pending = true;
-	let needs = [];
-	let colors = [];
-	let displaySelfcenteredNeeds = false;
+	let needs = $state([]);
+	let colors = $state([]);
+	let displaySelfcenteredNeeds = $state(false);
 
-	$: data = needs.map((entry) => {
+	let data = $derived(needs.map((entry) => {
 		return { name: $locale === 'en' ? entry.need.nameEN : entry.need.nameDE, count: entry.count };
-	});
+	}));
 
 	const fetchData = async () => {
 		const filter = `owner = '${$user.id}' && created >= "${$startDate.toString()} 00:00:00" && created < "${$endDate.add({ days: 1 }).toString()} 00:00:00"`;
@@ -90,7 +90,7 @@
 				</h2>
 				<div class="flex items-center gap-2">
 					<Button
-						on:click={() => (displaySelfcenteredNeeds = false)}
+						onclick={() => (displaySelfcenteredNeeds = false)}
 						class="{displaySelfcenteredNeeds === false
 							? 'solid-need-button text-white'
 							: 'border-need-button'} h-7 rounded-full px-4 leading-tight transition"
@@ -98,7 +98,7 @@
 						{$t('default.page.dashboard.needs.community')}
 					</Button>
 					<Button
-						on:click={() => (displaySelfcenteredNeeds = true)}
+						onclick={() => (displaySelfcenteredNeeds = true)}
 						class="{displaySelfcenteredNeeds === true
 							? 'solid-need-button text-white'
 							: 'border-need-button'} h-7 rounded-full px-4 leading-tight"

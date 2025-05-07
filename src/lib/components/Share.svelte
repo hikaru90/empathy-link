@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { createBubbler, preventDefault } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 	import { daysAgo } from '$scripts/helpers';
 	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
 	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
@@ -27,22 +30,26 @@
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 
-	export let id: string;
-	export let record: string;
+	interface Props {
+		id: string;
+		record: string;
+	}
 
-	let initialized = false;
+	let { id, record }: Props = $props();
+
+	let initialized = $state(false);
 	let pending = true;
 	let responses = [];
-	let dialogOpen = false;
-	let drawerOpen = false;
+	let dialogOpen = $state(false);
+	let drawerOpen = $state(false);
 	let recipient = '';
 	let confirmDeletion = false;
 
-	$: shareableLink = `${$page.url.origin}/app/fights/${id}/respond`;
-	$: daysAgoIntl = () => {
+	let shareableLink = $derived(`${$page.url.origin}/app/fights/${id}/respond`);
+	let daysAgoIntl = $derived(() => {
 		if (!initialized) return '...';
 		return daysAgo(record.created);
-	};
+	});
 
 	const schema = z.object({
 		email: z.string().email({ message: get(t)('default.page.login.form.email.validEmailError') })
@@ -164,7 +171,7 @@
 	<div class="flex items-center">
 		{#if !record.resolved}
 		<Button
-			on:click={toggleResolution}
+			onclick={toggleResolution}
 			decoration="dark-op1"
 			class="flex items-center gap-2 border-neutral-900 bg-green-700 text-sm text-zinc-200 hover:bg-green-800"
 		>
@@ -173,7 +180,7 @@
 		</Button>
 		{:else}
 		<Button
-			on:click={toggleResolution}
+			onclick={toggleResolution}
 			decoration="dark-op1"
 			class="flex items-center gap-2 border-neutral-900 bg-red-700 text-sm text-zinc-200 hover:bg-red-800"
 		>
@@ -182,7 +189,7 @@
 		</Button>
 		{/if}
 		<Button
-			on:click={() => (drawerOpen = true)}
+			onclick={() => (drawerOpen = true)}
 			decoration="dark-op1"
 			class="flex items-center gap-2 border-neutral-900 bg-neutral-800 text-sm text-zinc-200"
 		>
@@ -212,7 +219,7 @@
 			<div class="max-container flex flex-col gap-4">
 				<button
 					use:copy={shareableLink}
-					on:svelte-copy={() => {
+					onsvelte-copy={() => {
 						drawerOpen = false;
 						toast.success($t('default.menu.share.copyLinkConfirmation'));
 					}}
@@ -223,7 +230,7 @@
 				</button>
 
 				<button
-					on:click={() => ((drawerOpen = false), (dialogOpen = true))}
+					onclick={() => ((drawerOpen = false), (dialogOpen = true))}
 					class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm"
 					>{$t('default.menu.share.mailLink')} <Mail /></button
 				>
@@ -240,21 +247,23 @@
 			>
 			<Dialog.Description>
 				<form
-					on:submit|preventDefault
+					onsubmit={preventDefault(bubble('submit'))}
 					use:enhance
 					class="-mt-1 flex h-full flex-grow flex-col items-start"
 				>
 					<Form.Field {form} name="email" class="w-full">
-						<Form.Control let:attrs>
-							<Form.Label class="form-label">E-Mail</Form.Label>
-							<Input
-								{...attrs}
-								bind:value={$formData.email}
-								type="text"
-								placeholder={$locale === 'en' ? 'E-Mail' : 'E-Mail Adresse'}
-								class="mb-4"
-							/>
-						</Form.Control>
+						<Form.Control >
+							{#snippet children({ attrs })}
+														<Form.Label class="form-label">E-Mail</Form.Label>
+								<Input
+									{...attrs}
+									bind:value={$formData.email}
+									type="text"
+									placeholder={$locale === 'en' ? 'E-Mail' : 'E-Mail Adresse'}
+									class="mb-4"
+								/>
+																				{/snippet}
+												</Form.Control>
 						<!-- <Form.Description>This is your public display name.</Form.Description> -->
 						<Form.FieldErrors />
 					</Form.Field>

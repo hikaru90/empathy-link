@@ -4,7 +4,7 @@
 	import ChartColumnDecreasing from 'lucide-svelte/icons/chart-column-decreasing';
 	import Book from 'lucide-svelte/icons/book';
 	import Users from 'lucide-svelte/icons/users';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	type MenuItem = {
 		slug: string;
@@ -15,7 +15,7 @@
 		name?: string;
 	};
 
-	let menuItems: MenuItem[] = [
+	let menuItems: MenuItem[] = $state([
 		{
 			slug: 'chat',
 			heading: 'Chat',
@@ -44,11 +44,11 @@
 			icon: Users,
 			available: true
 		}
-	];
+	]);
 	let footerVisible = false;
 
 	const isCurrentRoute = (path: string) => {
-		return $page.data.route === path;
+		return page.data.route === path;
 	};
 
 	t.subscribe((value) => {
@@ -90,7 +90,7 @@
 						: 'pointer-events-none'}"
 				>
 					<div class="size-8 flex items-center justify-center {isCurrentRoute(item.path) ? 'text-black' : 'text-black/60'}">
-						<svelte:component this={item.icon} class="size-5" />
+						<item.icon class="size-5" />
 					</div>
 					<span class="text-2xs lg:mt-2 lg:text-xs {isCurrentRoute(item.path) ? 'text-black' : 'text-black/60'}">
 						{item.heading}

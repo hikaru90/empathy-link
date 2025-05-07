@@ -9,9 +9,13 @@
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 
-	let className: string | undefined = undefined;
-	export { className as class };
-	export let data: SuperValidated<Infer<FormSchema>>;
+	
+	interface Props {
+		class?: string | undefined;
+		data: SuperValidated<Infer<FormSchema>>;
+	}
+
+	let { class: className = undefined, data }: Props = $props();
 
 	const form = superForm(data, {
 		resetForm: false,
@@ -32,33 +36,41 @@
 <!-- <SuperDebug data={formData} /> -->
 		<form method="POST" use:enhance class={className}>
 			<Form.Field {form} name="firstName">
-				<Form.Control let:attrs>
-					<Form.Label>{$t('default.page.register.form.firstname.label')}</Form.Label>
-					<Input {...attrs} bind:value={$formData.firstName} />
+				<Form.Control >
+					{#snippet children({ attrs })}
+						<Form.Label>{$t('default.page.register.form.firstname.label')}</Form.Label>
+						<Input {...attrs} bind:value={$formData.firstName} />
+										{/snippet}
 				</Form.Control>
 				<!-- <Form.Description>This is your public display name.</Form.Description> -->
 				<Form.FieldErrors />
 			</Form.Field>
 			<Form.Field {form} name="lastName">
-				<Form.Control let:attrs>
-					<Form.Label>{$t('default.page.register.form.lastname.label')}</Form.Label>
-					<Input {...attrs} bind:value={$formData.lastName} />
+				<Form.Control >
+					{#snippet children({ attrs })}
+						<Form.Label>{$t('default.page.register.form.lastname.label')}</Form.Label>
+						<Input {...attrs} bind:value={$formData.lastName} />
+										{/snippet}
 				</Form.Control>
 				<!-- <Form.Description>This is your public display name.</Form.Description> -->
 				<Form.FieldErrors />
 			</Form.Field>
 			<Form.Field {form} name="email">
-				<Form.Control let:attrs>
-					<Form.Label>{$t('default.page.register.form.email.label')}</Form.Label>
-					<Input {...attrs} bind:value={$formData.email} type="email" />
+				<Form.Control >
+					{#snippet children({ attrs })}
+						<Form.Label>{$t('default.page.register.form.email.label')}</Form.Label>
+						<Input {...attrs} bind:value={$formData.email} type="email" />
+										{/snippet}
 				</Form.Control>
 				<!-- <Form.Description>This is your public display name.</Form.Description> -->
 				<Form.FieldErrors />
 			</Form.Field>
 			<Form.Field {form} name="password">
-				<Form.Control let:attrs>
-					<Form.Label>{$t('default.page.register.form.password.label')}</Form.Label>
-					<Input {...attrs} bind:value={$formData.password} type="password" />
+				<Form.Control >
+					{#snippet children({ attrs })}
+						<Form.Label>{$t('default.page.register.form.password.label')}</Form.Label>
+						<Input {...attrs} bind:value={$formData.password} type="password" />
+										{/snippet}
 				</Form.Control>
 				<!-- <Form.Description>This is your public display name.</Form.Description> -->
 				<Form.FieldErrors />
