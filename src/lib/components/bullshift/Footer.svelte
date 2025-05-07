@@ -69,6 +69,7 @@
 		alt=""
 		class="absolute left-0 top-0 w-7 -translate-y-full transform"
 	/>
+	
 	<img
 		src="/inverted-border-white.svg"
 		alt=""

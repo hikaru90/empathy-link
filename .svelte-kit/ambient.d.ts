@@ -26,8 +26,6 @@
  * ```
  */
 declare module '$env/static/private' {
-	export const HOST: string;
-	export const PORT: string;
 	export const PRIVATE_BREVO_API_KEY: string;
 	export const PRIVATE_GEMINI_API_KEY: string;
 	export const NVM_INC: string;
@@ -126,8 +124,6 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
-		HOST: string;
-		PORT: string;
 		PRIVATE_BREVO_API_KEY: string;
 		PRIVATE_GEMINI_API_KEY: string;
 		NVM_INC: string;
