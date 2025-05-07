@@ -1,4 +1,0 @@
-const PUBLIC_POSTHOG_KEY = "phc_D4XP4mq4ixxa70aT5JuQm6kTvH7yGKHzUNYCsrBHEDW";
-export {
-  PUBLIC_POSTHOG_KEY as P
-};
