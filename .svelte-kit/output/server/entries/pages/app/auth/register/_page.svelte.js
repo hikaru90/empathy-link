@@ -11,7 +11,7 @@ import "memoize-weak";
 import { z as zodClient } from "../../../../../chunks/zod.js";
 import { t } from "../../../../../chunks/translations.js";
 import { a as toast } from "../../../../../chunks/Toaster.svelte_svelte_type_style_lang.js";
-import "../../../../../chunks/index4.js";
+import "../../../../../chunks/index3.js";
 const RegisterForm = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $t, $$unsubscribe_t;
   let $formData, $$unsubscribe_formData;

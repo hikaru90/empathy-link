@@ -1,5 +1,5 @@
 import { c as create_ssr_component, a as add_attribute, e as escape } from "./ssr.js";
-import { c as cn } from "./index3.js";
+import { c as cn } from "./create.js";
 const backgroundImage = "/_app/immutable/assets/holo3.CNY6rpg_.jpg";
 const SparklePill = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let { fast = false } = $$props;

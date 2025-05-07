@@ -14,11 +14,11 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_index4.js",
-      "_page.js",
-      "_translations.js",
       "_index3.js",
-      "_index7.js",
+      "_translations.js",
+      "_create.js",
+      "_index6.js",
+      "_page.js",
       "_auth.js",
       "_client.js"
     ]
@@ -29,10 +29,10 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_index3.js",
       "_page.js",
       "_translations.js",
-      "_index5.js",
+      "_create.js",
+      "_index4.js",
       "_Avatar.js",
       "_auth.js",
       "_client.js"
@@ -44,13 +44,13 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_index3.js",
+      "_page.js",
       "_Cross1.js",
       "_lifecycle.js",
       "_translations.js",
-      "_index7.js",
-      "_index5.js",
-      "_page.js",
+      "_index6.js",
+      "_create.js",
+      "_index4.js",
       "_helpers.js",
       "_auth.js",
       "_SparklePill.js",
@@ -61,7 +61,7 @@
     "file": "chunks/Cross1.js",
     "name": "Cross1",
     "imports": [
-      "_index3.js",
+      "_create.js",
       "_utils.js",
       "_index2.js",
       "_dialog-close.js",
@@ -81,20 +81,18 @@
       "_ssr.js",
       "_root.svelte_svelte_type_style_lang.js",
       "_drawer-title.js",
-      "_index4.js",
+      "_index3.js",
       "_Icon.js",
       "_utils.js",
-      "_index3.js",
       "_translations.js",
-      "_stores.js",
-      "_client.js"
+      "_stores.js"
     ]
   },
   "_FormStepDisplay.svelte_svelte_type_style_lang.js": {
     "file": "chunks/FormStepDisplay.svelte_svelte_type_style_lang.js",
     "name": "FormStepDisplay.svelte_svelte_type_style_lang",
     "imports": [
-      "_index3.js"
+      "_create.js"
     ],
     "css": [
       "_app/immutable/assets/FormStepDisplay.CYqpfaym.css"
@@ -108,10 +106,6 @@
       "_ssr.js"
     ]
   },
-  "_Mascot.svelte_svelte_type_style_lang.js": {
-    "file": "_app/immutable/assets/Mascot.C947rybQ.css",
-    "src": "_Mascot.svelte_svelte_type_style_lang.js"
-  },
   "_ResponseMascot.js": {
     "file": "chunks/ResponseMascot.js",
     "name": "ResponseMascot",
@@ -119,15 +113,15 @@
       "_utils.js",
       "_lifecycle.js",
       "_ssr.js",
-      "_index3.js",
+      "_page.js",
       "_translations.js",
-      "_index5.js",
+      "_index4.js",
       "_chevron-left.js",
-      "_index10.js",
+      "_chevron-down.js",
       "_SparklePill.js"
     ],
     "css": [
-      "_app/immutable/assets/Mascot.C947rybQ.css"
+      "_app/immutable/assets/ResponseMascot.C947rybQ.css"
     ]
   },
   "_Share.svelte_svelte_type_style_lang.js": {
@@ -139,7 +133,7 @@
     "name": "SparklePill",
     "imports": [
       "_ssr.js",
-      "_index3.js"
+      "_create.js"
     ],
     "assets": [
       "_app/immutable/assets/holo3.CNY6rpg_.jpg"
@@ -170,9 +164,9 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_index3.js",
+      "_create.js",
       "_Cross1.js",
-      "_index4.js"
+      "_index3.js"
     ]
   },
   "_check.js": {
@@ -181,6 +175,19 @@
     "imports": [
       "_ssr.js",
       "_Icon.js"
+    ]
+  },
+  "_chevron-down.js": {
+    "file": "chunks/chevron-down.js",
+    "name": "chevron-down",
+    "imports": [
+      "_root.svelte_svelte_type_style_lang.js",
+      "_utils.js",
+      "_ssr.js",
+      "_drawer-title.js",
+      "_lifecycle.js",
+      "_Icon.js",
+      "_FormStepDisplay.svelte_svelte_type_style_lang.js"
     ]
   },
   "_chevron-left.js": {
@@ -207,6 +214,16 @@
       "_ssr2.js"
     ]
   },
+  "_create.js": {
+    "file": "chunks/create.js",
+    "name": "create",
+    "imports": [
+      "_index2.js",
+      "_ssr2.js",
+      "_lifecycle.js",
+      "_utils.js"
+    ]
+  },
   "_dashboard.js": {
     "file": "chunks/dashboard.js",
     "name": "dashboard",
@@ -221,7 +238,7 @@
       "_utils.js",
       "_ssr.js",
       "_index2.js",
-      "_index3.js",
+      "_create.js",
       "_lifecycle.js",
       "_scheduler.js"
     ]
@@ -240,7 +257,7 @@
       "_index2.js",
       "_scheduler.js",
       "_lifecycle.js",
-      "_index3.js",
+      "_create.js",
       "_Icon.js"
     ]
   },
@@ -258,14 +275,15 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
+      "_index3.js",
       "_index4.js",
-      "_page.js",
-      "_index5.js",
       "_Avatar.js",
       "_translations.js",
       "_auth.js",
-      "_index9.js",
+      "_index8.js",
+      "_create.js",
       "_helpers.js",
+      "_page.js",
       "_client.js",
       "_Icon.js",
       "_button.js"
@@ -315,19 +333,6 @@
     "file": "chunks/index.js",
     "name": "index"
   },
-  "_index10.js": {
-    "file": "chunks/index10.js",
-    "name": "index",
-    "imports": [
-      "_ssr.js",
-      "_Icon.js",
-      "_lifecycle.js",
-      "_FormStepDisplay.svelte_svelte_type_style_lang.js",
-      "_root.svelte_svelte_type_style_lang.js",
-      "_utils.js",
-      "_drawer-title.js"
-    ]
-  },
   "_index2.js": {
     "file": "chunks/index2.js",
     "name": "index",
@@ -339,20 +344,24 @@
     "file": "chunks/index3.js",
     "name": "index",
     "imports": [
-      "_index2.js",
-      "_utils.js",
-      "_ssr2.js",
-      "_lifecycle.js"
-    ],
-    "css": [
-      "_app/immutable/assets/index.CTgYpJLa.css"
+      "_create.js"
     ]
   },
   "_index4.js": {
     "file": "chunks/index4.js",
     "name": "index",
     "imports": [
-      "_index3.js"
+      "_utils.js",
+      "_ssr.js",
+      "_create.js",
+      "_Cross1.js",
+      "_page.js",
+      "_SparklePill.js",
+      "_index6.js",
+      "_dialog-close.js",
+      "_lifecycle.js",
+      "_index2.js",
+      "_scheduler.js"
     ]
   },
   "_index5.js": {
@@ -361,32 +370,16 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_index3.js",
+      "_create.js",
       "_Cross1.js",
-      "_SparklePill.js",
-      "_index7.js",
-      "_dialog-close.js",
-      "_lifecycle.js",
-      "_index2.js",
-      "_scheduler.js"
+      "_SparklePill.js"
     ]
   },
   "_index6.js": {
     "file": "chunks/index6.js",
     "name": "index",
     "imports": [
-      "_utils.js",
-      "_ssr.js",
-      "_index3.js",
-      "_Cross1.js",
-      "_SparklePill.js"
-    ]
-  },
-  "_index7.js": {
-    "file": "chunks/index7.js",
-    "name": "index",
-    "imports": [
-      "_index3.js",
+      "_create.js",
       "_dialog-close.js",
       "_utils.js",
       "_ssr.js"
@@ -395,13 +388,13 @@
       "_app/immutable/assets/index.C87RaGEE.css"
     ]
   },
-  "_index8.js": {
-    "file": "chunks/index8.js",
+  "_index7.js": {
+    "file": "chunks/index7.js",
     "name": "index",
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_index3.js",
+      "_create.js",
       "_Cross1.js",
       "_dialog-close.js"
     ],
@@ -409,13 +402,13 @@
       "_app/immutable/assets/dialog-content.CjG4zrKY.css"
     ]
   },
-  "_index9.js": {
-    "file": "chunks/index9.js",
+  "_index8.js": {
+    "file": "chunks/index8.js",
     "name": "index",
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_index3.js",
+      "_create.js",
       "_lifecycle.js",
       "_dialog-close.js",
       "_index2.js",
@@ -429,11 +422,12 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_index5.js",
-      "_index3.js",
+      "_create.js",
+      "_index4.js",
+      "_dialog-close.js",
       "_index2.js",
       "_lifecycle.js",
-      "_index4.js"
+      "_index3.js"
     ]
   },
   "_internal.js": {
@@ -456,20 +450,16 @@
     "file": "chunks/page.js",
     "name": "page",
     "imports": [
+      "_create.js",
       "_index2.js"
+    ],
+    "css": [
+      "_app/immutable/assets/page.CTgYpJLa.css"
     ]
   },
   "_pocketbase.js": {
     "file": "chunks/pocketbase.js",
     "name": "pocketbase"
-  },
-  "_posthog.js": {
-    "file": "chunks/posthog.js",
-    "name": "posthog",
-    "imports": [
-      "_index2.js",
-      "_utils.js"
-    ]
   },
   "_private.js": {
     "file": "chunks/private.js",
@@ -523,27 +513,26 @@
       "_Icon.js"
     ]
   },
-  "_simplebar.js": {
-    "file": "chunks/simplebar.js",
-    "name": "simplebar",
-    "imports": [
-      "_utils.js",
-      "_ssr.js",
-      "_lifecycle.js",
-      "_Toaster.svelte_svelte_type_style_lang.js",
-      "_page.js"
-    ],
-    "css": [
-      "_app/immutable/assets/simplebar.Zga46yDy.css"
-    ]
-  },
   "_skeleton.js": {
     "file": "chunks/skeleton.js",
     "name": "skeleton",
     "imports": [
       "_utils.js",
       "_ssr.js",
-      "_index3.js"
+      "_create.js"
+    ]
+  },
+  "_sonner.js": {
+    "file": "chunks/sonner.js",
+    "name": "sonner",
+    "imports": [
+      "_utils.js",
+      "_ssr.js",
+      "_lifecycle.js",
+      "_Toaster.svelte_svelte_type_style_lang.js"
+    ],
+    "css": [
+      "_app/immutable/assets/sonner.CLTYUZga.css"
     ]
   },
   "_ssr.js": {
@@ -754,12 +743,11 @@
       "_lifecycle.js",
       "_ssr.js",
       "_translations.js",
-      "_simplebar.js",
-      "_page.js",
+      "_sonner.js",
       "_SparklePill.js",
-      "_index3.js",
+      "_page.js",
       "_client.js",
-      "_posthog.js"
+      "_index2.js"
     ],
     "css": [
       "_app/immutable/assets/_layout.4YuHacuD.css"
@@ -802,16 +790,16 @@
     "imports": [
       "_utils.js",
       "_ssr.js",
+      "_index3.js",
       "_index4.js",
-      "_page.js",
-      "_index5.js",
       "_translations.js",
       "_client.js",
+      "_page.js",
+      "_index5.js",
       "_index6.js",
-      "_index3.js",
-      "_index7.js",
       "_Cross1.js",
       "_helpers.js",
+      "_create.js",
       "_Icon.js",
       "_chevron-right.js",
       "_button.js",
@@ -819,8 +807,7 @@
       "_icon-steps.js",
       "_send-horizontal.js",
       "_heart.js",
-      "_lifecycle.js",
-      "_posthog.js"
+      "_lifecycle.js"
     ],
     "css": [
       "_app/immutable/assets/_page.B9LCbVG1.css"
@@ -898,8 +885,7 @@
       "_index.js",
       "_gemini.js",
       "_pocketbase.js",
-      "_tools.js",
-      "_auth.js"
+      "_tools.js"
     ]
   },
   "src/routes/api/ai/checkForJudgement/+server.ts": {
@@ -988,10 +974,9 @@
       "_lifecycle.js",
       "_ssr.js",
       "_translations.js",
-      "_simplebar.js",
-      "_page.js",
+      "_sonner.js",
       "_SparklePill.js",
-      "_index3.js",
+      "_page.js",
       "_client.js"
     ],
     "css": [
@@ -1059,10 +1044,10 @@
       "_zod.js",
       "_translations.js",
       "_Toaster.svelte_svelte_type_style_lang.js",
-      "_index4.js",
-      "_index8.js",
-      "_pocketbase.js",
       "_index3.js",
+      "_index7.js",
+      "_pocketbase.js",
+      "_create.js",
       "_button.js",
       "_check.js",
       "_stores.js"
@@ -1110,7 +1095,7 @@
       "_zod.js",
       "_translations.js",
       "_Toaster.svelte_svelte_type_style_lang.js",
-      "_index4.js"
+      "_index3.js"
     ]
   },
   "src/routes/app/dashboard/+page.svelte": {
@@ -1124,15 +1109,16 @@
       "_AppTopMenu.js",
       "_AppBottomMenu.js",
       "_lifecycle.js",
-      "_index3.js",
+      "_create.js",
+      "_page.js",
       "_dialog-close.js",
       "_index2.js",
       "_scheduler.js",
-      "_index4.js",
+      "_index3.js",
       "_dashboard.js",
-      "_index8.js",
+      "_index7.js",
       "_translations.js",
-      "_index5.js",
+      "_index4.js",
       "_skeleton.js",
       "_pocketbase.js",
       "_client.js",
@@ -1152,18 +1138,18 @@
       "_utils.js",
       "_ssr.js",
       "_skeleton.js",
-      "_index3.js",
+      "_page.js",
       "_pocketbase.js",
       "_translations.js",
       "_dashboard.js",
       "_client.js",
       "_auth.js",
       "_helpers.js",
+      "_create.js",
       "_AppTopMenu.js",
       "_AppBottomMenu.js",
-      "_index6.js",
-      "_page.js",
       "_index5.js",
+      "_index4.js",
       "_chevron-left.js",
       "_Icon.js"
     ],
@@ -1187,12 +1173,12 @@
       "_lifecycle.js",
       "_ssr.js",
       "_translations.js",
-      "_index3.js",
       "_page.js",
-      "_index7.js",
+      "_create.js",
+      "_index6.js",
       "_auth.js",
       "_client.js",
-      "_index4.js",
+      "_index3.js",
       "_pocketbase.js",
       "_stores.js",
       "_formData.js",
@@ -1228,9 +1214,9 @@
       "_AppTopMenu.js",
       "_AppBottomMenu.js",
       "_stores.js",
-      "_index4.js",
-      "_index10.js",
       "_index3.js",
+      "_chevron-down.js",
+      "_create.js",
       "_FormStepDisplay.svelte_svelte_type_style_lang.js",
       "_formData.js",
       "_index.js",
@@ -1255,12 +1241,12 @@
     "isEntry": true,
     "imports": [
       "_utils.js",
-      "_index5.js",
       "_ssr.js",
       "_AppTopMenu.js",
       "_AppBottomMenu.js",
       "_input.js",
-      "_index3.js",
+      "_create.js",
+      "_index4.js",
       "_dialog-close.js",
       "_lifecycle.js",
       "_index2.js",
@@ -1268,19 +1254,19 @@
       "_client.js",
       "_formData.js",
       "_index.js",
+      "_page.js",
       "_translations.js",
       "_chevron-left.js",
-      "_index10.js",
+      "_chevron-down.js",
       "_zod.js",
       "_icon-steps.js",
       "_pocketbase.js",
       "_SparklePill.js",
       "_auth.js",
-      "_page.js",
-      "_index7.js",
-      "_index4.js",
+      "_index6.js",
+      "_index3.js",
       "_stores.js",
-      "_index8.js",
+      "_index7.js",
       "_Toaster.svelte_svelte_type_style_lang.js",
       "_check.js",
       "_rotate-ccw.js",
@@ -1291,7 +1277,7 @@
     ],
     "css": [
       "_app/immutable/assets/_page.zQFL3fER.css",
-      "_app/immutable/assets/Mascot.C947rybQ.css",
+      "_app/immutable/assets/ResponseMascot.C947rybQ.css",
       "_app/immutable/assets/Share.Buu23odp.css"
     ]
   },
@@ -1305,8 +1291,8 @@
       "_ssr.js",
       "_AppBottomMenu.js",
       "_AppTopMenu.js",
+      "_create.js",
       "_index3.js",
-      "_index4.js",
       "_schema.js",
       "_client.js",
       "_formData.js",
@@ -1316,8 +1302,8 @@
       "_pocketbase.js",
       "_auth.js",
       "_page.js",
-      "_index6.js",
       "_index5.js",
+      "_index4.js",
       "_chevron-left.js",
       "_heart.js"
     ],
@@ -1341,12 +1327,12 @@
       "_lifecycle.js",
       "_ssr.js",
       "_translations.js",
-      "_index3.js",
       "_page.js",
-      "_index7.js",
+      "_create.js",
+      "_index6.js",
       "_auth.js",
       "_client.js",
-      "_index4.js",
+      "_index3.js",
       "_pocketbase.js",
       "_stores.js",
       "_formData.js",
@@ -1382,12 +1368,12 @@
       "_AppTopMenu.js",
       "_AppBottomMenu.js",
       "_stores.js",
-      "_index4.js",
-      "_index10.js",
-      "_page.js",
-      "_index7.js",
       "_index3.js",
+      "_chevron-down.js",
+      "_index6.js",
+      "_page.js",
       "_translations.js",
+      "_create.js",
       "_auth.js",
       "_client.js",
       "_FormStepDisplay.svelte_svelte_type_style_lang.js",
@@ -1412,11 +1398,11 @@
     "imports": [
       "_ssr.js",
       "_AppTopMenu.js",
-      "_index4.js",
-      "_page.js",
-      "_translations.js",
       "_index3.js",
-      "_index7.js",
+      "_translations.js",
+      "_create.js",
+      "_index6.js",
+      "_page.js",
       "_auth.js",
       "_client.js",
       "_FormStepDisplay.svelte_svelte_type_style_lang.js",
@@ -1431,7 +1417,7 @@
       "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/Mascot.C947rybQ.css",
+      "_app/immutable/assets/ResponseMascot.C947rybQ.css",
       "_app/immutable/assets/dialog-content.CjG4zrKY.css",
       "_app/immutable/assets/Share.Buu23odp.css"
     ]
@@ -1457,17 +1443,16 @@
       "_ssr.js",
       "_Footer.js",
       "_utils.js",
-      "_pocketbase.js",
       "_auth.js",
       "_translations.js",
+      "_index7.js",
+      "_index3.js",
       "_index8.js",
-      "_index4.js",
-      "_index9.js",
+      "_create.js",
       "_Icon.js",
       "_rotate-ccw.js",
       "_send-horizontal.js",
       "_x.js",
-      "_index3.js",
       "_button.js"
     ]
   },
@@ -1535,9 +1520,7 @@
     "src": "src/routes/bullshift/stats/+page.server.ts",
     "isEntry": true,
     "imports": [
-      "_gemini.js",
-      "_pocketbase.js",
-      "_index.js"
+      "_pocketbase.js"
     ]
   },
   "src/routes/bullshift/stats/+page.svelte": {
@@ -1548,10 +1531,19 @@
     "imports": [
       "_ssr.js",
       "_Footer.js",
+      "_pocketbase.js",
+      "_translations.js",
+      "_utils.js",
+      "_index3.js",
+      "_dashboard.js",
+      "_client.js",
+      "_auth.js",
+      "_helpers.js",
+      "_skeleton.js",
       "_chevron-right.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.KpkFw4qf.css"
+      "_app/immutable/assets/_page.1CIL4wge.css"
     ]
   },
   "src/routes/utility/shapes/+page.js": {

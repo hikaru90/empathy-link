@@ -1,148 +1,31 @@
-import { w as writable, d as derived } from "./index2.js";
-let timeoutAction;
-let timeoutEnable;
-function withoutTransition(action) {
-  if (typeof document === "undefined")
-    return;
-  clearTimeout(timeoutAction);
-  clearTimeout(timeoutEnable);
-  const style = document.createElement("style");
-  const css = document.createTextNode(`* {
-     -webkit-transition: none !important;
-     -moz-transition: none !important;
-     -o-transition: none !important;
-     -ms-transition: none !important;
-     transition: none !important;
-  }`);
-  style.appendChild(css);
-  const disable = () => document.head.appendChild(style);
-  const enable = () => document.head.removeChild(style);
-  if (typeof window.getComputedStyle !== "undefined") {
-    disable();
-    action();
-    window.getComputedStyle(style).opacity;
-    enable();
-    return;
+import { tv } from "tailwind-variants";
+import "dequal";
+import "./create.js";
+import "clsx";
+import { w as writable } from "./index2.js";
+const buttonVariants = tv({
+  base: "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  variants: {
+    variant: {
+      default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+      destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+      outline: "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+      secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+      ghost: "hover:bg-accent hover:text-accent-foreground",
+      link: "text-primary underline-offset-4 hover:underline"
+    },
+    size: {
+      default: "h-9 px-4 py-2",
+      sm: "h-8 rounded-md px-3 text-xs",
+      lg: "h-10 rounded-md px-8",
+      icon: "h-9 w-9"
+    }
+  },
+  defaultVariants: {
+    variant: "default",
+    size: "default"
   }
-  if (typeof window.requestAnimationFrame !== "undefined") {
-    disable();
-    action();
-    window.requestAnimationFrame(enable);
-    return;
-  }
-  disable();
-  timeoutAction = window.setTimeout(() => {
-    action();
-    timeoutEnable = window.setTimeout(enable, 120);
-  }, 120);
-}
-const noopStorage = {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getItem: (_key) => null,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setItem: (_key, _value) => {
-  }
-};
-const isBrowser = typeof document !== "undefined";
-const modes = ["dark", "light", "system"];
-const localStorageKey = "mode-watcher-mode";
-const userPrefersMode = createUserPrefersMode();
-const systemPrefersMode = createSystemMode();
-const themeColors = writable(void 0);
-const derivedMode = createDerivedMode();
-function createUserPrefersMode() {
-  const defaultValue = "system";
-  const storage = isBrowser ? localStorage : noopStorage;
-  const initialValue = storage.getItem(localStorageKey);
-  let value = isValidMode(initialValue) ? initialValue : defaultValue;
-  const { subscribe, set: _set } = writable(value, () => {
-    if (!isBrowser)
-      return;
-    const handler = (e) => {
-      if (e.key !== localStorageKey)
-        return;
-      const newValue = e.newValue;
-      if (isValidMode(newValue)) {
-        _set(value = newValue);
-      } else {
-        _set(value = defaultValue);
-      }
-    };
-    addEventListener("storage", handler);
-    return () => removeEventListener("storage", handler);
-  });
-  function set(v) {
-    _set(value = v);
-    storage.setItem(localStorageKey, value);
-  }
-  return {
-    subscribe,
-    set
-  };
-}
-function createSystemMode() {
-  const defaultValue = void 0;
-  let track = true;
-  const { subscribe, set } = writable(defaultValue, () => {
-    if (!isBrowser)
-      return;
-    const handler = (e) => {
-      if (!track)
-        return;
-      set(e.matches ? "light" : "dark");
-    };
-    const mediaQueryState = window.matchMedia("(prefers-color-scheme: light)");
-    mediaQueryState.addEventListener("change", handler);
-    return () => mediaQueryState.removeEventListener("change", handler);
-  });
-  function query() {
-    if (!isBrowser)
-      return;
-    const mediaQueryState = window.matchMedia("(prefers-color-scheme: light)");
-    set(mediaQueryState.matches ? "light" : "dark");
-  }
-  function tracking(active) {
-    track = active;
-  }
-  return {
-    subscribe,
-    query,
-    tracking
-  };
-}
-function createDerivedMode() {
-  const { subscribe } = derived([userPrefersMode, systemPrefersMode, themeColors], ([$userPrefersMode, $systemPrefersMode, $themeColors]) => {
-    if (!isBrowser)
-      return void 0;
-    const derivedMode2 = $userPrefersMode === "system" ? $systemPrefersMode : $userPrefersMode;
-    withoutTransition(() => {
-      const htmlEl = document.documentElement;
-      const themeColorEl = document.querySelector('meta[name="theme-color"]');
-      if (derivedMode2 === "light") {
-        htmlEl.classList.remove("dark");
-        htmlEl.style.colorScheme = "light";
-        if (themeColorEl && $themeColors) {
-          themeColorEl.setAttribute("content", $themeColors.light);
-        }
-      } else {
-        htmlEl.classList.add("dark");
-        htmlEl.style.colorScheme = "dark";
-        if (themeColorEl && $themeColors) {
-          themeColorEl.setAttribute("content", $themeColors.dark);
-        }
-      }
-    });
-    return derivedMode2;
-  });
-  return {
-    subscribe
-  };
-}
-function isValidMode(value) {
-  if (typeof value !== "string")
-    return false;
-  return modes.includes(value);
-}
+});
 let scroll = writable(0);
 let windowHeight = writable(0);
 let windowWidth = writable(0);
@@ -163,7 +46,7 @@ export {
   windowHeight as a,
   backgroundColor as b,
   currentSection as c,
-  derivedMode as d,
+  buttonVariants as d,
   scroll as s,
   windowWidth as w
 };

@@ -1,6 +1,6 @@
 import { c as compute_rest_props } from "./utils.js";
 import { c as create_ssr_component, s as spread, g as escape_attribute_value, h as escape_object } from "./ssr.js";
-import { c as cn } from "./index3.js";
+import { c as cn } from "./create.js";
 const Skeleton = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
   let { class: className = void 0 } = $$props;

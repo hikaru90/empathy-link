@@ -4,8 +4,8 @@ import { A as AppBottomMenu } from "../../../../chunks/AppBottomMenu.js";
 import { A as AppTopMenu } from "../../../../chunks/AppTopMenu.js";
 import "clsx";
 import "dequal";
+import "../../../../chunks/create.js";
 import "../../../../chunks/index3.js";
-import "../../../../chunks/index4.js";
 import "../../../../chunks/schema.js";
 import "../../../../chunks/client.js";
 import "ts-deepmerge";
@@ -19,8 +19,8 @@ import "../../../../chunks/Toaster.svelte_svelte_type_style_lang.js";
 import "../../../../chunks/pocketbase.js";
 import { u as user } from "../../../../chunks/auth.js";
 import "../../../../chunks/page.js";
-import { B as Button$1 } from "../../../../chunks/index6.js";
-import { B as Button } from "../../../../chunks/index5.js";
+import { B as Button$1 } from "../../../../chunks/index5.js";
+import { B as Button } from "../../../../chunks/index4.js";
 import { C as Chevron_left } from "../../../../chunks/chevron-left.js";
 import { H as Heart } from "../../../../chunks/heart.js";
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -55,7 +55,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
             return `${escape($t("default.page.selfempathy.create"))} ${validate_component(Heart, "Heart").$$render(
               $$result,
               {
-                class: "h-4 w-4 text-red-600\r\n							"
+                class: "h-4 w-4 text-red-600\n							"
               },
               {},
               {}
