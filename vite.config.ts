@@ -27,23 +27,23 @@ export default defineConfig({
 			}
 		}
 	},
-	optimizeDeps: {
-		exclude: [
-			'@sveltekit-i18n/parser-default',
-			'devalue',
-			'resize-observer-polyfill',
-			'posthog-js',
-			'clsx',
-			'tailwind-merge',
-			'tailwind-variants',
-			'dequal',
-			'nanoid/non-secure',
-			'@internationalized/date',
-			'@floating-ui/dom',
-			'focus-trap',
-			'marked',
-			'pocketbase',
-			'lucide-svelte'
-		] // Exclude dependencies if they don't need optimization
-	}
+	// optimizeDeps: {
+	// 	exclude: [
+	// 		'@sveltekit-i18n/parser-default',
+	// 		'devalue',
+	// 		'resize-observer-polyfill',
+	// 		'posthog-js',
+	// 		'clsx',
+	// 		'tailwind-merge',
+	// 		'tailwind-variants',
+	// 		'dequal',
+	// 		'nanoid/non-secure',
+	// 		'@internationalized/date',
+	// 		'@floating-ui/dom',
+	// 		'focus-trap',
+	// 		'marked',
+	// 		'pocketbase',
+	// 		'lucide-svelte'
+	// 	] // Exclude dependencies if they don't need optimization
+	// }
 });

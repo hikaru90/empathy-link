@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { t, initialized, locale } from '$lib/translations';
 	import '$src/app.pcss';
 	import SparklePill from '$lib/components/SparklePill.svelte';
@@ -56,18 +54,19 @@
 	// 	}
 	// });
 
-	function setLangAttribute() {
+	const setLangAttribute = () => {
 		if (browser) {
 			const currentLocale = $locale;
 			document.documentElement.lang = currentLocale;
 		}
 	}
 
-	run(() => {
+	$effect(() => {
 		if (browser) {
 			setLangAttribute();
 		}
 	});
+
 
 	onNavigate((navigation) => {
 		if (!document.startViewTransition) return;

@@ -82,8 +82,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 		return response;
 	} catch (error) {
-		// Clear the cookie on any error
-		event.locals.pb.authStore.clear();
+		// Only clear auth on authentication-related errors
+		if (error instanceof Error && error.message.includes('auth')) {
+			event.locals.pb.authStore.clear();
+		}
 
 		if (event.url.pathname.startsWith('/api')) {
 			throw redirect(303, '/login');

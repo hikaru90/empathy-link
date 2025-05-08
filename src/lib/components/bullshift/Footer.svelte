@@ -63,7 +63,7 @@
 </script>
 
 <!-- <div class="inverted-border fixed bottom-0 left-0 w-full bg-black text-gray-200 px-4 pb-4 pt-2 z-[1002]"> -->
-<div class="fixed bottom-0 left-0 z-[1002] w-full bg-white px-4 pb-4 pt-2 text-black">
+<div class="fixed bottom-0 left-0 z-[1000] w-full bg-white px-4 pb-4 pt-2 text-black">
 	<img
 		src="/inverted-border-white.svg"
 		alt=""

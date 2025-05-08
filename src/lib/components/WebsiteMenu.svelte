@@ -119,13 +119,9 @@
 				{/each}
 			</div>
 			<div class="flex w-1 items-center justify-end gap-4">
-				<Button
-					onclick={() => goto('/app/auth/login')}
-					variant="outline"
-					class="hidden font-bold lg:block"
-				>
+				<a href="/app/auth/login" class="hidden lg:block px-5 py-2 rounded-md bg-black text-white">
 					{$t('default.page.login.heading')}
-				</Button>
+				</a>
 				<div class="lg:hidden">
 					<WebsiteHamburgerMenu menuItems={menuItems()} />
 				</div>

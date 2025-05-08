@@ -1,13 +1,9 @@
 <script lang="ts">
-	import { run, createBubbler, preventDefault } from 'svelte/legacy';
-
-	const bubble = createBubbler();
 	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
 	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
 	import * as Drawer from '$lib/components/ui/drawer';
-	import Menu from '$lib/components/Menu.svelte';
 	import * as Form from '$lib/components/ui/form';
 	import * as ToggleGroup from '$lib/components/ui/toggle-group';
 	import { type SuperValidated, type Infer, defaults, superForm } from 'sveltekit-superforms';
@@ -79,13 +75,23 @@
 		return color;
 	};
 
-	run(() => {
-		() => {
-			console.log('check step', step);
-			if (step === 9) checkForJudgement = true;
-		};
+
+	// equivalent of $: () => { ... }
+	$effect(() => {
+		console.log('check step', step);
+		if (step === 9) checkForJudgement = true;
 	});
-	let options.validators = $derived(steps[step - 1]);
+
+	// equivalent of $: options.validators = steps[step - 1];
+	$effect(() => {
+		options!.validators = steps[step - 1];
+	});
+
+	// equivalent of $: currentBackgroundColor = updateBackgroundColor(step);
+	$effect(() => {
+		currentBackgroundColor = updateBackgroundColor(step);
+	});
+
 	let currentBackgroundColor = $derived(updateBackgroundColor(step));
 
 	const handleSubmit = async () => {
@@ -172,7 +178,7 @@
 		validateForm,
 		options,
 		updateForm
-	} = $state(form);
+	} = form;
 
 	formData.subscribe((value) => {
 		console.log('form was updated', value);
@@ -441,7 +447,7 @@
 	<AppTopMenu />
 	<div class="max-container relative flex flex-grow flex-col pb-40">
 		<form
-			onsubmit={preventDefault(bubble('submit'))}
+			onsubmit={preventDefault()}
 			use:enhance
 			class="-mt-1 flex h-full flex-grow flex-col pb-[74px]"
 		>

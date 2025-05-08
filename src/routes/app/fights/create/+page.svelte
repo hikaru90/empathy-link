@@ -60,12 +60,14 @@
 	};
 
 
-	run(() => {
-		() => {
-			if (step === 2) checkForJudgement = true;
-		};
+	$effect(() => {
+		console.log('check step', step);
+		if (step === 9) checkForJudgement = true;
 	});
-	let options.validators = $derived(steps[step - 1]);
+	$effect(() => {
+		options!.validators = steps[step - 1];
+	});
+
 	let currentBackgroundColor = $derived(updateBackgroundColor(step));
 
 	const speechBubbleContentArray = [
