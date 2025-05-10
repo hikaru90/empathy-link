@@ -212,7 +212,7 @@
 	<div class="">
 		<div bind:this={chatContainer} class="rounded-lg pb-36 pt-4">
 			<h1 class="mb-3 text-2xl font-light">
-				Hi Alex, ich bin hier, um den ganzen Bullshit in deinem Leben zu durchbrechen.
+				Hi <span class="capitalize">{$user?.firstName}</span>, ich bin hier, um den ganzen Bullshit in deinem Leben zu durchbrechen.
 			</h1>
 			<h2 class="mb-6 text-2xl font-light text-black/40">
 				Beschreib mir eine Situation, und ich helfe dir, sie zu verarbeiten. Vertrau mir – wir
