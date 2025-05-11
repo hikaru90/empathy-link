@@ -37,7 +37,7 @@
 			>
 				{#each menu as item}
 					<button
-						class="rounded-full px-3 py-0.5 {currentSlug === item.slug
+						class="mt-[1px] rounded-full px-3 py-0.5 {currentSlug === item.slug
 							? 'bg-black text-offwhite'
 							: 'border-2 border-black text-black'}"
 						onclick={() => (currentSlug = item.slug)}

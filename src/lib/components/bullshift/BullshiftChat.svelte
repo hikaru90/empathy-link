@@ -8,6 +8,7 @@
 	import SendHorizontal from 'lucide-svelte/icons/send-horizontal';
 	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
+	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 	import X from 'lucide-svelte/icons/x';
 	import Bug from 'lucide-svelte/icons/bug';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -35,6 +36,7 @@
 	let isLoading = $state(false);
 	let chatContainer: HTMLDivElement = $state();
 	let chatTerminationModalVisible = $state(false);
+	let analyzerIsRunning = $state(false);
 
 	const handleSendMessage = async () => {
 		if (!userMessage.trim()) return;
@@ -136,6 +138,9 @@
 			userMessage = '';
 		} catch (error) {
 			console.error('Failed to clear chat:', error);
+		} finally {
+			analyzerIsRunning = false;
+			chatTerminationModalVisible = false;
 		}
 	};
 	const callMemoryExtraction = async () => {
@@ -302,13 +307,18 @@
 						Nicht auswerten
 					</Button>
 					<Button
-						class="flex-grow bg-bullshift"
+						class="flex-grow bg-black text-white flex items-center gap-2 justify-between"
 						onclick={() => {
-							chatTerminationModalVisible = false;
+							analyzerIsRunning = true;
 							analyzeChat();
 						}}
 					>
 						Auswerten
+						{#if analyzerIsRunning}
+							<LoaderCircle class="size-4 animate-spin" />
+							{:else}
+							<ChevronRight class="size-4" />
+						{/if}
 					</Button>
 				</div>
 			</Dialog.Footer>

@@ -4,22 +4,15 @@ import { pb } from '$scripts/pocketbase';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
     const user = locals.user;
+    const { id } = params;
 
     try {
-        const memories = await pb.collection('memories').getFullList({
-            filter: `user = "${user.id}"`,
-            sort: '-created'
-        });
-
-        const analyses = await pb.collection('analyses').getFullList({
-            filter: `user = "${user.id}"`,
-            sort: '-created',
+        const analysis = await pb.collection('analyses').getOne(id, {
             expand: 'chat'
         });
 
         return {
-            analyses,
-            memories
+            analysis,
         };
     } catch (error) {
         console.error('Error initializing chat:', error);

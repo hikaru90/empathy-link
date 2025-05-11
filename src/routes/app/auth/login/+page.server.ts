@@ -13,14 +13,15 @@ const redirectToFightOrDashboard = (
 	const loginRedirectTarget = cookies.get('loginRedirectTarget');
 
 	if (loginRedirectTarget) {
-		throw redirect(302, loginRedirectTarget);
+		redirect(307, loginRedirectTarget);
 	} else {
-		throw redirect(302, '/bullshift');
+		redirect(307, '/bullshift');
 	}
 };
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
 	if (locals.user) {
+		console.log('user', locals.user);
 		user.update((value) => locals.user);
 		console.log('redirecting');
 		redirectToFightOrDashboard(cookies);
@@ -32,19 +33,23 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 
 export const actions: Actions = {
 	default: async (event) => {
+		console.log('default action');
 		try {
 			console.log('action');
 			const form = await superValidate(event, zod(formSchema));
+			console.log('form', form);
 			if (!form.valid) {
+				console.log('form not valid');
 				return fail(400, {
 					form
 				});
 			}
 
 			try {
-				await event.locals.pb
+				const authWithPassword = await event.locals.pb
 					.collection('users')
 					.authWithPassword(form.data.email, form.data.password);
+				console.log('authWithPassword', authWithPassword);
 				if (!event.locals.pb?.authStore?.model?.verified) {
 					event.locals.pb.authStore.clear();
 					console.log('user not verified');
@@ -58,8 +63,6 @@ export const actions: Actions = {
 					form
 				});
 			}
-
-			redirectToFightOrDashboard(event.cookies);
 
 			return { form };
 			// return message(form, 'Login successfull');

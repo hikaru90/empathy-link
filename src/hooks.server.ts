@@ -78,7 +78,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 		// Update the cookie
 		const response = await resolve(event);
-		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie());
+		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie({
+			secure: import.meta.env.DEV ? false : true
+		}));
 
 		return response;
 	} catch (error) {
@@ -88,11 +90,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 
 		if (event.url.pathname.startsWith('/api')) {
-			throw redirect(303, '/login');
+			throw redirect(303, '/app/auth/login');
 		}
 
 		const response = await resolve(event);
-		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie());
+		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie({
+			secure: import.meta.env.DEV ? false : true
+		}));
 		return response;
 	}
 };

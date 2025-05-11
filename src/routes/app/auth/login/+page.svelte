@@ -4,17 +4,15 @@
 	import LoginForm from '$lib/components/LoginForm.svelte';
 	import { t } from '$lib/translations';
 	import { page } from '$app/stores';
+	import type { PageProps } from './$types';
 
-	interface Props {
-		data: PageData;
-	}
+	let { data }: PageProps = $props();
 
-	let { data }: Props = $props();
+	console.log('data',data);
 
 	const verifyMail = $page.url.searchParams.get('verifyMail');
 	console.log('verifyMail', verifyMail);
 
-	console.log('login page');
 </script>
 
 <div class="flex h-full flex-grow flex-col justify-between">

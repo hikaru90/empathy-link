@@ -8,6 +8,7 @@
 	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { t } from '$lib/translations';
 	import LogOut from 'lucide-svelte/icons/log-out';
+	import SparklePill from '$lib/components/SparklePill.svelte';
 
 	const notifications = [
 		{
@@ -28,7 +29,8 @@
 	>
 		<UserRoundCog class="size-3 text-white" />
 	</button>
-	<img src="/bullshift/bullshift-logo.svg" alt="Bullshift Logo" class="h-5" />
+	<SparklePill class="w-8 h-4 shadow-md" />
+	<!-- <img src="/bullshift/bullshift-logo.svg" alt="Bullshift Logo" class="h-5" /> -->
 	<button
 		class="relative flex size-8 items-center justify-center rounded-full bg-black"
 		onclick={() => (isOpen = true)}

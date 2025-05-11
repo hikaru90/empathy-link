@@ -49,7 +49,13 @@
 		<div
 			class="rounded-t-xl border-b border-black/5 bg-almostwhite px-5 pb-3 pt-4 shadow-2xl shadow-black/10 dark:bg-muted"
 		>
-			<h2 class="text-md mb-2 font-bold">Chats</h2>
+			<div class="flex items-center justify-between">
+				<h2 class="text-md mb-2 font-bold">Chats</h2>
+				<a
+						href="/bullshift/stats/chats"
+						class="rounded-full border border-needs-foreground/20 px-2 py-1 text-xs"
+						>Alle ansehen</a>
+			</div>
 			<div class="flex items-center text-2xs">
 				<div class="w-1/6">
 					{$t('default.page.dashboard.fights.table.date')}
@@ -62,9 +68,8 @@
 			class="rounded-b-xl bg-almostwhite px-4 pb-3 pt-2 shadow-2xl shadow-black/10 dark:bg-muted"
 		>
 			{#each data as record, index}
-				{#if showMore || index < 3}
-					<button
-						onclick={gotoFight(record.id)}
+				{#if showMore || index < 5}
+					<a href={`/bullshift/stats/chats/${record.id}`}
 						class="group flex w-full items-center border-b border-black/5 py-2 text-left text-xs last:border-b-0 sm:py-3"
 					>
 						<div class="w-1/6">
@@ -78,16 +83,16 @@
 							{record.title}
 						</div>
 						<div class="flex w-1/6 justify-end">
-							<div class="skeumorphic-button rounded-full p-1">
-								<ChevronRight
-									class="size-3 rounded-full group-hover:bg-neutral-300 group-hover:text-black"
-								/>
+							<div
+								class="skeumorphic-button flex size-5 items-center justify-center rounded-full group-hover:bg-white group-hover:text-black"
+							>
+								<ChevronRight class="size-3 rounded-full" />
 							</div>
 						</div>
-					</button>
+					</a>
 				{/if}
 			{/each}
-			<div class="flex justify-center pt-4">
+			<!-- <div class="flex justify-center pt-4">
 				{#if !showMore}
 					<button
 						onclick={() => (showMore = true)}
@@ -101,7 +106,7 @@
 						>Weniger anzeigen</button
 					>
 				{/if}
-			</div>
+			</div> -->
 		</div>
 	</div>
 {/if}
