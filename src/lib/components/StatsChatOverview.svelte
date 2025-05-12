@@ -42,12 +42,12 @@
 	<div class="relative z-0">
 		<div
 			style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);"
-			class="absolute left-0 top-20 z-0 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 transform dark:opacity-10"
+			class="absolute left-0 top-20 z-0 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 transform dark:opacity-10 opacity-60 pointer-events-none"
 		></div>
 	</div>
 	<div class="relative z-10">
 		<div
-			class="rounded-t-xl border-b border-black/5 bg-almostwhite px-5 pb-3 pt-4 shadow-2xl shadow-black/10 dark:bg-muted"
+			class="rounded-t-xl border-b border-black/5 bg-offwhite px-5 pb-3 pt-4 shadow-2xl shadow-black/10 dark:bg-muted"
 		>
 			<div class="flex items-center justify-between">
 				<h2 class="text-md mb-2 font-bold">Chats</h2>
@@ -65,7 +65,7 @@
 			</div>
 		</div>
 		<div
-			class="rounded-b-xl bg-almostwhite px-4 pb-3 pt-2 shadow-2xl shadow-black/10 dark:bg-muted"
+			class="rounded-b-xl bg-offwhite px-4 pb-3 pt-2 shadow-2xl shadow-black/10 dark:bg-muted"
 		>
 			{#each data as record, index}
 				{#if showMore || index < 5}

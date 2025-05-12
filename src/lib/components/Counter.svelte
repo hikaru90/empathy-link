@@ -17,14 +17,14 @@
 
 <div class={cn('flex flex-col p-2', className)}>
 	<div class="flex flex-col items-center justify-center rounded-lg bg-white/40 p-2">
-		<div class="relative h-10 w-full rounded-[8px] bg-black/20 p-1">
-			<div class="flex h-full w-full items-center justify-center rounded-[5px] bg-black">
+		<div class="relative h-10 w-full rounded-md bg-black/20 p-1">
+			<div class="flex h-full w-full items-center justify-center rounded-lg bg-black">
 				<div class="font-bold text-bullshift">
 					{value}
 				</div>
 			</div>
 		</div>
-		<div class="mt-2 flex min-h-8 items-end justify-center text-center text-xs text-gray-800">
+		<div class="mt-2 flex min-h-10 items-end justify-center text-center text-xs text-gray-800">
 			{label}
 		</div>
 	</div>

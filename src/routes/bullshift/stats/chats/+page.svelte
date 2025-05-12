@@ -25,7 +25,7 @@
 			slug: 'memory'
 		},
 		{
-			label: 'Erkenntnisse',
+			label: 'Beziehungen',
 			slug: 'insights'
 		}
 	];
@@ -42,11 +42,9 @@
 		console.log('selectedChats', selectedChats);
 	}
 
-	const deleteChats = () => {
-		for (const id of selectedChats) {
-			pb.collection('analyses').delete(id);
-			invalidateAll();
-		}
+	const deleteChats = async () => {
+		await Promise.all(selectedChats.map(id => pb.collection('analyses').delete(id)));
+		invalidateAll();
 		selectedChats = [];
 	}
 </script>
@@ -71,35 +69,37 @@
 					</button>
 				{/if}
 			</div>
-				<div class="mt-6 rounded-b-xl pb-3 pr-2 pt-2">
+				<div class="mt-6 rounded-b-xl pb-3 pr-2 pt-2 flex flex-col">
 					{#each data.analyses as record, index}
-						<div class="flex items-center gap-2 border-b border-black/5 py-2 last:border-b-0">
-							<button 
+						<div class="flex items-center gap-2 border-b border-neutral-500/5 px-2 last:border-b-0 bg-offwhite rounded-full relative">
+								<button 
 								onclick={() => selectChat(record.id)} 
-								class="size-5 rounded-md border border-black/10 flex items-center justify-center"
+								class="border-r border-neutral-500/5 py-2 pr-1"
 								aria-label="Select chat"
-							>
-								{#if selectedChats.includes(record.id)}
+								>
+								<div class="size-5 rounded-full border border-black/10 flex items-center justify-center flex-shrink-0 bg-white shadow-inner">
+									{#if selectedChats.includes(record.id)}
 									<Check class="size-3" />
-								{:else}
+									{:else}
 									<div class="size-3"></div>
-								{/if}
+									{/if}
+								</div>
 							</button>
 							<a
 								href={`/bullshift/stats/chats/${record.id}`}
-								class="group flex w-full items-center text-left text-xs"
+								class="group flex items-center text-left text-xs relative w-full"
 							>
-								<div class="w-1/6">
+								<div class="w-1/6 flex-shrink-0">
 									{new Intl.DateTimeFormat('de-DE', {
 										month: 'short',
 										day: 'numeric'
 										// year: 'numeric',
 									}).format(new Date(record.created))}
 								</div>
-								<div class="mr-2 w-1/3 flex-grow overflow-hidden whitespace-nowrap">
+								<div class="w-4 mr-2 overflow-hidden whitespace-nowrap flex-grow">
 									{record.title}
 								</div>
-								<div class="flex w-1/6 justify-end">
+								<div class="flex justify-end">
 									<div
 										class="skeumorphic-button flex size-5 items-center justify-center rounded-full group-hover:bg-white group-hover:text-black"
 									>

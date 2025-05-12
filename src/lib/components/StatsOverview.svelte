@@ -7,7 +7,6 @@
 	import StatsNeeds from '$src/lib/components/StatsNeeds.svelte';
 	import StatsChatOverview from './StatsChatOverview.svelte';
 
-
 	interface Props {
 		data: any;
 	}
@@ -48,28 +47,8 @@
 	};
 </script>
 
-<div class="flex flex-col gap-4 py-4">
-
-	<div class="flex items-center justify-between rounded-lg border border-black/30 px-4 py-3">
-		<div class="flex items-center gap-4">
-			<div
-			class="flex size-8 items-center justify-center rounded-full bg-offwhite text-xs font-bold text-black"
-			>
-			{data.memories?.length}
-		</div>
-		<h2 class="text-lg">Erinnerungen</h2>
-	</div>
-	<ChevronRight class="size-4" />
-</div>
-
-<StatsChatOverview data={data.analyses} />
-<StatsFeelings data={getFeelings()} />
-<StatsNeeds data={getNeeds()} />
-
-{#each data.analyses as analysis}
-<div class="flex flex-col">
-	<h2 class="text-lg font-bold">{analysis.title}</h2>
-	<p class="text-sm text-gray-500">{analysis.description}</p>
-</div>
-{/each}
+<div class="flex flex-col gap-6 py-4">
+	<StatsChatOverview data={data.analyses} />
+	<StatsFeelings data={getFeelings()} />
+	<StatsNeeds data={getNeeds()} />
 </div>

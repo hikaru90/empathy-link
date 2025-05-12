@@ -16,7 +16,7 @@
 </script>
 
 <div class={cn('flex flex-col p-2', className)}>
-	<div class="flex flex-col rounded-lg bg-white/40 p-2 items-center justify-center">
+	<div class="flex flex-col rounded-lg bg-white/40 px-2 pb-2 pt-4 items-center justify-center">
 		<div class="relative size-10 rounded-full bg-black">
 			<div style="transform: rotate({rotation}deg)" class="absolute h-full w-full">
 				<div

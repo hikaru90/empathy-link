@@ -2,6 +2,9 @@
 	import Header from '$lib/components/bullshift/Header.svelte';
 	import Footer from '$lib/components/bullshift/Footer.svelte';
 	import StatsOverview from '$lib/components/StatsOverview.svelte';
+	import StatsMemories from '$lib/components/StatsMemories.svelte';
+	import StatsInsights from '$lib/components/StatsInsights.svelte';
+
 	import type { PageData } from './$types';
 	interface Props {
 		data: PageData;
@@ -16,10 +19,10 @@
 		},
 		{
 			label: 'Kommunikationsstil',
-			slug: 'memory'
+			slug: 'memories'
 		},
 		{
-			label: 'Erkenntnisse',
+			label: 'Beziehungen',
 			slug: 'insights'
 		},
 	];
@@ -50,6 +53,10 @@
 			<div class="max-container pb-16">
 				{#if currentSlug === 'overview'}
 					<StatsOverview data={data} />
+				{:else if currentSlug === 'memories'}
+					<StatsMemories data={data.memories} />
+				{:else if currentSlug === 'insights'}
+					<StatsInsights data={data.memories} />
 				{/if}
 			</div>
 		{/if}
