@@ -16,9 +16,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
             analyses,
         };
     } catch (error) {
-        console.error('Error initializing chat:', error);
+        console.error('Error getting chat stats:', error);
         return {
-            error: 'Failed to initialize chat'
+            error: 'Failed to get chat stats'
         };
     }
 }; 

@@ -161,7 +161,7 @@
 				<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
 			</div>
 		{:else}
-			<div class="min-h-svh"
+			<div class="min-h-svh overflow-hidden"
 				in:blur={{ duration: animationDuration, delay: animationDuration }}
 				out:blur={{ duration: animationDuration }}
 			>

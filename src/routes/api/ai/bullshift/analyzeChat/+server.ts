@@ -137,6 +137,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const record = await pb.collection('analyses').create(validatedAnalysis);
 
 		const result = await initChat(user, locale);
+		console.log('result',result);
 		return json(result);
 	} catch (error) {
 		console.error('Failed to initialize chat:', error);

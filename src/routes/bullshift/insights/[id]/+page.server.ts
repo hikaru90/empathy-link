@@ -8,17 +8,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     const locale = locals.locale;
     const id = params.id;
 
-    if (!user?.id) {
-        return {
-            error: 'User not authenticated'
-        };
-    }
-    if(user.role !== 'admin'){
-        return {
-            error: 'User not authorized'
-        };
-    }
-
     try {
         const traces = await pb.collection('traces').getFullList({
             filter: `chat = "${id}"`,
@@ -32,9 +21,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
             traces
         };
     } catch (error) {
-        console.error('Error initializing chat:', error);
+        console.error('Error getting chat insights:', error);
         return {
-            error: 'Failed to initialize chat'
+            error: 'Error getting chat insights'
         };
     }
 }; 

@@ -4,7 +4,7 @@ import { extractMemories } from '$lib/server/tools';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
-		// const { chatId } = await request.json();
+		const { userId } = await request.json();
 
 		// if (!chatId) {
 		//   return json({ error: 'No chat ID provided' }, { status: 400 });
@@ -12,7 +12,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		console.log('extracting Memories on the serverSide');
 		// Remove chat from memory
-		extractMemories();
+		extractMemories(userId);
 
 		return json({ success: true });
 	} catch (error) {

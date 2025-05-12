@@ -65,7 +65,7 @@
 </script>
 
 <!-- <div class="inverted-border fixed bottom-0 left-0 w-full bg-black text-gray-200 px-4 pb-4 pt-2 z-[1002]"> -->
-<div class="fixed bottom-0 left-0 z-[1000] w-full bg-offwhite px-4 pb-4 pt-2 text-black">
+<div class="fixed bottom-0 left-0 z-[1000] w-full bg-offwhite px-4 pb-6 pt-1 text-black">
 	<img
 		src="/inverted-border-white.svg"
 		alt=""
@@ -94,7 +94,7 @@
 					<div class="size-8 flex items-center justify-center {isCurrentRoute(item.path) ? 'text-black' : 'text-black/60'}">
 						<item.icon class="size-5" />
 					</div>
-					<span class="text-2xs lg:mt-2 lg:text-xs {isCurrentRoute(item.path) ? 'text-black' : 'text-black/60'}">
+					<span class="text-2xs -mt-1 lg:mt-2 lg:text-xs {isCurrentRoute(item.path) ? 'text-black' : 'text-black/60'}">
 						{item.heading}
 					</span>
 				</a>

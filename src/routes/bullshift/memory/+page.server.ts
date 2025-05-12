@@ -5,17 +5,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const user = locals.user;
 	const locale = locals.locale;
 
-	if (!user?.id) {
-		return {
-			error: 'User not authenticated'
-		};
-	}
-	if (user.role !== 'admin') {
-		return {
-			error: 'User not authorized'
-		};
-	}
-
 	try {
 		const records = Array.from(bullshiftChats.entries()).map(async ([id, chat]) => {
 			return {
@@ -30,9 +19,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 			records: resolvedRecords
 		};
 	} catch (error) {
-		console.error('Error initializing chat:', error);
+		console.error('Error getting bullshift instances:', error);
 		return {
-			error: 'Failed to initialize chat'
+			error: 'Error getting bullshift instances'
 		};
 	}
 };

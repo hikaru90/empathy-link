@@ -22,9 +22,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
             memories
         };
     } catch (error) {
-        console.error('Error initializing chat:', error);
+        console.error('Error geeting memories and analyses:', error);
         return {
-            error: 'Failed to initialize chat'
+            error: 'Error geeting memories and analyses'
         };
     }
 }; 

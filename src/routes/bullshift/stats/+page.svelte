@@ -31,18 +31,18 @@
 
 <div class="pt-16">
 	<Header />
-	<div class="flex h-full w-full flex-col overflow-hidden">
+	<div class="flex h-full w-full flex-col">
 		{#if data.error}
 			<p class="text-red-500">{data.error}</p>
 		{:else}
 			<div
-				class="scroll-snap-x scroll-snap-mandatory hidden-scrollbar mb-4 flex gap-1 overflow-x-auto px-5 justify-center text-sm md:text-base"
+				class="scroll-snap-x scroll-snap-mandatory hidden-scrollbar mb-4 flex gap-1 px-5 justify-center text-xs md:text-base"
 			>
 				{#each menu as item}
-					<button
-						class="mt-[1px] rounded-full px-3 py-0.5 {currentSlug === item.slug
-							? 'bg-black text-offwhite'
-							: 'border-2 border-black text-black'}"
+					<button style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.2);"
+						class="mt-[1px] rounded-full px-3 py-1 shadow-md {currentSlug === item.slug
+							? 'bg-white'
+							: 'bg-offwhite text-neutral-600'}"
 						onclick={() => (currentSlug = item.slug)}
 					>
 						{item.label}

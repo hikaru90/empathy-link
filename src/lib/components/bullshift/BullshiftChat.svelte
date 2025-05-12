@@ -16,7 +16,6 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import { cn } from '$lib/utils';
 
-
 	interface Props {
 		chatId: string;
 		history?: any[];
@@ -30,13 +29,14 @@
 		systemInstruction,
 		class: className = undefined
 	}: Props = $props();
-	
 
 	let userMessage = $state('');
 	let isLoading = $state(false);
 	let chatContainer: HTMLDivElement = $state();
 	let chatTerminationModalVisible = $state(false);
 	let analyzerIsRunning = $state(false);
+	let chatAnalysisModalVisible = $state(false);
+	let chatAnalysisId = $state('');
 
 	const handleSendMessage = async () => {
 		if (!userMessage.trim()) return;
@@ -114,8 +114,6 @@
 		}
 	};
 	const analyzeChat = async () => {
-		console.log('analyzeChat');
-		console.log('$user', $user);
 		try {
 			const response = await fetch('/api/ai/bullshift/analyzeChat', {
 				method: 'POST',
@@ -125,25 +123,24 @@
 				body: JSON.stringify({ user: $user, locale: $locale, chatId })
 			});
 
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-
 			const data = await response.json();
-			if (data.error) throw new Error(data.error);
 
+
+			chatAnalysisId = chatId;
 			// Update the chat ID and clear history
 			chatId = data.chatId;
 			history = [];
 			userMessage = '';
 		} catch (error) {
-			console.error('Failed to clear chat:', error);
+			console.error('Failed to analyze chat:', error);
 		} finally {
 			analyzerIsRunning = false;
 			chatTerminationModalVisible = false;
+			chatAnalysisModalVisible = true;
 		}
 	};
 	const callMemoryExtraction = async () => {
+		console.log('callMemoryExtraction');
 		try {
 			const response = await fetch('/api/ai/bullshift/extractMemories', {
 				method: 'POST',
@@ -174,6 +171,7 @@
 	});
 </script>
 
+{#if $user?.role === 'admin'}
 <div class={cn(className, 'flex justify-between')}>
 	<Popover.Root>
 		<Popover.Trigger>
@@ -212,12 +210,15 @@
 		Neuer Chat
 		<RotateCcw class="size-3 text-red-500" />
 	</button>
-</div>
+	</div>
+{/if}
+
 {#if chatId}
 	<div class="">
 		<div bind:this={chatContainer} class="rounded-lg pb-36 pt-4">
 			<h1 class="mb-3 text-2xl font-light">
-				Hi <span class="capitalize">{$user?.firstName}</span>, ich bin hier, um den ganzen Bullshit in deinem Leben zu durchbrechen.
+				Hi <span class="capitalize">{$user?.firstName}</span>, ich bin hier, um den ganzen Bullshit
+				in deinem Leben zu durchbrechen.
 			</h1>
 			<h2 class="mb-6 text-2xl font-light text-black/40">
 				Beschreib mir eine Situation, und ich helfe dir, sie zu verarbeiten. Vertrau mir – wir
@@ -233,7 +234,7 @@
 					>
 						<div class="text-sm">
 							{#if 'text' in message.parts[0]}
-							{@html marked(message.parts[0].text)}
+								{@html marked(message.parts[0].text)}
 								<!-- {@html marked(
 									message.role === 'user'
 										? message.parts[0].text
@@ -307,19 +308,53 @@
 						Nicht auswerten
 					</Button>
 					<Button
-						class="flex-grow bg-black text-white flex items-center gap-2 justify-between"
+						class="flex flex-grow items-center justify-between gap-2 bg-black text-white"
 						onclick={() => {
 							analyzerIsRunning = true;
+							callMemoryExtraction()
 							analyzeChat();
 						}}
 					>
 						Auswerten
 						{#if analyzerIsRunning}
 							<LoaderCircle class="size-4 animate-spin" />
-							{:else}
+						{:else}
 							<ChevronRight class="size-4" />
 						{/if}
 					</Button>
+				</div>
+			</Dialog.Footer>
+		</Dialog.Header>
+	</Dialog.Content>
+</Dialog.Root>
+
+<Dialog.Root bind:open={chatAnalysisModalVisible}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Zur Chat auswertung?</Dialog.Title>
+			<Dialog.Description>Möchtest Du zur Auswertung gehen?</Dialog.Description>
+			<Dialog.Footer>
+				<div class="mt-2 flex flex-grow justify-between gap-4">
+					<Button
+						variant="outline"
+						class="bg-transparent shadow-none"
+						onclick={() => {
+							chatAnalysisModalVisible = false;
+						}}
+					>
+						Schließen
+					</Button>
+					{#if chatAnalysisId}
+					<a href={`/bullshift/stats/chats/${chatAnalysisId}`}
+						class="whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 shadow h-9 px-4 py-2 flex flex-grow items-center justify-between gap-2 bg-black text-white"
+						onclick={() => {
+							chatAnalysisModalVisible = false;
+						}}
+					>
+						Zur Auswertung
+							<ChevronRight class="size-4" />
+						</a>
+					{/if}
 				</div>
 			</Dialog.Footer>
 		</Dialog.Header>

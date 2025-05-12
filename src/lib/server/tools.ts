@@ -172,15 +172,14 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 };
 
 // Memory Extraction
-export const extractMemories = async () => {
+export const extractMemories = async (userId: string) => {
 	try {
 		const memories = await pb.collection('memoryExtractionQueue').getFullList({
-			filter: `status = "pending"`,
+			filter: `status = "pending" && user = "${userId}"`,
 			sort: '-created'
 		});
 		console.log('memories length', memories.length);
 		for (const memory of memories) {
-			const userId = memory.user;
 			const userChats = await pb.collection('chats').getFullList({
 				filter: `user = "${userId}" && memoryProcessed = false`,
 				sort: '-created'
