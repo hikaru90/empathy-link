@@ -42,7 +42,7 @@
 					<button style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.2);"
 						class="mt-[1px] rounded-full px-3 py-1 shadow-md {currentSlug === item.slug
 							? 'bg-white'
-							: 'bg-offwhite text-neutral-600'}"
+							: 'bg-offwhite/60 text-neutral-500'}"
 						onclick={() => (currentSlug = item.slug)}
 					>
 						{item.label}

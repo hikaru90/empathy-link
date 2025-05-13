@@ -15,7 +15,9 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Popover from '$lib/components/ui/popover';
 	import { cn } from '$lib/utils';
-
+	import IconHeart from '$assets/icons/icon-heart.svg?raw';
+	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
+	import AutoTextarea from '$lib/components/AutoTextarea.svelte';
 	interface Props {
 		chatId: string;
 		history?: any[];
@@ -125,7 +127,6 @@
 
 			const data = await response.json();
 
-
 			chatAnalysisId = chatId;
 			// Update the chat ID and clear history
 			chatId = data.chatId;
@@ -165,6 +166,11 @@
 		}
 	};
 
+	const autoGrow = (element: HTMLTextAreaElement) => {
+		element.style.height = '5px';
+		element.style.height = element.scrollHeight + 'px';
+	};
+
 	onMount(async () => {
 		// scrollToBottom();
 		scrollDown();
@@ -172,44 +178,46 @@
 </script>
 
 {#if $user?.role === 'admin'}
-<div class={cn(className, 'flex justify-between')}>
-	<Popover.Root>
-		<Popover.Trigger>
-			<div class="flex items-center gap-2 rounded-full bg-black px-3 py-1 text-xs text-offwhite">
-				Debug <Bug class="size-4 text-blue-300" />
-			</div>
-		</Popover.Trigger>
-		<Popover.Content class="m-2 flex w-auto flex-col gap-2 bg-transparent p-0 shadow-none">
-			<a
-				target="_blank"
-				class="flex items-center justify-between gap-2 rounded-full bg-black px-2 py-1 text-xs text-offwhite active:bg-blue-500/50"
-				href={`/bullshift/insights/${chatId}`}
-			>
-				<span class="hidden md:inline">{chatId}: </span>Inspect Chat<span class="text-blue-300"
-					>↗</span
+	<div class={cn(className, 'flex justify-between')}>
+		<Popover.Root>
+			<Popover.Trigger>
+				<div
+					class="flex items-center gap-2 rounded-full bg-black py-1 pl-2 pr-3 text-xs text-offwhite"
 				>
-			</a>
-			<button
-				onclick={flushMemory}
-				class="flex items-center justify-between gap-2 rounded-full bg-black px-2 py-1 text-xs text-offwhite active:bg-red-500/50"
-			>
-				Flush Memory <span class="text-yellow-300">↡</span>
-			</button>
-			<button
-				onclick={callMemoryExtraction}
-				class="flex items-center justify-between gap-2 rounded-full bg-black px-2 py-1 text-xs text-offwhite active:bg-red-500/50"
-			>
-				Extract Memory <span class="text-green-300">↳</span>
-			</button>
-		</Popover.Content>
-	</Popover.Root>
-	<button
-		onclick={clearChat}
-		class="flex items-center gap-1 rounded-full bg-black/30 px-2 py-1 text-xs text-black"
-	>
-		Neuer Chat
-		<RotateCcw class="size-3 text-red-500" />
-	</button>
+					<Bug class="size-4 text-blue-300" /> Debug
+				</div>
+			</Popover.Trigger>
+			<Popover.Content class="m-2 flex w-auto flex-col gap-2 bg-transparent p-0 shadow-none">
+				<a
+					target="_blank"
+					class="flex items-center justify-between gap-2 rounded-full bg-black px-2 py-1 text-xs text-offwhite active:bg-blue-500/50"
+					href={`/bullshift/insights/${chatId}`}
+				>
+					<span class="hidden md:inline">{chatId}: </span>Inspect Chat<span class="text-blue-300"
+						>↗</span
+					>
+				</a>
+				<button
+					onclick={flushMemory}
+					class="flex items-center justify-between gap-2 rounded-full bg-black px-2 py-1 text-xs text-offwhite active:bg-red-500/50"
+				>
+					Flush Memory <span class="text-yellow-300">↡</span>
+				</button>
+				<button
+					onclick={callMemoryExtraction}
+					class="flex items-center justify-between gap-2 rounded-full bg-black px-2 py-1 text-xs text-offwhite active:bg-red-500/50"
+				>
+					Extract Memory <span class="text-green-300">↳</span>
+				</button>
+			</Popover.Content>
+		</Popover.Root>
+		<button
+			onclick={clearChat}
+			class="flex items-center gap-1 rounded-full bg-black/30 px-2 py-1 text-xs text-black"
+		>
+			Neuer Chat
+			<RotateCcw class="size-3 text-red-500" />
+		</button>
 	</div>
 {/if}
 
@@ -259,35 +267,60 @@
 			{/if}
 		</div>
 
-		<div class="fixed bottom-16 left-0 right-0 bg-background px-4 pb-6 pt-4">
-			<form onsubmit={preventDefault(handleSendMessage)} class="flex gap-4">
-				<input
-					type="text"
+		<div class="fixed bottom-[62px] left-0 right-0 px-4 pb-6 pt-4">
+			{#if history.length > 0}
+				<button
+					class="absolute -top-6 left-1/2 flex -translate-x-1/2 transform items-center gap-2 rounded-full bg-black px-3 py-1 text-sm text-offwhite"
+					onclick={() => {
+						chatTerminationModalVisible = true;
+					}}
+				>
+					Chat beenden
+					<X class="size-4 text-red-400" />
+				</button>
+			{/if}
+			<form
+				onsubmit={preventDefault(handleSendMessage)}
+				class="flex flex-col gap-2 rounded-2xl bg-gradient-to-b from-white to-offwhite p-2"
+			>
+				<AutoTextarea
 					bind:value={userMessage}
 					placeholder="Deine Nachricht..."
-					class="flex-grow rounded-full border px-4 py-2"
-				/>
-				<button
-					type="submit"
-					disabled={isLoading}
-					class="-m-1 flex size-12 items-center justify-center rounded-full bg-bullshift text-black disabled:opacity-50"
-				>
-					<SendHorizontal class="" />
-				</button>
+					class="flex-grow rounded-md bg-transparent outline-none px-2 py-1"
+				></AutoTextarea>
+				<div class="flex items-center justify-between">
+					<div class="flex items-center gap-2">
+						<button
+							style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
+							class="flex items-center gap-1 rounded-full bg-white px-2 py-1 text-xs text-black/40"
+						>
+							<div class="w-[1.5em] fill-neutral-500">
+								{@html IconHeart}
+							</div>
+							Gefühle
+						</button>
+						<button
+							style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
+							class="flex items-center gap-1 rounded-full bg-white px-2 py-1 text-xs text-black/40"
+						>
+							<div class="w-[1.5em] fill-neutral-500">
+								{@html IconSwirl}
+							</div>
+							Bedürfnisse
+						</button>
+					</div>
+					<button
+						type="submit"
+						disabled={isLoading}
+						style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
+						class="flex size-10 items-center justify-center rounded-full bg-bullshift text-black disabled:opacity-50"
+					>
+						<SendHorizontal class="size-4" />
+					</button>
+				</div>
 			</form>
 		</div>
 	</div>
-	{#if history.length > 0}
-		<button
-			class="fixed bottom-36 left-1/2 flex -translate-x-1/2 transform items-center gap-2 rounded-full bg-black px-3 py-1 text-sm text-offwhite"
-			onclick={() => {
-				chatTerminationModalVisible = true;
-			}}
-		>
-			Chat beenden
-			<X class="size-4 text-red-400" />
-		</button>
-	{/if}
 {/if}
 
 <Dialog.Root bind:open={chatTerminationModalVisible}>
@@ -311,7 +344,7 @@
 						class="flex flex-grow items-center justify-between gap-2 bg-black text-white"
 						onclick={() => {
 							analyzerIsRunning = true;
-							callMemoryExtraction()
+							callMemoryExtraction();
 							analyzeChat();
 						}}
 					>
@@ -345,13 +378,14 @@
 						Schließen
 					</Button>
 					{#if chatAnalysisId}
-					<a href={`/bullshift/stats/chats/${chatAnalysisId}`}
-						class="whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 shadow h-9 px-4 py-2 flex flex-grow items-center justify-between gap-2 bg-black text-white"
-						onclick={() => {
-							chatAnalysisModalVisible = false;
-						}}
-					>
-						Zur Auswertung
+						<a
+							href={`/bullshift/stats/chats/${chatAnalysisId}`}
+							class="flex h-9 flex-grow items-center justify-between gap-2 whitespace-nowrap rounded-md bg-black px-4 py-2 text-sm font-medium text-white shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+							onclick={() => {
+								chatAnalysisModalVisible = false;
+							}}
+						>
+							Zur Auswertung
 							<ChevronRight class="size-4" />
 						</a>
 					{/if}

@@ -8,6 +8,12 @@ const client = 'empathy_link'
 
 
 export const handle: Handle = async ({ event, resolve }) => {
+	if (
+    event.url.pathname.startsWith('/.well-known/appspecific/com.chrome.devtools')
+  ) {
+    return new Response(null, { status: 204 });
+  }
+	
 	// Get session token and posthog user id
 	let sessionToken = event.cookies.get(`${client}_session_id`);
 	let posthogUserId = event.cookies.get(`${client}_user_id`);
