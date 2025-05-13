@@ -11,9 +11,16 @@
 
 	let { placeholder = '', value = $bindable(''), class: className = undefined }: Props = $props();
 
+  const setCursorToEnd = () => {
+        const length = textarea.value.length;
+        textarea.focus();
+        textarea.setSelectionRange(length, length);
+  };
+
   $effect(() => {
-    console.log('value', value);
+    value = value;
     changeHeight()
+    setCursorToEnd();
   });
 
 	const changeHeight = () => {

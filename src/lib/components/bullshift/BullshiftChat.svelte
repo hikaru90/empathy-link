@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { preventDefault } from 'svelte/legacy';
-
 	import { marked } from 'marked';
 	import { onMount } from 'svelte';
 	import { user } from '$store/auth';
@@ -18,11 +17,29 @@
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import AutoTextarea from '$lib/components/AutoTextarea.svelte';
+	import { pb } from '$scripts/pocketbase'
+
+	interface Feeling {
+		id: string;
+		nameDE: string;
+		nameEN: string;
+		category: string;
+		positive: boolean;
+		sort: number;
+	}
+
+	interface Need {
+		id: string;
+		nameDE: string;
+		nameEN: string;
+		category: string;
+		sort: number;
+	}
+
 	interface Props {
 		chatId: string;
 		history?: any[];
 		systemInstruction: string;
-		class?: string | undefined;
 	}
 
 	let {
@@ -39,6 +56,10 @@
 	let analyzerIsRunning = $state(false);
 	let chatAnalysisModalVisible = $state(false);
 	let chatAnalysisId = $state('');
+	let feelings = $state<Feeling[]>([]);
+	let needs = $state<Need[]>([]);
+	let feelingSelectorVisible = $state(false);
+	let needSelectorVisible = $state(false);
 
 	const handleSendMessage = async () => {
 		if (!userMessage.trim()) return;
@@ -73,7 +94,16 @@
 			}, 500);
 		}
 	};
-
+	const getFeelings = async() => {
+		feelings = await pb.collection('feelings').getFullList({
+			sort: '-positive,category,sort'
+		});
+	};
+	const getNeeds = async() => {
+		needs = await pb.collection('needs').getFullList({
+			sort: 'category,sort'
+		});
+	};
 	const scrollDown = () => {
 		window.scroll({
 			top: document.body.scrollHeight,
@@ -117,6 +147,11 @@
 	};
 	const analyzeChat = async () => {
 		try {
+			// Validate required data
+			if (!$user || !$locale || !chatId) {
+				throw new Error('Missing required data for chat analysis');
+			}
+
 			const response = await fetch('/api/ai/bullshift/analyzeChat', {
 				method: 'POST',
 				headers: {
@@ -125,15 +160,25 @@
 				body: JSON.stringify({ user: $user, locale: $locale, chatId })
 			});
 
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+
 			const data = await response.json();
 
-			chatAnalysisId = chatId;
-			// Update the chat ID and clear history
-			chatId = data.chatId;
+			// Validate response data
+			if (!data.analysis?.id || !data.initiatedChat?.chatId) {
+				throw new Error('Invalid response data from server');
+			}
+
+			chatAnalysisId = data.analysis.id;
+			chatId = data.initiatedChat.chatId;
 			history = [];
 			userMessage = '';
 		} catch (error) {
 			console.error('Failed to analyze chat:', error);
+			// You might want to show an error message to the user here
+			// For example: showErrorNotification('Failed to analyze chat. Please try again.');
 		} finally {
 			analyzerIsRunning = false;
 			chatTerminationModalVisible = false;
@@ -165,6 +210,15 @@
 			return '';
 		}
 	};
+	const addText = (text: string) => {
+		let textToAdd = '';
+		if (userMessage && userMessage[userMessage.length - 1] !== ' ') {
+			textToAdd = ' ' + text;
+		}else{
+			textToAdd = text;
+		}
+		userMessage += textToAdd;
+	};
 
 	const autoGrow = (element: HTMLTextAreaElement) => {
 		element.style.height = '5px';
@@ -172,8 +226,10 @@
 	};
 
 	onMount(async () => {
-		// scrollToBottom();
 		scrollDown();
+
+		getFeelings()
+		getNeeds()
 	});
 </script>
 
@@ -223,7 +279,7 @@
 
 {#if chatId}
 	<div class="">
-		<div bind:this={chatContainer} class="rounded-lg pb-36 pt-4">
+		<div bind:this={chatContainer} class="rounded-lg pb-52 pt-4">
 			<h1 class="mb-3 text-2xl font-light">
 				Hi <span class="capitalize">{$user?.firstName}</span>, ich bin hier, um den ganzen Bullshit
 				in deinem Leben zu durchbrechen.
@@ -236,7 +292,7 @@
 				<!-- {JSON.stringify(message)} -->
 				<div class="mb-4 {message.role === 'user' ? 'text-right' : 'text-left'}">
 					<div
-						class="inline-block rounded-xl px-3 py-2 {message.role === 'user'
+						class="inline-block rounded-xl px-3 py-2 break-all {message.role === 'user'
 							? 'border border-white'
 							: 'bg-white'}"
 					>
@@ -281,29 +337,50 @@
 			{/if}
 			<form
 				onsubmit={preventDefault(handleSendMessage)}
-				class="flex flex-col gap-2 rounded-2xl bg-gradient-to-b from-white to-offwhite p-2"
+				class="flex flex-col gap-2 rounded-2xl bg-gradient-to-b from-white to-offwhite p-2 shadow-lg"
 			>
 				<AutoTextarea
 					bind:value={userMessage}
 					placeholder="Deine Nachricht..."
 					class="flex-grow rounded-md bg-transparent outline-none px-2 py-1"
 				></AutoTextarea>
-				<div class="flex items-center justify-between">
+
+
+
+
+
+				<div class="{feelingSelectorVisible ? 'flex' : 'hidden'} flex-wrap gap-1 max-h-40 overflow-y-auto overscroll-contain">
+					{#each feelings as feeling}
+						<button type="button" onclick={() => addText(feeling.nameDE)} class="rounded-full bg-white border border-black/5 active:bg-black/5 px-2 py-0.5 text-xs text-black">{feeling.nameDE}</button>
+					{/each}
+				</div>
+				<div class="{needSelectorVisible ? 'flex' : 'hidden'} flex-wrap gap-1 max-h-40 overflow-y-auto overscroll-contain">
+					{#each needs as need}
+						<button type="button" onclick={() => addText(need.nameDE)} class="rounded-full bg-white border border-black/5 active:bg-black/5 px-2 py-0.5 text-xs text-black">{need.nameDE}</button>
+					{/each}
+				</div>
+
+
+
+
+
+
+				<div class="flex items-end justify-between">
 					<div class="flex items-center gap-2">
-						<button
-							style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
-							class="flex items-center gap-1 rounded-full bg-white px-2 py-1 text-xs text-black/40"
+						<button type="button" onclick={() => {needSelectorVisible = false; feelingSelectorVisible = !feelingSelectorVisible}}
+							style="{feelingSelectorVisible ? '' : 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}"
+							class="flex items-center gap-1 rounded-full {feelingSelectorVisible ? 'bg-black/5 shadow-inner text-black/40' : 'bg-white text-black/60'} px-2 py-1 text-xs"
 						>
-							<div class="w-[1.5em] fill-neutral-500">
+							<div class="w-[1.2em] fill-neutral-500">
 								{@html IconHeart}
 							</div>
 							Gefühle
 						</button>
-						<button
-							style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
-							class="flex items-center gap-1 rounded-full bg-white px-2 py-1 text-xs text-black/40"
+						<button type="button" onclick={() => {feelingSelectorVisible = false; needSelectorVisible = !needSelectorVisible}}
+							style="{needSelectorVisible ? '' : 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}	"
+							class="flex items-center gap-1 rounded-full {needSelectorVisible ? 'bg-black/5 shadow-inner text-black/40' : 'bg-white text-black/60'} px-2 py-1 text-xs"
 						>
-							<div class="w-[1.5em] fill-neutral-500">
+							<div class="w-[1.2em] fill-neutral-500">
 								{@html IconSwirl}
 							</div>
 							Bedürfnisse
@@ -311,6 +388,7 @@
 					</div>
 					<button
 						type="submit"
+						onclick={() => {feelingSelectorVisible = false; needSelectorVisible = false}}
 						disabled={isLoading}
 						style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
 						class="flex size-10 items-center justify-center rounded-full bg-bullshift text-black disabled:opacity-50"
