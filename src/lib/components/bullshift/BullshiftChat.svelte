@@ -170,8 +170,15 @@
 			if (!data.analysis?.id || !data.initiatedChat?.chatId) {
 				throw new Error('Invalid response data from server');
 			}
-
 			chatAnalysisId = data.analysis.id;
+
+
+
+			await callMemoryExtraction();
+
+
+
+
 			chatId = data.initiatedChat.chatId;
 			history = [];
 			userMessage = '';
@@ -422,7 +429,6 @@
 						class="flex flex-grow items-center justify-between gap-2 bg-black text-white"
 						onclick={() => {
 							analyzerIsRunning = true;
-							callMemoryExtraction();
 							analyzeChat();
 						}}
 					>
