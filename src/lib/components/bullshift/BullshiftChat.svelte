@@ -16,7 +16,7 @@
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import AutoTextarea from '$lib/components/AutoTextarea.svelte';
-	import { pb } from '$scripts/pocketbase'
+	import { pb } from '$scripts/pocketbase';
 
 	interface Feeling {
 		id: string;
@@ -54,9 +54,17 @@
 	let userMessage = $state('');
 	let isLoading = $state(false);
 	let chatContainer: HTMLDivElement = $state();
+
 	let chatTerminationModalVisible = $state(false);
+
 	let analyzerIsRunning = $state(false);
+	let analyzerFailed = $state(false);
+
+	let memorizerIsRunning = $state(false);
+	let memorizerFailed = $state(false);
+
 	let chatAnalysisModalVisible = $state(false);
+
 	let chatAnalysisId = $state('');
 	let feelings = $state<Feeling[]>([]);
 	let needs = $state<Need[]>([]);
@@ -96,12 +104,12 @@
 			}, 500);
 		}
 	};
-	const getFeelings = async() => {
+	const getFeelings = async () => {
 		feelings = await pb.collection('feelings').getFullList({
 			sort: '-positive,category,sort'
 		});
 	};
-	const getNeeds = async() => {
+	const getNeeds = async () => {
 		needs = await pb.collection('needs').getFullList({
 			sort: 'category,sort'
 		});
@@ -147,70 +155,89 @@
 			console.error('Failed to clear chat:', error);
 		}
 	};
-	const analyzeChat = async () => {
+	const memorizeChatFake = async () => {
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				resolve(true);
+			}, 1000);
+		});
+	};
+	const startAnalysis = async () => {
+		chatAnalysisId = '';
+		analyzerIsRunning = true;
 		try {
-			// Validate required data
-			if (!user || !$locale || !chatId) {
-				throw new Error('Missing required data for chat analysis');
-			}
-
-			const response = await fetch('/api/ai/bullshift/analyzeChat', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ user: user, locale: $locale, chatId })
-			});
-
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-
-			const data = await response.json();
-
-			// Validate response data
-			if (!data.analysis?.id || !data.initiatedChat?.chatId) {
-				throw new Error('Invalid response data from server');
-			}
-			chatAnalysisId = data.analysis.id;
-
-
-
-			await callMemoryExtraction();
-
-
-
-
-			chatId = data.initiatedChat.chatId;
-			history = [];
-			userMessage = '';
+			const [analysisResponse] = await Promise.all([
+				analyzeChat(),
+				new Promise(resolve => setTimeout(resolve, 2000))
+			]);
+			
+			chatAnalysisId = analysisResponse;
+			console.log('chatAnalysisId', chatAnalysisId);
 		} catch (error) {
+			analyzerFailed = true;
 			console.error('Failed to analyze chat:', error);
-			// You might want to show an error message to the user here
-			// For example: showErrorNotification('Failed to analyze chat. Please try again.');
+			return false;
 		} finally {
 			analyzerIsRunning = false;
-			chatTerminationModalVisible = false;
-			chatAnalysisModalVisible = true;
+		}
+
+		memorizerIsRunning = true;
+		try {
+			const [memorizationResponse] = await Promise.all([
+				extractMemories(),
+				new Promise(resolve => setTimeout(resolve, 2000))
+			]);
+			await clearChat();
+		} catch (error) {
+			memorizerFailed = true;
+			console.error('Failed to memorize chat:', error);
+			return false;
+		} finally {
+			memorizerIsRunning = false;
 		}
 	};
-	const callMemoryExtraction = async () => {
-		console.log('callMemoryExtraction');
-		try {
-			const response = await fetch('/api/ai/bullshift/extractMemories', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({})
-			});
-
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-		} catch (error) {
-			console.error('Failed to extract memories:', error);
+	const analyzeChat = async (): Promise<string> => {
+		// Validate required data
+		if (!user || !$locale || !chatId) {
+			throw new Error('Missing required data for chat analysis');
 		}
+
+		const response = await fetch('/api/ai/bullshift/analyzeChat', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ user: user, locale: $locale, chatId })
+		});
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+
+		const data = await response.json();
+
+		// Validate response data
+		if (!data.analysis?.id || !data.initiatedChat?.chatId) {
+			throw new Error('Invalid response data from server');
+		}
+
+		chatAnalysisId = data.analysis.id;
+		return data.analysis.id;
+	};
+	const extractMemories = async (): Promise<boolean> => {
+		const response = await fetch('/api/ai/bullshift/extractMemories', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ userId: user.id })
+		});
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+
+		return true;
 	};
 	const safelyParseJSON = (jsonString: string) => {
 		try {
@@ -223,7 +250,7 @@
 		let textToAdd = '';
 		if (userMessage && userMessage[userMessage.length - 1] !== ' ') {
 			textToAdd = ' ' + text;
-		}else{
+		} else {
 			textToAdd = text;
 		}
 		userMessage += textToAdd;
@@ -237,8 +264,8 @@
 	onMount(async () => {
 		scrollDown();
 
-		getFeelings()
-		getNeeds()
+		getFeelings();
+		getNeeds();
 	});
 </script>
 
@@ -269,7 +296,14 @@
 					Flush Memory <span class="text-yellow-300">↡</span>
 				</button>
 				<button
-					onclick={callMemoryExtraction}
+					onclick={async () => {
+						try {
+							await extractMemories();
+							console.log('Memories extracted successfully');
+						} catch (error) {
+							console.error('Failed to extract memories:', error);
+						}
+					}}
 					class="flex items-center justify-between gap-2 rounded-full bg-black px-2 py-1 text-xs text-offwhite active:bg-red-500/50"
 				>
 					Extract Memory <span class="text-green-300">↳</span>
@@ -301,7 +335,7 @@
 				<!-- {JSON.stringify(message)} -->
 				<div class="mb-4 {message.role === 'user' ? 'text-right' : 'text-left'}">
 					<div
-						class="inline-block rounded-xl px-3 py-2 break-words {message.role === 'user'
+						class="inline-block break-words rounded-xl px-3 py-2 {message.role === 'user'
 							? 'border border-white'
 							: 'bg-white'}"
 					>
@@ -351,43 +385,70 @@
 				<AutoTextarea
 					bind:value={userMessage}
 					placeholder="Deine Nachricht..."
-					class="flex-grow rounded-md bg-transparent outline-none px-2 py-1"
+					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
 				></AutoTextarea>
 
-
-
-
-
-				<div class="{feelingSelectorVisible ? 'flex' : 'hidden'} flex-wrap gap-1 max-h-40 overflow-y-auto overscroll-contain">
+				<div
+					class="{feelingSelectorVisible
+						? 'flex'
+						: 'hidden'} max-h-40 flex-wrap gap-1 overflow-y-auto overscroll-contain"
+				>
 					{#each feelings as feeling}
-						<button type="button" onclick={() => addText(feeling.nameDE)} class="rounded-full bg-white border border-black/5 active:bg-black/5 px-2 py-0.5 text-xs text-black">{feeling.nameDE}</button>
+						<button
+							type="button"
+							onclick={() => addText(feeling.nameDE)}
+							class="rounded-full border border-black/5 bg-white px-2 py-0.5 text-xs text-black active:bg-black/5"
+							>{feeling.nameDE}</button
+						>
 					{/each}
 				</div>
-				<div class="{needSelectorVisible ? 'flex' : 'hidden'} flex-wrap gap-1 max-h-40 overflow-y-auto overscroll-contain">
+				<div
+					class="{needSelectorVisible
+						? 'flex'
+						: 'hidden'} max-h-40 flex-wrap gap-1 overflow-y-auto overscroll-contain"
+				>
 					{#each needs as need}
-						<button type="button" onclick={() => addText(need.nameDE)} class="rounded-full bg-white border border-black/5 active:bg-black/5 px-2 py-0.5 text-xs text-black">{need.nameDE}</button>
+						<button
+							type="button"
+							onclick={() => addText(need.nameDE)}
+							class="rounded-full border border-black/5 bg-white px-2 py-0.5 text-xs text-black active:bg-black/5"
+							>{need.nameDE}</button
+						>
 					{/each}
 				</div>
-
-
-
-
-
 
 				<div class="flex items-end justify-between">
 					<div class="flex items-center gap-2">
-						<button type="button" onclick={() => {needSelectorVisible = false; feelingSelectorVisible = !feelingSelectorVisible}}
-							style="{feelingSelectorVisible ? '' : 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}"
-							class="flex items-center gap-1 rounded-full {feelingSelectorVisible ? 'bg-black/5 shadow-inner text-black/40' : 'bg-white text-black/60'} px-2 py-1 text-xs"
+						<button
+							type="button"
+							onclick={() => {
+								needSelectorVisible = false;
+								feelingSelectorVisible = !feelingSelectorVisible;
+							}}
+							style={feelingSelectorVisible
+								? ''
+								: 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}
+							class="flex items-center gap-1 rounded-full {feelingSelectorVisible
+								? 'bg-black/5 text-black/40 shadow-inner'
+								: 'bg-white text-black/60'} px-2 py-1 text-xs"
 						>
 							<div class="w-[1.2em] fill-neutral-500">
 								{@html IconHeart}
 							</div>
 							Gefühle
 						</button>
-						<button type="button" onclick={() => {feelingSelectorVisible = false; needSelectorVisible = !needSelectorVisible}}
-							style="{needSelectorVisible ? '' : 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}	"
-							class="flex items-center gap-1 rounded-full {needSelectorVisible ? 'bg-black/5 shadow-inner text-black/40' : 'bg-white text-black/60'} px-2 py-1 text-xs"
+						<button
+							type="button"
+							onclick={() => {
+								feelingSelectorVisible = false;
+								needSelectorVisible = !needSelectorVisible;
+							}}
+							style="{needSelectorVisible
+								? ''
+								: 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}	"
+							class="flex items-center gap-1 rounded-full {needSelectorVisible
+								? 'bg-black/5 text-black/40 shadow-inner'
+								: 'bg-white text-black/60'} px-2 py-1 text-xs"
 						>
 							<div class="w-[1.2em] fill-neutral-500">
 								{@html IconSwirl}
@@ -397,7 +458,10 @@
 					</div>
 					<button
 						type="submit"
-						onclick={() => {feelingSelectorVisible = false; needSelectorVisible = false}}
+						onclick={() => {
+							feelingSelectorVisible = false;
+							needSelectorVisible = false;
+						}}
 						disabled={isLoading}
 						style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
 						class="flex size-10 items-center justify-center rounded-full bg-bullshift text-black disabled:opacity-50"
@@ -414,40 +478,75 @@
 	<Dialog.Content>
 		<Dialog.Header>
 			<Dialog.Title>Chat auswerten?</Dialog.Title>
-			<Dialog.Description>Möchtest du den Chat beenden und auswerten lassen?</Dialog.Description>
+			<Dialog.Description class="pt-2">
+				{#if analyzerIsRunning}
+					<div class="animate-pulse">Dein Chat wird ausgewertet.</div>
+				{:else if memorizerIsRunning}
+					<div class="animate-pulse">Dein Chat wird abgespeichert.</div>
+				{:else if analyzerFailed || memorizerFailed}
+					{#if analyzerFailed}
+						<div class="">Dein Chat konnte nicht ausgewertet werden.</div>
+					{:else if memorizerFailed}
+						<div class="">Dein Chat konnte nicht abgespeichert werden.</div>
+					{/if}
+				{:else}
+					{#if chatAnalysisId}
+						<div class="">Dein Chat wurde ausgewertet und abgespeichert.</div>
+					{:else}
+						<div class="">Möchtest du den Chat beenden und auswerten lassen?</div>
+					{/if}
+				{/if}
+			</Dialog.Description>
 			<Dialog.Footer>
 				<div class="mt-2 flex flex-grow justify-between gap-4">
-					<Button
-						variant="outline"
-						class="bg-transparent shadow-none"
-						onclick={() => {
-							chatTerminationModalVisible = false;
-							clearChat();
-						}}
-					>
-						Nicht auswerten
-					</Button>
-					<Button
-						class="flex flex-grow items-center justify-between gap-2 bg-black text-white"
-						onclick={() => {
-							analyzerIsRunning = true;
-							analyzeChat();
-						}}
-					>
-						Auswerten
-						{#if analyzerIsRunning}
-							<LoaderCircle class="size-4 animate-spin" />
-						{:else}
+					{#if analyzerIsRunning}
+						<Button
+							variant="outline"
+							class="bg-transparent shadow-none"
+							onclick={() => {
+								chatTerminationModalVisible = false;
+								clearChat();
+							}}
+						>
+							Nicht auswerten
+						</Button>
+					{:else if !analyzerFailed && !memorizerFailed && chatAnalysisId}
+						<a
+							href={`/bullshift/stats/chats/${chatAnalysisId}`}
+							class="flex h-9 flex-grow items-center justify-between gap-2 whitespace-nowrap rounded-md bg-black px-4 py-2 text-sm font-medium text-white shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+							onclick={() => {
+								chatAnalysisModalVisible = false;
+							}}
+						>
+							Zur Auswertung
 							<ChevronRight class="size-4" />
-						{/if}
-					</Button>
+						</a>
+					{:else}
+						<Button
+							class="flex flex-grow items-center justify-between gap-2 bg-black text-white"
+							onclick={() => {
+								startAnalysis();
+							}}
+						>
+							{#if analyzerFailed || memorizerFailed}
+								Erneut auswerten
+							{:else}
+								Auswerten
+							{/if}
+							{#if analyzerIsRunning}
+								<LoaderCircle class="size-4 animate-spin" />
+							{:else}
+								<ChevronRight class="size-4" />
+							{/if}
+						</Button>
+					{/if}
 				</div>
 			</Dialog.Footer>
 		</Dialog.Header>
 	</Dialog.Content>
 </Dialog.Root>
 
-<Dialog.Root bind:open={chatAnalysisModalVisible}>
+<!-- <Dialog.Root bind:open={chatAnalysisModalVisible}>
 	<Dialog.Content>
 		<Dialog.Header>
 			<Dialog.Title>Zur Chat auswertung?</Dialog.Title>
@@ -479,4 +578,4 @@
 			</Dialog.Footer>
 		</Dialog.Header>
 	</Dialog.Content>
-</Dialog.Root>
+</Dialog.Root> -->

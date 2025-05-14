@@ -173,6 +173,7 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 
 // Memory Extraction
 export const extractMemories = async (userId: string) => {
+	console.log(`status = "pending" && user = "${userId}"`);
 	try {
 		const memories = await pb.collection('memoryExtractionQueue').getFullList({
 			filter: `status = "pending" && user = "${userId}"`,

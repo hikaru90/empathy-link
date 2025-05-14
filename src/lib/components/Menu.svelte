@@ -5,10 +5,7 @@
 	import Logo from '$lib/components/Logo.svelte';
 	import Avatar from '$lib/components/Avatar.svelte';
 	import { t } from '$lib/translations';
-	import { user } from '$store/auth';
 	import * as Popover from '$lib/components/ui/popover';
-	import { Switch } from '$lib/components/ui/switch';
-	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { locale, locales } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
