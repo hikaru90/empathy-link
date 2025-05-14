@@ -51,14 +51,14 @@
 </script>
 
 <div
-	class="{$user.id === record.owner ? 'justify-start' : 'justify-end'} mb-3 flex items-center gap-2"
+	class="{user.id === record.owner ? 'justify-start' : 'justify-end'} mb-3 flex items-center gap-2"
 >
 	<div class="rounded-full bg-neutral-400 bg-opacity-50 px-3 py-1 text-xs text-black">
-		{$user.id === record.owner ? $user.firstName : record.expand.fight.name} — {new Date(
+		{user.id === record.owner ? user.firstName : record.expand.fight.name} — {new Date(
 			record.created
 		).toLocaleDateString('de-DE')}
 	</div>
-	{#if $user.id === record.owner && record.opened}
+	{#if user.id === record.owner && record.opened}
 		<div class="flex items-center rounded-full bg-green-600 px-1 py-[2px] text-2xs text-green-300">
 			<Check />
 			<Check class="-ml-2" />
@@ -67,7 +67,7 @@
 </div>
 
 <div
-	class="{$user.id === record.owner
+	class="{user.id === record.owner
 		? 'mr-10'
 		: 'ml-10'} relative mb-10 flex flex-col overflow-hidden rounded-xl shadow-xl"
 >

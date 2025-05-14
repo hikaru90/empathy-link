@@ -43,7 +43,6 @@
 	import X from 'lucide-svelte/icons/x'
 	import { backgroundColor } from '$store/page';
 	import { browser } from '$app/environment';
-	import { user } from '$store/auth';
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
 	let feelings = $state([]);
@@ -92,7 +91,6 @@
 		try {
 			let data = $formData;
 			data.fight = fight.id;
-			// data.owner = $user.id;
 			console.log('submit form', data);
 			const record = await pb.collection('responses').create(data);
 			formSuccess = true;
@@ -412,14 +410,11 @@
 				}
 			}
 
-			if(!$user){
+			if(!user){
 				console.log('setting cookie loginRedirectTarget');
 				setCookie('loginRedirectTarget', $page.url.pathname + $page.url.search, 0.1);
 			}else{
 				console.log('deleting cookie loginRedirectTarget'
-
-
-
 				);
 				deleteCookie('loginRedirectTarget');
 			}

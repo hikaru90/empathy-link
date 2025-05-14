@@ -5,7 +5,6 @@
 	import Logo from '$lib/components/Logo.svelte';
 	import Avatar from '$lib/components/Avatar.svelte';
 	import { t } from '$lib/translations';
-	import { user } from '$store/auth';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Switch } from '$lib/components/ui/switch';
 	import { Label } from '$lib/components/ui/label/index.js';
@@ -15,11 +14,13 @@
 	import { scroll } from '$store/page';
 	import { goto } from '$app/navigation';
 	import { debounce } from '$scripts/helpers'
+
 	interface Props {
+		user: App.User;
 		submenu?: import('svelte').Snippet;
 	}
 
-	let { submenu }: Props = $props();
+	let { submenu, user }: Props = $props();
 
 	let navbarHeight = $state(96);
 	let scrollValue = 0;
@@ -75,9 +76,9 @@
 				<Logo simplified />
 			</a>
 			<div class="flex items-center gap-4">
-				{#if $user}
+				{#if user}
 					<div class="">
-						<Avatar />
+						<Avatar user={user} />
 					</div>
 				{:else}
 					<Button onclick={() => goto('/app/auth/login')} decoration="op1" class="dark:text-white">

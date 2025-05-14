@@ -46,6 +46,7 @@
 					chatId={data.chatId}
 					history={data.history}
 					systemInstruction={data.systemPrompt}
+					user={data.user}
 				/>
 				{:else}
 				<div>

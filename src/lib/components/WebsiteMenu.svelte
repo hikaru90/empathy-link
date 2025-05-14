@@ -9,6 +9,12 @@
 	import { scroll, windowHeight, windowWidth, backgroundColor, currentSection } from '$store/page';
 	import WebsiteHamburgerMenu from '$lib/components/WebsiteHamburgerMenu.svelte';
 
+	interface Props {
+		user: App.User;
+	}
+
+	let { user }: Props = $props();
+
 	let lastScrollValue = 0;
 	let menuIsVisible = $state(true);
 	const scrollThreshold = 50;
@@ -123,7 +129,7 @@
 					{$t('default.page.login.heading')}
 				</a>
 				<div class="lg:hidden">
-					<WebsiteHamburgerMenu menuItems={menuItems()} />
+					<WebsiteHamburgerMenu user={user} menuItems={menuItems()} />
 				</div>
 			</div>
 		</nav>

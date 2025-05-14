@@ -13,13 +13,13 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { browser } from '$app/environment';
 	import { cn } from '$lib/utils';
-	import { user } from '$store/auth';
 
 	interface Props {
+		user: App.User;
 		class?: string | undefined;
 	}
 
-	let { class: className = undefined }: Props = $props();
+	let { user, class: className = undefined }: Props = $props();
 	
 
 	let initialized = $state(false);
@@ -37,7 +37,7 @@
 
       // load existing records from db
       const existingRecords = await pb.collection('fights').getFullList({
-        filter: `opponent = '${$user.id}'`,
+        filter: `opponent = '${user.id}'`,
         requestKey: 'existingRecords',
         expand: 'owner'
       });
@@ -54,7 +54,7 @@
       console.log('openedFights', openedFights);
 			// all fight ids that are in localstorage but not in existingRecords
 
-			const filterString = openedFights.map((fightId) => `owner != '${$user.id}' && id = '${fightId}'`).join(' || ');
+			const filterString = openedFights.map((fightId) => `owner != '${user.id}' && id = '${fightId}'`).join(' || ');
 			console.log('filterString', filterString);
 
 			if(filterString){
@@ -88,8 +88,8 @@
 			}
       
       records.forEach(async (record) => {
-        if($user.id === record.owner) return;
-        await pb.collection('fights').update(record.id, { opponent: $user.id });
+        if(user.id === record.owner) return;
+        await pb.collection('fights').update(record.id, { opponent: user.id });
         // Remove the openedFights entry from localStorage entirely
       })
   }

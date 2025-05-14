@@ -17,9 +17,10 @@
 	import { debounce } from '$scripts/helpers'
 	interface Props {
 		submenu?: import('svelte').Snippet;
+		user: App.User;
 	}
 
-	let { submenu }: Props = $props();
+	let { submenu, user }: Props = $props();
 
 	let navbarHeight = $state(96);
 	let scrollValue = 0;
@@ -100,9 +101,9 @@
 						</div>
 					</Popover.Content>
 				</Popover.Root>
-				{#if $user}
+				{#if user}
 					<div class="">
-						<Avatar />
+						<Avatar user={user} />
 					</div>
 				{:else}
 					<Button onclick={() => goto('/app/auth/login')} variant="outline">

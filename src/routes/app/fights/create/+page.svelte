@@ -30,7 +30,6 @@
 	import { serializeNonPOJOs, groupBy } from '$scripts/helpers';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import Mascot from '$lib/components/Mascot.svelte';
-	import { user } from '$store/auth';
 	import Share from '$lib/components/Share.svelte';
 	import { backgroundColor } from '$store/page';
 
@@ -86,7 +85,7 @@
 	const handleSubmit = async () => {
 		try {
 			let data = $formData;
-			data.owner = $user.id;
+			data.owner = user.id;
 			console.log('submit form', data);
 			const record = await pb.collection('fights').create(data);
 			id = record.id;

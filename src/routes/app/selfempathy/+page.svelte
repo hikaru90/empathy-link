@@ -4,7 +4,6 @@
 	import type { PageData } from '../../app/selfempathy/$types.js';
 	import LoginForm from '$lib/components/LoginForm.svelte';
 	import { t } from '$lib/translations';
-	import { user } from '$store/auth';
 	import { goto } from '$app/navigation';
 	import { backgroundColor } from '$store/page';
 	import { onMount } from 'svelte';
@@ -14,14 +13,17 @@
 	import { Button as SparkleButton } from '$lib/components/ui/button-sparkle';
 
 
+	interface Props {
+		data: App.Locals;
+	}
+
+	let { data }: Props = $props();
+
 	onMount(() => {
-		if (!$user) goto('/app/auth/login');
-		// Add bg-background class to the body
 		backgroundColor.set('bg-background');
 	});
 </script>
 
-{#if $user}
 	<div class="flex h-full flex-grow flex-col justify-between overflow-hidden">
 		<AppTopMenu />
 		<div class="max-container flex-grow pb-40">
@@ -55,4 +57,3 @@
 			</AppBottomMenu>
 		</div>
 	</div>
-{/if}

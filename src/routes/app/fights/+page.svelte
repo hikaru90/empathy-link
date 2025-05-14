@@ -5,7 +5,6 @@
 	import { t } from '$lib/translations';
 	import { Button as SparkleButton } from '$lib/components/ui/button-sparkle';
 	import Plus from 'lucide-svelte/icons/plus'
-	import { user } from '$store/auth';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button-op1/index.js';
@@ -13,16 +12,13 @@
 	import { backgroundColor } from '$store/page';
 	import ReceivedLinks from '$lib/components/ReceivedLinks.svelte';
 
-	// export let data: PageData;
+	interface Props {
+		data: App.Locals;
+	}
 
-	onMount(() => {
-		if (!$user) goto('/app/auth/login');
-		// Add bg-background class to the body
-		backgroundColor.set('bg-background');
-	});
+	let { data }: Props = $props();
 </script>
 
-{#if $user}
 	<div class="flex h-full flex-grow flex-col justify-between overflow-hidden">
 		<AppTopMenu />
 		<div class="max-container flex-grow pb-40">
@@ -32,7 +28,7 @@
 				<h1 class="font-heading text-lg font-semibold">{$t('default.page.fight.heading')}</h1>
 			</div>
 			<ReceivedLinks class="mb-14" />
-			<FightOverviewAll />
+			<FightOverviewAll user={data.user} />
 			<AppBottomMenu>
 				<div class="relative flex h-auto items-center justify-between">
 					<a href="/app/dashboard" class="block">
@@ -55,7 +51,6 @@
 			</AppBottomMenu>
 		</div>
 	</div>
-{/if}
 
 <style lang="scss">
 	.skeumorphic-button-dark {

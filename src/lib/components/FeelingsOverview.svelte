@@ -7,9 +7,14 @@
 	import { t, locale } from '$lib/translations';
 	import { startDate, endDate } from '$store/dashboard';
 	import { goto } from '$app/navigation';
-	import { user } from '$store/auth';
 	import { groupBy, sortByKey, generateHslaColors } from '$scripts/helpers';
 	import Donut from '$lib/components/Donut.svelte';
+
+	interface Props {
+		user: App.User;
+	}
+
+	let { user }: Props = $props();
 
 	let initialized = $state(false);
 	let pending = true;
@@ -25,7 +30,7 @@
 	}));
 
 	const fetchData = async () => {
-		const filter = `owner = '${$user.id}' && created >= "${$startDate.toString()} 00:00:00" && created < "${$endDate.add({ days: 1 }).toString()} 00:00:00"`;
+		const filter = `owner = '${user.id}' && created >= "${$startDate.toString()} 00:00:00" && created < "${$endDate.add({ days: 1 }).toString()} 00:00:00"`;
 		console.log('filter', filter);
 		const fights = await pb.collection('fights').getFullList({
 			filter: filter,
@@ -74,8 +79,6 @@
 		await fetchData();
 		initialized = true;
 		pending = false;
-
-		console.log('$user', $user);
 	});
 </script>
 

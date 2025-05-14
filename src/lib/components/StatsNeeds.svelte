@@ -1,14 +1,7 @@
 <script lang="ts">
-	import * as Table from '$lib/components/ui/table';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import { Button } from '$lib/components/ui/button';
 	import { onMount } from 'svelte';
-	import { pb } from '$scripts/pocketbase';
-	import { t, locale } from '$lib/translations';
-	import { startDate, endDate } from '$store/dashboard';
-	import { goto } from '$app/navigation';
-	import { user } from '$store/auth';
-	import { groupBy, sortByKey, generateHslaColors } from '$scripts/helpers';
+	import { t } from '$lib/translations';
+	import { generateHslaColors } from '$scripts/helpers';
 	import Donut from '$lib/components/Donut.svelte';
 
 	interface Props {
@@ -23,8 +16,6 @@
 
 	onMount(async () => {
 		pending = false;
-
-		console.log('$user', $user);
 	});
 </script>
 

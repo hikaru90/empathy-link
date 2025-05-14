@@ -7,15 +7,15 @@
 	import { t, locale } from '$lib/translations';
 	import { startDate, endDate } from '$store/dashboard';
 	import { goto } from '$app/navigation';
-	import { user } from '$store/auth';
 	import { groupBy, sortByKey, generateHslaColors } from '$scripts/helpers';
 	import Donut from '$lib/components/Donut.svelte';
 
 	interface Props {
 		data: any;
+		user: App.User;
 	}
 
-	let { data }: Props = $props();
+	let { data, user }: Props = $props();
 
 	let pending = true;
 	let colors = generateHslaColors(1, 100, 56, data.length);
@@ -23,8 +23,6 @@
 
 	onMount(async () => {
 		pending = false;
-
-		console.log('$user', $user);
 	});
 </script>
 

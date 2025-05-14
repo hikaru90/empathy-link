@@ -16,6 +16,12 @@
 	import { Switch } from '$lib/components/ui/switch';
 	import { Label } from '$lib/components/ui/label/index.js';
 
+	interface Props {
+		user: App.User;
+	}
+
+	let { user }: Props = $props();
+
 	let initialized = $state(false);
 	let pending = $state(true);
 	let records: object[] = $state([]);
@@ -27,7 +33,7 @@
 	const fetchData = async () => {
 		pending = true;
 		const newRecords = await pb.collection('fights').getList(page, perPage, {
-			filter: `owner = '${$user.id}'`,
+			filter: `owner = '${user.id}'`,
 			sort: '-updated',
 			expand: 'responses'
 		});
@@ -60,7 +66,7 @@
 		console.log('records', records);
 		initialized = true;
 
-		console.log('$user', $user);
+		console.log('user', user);
 	});
 </script>
 

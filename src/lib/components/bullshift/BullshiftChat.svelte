@@ -2,7 +2,6 @@
 	import { preventDefault } from 'svelte/legacy';
 	import { marked } from 'marked';
 	import { onMount } from 'svelte';
-	import { user } from '$store/auth';
 	import { locale } from '$lib/translations';
 	import SendHorizontal from 'lucide-svelte/icons/send-horizontal';
 	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
@@ -40,12 +39,15 @@
 		chatId: string;
 		history?: any[];
 		systemInstruction: string;
+		user: App.User;
+		class?: string | undefined;
 	}
 
 	let {
 		chatId = $bindable(),
 		history = $bindable([]),
 		systemInstruction,
+		user,
 		class: className = undefined
 	}: Props = $props();
 
@@ -71,7 +73,7 @@
 				body: JSON.stringify({
 					chatId,
 					message: userMessage,
-					userId: $user!.id,
+					userId: user!.id,
 					systemInstruction,
 					locale: $locale
 				})
@@ -120,14 +122,14 @@
 		});
 	};
 	const clearChat = async () => {
-		console.log('$user', $user);
+		console.log('user', user);
 		try {
 			const response = await fetch('/api/ai/bullshift/initChat', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ user: $user, locale: $locale })
+				body: JSON.stringify({ user: user, locale: $locale })
 			});
 
 			if (!response.ok) {
@@ -148,7 +150,7 @@
 	const analyzeChat = async () => {
 		try {
 			// Validate required data
-			if (!$user || !$locale || !chatId) {
+			if (!user || !$locale || !chatId) {
 				throw new Error('Missing required data for chat analysis');
 			}
 
@@ -157,7 +159,7 @@
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ user: $user, locale: $locale, chatId })
+				body: JSON.stringify({ user: user, locale: $locale, chatId })
 			});
 
 			if (!response.ok) {
@@ -240,7 +242,7 @@
 	});
 </script>
 
-{#if $user?.role === 'admin'}
+{#if user?.role === 'admin'}
 	<div class={cn(className, 'flex justify-between')}>
 		<Popover.Root>
 			<Popover.Trigger>
@@ -288,7 +290,7 @@
 	<div class="">
 		<div bind:this={chatContainer} class="rounded-lg pb-52 pt-4">
 			<h1 class="mb-3 text-2xl font-light">
-				Hi <span class="capitalize">{$user?.firstName}</span>, ich bin hier, um den ganzen Bullshit
+				Hi <span class="capitalize">{user?.firstName}</span>, ich bin hier, um den ganzen Bullshit
 				in deinem Leben zu durchbrechen.
 			</h1>
 			<h2 class="mb-6 text-2xl font-light text-black/40">

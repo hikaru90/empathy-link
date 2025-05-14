@@ -150,7 +150,6 @@
 					></div>
 				</div>
 				<div class="relative z-10">
-					<!-- <FightOwnerDisplay {record} /> -->
 					<FightDisplay {record} />
 				</div>
 				{#each responses as response}
@@ -161,7 +160,6 @@
 						></div>
 					</div>
 					<div class="relative z-10 mt-8">
-						<!-- <FightOwnerDisplay record={response} adversary={record.name} /> -->
 						<FightDisplay fight={record} record={response} adversary={record.name} />
 					</div>
 				{/each}

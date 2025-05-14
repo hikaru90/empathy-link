@@ -1,21 +1,16 @@
 <script lang="ts">
-	import * as Table from '$lib/components/ui/table';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { onMount } from 'svelte';
-	import { pb } from '$scripts/pocketbase';
-	import { t, locale } from '$lib/translations';
-	import { startDate, endDate } from '$store/dashboard';
+	import { t } from '$lib/translations';
 	import { goto } from '$app/navigation';
-	import { user } from '$store/auth';
-	import Check from 'lucide-svelte/icons/check';
-	import X from 'lucide-svelte/icons/x';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 
 	interface Props {
 		data: any;
+		user: App.User;
 	}
 
-	let { data }: Props = $props();
+	let { data, user }: Props = $props();
 
 	let initialized = $state(false);
 	let pending = true;
@@ -31,8 +26,6 @@
 	onMount(async () => {
 		initialized = true;
 		pending = false;
-
-		console.log('$user', $user);
 	});
 </script>
 

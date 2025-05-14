@@ -10,8 +10,14 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { locale } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
-	import { user } from '$store/auth';
 	import backgroundImage from '$assets/images/holo3.jpg';
+
+
+	interface Props {
+		user: App.User;
+	}
+
+	let { user }: Props = $props();
 
 	const langs = [
 		{ value: 'en', label: 'English' },
@@ -79,8 +85,8 @@
 						<div
 							class="flex size-7 items-center justify-center rounded-full bg-muted text-xs font-bold uppercase tracking-[-0.12em] relative z-10"
 						>
-							{$user?.firstName.charAt(0)}
-							{$user?.lastName.charAt(0)}
+							{user?.firstName.charAt(0)}
+							{user?.lastName.charAt(0)}
 						</div>
 						<div
 							style="background-image: url('{backgroundImage}'); background-size: 400% 400%"
@@ -89,11 +95,11 @@
 					</div>
 					<div class="flex flex-col">
 						<div class="font-bold">
-							{$user?.firstName}
-							{$user?.lastName}
+							{user?.firstName}
+							{user?.lastName}
 						</div>
 						<div class="text-sm -mt-1">
-							{$user?.email}
+							{user?.email}
 						</div>
 					</div>
 				</div>
@@ -112,9 +118,6 @@
 				</form>
 
 
-				<!-- <div class="break-all">
-					{JSON.stringify($user)}
-				</div> -->
 			</Sheet.Footer>
 		</div>
 	</Sheet.Content>

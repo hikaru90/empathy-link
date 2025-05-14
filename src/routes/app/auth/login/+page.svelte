@@ -17,7 +17,7 @@
 
 <div class="flex h-full flex-grow flex-col justify-between">
 	<div class="flex-grow">
-		<Menu />
+		<Menu user={data.user} />
 
 		
 		<div class="max-container relative">

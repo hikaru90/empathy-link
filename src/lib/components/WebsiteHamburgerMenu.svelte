@@ -17,9 +17,10 @@
 
 	interface Props {
 		menuItems: any;
+		user: App.User;
 	}
 
-	let { menuItems }: Props = $props();
+	let { menuItems, user }: Props = $props();
 	let dialogOpen = $state(false);
 
 	const langs = [
@@ -46,7 +47,7 @@
 
 <Sheet.Root bind:open={dialogOpen}>
 	<button onclick={() => (dialogOpen = true)} class="flex items-center">
-		<Menu class="size-6" />
+		<Menu user={user} class="size-6" />
 	</button>
 	<Sheet.Content class="{$backgroundColor} z-[1003] flex flex-col border-muted">
 		<Sheet.Header

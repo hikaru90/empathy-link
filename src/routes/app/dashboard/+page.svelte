@@ -6,12 +6,11 @@
 	import FeelingsOverview from '$lib/components/FeelingsOverview.svelte';
 	import NeedsOverview from '$lib/components/NeedsOverview.svelte';
 	import { startDate, endDate } from '$store/dashboard';
-	import { user } from '$store/auth';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
 	interface Props {
-		data: PageData;
+		data: App.Locals;
 	}
 
 	let { data }: Props = $props();
@@ -24,21 +23,11 @@
 	};
 
 	onMount(() => {
-		console.log('data', data);
-		console.log('onMount: $user', $user);
-		const unsubscribe = user.subscribe(($user) => {
-			console.log('$user in subscribe', $user);
-			if (!$user) {
-				goto('/app/auth/login');
-			}
-		});
-		return unsubscribe;
 	});
 </script>
 
-{#if $user}
 	<div class="app/dashboard/page bg-background overflow-hidden">
-		<AppTopMenu />
+		<AppTopMenu user={data.user} />
 		<div class="flex-grow">
 			<div class="max-container relative">
 				<div
@@ -62,13 +51,13 @@
 				</div>
 
 				<div class="mb-10">
-					<FightOverview />
+					<FightOverview user={data.user} />
 				</div>
 				<div class="mb-10">
-					<FeelingsOverview />
+					<FeelingsOverview user={data.user} />
 				</div>
 				<div class="mb-10 pb-40">
-					<NeedsOverview />
+					<NeedsOverview user={data.user} />
 				</div>
 			</div>
 
@@ -79,6 +68,3 @@
 			</AppBottomMenu>
 		</div>
 	</div>
-{:else}
-	Login please
-{/if}

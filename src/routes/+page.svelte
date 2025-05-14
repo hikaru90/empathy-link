@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import WebsiteMenu from '$lib/components/WebsiteMenu.svelte';
 	import AnimatedHeroBig from '$lib/components/AnimatedHeroBig.svelte';
 	import Locale from '$lib/components/Locale.svelte';
@@ -12,6 +12,13 @@
 	import { scroll, windowHeight } from '$store/page';
 	import { onMount } from 'svelte';
 	import { backgroundColor, currentSection } from '$store/page';
+	import type { ActionOptions } from 'puppeteer';
+
+	interface Props {
+		data: App.Locals;
+	}
+
+	let { data }: Props = $props();
 
 	const targetColors = [
 		{ name: 'topTarget', color: 'bg-white-background' },
@@ -57,7 +64,7 @@
 </script>
 
 <div class="flex h-full flex-grow flex-col justify-between">
-	<WebsiteMenu />
+	<WebsiteMenu user={data.user} />
 	<div class="{$backgroundColor} relative flex-grow transition duration-500">
 		<div id="topTarget"></div>
 		<div class="relative z-0 mb-20">

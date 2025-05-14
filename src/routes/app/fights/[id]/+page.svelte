@@ -16,6 +16,12 @@
 	import { goto } from '$app/navigation';
 	import { backgroundColor } from '$store/page';
 
+	interface Props {
+		data: App.Locals;
+	}
+
+	let { data }: Props = $props();
+
 	let initialized = $state(false);
 	let pending = true;
 	let record = $state(undefined);
@@ -150,7 +156,6 @@
 					></div>
 				</div>
 				<div class="relative z-10">
-					<!-- <FightOwnerDisplay {record} /> -->
 					<FightDisplay {record} />
 				</div>
 				{#each responses as response}
@@ -161,8 +166,7 @@
 						></div>
 					</div>
 					<div class="relative z-10 mt-8">
-						<!-- <FightOwnerDisplay record={response} adversary={record.name} /> -->
-						<FightDisplay fight={record} record={response} adversary={record.name} />
+						<FightDisplay fight={record} record={response} adversary={record.name} user={data.user} />
 					</div>
 				{/each}
 			</div>
