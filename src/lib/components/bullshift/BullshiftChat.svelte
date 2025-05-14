@@ -301,7 +301,7 @@
 				<!-- {JSON.stringify(message)} -->
 				<div class="mb-4 {message.role === 'user' ? 'text-right' : 'text-left'}">
 					<div
-						class="inline-block rounded-xl px-3 py-2 break-all {message.role === 'user'
+						class="inline-block rounded-xl px-3 py-2 break-words {message.role === 'user'
 							? 'border border-white'
 							: 'bg-white'}"
 					>
