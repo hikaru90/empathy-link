@@ -113,7 +113,7 @@
 			clearTimeout(typingTimeoutId);
 		}
 	});
-	let speechBubbleContent;
+	let speechBubbleContent = $state([]);
 	run(() => {
 		speechBubbleContent = getSpeechBubbleContent(formSuccess, step)
 	});

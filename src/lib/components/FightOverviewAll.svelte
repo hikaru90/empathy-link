@@ -10,7 +10,6 @@
 	import Check from 'lucide-svelte/icons/check'
 	import X from 'lucide-svelte/icons/x'
 	import Plus from 'lucide-svelte/icons/plus'
-	import { user } from '$store/auth';
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { delay } from '$scripts/helpers';
 	import { Switch } from '$lib/components/ui/switch';
