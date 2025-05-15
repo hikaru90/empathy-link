@@ -87,7 +87,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// Update the cookie
 	const response = await resolve(event);
 	response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie({
-		secure: import.meta.env.DEV ? false : true
+		// secure: import.meta.env.DEV ? false : true
+		secure: false
 	}));
 
 	if (event.url.pathname.startsWith('/api')) {

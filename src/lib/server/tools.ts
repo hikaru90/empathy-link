@@ -82,12 +82,15 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 			14. readabilityScore: Average readability score of the user's messages (Flesch–Kincaid, float).
 
 			Rules:
-			- The analysis should reflect only the user's messages (ignore AI messages for emotional stats unless otherwise stated).
+			- The analysis should reflect only the user's messages (ignore AI messages for emotional stats).
+			- When analyzing feelings, exclusively analyze the feelings of the user.
 			- When analyzing feelings, exclusively use the feelings list.
+			- When analyzing needs, exclusively analyze the needs of the user.
 			- When analyzing needs, exclusively use the needs list.
 			- IMPORTANT: you **must not** output any feeling or need that is not in the lists below. If no exact match exists, map the user’s expression to the single closest term from the list.  
 			- Keep feelings and needs lists concise (no duplicates, lowercase single words).
 			- Only save a request if a clear actionable request was made; otherwise return an empty string.
+			- IMPORTANT: your answer has to adhere to the json responseSchema. All required fields have to be present with their correct types.
 			`,
 				responseMimeType: 'application/json',
 				responseSchema: {
