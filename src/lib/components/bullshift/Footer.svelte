@@ -35,7 +35,7 @@
 			heading: 'Lernen',
 			path: '/bullshift/learn',
 			icon: Book,
-			available: false
+			available: true
 		},
 		{
 			slug: 'community',

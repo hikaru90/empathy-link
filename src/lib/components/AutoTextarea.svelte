@@ -29,10 +29,10 @@
 	};
 </script>
 
-<textarea
+<textarea style="resize: none;"
 	bind:value
 	{placeholder}
   bind:this={textarea}
   rows=1
-	class={cn('overflow-hidden max-h-[4.6em]', className)}
+	class={cn('overflow-y-auto max-h-[6.6em] overscroll-contain', className)}
 ></textarea>

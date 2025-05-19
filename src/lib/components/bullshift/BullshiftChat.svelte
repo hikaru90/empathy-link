@@ -545,37 +545,3 @@
 		</Dialog.Header>
 	</Dialog.Content>
 </Dialog.Root>
-
-<!-- <Dialog.Root bind:open={chatAnalysisModalVisible}>
-	<Dialog.Content>
-		<Dialog.Header>
-			<Dialog.Title>Zur Chat auswertung?</Dialog.Title>
-			<Dialog.Description>Möchtest Du zur Auswertung gehen?</Dialog.Description>
-			<Dialog.Footer>
-				<div class="mt-2 flex flex-grow justify-between gap-4">
-					<Button
-						variant="outline"
-						class="bg-transparent shadow-none"
-						onclick={() => {
-							chatAnalysisModalVisible = false;
-						}}
-					>
-						Schließen
-					</Button>
-					{#if chatAnalysisId}
-						<a
-							href={`/bullshift/stats/chats/${chatAnalysisId}`}
-							class="flex h-9 flex-grow items-center justify-between gap-2 whitespace-nowrap rounded-md bg-black px-4 py-2 text-sm font-medium text-white shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-							onclick={() => {
-								chatAnalysisModalVisible = false;
-							}}
-						>
-							Zur Auswertung
-							<ChevronRight class="size-4" />
-						</a>
-					{/if}
-				</div>
-			</Dialog.Footer>
-		</Dialog.Header>
-	</Dialog.Content>
-</Dialog.Root> -->
