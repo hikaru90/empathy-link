@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { pb } from '$scripts/pocketbase';
 
-export const load: PageServerLoad = async ({ locals, params }) => {
+export const load: PageServerLoad = async ({ locals, params, url }) => {
     const user = locals.user;
     const locale = locals.locale;
     const id = params.id;
@@ -15,7 +15,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
         return {
             record,
-            categories
+            categories,
+            currentPage: parseInt(url.searchParams.get('page') || '0')
         };
     } catch (error) {
         console.error('Error getting topic:', error);

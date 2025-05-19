@@ -45,7 +45,7 @@ console.log('category', data.categories.find(category => category.id === '66810r
     <h1 class="mt-4 mb-3 text-2xl font-light max-w-[15em]">
       Stärke deine Empathiefähigkeit, Schritt für Schritt.
     </h1>
-    <h2 class="mb-6 text-2xl font-light text-black/40 max-w-[14em]">
+    <h2 class="mb-10 text-2xl font-light text-black/40 max-w-[14em]">
       Lerne praktische Werkzeuge, um klar, mitfühlend und selbstbewusst zu kommunizieren.
     </h2>
 
@@ -62,7 +62,7 @@ console.log('category', data.categories.find(category => category.id === '66810r
                 <span>{topic.titleDE.split('||')[0]}</span>
                 <span>{topic.titleDE.split('||')[1]}</span>
               </h4>
-              <img src={`https://${PUBLIC_BACKEND_URL}/api/files/${topic.collectionId}/${topic.id}/${topic.image}`} alt={`background ${topic.titleDE}`} class="absolute top-0 left-1/3 w-full -z-0">
+              <img src={`https://${PUBLIC_BACKEND_URL}/api/files/${topic.collectionId}/${topic.id}/${topic.image}`} alt={`background ${topic.titleDE}`} class="absolute top-0 left-1/3 w-full -z-0 transform -rotate-6">
             </a>
             {/each}
 

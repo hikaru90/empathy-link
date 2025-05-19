@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         });
         const topics = await pb.collection('topics').getFullList({
             filter: '',
-            sort: '-created',
+            sort: 'order',
             expand: 'category'
         });
 
