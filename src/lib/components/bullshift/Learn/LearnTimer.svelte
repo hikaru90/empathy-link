@@ -52,7 +52,7 @@
 
 </script>
 
-<div style="background-color: {color}" class="inline-flex items-center justify-between gap-2 rounded-full p-2">
+<div style="background-color: {color}" class="inline-flex items-center justify-between gap-2 rounded-full p-2 mb-6">
   <button onclick={() => clickTimer()} style="border: 2px solid {color}; box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.3), -4px -4px 8px 0 rgba(255, 255, 255, 0.3);" class="size-8 rounded-full flex items-center justify-center">
     {#if isRunning}
       <Pause class="size-3" />

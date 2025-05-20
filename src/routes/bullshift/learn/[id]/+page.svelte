@@ -1,13 +1,18 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { replaceState } from '$app/navigation';
 	import Header from '$lib/components/bullshift/Header.svelte';
 	import Footer from '$lib/components/bullshift/Footer.svelte';
-	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
-	import { PUBLIC_BACKEND_URL } from '$env/static/public';
-	import LearnStepper from '$lib/components/LearnStepper.svelte';
-	import { marked } from 'marked';
-	import { replaceState } from '$app/navigation';
-	import LearnTimer from '$lib/components/LearnTimer.svelte';
+	import LearnStepper from '$lib/components/bullshift/Learn/LearnStepper.svelte';
+	import LearnTimer from '$lib/components/bullshift/Learn/LearnTimer.svelte';
+	import LearnStepIndicator from '$lib/components/bullshift/Learn/LearnStepIndicator.svelte';
+	import LearnTitleCard from '$lib/components/bullshift/Learn/LearnTitleCard.svelte';
+	import LearnHeading from '$lib/components/bullshift/Learn/LearnHeading.svelte';
+	import LearnList from '$lib/components/bullshift/Learn/LearnList.svelte';
+	import LearnText from '$lib/components/bullshift/Learn/LearnText.svelte';
+	import LearnTask from '$lib/components/bullshift/Learn/LearnTask.svelte';
+	import LearnBodyMap from '$lib/components/LearnBodyMap.svelte';
+
 	interface Props {
 		data: PageData;
 	}
@@ -52,7 +57,7 @@
 	};
 </script>
 
-<div class="pb-32 pt-8">
+<div class="pb-32 pt-6">
 	<Header />
 	<div class="max-container py-10">
 		<div class="mb-6 flex items-center justify-center">
@@ -62,55 +67,27 @@
 			>
 				<ChevronLeft class="size-4" /> zurück
 			</a> -->
-			<div class="flex items-center justify-center gap-2">
-				{#each topic().content as page, index}
-					<div
-						style="background-color: {currentPage >= index ? currentCategory().color : 'white'}"
-						class="h-2 w-4 rounded-full"
-					></div>
-				{/each}
-			</div>
+			<LearnStepIndicator {topic} {currentPage} {currentCategory} />
 		</div>
-		
+
 		{#if currentPage === 0}
-			<div
-				style="background-color: {currentCategory().color}"
-				class="relative mb-10 overflow-hidden rounded-lg p-4"
-			>
-				<h1 class="relative z-10 text-xl font-light">
-					<div class="mb-10">{topic().titleDE.split('||')[0]}</div>
-					<div class="font-bold">{topic().titleDE.split('||')[1]}</div>
-				</h1>
-				<img
-					src={`https://${PUBLIC_BACKEND_URL}/api/files/${topic().collectionId}/${topic().id}/${topic().image}`}
-					alt={`background ${topic().titleDE}`}
-					class="absolute right-0 top-1/2 -z-0 -mr-10 w-2/3 -translate-y-1/2 rotate-12 transform"
-				/>
-			</div>
+			<LearnTitleCard currentCategory={currentCategory()} topic={topic()} />
 		{/if}
 		{#each topic().content as page, index}
 			{#if currentPage === index}
 				{#each page.content as content}
 					{#if content.type === 'text'}
-						<div class="mb-4">
-							{@html marked(content.content)}
-						</div>
+						<LearnText {content} />
+					{:else if content.type === 'task'}
+						<LearnTask color={currentCategory().color} {content} />
 					{:else if content.type === 'heading'}
-					<h2 class="mb-4 text-lg font-bold">{content.content}</h2>
+						<LearnHeading {content} />
 					{:else if content.type === 'timer'}
 						<LearnTimer duration={content.duration} color={currentCategory().color} />
+					{:else if content.type === 'bodymap'}
+						<LearnBodyMap {content} color={currentCategory().color} />
 					{:else if content.type === 'list'}
-						{#each content.items as item}
-							<div class="mb-3 flex gap-2">
-								<div
-									style="background-color: {currentCategory().color}"
-									class="mt-2 size-2 flex-shrink-0 rounded-full"
-								></div>
-								<div>
-									{@html marked(item, { breaks: true })}
-								</div>
-							</div>
-						{/each}
+						<LearnList {content} currentCategory={currentCategory()} />
 					{/if}
 				{/each}
 			{/if}

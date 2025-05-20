@@ -14,9 +14,22 @@
 
 	let { gotoNextPage, gotoPrevPage, color, class: className = undefined, step }: Props = $props();
 
+	const goForward = () => {
+		scrollToTop()
+		gotoNextPage();
+	};
+
 	const goBack = () => {
+		scrollToTop()
 		if (step === 0) window.history.back();
 		else gotoPrevPage();
+	};
+
+	const scrollToTop = () => {
+		window.scrollTo({
+			top: 0,
+			behavior: 'smooth'
+		});
 	};
 </script>
 
@@ -33,7 +46,7 @@
 	</button>
 	<button
 		style="border: 2px solid {color}; box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.3), -4px -4px 8px 0 rgba(255, 255, 255, 0.3);"
-		onclick={() => gotoNextPage()}
+		onclick={() => goForward()}
 		class="flex items-center gap-2 rounded-full px-4 text-sm"
 	>
 		{$t('default.page.fights.form.general.next')}
