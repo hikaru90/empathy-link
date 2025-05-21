@@ -3,190 +3,363 @@
 	import { pb } from '$scripts/pocketbase';
 	import { serializeNonPOJOs, groupBy } from '$scripts/helpers';
 	import * as ToggleGroup from '$lib/components/ui/toggle-group';
-	import Box from 'lucide-svelte/icons/box';
+	import Pencil from 'lucide-svelte/icons/pencil';
+	import Trash from 'lucide-svelte/icons/trash';
 
 	interface Props {
 		content: object;
 		color: string;
 	}
 
+	interface feeling {
+		category: 'true' | 'false';
+		content: {
+			category: string;
+			visible: boolean;
+			content: dbFeeling[];
+		}[];
+	}
+
+	interface dbFeeling {
+		id: string;
+		nameEN: string;
+		nameDE: string;
+		category: string;
+		positive: boolean;
+		sort: number;
+	}
+
 	let { content, color }: Props = $props();
 
-	let points = $state<{ x: number; y: number }[]>([]);
-	let feelings = $state<any[]>([]);
-	let selectedFeelings = $state<any[]>([]);
+	let points = $state<{ id: number; x: number; y: number; feelings: string[] }[]>([]);
+	let feelings = $state<dbFeeling[]>([]);
+	let groupedFeelings = $state<feeling[]>([]);
 	let showFeelings = $state<boolean>(false);
 	let feelingsElement = $state<HTMLElement | null>(null);
-	let activePoint = $state<{ x: number; y: number } | null>(null);
+	let activePointId = $state<number | null>(null);
+	let imageElement: HTMLImageElement;
+	let imageRect: DOMRect | null = null;
+	let previousActivePointId = $state<number | null>(null);
 
+	$effect(() => {
+		if (activePointId !== previousActivePointId) {
+			groupedFeelings = groupedFeelings.map(group => ({
+				...group,
+				content: group.content.map(category => ({
+					...category,
+					visible: false
+				}))
+			}));
+			previousActivePointId = activePointId;
+		}
+	});
+
+	const updateImageRect = () => {
+		if (imageElement) {
+			imageRect = imageElement.getBoundingClientRect();
+		}
+	};
+	const constrainPoint = (x: number, y: number): { x: number; y: number } => {
+		if (!imageRect) return { x, y };
+
+		// Constrain x and y to be within the image bounds
+		const constrainedX = Math.max(0, Math.min(x, imageRect.width));
+		const constrainedY = Math.max(0, Math.min(y, imageRect.height));
+
+		return { x: constrainedX, y: constrainedY };
+	};
 	const drawPoint = (event: TouchEvent) => {
 		event.preventDefault();
 		const button = event.currentTarget as HTMLElement;
 		const rect = button.getBoundingClientRect();
-		console.log('button',rect);
 		const touch = event.touches[0];
 		const x = touch.clientX - rect.left;
 		const y = touch.clientY - rect.top;
-		
-		activePoint = { x, y };
-		points = [...points, activePoint];
-	};
 
-	const updatePoint = (event: TouchEvent) => {
-		event.preventDefault();
-		if (!activePoint) return;
-		const button = event.currentTarget as HTMLElement;
-		const rect = button.getBoundingClientRect();
-		const touch = event.touches[0];
-		const x = touch.clientX - rect.left;
-		const y = touch.clientY - rect.top;
-		
-		activePoint.x = x;
-		activePoint.y = y;
-		points = [...points];
-	};
+		// Constrain the new point to image bounds
+		const { x: constrainedX, y: constrainedY } = constrainPoint(x, y);
 
-	const endPoint = () => {
-		activePoint = null;
-		showFeelings = true;
-		scrollToFeelings();
+		activePointId = points.length;
+		points = [...points, { id: activePointId, x: constrainedX, y: constrainedY, feelings: [] }];
 	};
-
 	const initFeelings = async () => {
 		const records = await pb.collection('feelings').getFullList({
 			sort: 'category,sort'
 		});
-		const data = serializeNonPOJOs(records);
-		let res = groupBy(data, 'positive');
-		res.map((entry) => {
-			entry.content = groupBy(entry.content, 'category');
-			entry.content.map((category) => (category.visible = false));
-			return entry;
-		});
+		const data = serializeNonPOJOs(records) as dbFeeling[];
+		feelings = data;
+		let res = groupBy(data, 'positive') as feeling[];
+		res = res.map((entry) => ({
+			category: entry.category as 'true' | 'false',
+			content: groupBy(entry.content, 'category').map((category) => ({
+				...category,
+				visible: false
+			}))
+		}));
 		console.log('feelings res', res);
-		feelings = res;
+		groupedFeelings = res;
 	};
-	const toggleFeelingsCatgeory = (feeling, category: string) => {
+	const toggleFeelingsCatgeory = (feeling: dbFeeling, category: string) => {
 		if (feeling.nameEN !== category) return;
-		const target0 = feelings[0].content.find((entry) => entry.category === category);
-		const target1 = feelings[1].content.find((entry) => entry.category === category);
+		const target0 = groupedFeelings[0].content.find((entry) => entry.category === category);
+		const target1 = groupedFeelings[1].content.find((entry) => entry.category === category);
 		if (target0) target0.visible = !target0.visible;
 		if (target1) target1.visible = !target1.visible;
-		feelings = [...feelings];
+		groupedFeelings = [...groupedFeelings];
 	};
-	const categoryIsVisible = (feeling, category) => {
+	const categoryIsVisible = (
+		feeling: dbFeeling,
+		category: { category: string; content: any; visible: boolean }
+	) => {
 		const feelingSlug = feeling.nameEN;
 		const categorySlug = category.category;
 		if (feelingSlug === categorySlug) return true;
 		if (category.visible) return true;
 		return false;
 	};
-	const selectFeeling = (feeling) => {
-		if (selectedFeelings.includes(feeling.id)) {
-			selectedFeelings = selectedFeelings.filter((id) => id !== feeling.id);
+	const selectFeeling = (feeling: dbFeeling) => {
+		const activePoint = points.find((point) => point.id === activePointId);
+		if (activePoint?.feelings?.includes(feeling.id)) {
+			activePoint.feelings = activePoint.feelings.filter((id) => id !== feeling.id);
 		} else {
-			selectedFeelings.push(feeling.id);
+			points.find((point) => point.id === activePointId)?.feelings.push(feeling.id);
 		}
 	};
 	const scrollToFeelings = () => {
-		if (!feelingsElement) return;
+		console.log('scrollToFeelings');
 		setTimeout(() => {
+			if (!feelingsElement) return;
 			const offset = feelingsElement.getBoundingClientRect().top + window.scrollY + 200; // 100px offset from top
-			console.log('offset',offset);
-		window.scrollTo({
+			window.scrollTo({
 				top: offset,
 				behavior: 'smooth'
 			});
 		}, 100);
 	};
+	const handleTouchMove = (e: TouchEvent) => {
+		if (activePointId === null) return;
+		e.preventDefault();
+		const button = e.currentTarget as HTMLElement;
+		const rect = button.getBoundingClientRect();
+		const touch = e.touches[0];
+		const x = touch.clientX - rect.left;
+		const y = touch.clientY - rect.top;
 
-	function touchAction(node: HTMLElement) {
-		const options = { passive: false };
-		
-		function handleTouchStart(e: TouchEvent) {
-			e.preventDefault();
+		// Constrain the dragged point to image bounds
+		const { x: constrainedX, y: constrainedY } = constrainPoint(x, y);
+
+		points[activePointId] = { ...points[activePointId], x: constrainedX, y: constrainedY };
+		points = [...points];
+	};
+	const touchAction = (node: HTMLElement) => {
+		const handleTouchStart = (e: TouchEvent) => {
+			const target = e.target as HTMLElement;
+			if (target.closest('.point-dot') || target.closest('.point-controls')) {
+				return;
+			}
 			drawPoint(e);
-		}
-		
-		function handleTouchMove(e: TouchEvent) {
-			e.preventDefault();
-			updatePoint(e);
-		}
-		
-		node.addEventListener('touchstart', handleTouchStart, options);
-		node.addEventListener('touchmove', handleTouchMove, options);
-		node.addEventListener('touchend', endPoint);
-		node.addEventListener('touchcancel', endPoint);
-		
+		};
+		const handleTouchEnd = () => {
+			if (activePointId !== null) {
+				showFeelings = true;
+				const activePoint = points.find((point) => point.id === activePointId);
+				if (activePoint && activePoint.feelings.length === 0) {
+					scrollToFeelings();
+				}
+			}
+		};
+
+		node.addEventListener('touchstart', handleTouchStart, { passive: false });
+		node.addEventListener('touchmove', handleTouchMove, { passive: false });
+		node.addEventListener('touchend', handleTouchEnd);
+		node.addEventListener('touchcancel', handleTouchEnd);
+
 		return {
 			destroy() {
 				node.removeEventListener('touchstart', handleTouchStart);
 				node.removeEventListener('touchmove', handleTouchMove);
-				node.removeEventListener('touchend', endPoint);
-				node.removeEventListener('touchcancel', endPoint);
+				node.removeEventListener('touchend', handleTouchEnd);
+				node.removeEventListener('touchcancel', handleTouchEnd);
 			}
 		};
-	}
+	};
+	const dragPointAction = (node: HTMLElement, index: number) => {
+		const handleTouchStart = (e: TouchEvent) => {
+			// Don't start drag if clicking on controls
+			const target = e.target as HTMLElement;
+			if (target.closest('.point-controls')) {
+				return;
+			}
+			e.stopPropagation();
+			e.preventDefault();
+			activePointId = index;
+		};
+
+		node.addEventListener('touchstart', handleTouchStart, { passive: false });
+		return {
+			destroy() {
+				node.removeEventListener('touchstart', handleTouchStart);
+			}
+		};
+	};
+	const removePoint = (index: number) => {
+		console.log('removePoint', index);
+		points = points.filter((point) => point.id !== index);
+	};
+	const trashButtonAction = (node: HTMLElement) => {
+		const handleTouchStart = (e: TouchEvent) => {
+			// Only prevent default if we're actually on the button
+			if (e.target === node || node.contains(e.target as Node)) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		};
+
+		const handleTouchEnd = (e: TouchEvent) => {
+			// Only trigger if we're actually on the button
+			if (e.target === node || node.contains(e.target as Node)) {
+				e.preventDefault();
+				e.stopPropagation();
+				const index = parseInt(node.dataset.index || '0', 10);
+				removePoint(index);
+			}
+		};
+
+		const handleClick = (e: MouseEvent) => {
+			e.preventDefault();
+			e.stopPropagation();
+			const index = parseInt(node.dataset.index || '0', 10);
+			removePoint(index);
+		};
+
+		node.addEventListener('touchstart', handleTouchStart, { passive: false });
+		node.addEventListener('touchend', handleTouchEnd, { passive: false });
+		node.addEventListener('click', handleClick);
+
+		return {
+			destroy() {
+				node.removeEventListener('touchstart', handleTouchStart);
+				node.removeEventListener('touchend', handleTouchEnd);
+				node.removeEventListener('click', handleClick);
+			}
+		};
+	};
 
 	onMount(async () => {
 		initFeelings();
+		// Update image rect when image loads
+		if (imageElement) {
+			imageElement.onload = updateImageRect;
+			updateImageRect();
+		}
 	});
 </script>
 
-{JSON.stringify(selectedFeelings)}
+<!-- {JSON.stringify(selectedFeelings)}
+<br />
+{JSON.stringify(activePointId)}
+<br />
+{JSON.stringify(points)} -->
 
 <div class="flex justify-center">
-	<div
-		class="relative flex flex-col items-center justify-center gap-1 w-full"
-	>
-	<button aria-label="bodyscan map" use:touchAction class="relative touch-none">
-			{#each points as point}
+	<div class="relative flex w-full flex-col items-center justify-center gap-1">
+		<div
+			role="button"
+			aria-label="bodyscan map"
+			use:touchAction
+			class="bodyscan-map relative touch-none"
+			tabindex="0"
+			style="touch-action: none;"
+		>
+			{#each points as point, i}
 				<div
-					class="absolute z-10 size-4 rounded-full bg-white"
+					class="point-dot absolute z-10 -m-2.5 size-5 rounded-full bg-white"
 					style="left: {point.x}px; top: {point.y}px;"
-				></div>
+					use:dragPointAction={i}
+				>
+					{#if i === activePointId}
+						<div class="pointer-events-none relative z-10 h-full w-full">
+							<div
+								class="point-controls absolute bottom-full left-1/2 z-10 mb-2 flex -translate-x-1/2 transform flex-col items-center gap-1 rounded-[18px] bg-white p-2"
+							>
+								<div class="flex flex-col gap-1">
+									{#each point.feelings as feeling}
+										<div class="flex items-center justify-center gap-1">
+											<div class="text-xs text-center">{feelings.find((f) => f.id === feeling)?.nameDE}</div>
+										</div>
+									{/each}
+								</div>
+								<div class="flex items-center gap-1">
+									<Pencil class="size-4" />
+									<div class="h-4 w-[1px] bg-black/5"></div>
+									<button
+										aria-label="remove point"
+										use:trashButtonAction
+										data-index={i}
+										class="point-control pointer-events-auto touch-none"
+										type="button"
+									>
+										<Trash class="size-4" />
+									</button>
+								</div>
+							</div>
+							<div
+								class="pointer-events-none absolute left-0 top-0 -z-10 h-full w-full animate-ping rounded-full bg-red-400"
+							></div>
+						</div>
+					{/if}
+				</div>
 			{/each}
-			<img src="/learn/character.svg" alt="bodyscan" class="w-52" />
-		</button>
+			<img
+				bind:this={imageElement}
+				src="/learn/character.svg"
+				alt="bodyscan"
+				class="w-52"
+				onload={updateImageRect}
+			/>
+		</div>
 
 		<div bind:this={feelingsElement}></div>
-		{#if showFeelings}
-				<ToggleGroup.Root
+		{#each points as point}
+			{#if showFeelings && point.id === activePointId}
+				<ToggleGroup.Root 
+					name={point.id}
 					id="feeling-selector"
 					type="multiple"
-					bind:value={feelings}
+					bind:value={point.feelings}
+					onValueChange={(value) => {
+						console.log('value', value);
+					}}
 					class="flex flex-col gap-4"
 				>
-					{#if feelings.length > 0}
+					{#if groupedFeelings.length > 0}
 						<div class="">
 							<div class="-mx-1 flex w-full flex-wrap justify-start transition-all">
-								{#each feelings as positive}
-									<!-- <div class="mb-1 mt-3 flex items-center gap-3 text-xs">
-                {positive.category === 'true' ? 'Positiv' : 'Negativ'}
-                <div class="mr-2 flex-grow border-b border-black border-opacity-20"></div>
-              </div> -->
+								{#each groupedFeelings as positive}
 									{#each positive.content as category}
 										{#each category.content as feeling}
 											<button
 												type="button"
 												onclick={() => toggleFeelingsCatgeory(feeling, category.category)}
 												class="{categoryIsVisible(feeling, category) ||
-												selectedFeelings.includes(feeling.id)
+												point.feelings.includes(feeling.id)
 													? 'pointer-events-auto max-w-[300px] p-0.5 opacity-100'
-													: 'pointer-events-none m-0 max-w-0 opacity-0 text-[2px]'} h-7 block leading-none transition-all"
+													: 'pointer-events-none m-0 max-w-0 text-[2px] opacity-0'} block h-7 leading-none transition-all"
 											>
 												<ToggleGroup.Item
 													value={feeling.id}
-													onclick={() => selectFeeling(feeling)}
 													class="{feeling.nameEN === category.category
 														? `bg-white/40 hover:bg-white/30`
 														: ''} h-auto max-w-[300px] rounded-full px-2 py-0.5 text-xs text-black hover:bg-white/30 hover:text-black data-[state=on]:bg-white"
 												>
-												{#if feeling.nameEN === category.category}
-													<div class="size-1.5 rounded-full -ml-0.5 mr-1 {positive.category === 'true'
-														? 'bg-green-400'
-														: 'bg-red-400'}" ></div>
-												{/if}
+													{#if feeling.nameEN === category.category}
+														<div
+															class="-ml-0.5 mr-1 size-1.5 rounded-full {positive.category ===
+															'true'
+																? 'bg-green-400'
+																: 'bg-red-400'}"
+														></div>
+													{/if}
 													{feeling.nameDE}
 												</ToggleGroup.Item>
 											</button>
@@ -197,6 +370,7 @@
 						</div>
 					{/if}
 				</ToggleGroup.Root>
-		{/if}
+			{/if}
+		{/each}
 	</div>
 </div>
