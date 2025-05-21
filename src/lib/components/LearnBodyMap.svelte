@@ -40,12 +40,13 @@
 	let imageElement: HTMLImageElement;
 	let imageRect: DOMRect | null = null;
 	let previousActivePointId = $state<number | null>(null);
+	let feelingsContainer: HTMLElement | null = null;
 
 	$effect(() => {
 		if (activePointId !== previousActivePointId) {
-			groupedFeelings = groupedFeelings.map(group => ({
+			groupedFeelings = groupedFeelings.map((group) => ({
 				...group,
-				content: group.content.map(category => ({
+				content: group.content.map((category) => ({
 					...category,
 					visible: false
 				}))
@@ -151,6 +152,25 @@
 		points[activePointId] = { ...points[activePointId], x: constrainedX, y: constrainedY };
 		points = [...points];
 	};
+	const dragPointAction = (node: HTMLElement, index: number) => {
+		const handleTouchStart = (e: TouchEvent) => {
+			// Don't start drag if clicking on controls
+			const target = e.target as HTMLElement;
+			if (target.closest('.point-controls')) {
+				return;
+			}
+			e.stopPropagation();
+			e.preventDefault();
+			activePointId = index;
+		};
+
+		node.addEventListener('touchstart', handleTouchStart, { passive: false });
+		return {
+			destroy() {
+				node.removeEventListener('touchstart', handleTouchStart);
+			}
+		};
+	};
 	const touchAction = (node: HTMLElement) => {
 		const handleTouchStart = (e: TouchEvent) => {
 			const target = e.target as HTMLElement;
@@ -180,25 +200,6 @@
 				node.removeEventListener('touchmove', handleTouchMove);
 				node.removeEventListener('touchend', handleTouchEnd);
 				node.removeEventListener('touchcancel', handleTouchEnd);
-			}
-		};
-	};
-	const dragPointAction = (node: HTMLElement, index: number) => {
-		const handleTouchStart = (e: TouchEvent) => {
-			// Don't start drag if clicking on controls
-			const target = e.target as HTMLElement;
-			if (target.closest('.point-controls')) {
-				return;
-			}
-			e.stopPropagation();
-			e.preventDefault();
-			activePointId = index;
-		};
-
-		node.addEventListener('touchstart', handleTouchStart, { passive: false });
-		return {
-			destroy() {
-				node.removeEventListener('touchstart', handleTouchStart);
 			}
 		};
 	};
@@ -244,6 +245,65 @@
 			}
 		};
 	};
+	const pencilButtonAction = (node: HTMLElement) => {
+		const handleTouchStart = (e: TouchEvent) => {
+			// Only prevent default if we're actually on the button
+			if (e.target === node || node.contains(e.target as Node)) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		};
+
+		const handleTouchEnd = (e: TouchEvent) => {
+			// Only trigger if we're actually on the button
+			if (e.target === node || node.contains(e.target as Node)) {
+				e.preventDefault();
+				e.stopPropagation();
+				const index = parseInt(node.dataset.index || '0', 10);
+				activePointId = index;
+				showFeelings = true;
+				scrollToFeelings();
+			}
+		};
+
+		const handleClick = (e: MouseEvent) => {
+			e.preventDefault();
+			e.stopPropagation();
+			const index = parseInt(node.dataset.index || '0', 10);
+			activePointId = index;
+			showFeelings = true;
+			scrollToFeelings();
+		};
+
+		node.addEventListener('touchstart', handleTouchStart, { passive: false });
+		node.addEventListener('touchend', handleTouchEnd, { passive: false });
+		node.addEventListener('click', handleClick);
+
+		return {
+			destroy() {
+				node.removeEventListener('touchstart', handleTouchStart);
+				node.removeEventListener('touchend', handleTouchEnd);
+				node.removeEventListener('click', handleClick);
+			}
+		};
+	};
+
+	// Add this function to handle clicks outside
+	const handleClickOutside = (event: MouseEvent) => {
+		// Check if the click target is outside both the feelings container and point controls
+		const target = event.target as HTMLElement;
+		const isOutsideFeelings = !target.closest('#feeling-selector');
+		const isOutsidePointControls = !target.closest('.point-controls');
+		const isOutsidePointDot = !target.closest('.point-dot');
+
+		// Only close if the active point has feelings
+		if (isOutsideFeelings && isOutsidePointControls && isOutsidePointDot) {
+			const activePoint = points.find((point) => point.id === activePointId);
+			if (activePoint && activePoint.feelings.length > 0) {
+				showFeelings = false;
+			}
+		}
+	};
 
 	onMount(async () => {
 		initFeelings();
@@ -252,6 +312,14 @@
 			imageElement.onload = updateImageRect;
 			updateImageRect();
 		}
+
+		// Add click listener to document
+		document.addEventListener('click', handleClickOutside);
+
+		// Clean up listener on component destroy
+		return () => {
+			document.removeEventListener('click', handleClickOutside);
+		};
 	});
 </script>
 
@@ -285,12 +353,22 @@
 								<div class="flex flex-col gap-1">
 									{#each point.feelings as feeling}
 										<div class="flex items-center justify-center gap-1">
-											<div class="text-xs text-center">{feelings.find((f) => f.id === feeling)?.nameDE}</div>
+											<div class="text-center text-xs">
+												{feelings.find((f) => f.id === feeling)?.nameDE}
+											</div>
 										</div>
 									{/each}
 								</div>
 								<div class="flex items-center gap-1">
-									<Pencil class="size-4" />
+									<button
+										aria-label="edit feelings"
+										use:pencilButtonAction
+										data-index={i}
+										class="point-control pointer-events-auto touch-none"
+										type="button"
+									>
+										<Pencil class="size-4" />
+									</button>
 									<div class="h-4 w-[1px] bg-black/5"></div>
 									<button
 										aria-label="remove point"
@@ -304,7 +382,7 @@
 								</div>
 							</div>
 							<div
-								class="pointer-events-none absolute left-0 top-0 -z-10 h-full w-full animate-ping rounded-full bg-red-400"
+								class="pointer-events-none absolute left-0 top-0 -z-10 h-full w-full animate-ping rounded-full bg-white"
 							></div>
 						</div>
 					{/if}
@@ -321,8 +399,8 @@
 
 		<div bind:this={feelingsElement}></div>
 		{#each points as point}
-			{#if showFeelings && point.id === activePointId}
-				<ToggleGroup.Root 
+		{#if showFeelings && point.id === activePointId}
+				<ToggleGroup.Root
 					name={point.id}
 					id="feeling-selector"
 					type="multiple"
@@ -330,7 +408,7 @@
 					onValueChange={(value) => {
 						console.log('value', value);
 					}}
-					class="flex flex-col gap-4"
+					class="flex flex-col gap-4 transition-all duration-800"
 				>
 					{#if groupedFeelings.length > 0}
 						<div class="">
