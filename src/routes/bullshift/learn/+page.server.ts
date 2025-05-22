@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         const topics = await pb.collection('topics').getFullList({
             filter: '',
             sort: 'order',
-            expand: 'category'
+            expand: 'currentVersion, currentVersion.category'
         });
 
         return {

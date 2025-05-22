@@ -33,6 +33,7 @@
 		"dotenv": "^16.4.5",
 		"jimp": "^0.22.12",
 		"p5": "^1.11.3",
+		"paneforge": "^0.0.6",
 		"pocketbase": "^0.21.1",
 		"postcss": "^8.4.38",
 		"postcss-import": "^16.1.0",

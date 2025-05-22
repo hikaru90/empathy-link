@@ -301,6 +301,7 @@
 			const activePoint = points.find((point) => point.id === activePointId);
 			if (activePoint && activePoint.feelings.length > 0) {
 				showFeelings = false;
+				activePointId = null;
 			}
 		}
 	};
@@ -329,7 +330,7 @@
 <br />
 {JSON.stringify(points)} -->
 
-<div class="flex justify-center">
+<div class="flex justify-center mb-6">
 	<div class="relative flex w-full flex-col items-center justify-center gap-1">
 		<div
 			role="button"
@@ -345,21 +346,21 @@
 					style="left: {point.x}px; top: {point.y}px;"
 					use:dragPointAction={i}
 				>
-					{#if i === activePointId}
-						<div class="pointer-events-none relative z-10 h-full w-full">
-							<div
-								class="point-controls absolute bottom-full left-1/2 z-10 mb-2 flex -translate-x-1/2 transform flex-col items-center gap-1 rounded-[18px] bg-white p-2"
-							>
-								<div class="flex flex-col gap-1">
-									{#each point.feelings as feeling}
-										<div class="flex items-center justify-center gap-1">
-											<div class="text-center text-xs">
-												{feelings.find((f) => f.id === feeling)?.nameDE}
-											</div>
+					<div class="pointer-events-none relative z-10 h-full w-full">
+						<div
+							class="point-controls absolute bottom-full left-1/2 z-10 mb-2 flex -translate-x-1/2 transform flex-col items-center gap-1 rounded-[18px] bg-white "
+						>
+							<div class="flex flex-col gap-1 px-2 pt-2 {i === activePointId ? '' : 'pb-2'}">
+								{#each point.feelings as feeling}
+									<div class="flex items-center justify-center gap-1">
+										<div class="text-center text-xs">
+											{feelings.find((f) => f.id === feeling)?.nameDE}
 										</div>
-									{/each}
-								</div>
-								<div class="flex items-center gap-1">
+									</div>
+								{/each}
+							</div>
+							{#if i === activePointId}
+								<div class="flex items-center gap-1 px-2 pb-2">
 									<button
 										aria-label="edit feelings"
 										use:pencilButtonAction
@@ -380,12 +381,12 @@
 										<Trash class="size-4" />
 									</button>
 								</div>
-							</div>
-							<div
-								class="pointer-events-none absolute left-0 top-0 -z-10 h-full w-full animate-ping rounded-full bg-white"
-							></div>
+							{/if}
 						</div>
-					{/if}
+						<div
+							class="pointer-events-none absolute left-0 top-0 -z-10 h-full w-full animate-ping rounded-full bg-white"
+						></div>
+					</div>
 				</div>
 			{/each}
 			<img
@@ -399,7 +400,7 @@
 
 		<div bind:this={feelingsElement}></div>
 		{#each points as point}
-		{#if showFeelings && point.id === activePointId}
+			{#if showFeelings && point.id === activePointId}
 				<ToggleGroup.Root
 					name={point.id}
 					id="feeling-selector"
@@ -408,7 +409,7 @@
 					onValueChange={(value) => {
 						console.log('value', value);
 					}}
-					class="flex flex-col gap-4 transition-all duration-800"
+					class="duration-800 flex flex-col gap-4 transition-all"
 				>
 					{#if groupedFeelings.length > 0}
 						<div class="">

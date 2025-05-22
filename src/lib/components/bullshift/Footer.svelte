@@ -5,7 +5,15 @@
 	import Book from 'lucide-svelte/icons/book';
 	import Users from 'lucide-svelte/icons/users';
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
+	import { cn } from '$lib/utils';
+
+	interface Props {
+		absolute?: boolean;
+		class?: string;
+	}
+
+	let { absolute = false, class: className = undefined }: Props = $props();	
+
 	type MenuItem = {
 		slug: string;
 		heading: string;
@@ -64,8 +72,7 @@
 
 </script>
 
-<!-- <div class="inverted-border fixed bottom-0 left-0 w-full bg-black text-gray-200 px-4 pb-4 pt-2 z-[1002]"> -->
-<div class="fixed bottom-0 left-0 z-[1000] w-full bg-offwhite px-4 pb-6 pt-1 text-black">
+<div class={cn("bottom-0 left-0 z-[1000] w-full bg-offwhite px-4 pb-6 pt-1 text-black", absolute ? 'absolute' : 'fixed', className)}>
 	<img
 		src="/inverted-border-white.svg"
 		alt=""
@@ -94,7 +101,7 @@
 					<div class="size-8 flex items-center justify-center {isCurrentRoute(item.path) ? 'text-black' : 'text-black/60'}">
 						<item.icon class="size-5" />
 					</div>
-					<span class="text-2xs -mt-1 lg:mt-2 lg:text-xs {isCurrentRoute(item.path) ? 'text-black' : 'text-black/60'}">
+					<span class="text-2xs -mt-1 {isCurrentRoute(item.path) ? 'text-black' : 'text-black/60'}">
 						{item.heading}
 					</span>
 				</a>

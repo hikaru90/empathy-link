@@ -10,9 +10,10 @@
 		class?: string | undefined;
 		gotoPrevPage: () => void;
 		gotoNextPage: () => void;
+		absolute?: boolean;
 	}
 
-	let { gotoNextPage, gotoPrevPage, color, class: className = undefined, step }: Props = $props();
+	let { gotoNextPage, gotoPrevPage, color, class: className = undefined, step, absolute = false }: Props = $props();
 
 	const goForward = () => {
 		scrollToTop()
@@ -35,7 +36,7 @@
 
 <div
 	style="background-color: {color};"
-	class="flex justify-between {className} fixed bottom-[84px] left-4 right-4 rounded-full p-2 shadow-xl"
+	class="flex justify-between {className} {absolute ? 'absolute' : 'fixed'} bottom-[84px] left-4 right-4 rounded-full p-2 shadow-xl"
 >
 	<button
 		style="border: 2px solid {color}; box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.3), -4px -4px 8px 0 rgba(255, 255, 255, 0.3);"

@@ -11,20 +11,21 @@
 
   let { data }: Props = $props();
 
-console.log('category', data.categories.find(category => category.id === '66810rsh06w73ea'));
 
   const categories = $derived(() => {
+    console.log('topics', data.topics);
     if(!data.topics) return []
     const res = data.topics
     // Group topics by category
     const groupedTopics = res.reduce((acc: Record<string, any[]>, topic: any) => {
-      const category = topic.expand?.category?.id || 'Uncategorized';
+      const category = topic?.expand?.currentVersion?.expand?.category?.id || 'Uncategorized';
       if (!acc[category]) {
         acc[category] = [];
       }
       acc[category].push(topic);
       return acc;
     }, {});
+    console.log('groupedTopics',groupedTopics);
 
     // Convert to array of category groups
     const groupedArray = Object.entries(groupedTopics).map(([category, topics]) => ({
@@ -35,7 +36,7 @@ console.log('category', data.categories.find(category => category.id === '66810r
   });
 
   const currentCategory = (categoryId: string) => {
-    return data.categories.find(c => c.id === categoryId)
+    return data.categories?.find(c => c.id === categoryId)
   }
 </script>
 
@@ -57,12 +58,12 @@ console.log('category', data.categories.find(category => category.id === '66810r
           </h3>
           <div class="flex gap-4">
             {#each category.topics as topic}
-            <a style="background-color: {currentCategory(category.category)?.color}" href={`/bullshift/learn/${topic.id}`} class="w-52 h-60 rounded-lg flex items-end justify-start p-4 text-sm relative overflow-hidden">
+            <a style="background-color: {currentCategory(category.category)?.color}" href={`/bullshift/learn/${topic?.id}`} class="w-52 h-60 rounded-lg flex items-end justify-start p-4 text-sm relative overflow-hidden">
               <h4 class="text-xl font-light relative z-10">
-                <span>{topic.titleDE.split('||')[0]}</span>
-                <span>{topic.titleDE.split('||')[1]}</span>
+                <span>{topic.expand?.currentVersion?.titleDE.split('||')[0]}</span>
+                <span>{topic.expand?.currentVersion?.titleDE.split('||')[1]}</span>
               </h4>
-              <img src={`https://${PUBLIC_BACKEND_URL}/api/files/${topic.collectionId}/${topic.id}/${topic.image}`} alt={`background ${topic.titleDE}`} class="absolute top-0 left-1/3 w-full -z-0 transform -rotate-6">
+              <img src={`https://${PUBLIC_BACKEND_URL}/api/files/${topic.expand?.currentVersion?.collectionId}/${topic.expand?.currentVersion?.id}/${topic.expand?.currentVersion?.image}`} alt={`background ${topic.expand?.currentVersion?.titleDE}`} class="absolute top-0 left-1/3 w-full -z-0 transform -rotate-6">
             </a>
             {/each}
 

@@ -10,6 +10,12 @@
 	import LogOut from 'lucide-svelte/icons/log-out';
 	import SparklePill from '$lib/components/SparklePill.svelte';
 
+	interface Props {
+		absolute?: boolean;
+	}
+
+	let { absolute = false }: Props = $props();
+
 	const notifications = [
 		{
 			id: 1,
@@ -22,7 +28,7 @@
 	let userMenuIsOpen = $state(false);
 </script>
 
-<nav class="absolute left-0 top-0 flex w-full items-center justify-between p-4">
+<nav class="{absolute ? 'absolute' : 'fixed'} left-0 top-0 flex w-full items-center justify-between p-4">
 	<button
 		class="flex size-8 items-center justify-center rounded-full bg-black"
 		onclick={() => (userMenuIsOpen = true)}

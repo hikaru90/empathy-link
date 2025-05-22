@@ -31,13 +31,13 @@
 
 	let currentCategory = $derived(() => {
 		if (!data.categories || !data.record) return { color: '#000000' };
-		const res = data.categories.find((c) => c.id === data.record?.category);
+		const res = data.categories.find((c) => c.id === data.record?.expand?.currentVersion?.category);
 		return res ? res : { color: '#000000' };
 	});
 
 	const topic = $derived(() => {
-		if (!data.record) return [];
-		return data.record;
+		if (!data.record?.expand?.currentVersion) return [];
+		return data.record.expand.currentVersion;
 	});
 
 	const goBack = () => {
