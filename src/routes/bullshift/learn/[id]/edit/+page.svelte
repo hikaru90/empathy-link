@@ -79,8 +79,6 @@
 	};
 
 
-
-	////
 	let contentReady = $state(false);
 	let lastKnownScrollPosition = 0;
 	let ticking = false;
@@ -252,7 +250,7 @@
 			</main>
 		</Resizable.Pane>
 		<Resizable.Handle withHandle />
-		<Resizable.Pane defaultSize={50}>
+		<Resizable.Pane defaultSize={50} class="relative">
 			<LearnEditor {currentPage} topicId={data.topicId} />
 		</Resizable.Pane>
 	</Resizable.PaneGroup>
