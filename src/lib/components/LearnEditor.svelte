@@ -36,6 +36,8 @@
 	let openPageAccordions: Set<number> = $state(new Set([0])); // First page open by default
 	let formElement: HTMLFormElement | null = null;
 	let saveStatus: 'idle' | 'saving' | 'success' | 'error' = $state('idle');
+	let imageLoading: boolean = $state(false);
+	let imageError: boolean = $state(false);
 
 	let currentVersion: TopicVersion | undefined = $derived(
 		allVersions.find((version) => version.id === currentVersionId)
@@ -340,6 +342,39 @@
 				})()
 	);
 
+	const handleImageLoad = () => {
+		imageLoading = false;
+		imageError = false;
+	};
+
+	const handleImageError = () => {
+		imageLoading = false;
+		imageError = true;
+	};
+
+	const handleImageStart = () => {
+		if ($formData.image) {
+			imageLoading = true;
+			imageError = false;
+		}
+	};
+
+	// Derived value to check if image URL is valid
+	let isValidImageUrl = $derived(
+		$formData.image && 
+		$formData.image.trim().length > 0
+	);
+
+	// Reset image loading state when URL changes
+	$effect(() => {
+		if ($formData.image) {
+			handleImageStart();
+		} else {
+			imageLoading = false;
+			imageError = false;
+		}
+	});
+
 	onMount(async () => {
 		await getLiveVersionId();
 		await getVersions();
@@ -471,6 +506,18 @@
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
+
+			<!-- Image Preview -->
+			{#if $formData.image}
+				<div class="mb-4">
+					<div class="text-sm font-medium mb-2">Image Preview</div>
+					<img 
+						src={currentVersion ? `${pb.baseUrl}/api/files/topicVersions/${currentVersion.id}/${$formData.image}` : ''} 
+						alt="Topic preview" 
+						class="max-w-full max-h-64 rounded border"
+					/>
+				</div>
+			{/if}
 
 			<!-- Content Editor -->
 			<div class="mt-8">
