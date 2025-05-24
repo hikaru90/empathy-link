@@ -37,7 +37,6 @@
 		className
 	)}
 	{...rest}
-	onclick
 	on:pointermove
 	on:focusin
 >

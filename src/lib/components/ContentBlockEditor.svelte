@@ -188,7 +188,7 @@
 				<div class="mt-2 border rounded p-2 bg-white">
 					<ul class="list-disc list-inside">
 						{#each block.items as item}
-							<li>{item}</li>
+							{@html marked(item, { breaks: true })}
 						{/each}
 					</ul>
 				</div>

@@ -3,7 +3,7 @@
 	import '$src/app.pcss';
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { blur } from 'svelte/transition';
-	import { Toaster } from '$lib/components/ui/sonner';
+	// import { Toaster } from '$lib/components/ui/sonner';
 	import AppMenu from '$lib/components/AppMenu.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import { scroll, windowHeight, windowWidth, backgroundColor } from '$store/page';
@@ -87,7 +87,7 @@
 		<AppMenu user={data.user} />
 	{/if}
 {/key}
-<Toaster />
+<!-- <Toaster /> -->
 
 <style lang="scss">
 	@use '../../../assets/styles/style.scss' as *;

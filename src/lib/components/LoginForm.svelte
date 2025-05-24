@@ -64,7 +64,7 @@
 								{/snippet}
 				</Form.Control>
 		<Form.Description
-			><button 
+			><button type="button"
 				tabindex="0"
 				onclick={() => (resetPassordDialogOpen = true)}
 				class="text-sm text-muted-foreground hover:underline">{$t('default.page.login.forgotPassword.question')}</button></Form.Description
