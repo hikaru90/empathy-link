@@ -91,8 +91,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 		secure: false
 	}));
 
+	// Protect API routes
 	if (event.url.pathname.startsWith('/api')) {
-		// If not authenticated and trying to access API, throw 401
+		if (!event.locals.pb.authStore.isValid) {
+			throw redirect(303, '/app/auth/login');
+		}
+	}
+
+	// Protect learning routes - require authentication
+	if (event.url.pathname.startsWith('/bullshift/learn')) {
 		if (!event.locals.pb.authStore.isValid) {
 			throw redirect(303, '/app/auth/login');
 		}

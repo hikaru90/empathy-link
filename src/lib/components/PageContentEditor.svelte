@@ -3,6 +3,10 @@
 	import { Input } from '$lib/components/ui/input';
 	import ContentBlockEditor from '$lib/components/ContentBlockEditor.svelte';
 	import BlockTypeSelector from '$lib/components/BlockTypeSelector.svelte';
+	import Plus from 'lucide-svelte/icons/plus';
+	import Trash from 'lucide-svelte/icons/trash';
+	import ChevronsUp from 'lucide-svelte/icons/chevron-up';
+	import ChevronsDown from 'lucide-svelte/icons/chevron-down';
 
 	interface Props {
 		content: Content[];
@@ -65,6 +69,9 @@
 				break;
 			case 'bodymap':
 				newBlock = { type: 'bodymap' };
+				break;
+			case 'taskCompletion':
+				newBlock = { type: 'taskCompletion', allowNotes: true };
 				break;
 			default:
 				return;
@@ -192,16 +199,17 @@
 		<button
 			type="button"
 			onclick={addPage}
-			class="rounded bg-green-500 px-3 py-1 text-sm text-white hover:bg-green-600"
+			class="rounded bg-green-500 px-3 py-1 text-sm text-white hover:bg-green-600 flex items-center gap-2"
 		>
 			Add Page
+			<Plus class="size-4 -ml-1" />
 		</button>
 	</div>
 
 	{#if content && content.length > 0}
 		{#each content as page, pageIndex (page.page)}
 			<div
-				class="mb-4 rounded-lg border bg-gray-50"
+				class="mb-4 rounded-lg border bg-gray-50 overflow-hidden"
 				draggable="true"
 				role="listitem"
 				ondragstart={(e: DragEvent) => handleDragStart(e, 'page', pageIndex)}
@@ -247,12 +255,16 @@
 								e.stopPropagation();
 								removePage(pageIndex);
 							}}
-							class="rounded bg-red-500 px-2 py-1 text-xs text-white hover:bg-red-600"
+							class="size-6 rounded bg-red-500 p-1 text-xs text-white hover:bg-red-600 flex items-center justify-center gap-2"
 						>
-							Delete
+							<Trash class="size-3" />
 						</button>
 						<span class="text-gray-500">
-							{openPageAccordions.has(pageIndex) ? '▼' : '▶'}
+							{#if openPageAccordions.has(pageIndex)}
+								<ChevronsUp class="size-4" />
+							{:else}
+								<ChevronsDown class="size-4" />
+							{/if}
 						</span>
 					</div>
 				</div>
@@ -260,12 +272,6 @@
 				<!-- Page Content (Accordion) -->
 				{#if openPageAccordions.has(pageIndex)}
 					<div class="border-t bg-white p-4">
-						<!-- Add Block Buttons -->
-						<div class="mb-4 flex flex-wrap gap-2">
-							<span class="text-sm font-medium text-gray-600">Add Block:</span>
-							<BlockTypeSelector onAddBlock={(type) => addContentBlock(pageIndex, type)} />
-						</div>
-
 						<!-- Content Blocks -->
 						{#if page.content.length === 0}
 							<p class="py-8 text-center text-gray-500">
@@ -287,6 +293,10 @@
 								/>
 							{/each}
 						{/if}
+						<!-- Add Block Buttons -->
+						<div class="mb-4 flex flex-wrap gap-2">
+							<BlockTypeSelector onAddBlock={(type) => addContentBlock(pageIndex, type)} />
+						</div>
 					</div>
 				{/if}
 			</div>

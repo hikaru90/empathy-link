@@ -12,6 +12,7 @@
 	import LearnText from '$lib/components/bullshift/Learn/LearnText.svelte';
 	import LearnTask from '$lib/components/bullshift/Learn/LearnTask.svelte';
 	import LearnBodyMap from '$lib/components/LearnBodyMap.svelte';
+	import LearnCompletionNotes from '$lib/components/bullshift/Learn/LearnCompletionNotes.svelte';
 	import LearnEditor from '$lib/components/LearnEditor.svelte';
 	import * as Resizable from '$lib/components/ui/resizable';
 	import { blur } from 'svelte/transition';
@@ -219,7 +220,7 @@
 							{/if}
 							{#each topic().content as page, index}
 								{#if currentPage === index}
-									{#each page.content as content}
+									{#each page.content as content, blockIndex}
 										{#if content.type === 'text'}
 											<LearnText {content} />
 										{:else if content.type === 'task'}
@@ -229,7 +230,25 @@
 										{:else if content.type === 'timer'}
 											<LearnTimer duration={content.duration} color={currentCategory().color} />
 										{:else if content.type === 'bodymap'}
-											<LearnBodyMap {content} color={currentCategory().color} />
+											<LearnBodyMap 
+												{content} 
+												color={currentCategory().color}
+												pageIndex={index}
+												{blockIndex}
+												session={null}
+												contentBlock={content}
+												topicVersionId={topic().id}
+												onResponse={() => {}}
+											/>
+										{:else if content.type === 'taskCompletion'}
+											<LearnCompletionNotes 
+												{content} 
+												color={currentCategory().color}
+												pageIndex={index}
+												{blockIndex}
+												session={null}
+												onResponse={() => {}}
+											/>
 										{:else if content.type === 'list'}
 											<LearnList {content} currentCategory={currentCategory()} />
 										{/if}

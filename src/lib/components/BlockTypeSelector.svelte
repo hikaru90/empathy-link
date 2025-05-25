@@ -9,7 +9,8 @@
 		{ type: 'list' as const, label: 'List', color: 'yellow' },
 		{ type: 'task' as const, label: 'Task', color: 'green' },
 		{ type: 'timer' as const, label: 'Timer', color: 'orange' },
-		{ type: 'bodymap' as const, label: 'Bodymap', color: 'pink' }
+		{ type: 'bodymap' as const, label: 'Bodymap', color: 'pink' },
+		{ type: 'taskCompletion' as const, label: 'Task Completion', color: 'teal' }
 	];
 </script>
 

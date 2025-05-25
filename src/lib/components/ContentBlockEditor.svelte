@@ -26,6 +26,8 @@
 		canMoveDown: boolean;
 	} = $props();
 
+	let isCollapsed = $state(true);
+
 	const updateListItem = (itemIndex: number, value: string) => {
 		if (block.type === 'list') {
 			const newItems = [...block.items];
@@ -48,14 +50,19 @@
 </script>
 
 <div 
-	class="mb-3 border rounded border-gray-200 bg-gray-50"
+	class="mb-3 border rounded-md border-gray-200 bg-gray-50"
 	draggable="true"
 	role="listitem"
 >
 	<!-- Block Header -->
-	<div class="flex items-center justify-between p-2 bg-gray-100 border-b">
+	<div class="flex items-center justify-between p-2 bg-gray-100 border-b cursor-pointer hover:bg-gray-200"
+	onclick={() => isCollapsed = !isCollapsed}
+	role="button"
+	tabindex="0"
+	onkeydown={(e) => e.key === 'Enter' && (isCollapsed = !isCollapsed)}>
 		<div class="flex items-center gap-2">
 			<span class="text-gray-400 cursor-move">⋮⋮</span>
+			<span class="text-gray-500 text-sm">{isCollapsed ? '▶' : '▼'}</span>
 			<span class="text-sm font-medium capitalize">{block.type}</span>
 		</div>
 		<div class="flex items-center gap-1">
@@ -86,6 +93,7 @@
 	</div>
 
 	<!-- Block Content Editor -->
+	{#if !isCollapsed}
 	<div class="p-3">
 		{#if block.type === 'text'}
 			<div class="grid grid-cols-2 gap-4">
@@ -98,7 +106,7 @@
 							const target = e.target as HTMLTextAreaElement;
 							onUpdate('content', target.value);
 						}}
-						rows={4}
+						rows={8}
 						class="font-mono text-sm"
 						placeholder="Enter markdown content..."
 					/>
@@ -253,6 +261,52 @@
 				<p>Bodymap Component</p>
 				<p class="text-sm">This will load a custom bodymap component in the frontend</p>
 			</div>
+		{:else if block.type === 'taskCompletion'}
+			<div class="space-y-2">
+				<div>
+					<label for="task-completion-taskId-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Task ID (optional)</label>
+					<Input 
+						id="task-completion-taskId-{pageIndex}-{blockIndex}"
+						value={block.taskId || ''} 
+						oninput={(e: Event) => {
+							const target = e.target as HTMLInputElement;
+							onUpdate('taskId', target.value || undefined);
+						}}
+						placeholder="Optional reference to link with specific task..." 
+					/>
+				</div>
+				<div class="flex items-center gap-2">
+					<input
+						id="task-completion-allowNotes-{pageIndex}-{blockIndex}"
+						type="checkbox"
+						checked={block.allowNotes !== false}
+						onchange={(e: Event) => {
+							const target = e.target as HTMLInputElement;
+							onUpdate('allowNotes', target.checked);
+						}}
+						class="rounded"
+					/>
+					<label for="task-completion-allowNotes-{pageIndex}-{blockIndex}" class="text-sm font-medium">
+						Allow notes
+					</label>
+				</div>
+				<div>
+					<label for="task-completion-placeholder-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Notes placeholder (optional)</label>
+					<Input 
+						id="task-completion-placeholder-{pageIndex}-{blockIndex}"
+						value={block.notesPlaceholder || ''} 
+						oninput={(e: Event) => {
+							const target = e.target as HTMLInputElement;
+							onUpdate('notesPlaceholder', target.value || undefined);
+						}}
+						placeholder="Custom placeholder for notes field..." 
+					/>
+				</div>
+				<div class="border rounded p-2 bg-white">
+					<div class="text-sm text-gray-600">Preview: Task completion component with checkbox and {block.allowNotes !== false ? 'notes field' : 'no notes field'}</div>
+				</div>
+			</div>
 		{/if}
 	</div>
+	{/if}
 </div> 

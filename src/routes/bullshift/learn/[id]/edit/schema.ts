@@ -12,7 +12,8 @@ export type ContentBlock =
   | HeadingBlock
   | TaskBlock
   | TimerBlock
-  | BodymapBlock;
+  | BodymapBlock
+  | TaskCompletionBlock;
 
 export interface TextBlock {
   type: "text";
@@ -43,6 +44,13 @@ export interface TimerBlock {
 
 export interface BodymapBlock {
   type: "bodymap";
+}
+
+export interface TaskCompletionBlock {
+  type: "taskCompletion";
+  taskId?: string; // Optional reference to link with specific task
+  allowNotes?: boolean; // Whether to show notes field
+  notesPlaceholder?: string; // Custom placeholder for notes
 }
 
 export interface TopicVersion {
@@ -91,13 +99,21 @@ const bodymapBlockSchema = z.object({
   type: z.literal("bodymap")
 });
 
+const taskCompletionBlockSchema = z.object({
+  type: z.literal("taskCompletion"),
+  taskId: z.string().optional(),
+  allowNotes: z.boolean().optional(),
+  notesPlaceholder: z.string().optional()
+});
+
 const contentBlockSchema = z.discriminatedUnion("type", [
   textBlockSchema,
   listBlockSchema,
   headingBlockSchema,
   taskBlockSchema,
   timerBlockSchema,
-  bodymapBlockSchema
+  bodymapBlockSchema,
+  taskCompletionBlockSchema
 ]);
 
 const contentSchema = z.object({
@@ -117,3 +133,66 @@ export const topicVersionFormSchema = z.object({
 });
 
 export type TopicVersionFormSchema = typeof topicVersionFormSchema;
+
+
+
+// Learning Session Response Types
+export interface SessionResponse {
+  pageIndex: number;
+  blockIndex: number;
+  blockType: ContentBlock['type'];
+  response: any;
+  timestamp: string;
+  // Version-independent identification
+  blockContent: ContentBlock; // Snapshot of the actual content block at time of response
+  topicVersionId: string; // The version this response was created for
+}
+
+export interface TaskResponse extends SessionResponse {
+  blockType: 'task';
+  response: {
+    completed: boolean;
+    notes?: string;
+    timeSpent?: number; // in seconds
+  };
+}
+
+export interface BodymapResponse extends SessionResponse {
+  blockType: 'bodymap';
+  response: {
+    points: Array<{
+      x: number;
+      y: number;
+      feelings: string[]; // feeling IDs
+    }>;
+  };
+}
+
+export interface TimerResponse extends SessionResponse {
+  blockType: 'timer';
+  response: {
+    completed: boolean;
+    actualDuration?: number; // how long they actually spent
+  };
+}
+
+export interface TaskCompletionResponse extends SessionResponse {
+  blockType: 'taskCompletion';
+  response: {
+    completed: boolean;
+    notes?: string;
+    timeSpent?: number; // in seconds
+  };
+}
+
+export interface LearningSession {
+  id: string;
+  user: string;
+  topic: string;
+  topicVersion: string;
+  currentPage: number;
+  responses: SessionResponse[];
+  created: string;
+  updated: string;
+  completed: boolean;
+}

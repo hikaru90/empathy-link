@@ -140,7 +140,14 @@
 			});
 			const data = serializeNonPOJOs(records) as TopicVersion[];
 			allVersions = data;
-			currentVersionId = data[data.length - 1]?.id || '';
+			
+			// Prioritize the live version if available, otherwise use the latest version
+			if (liveVersionId && data.find(v => v.id === liveVersionId)) {
+				currentVersionId = liveVersionId;
+			} else {
+				currentVersionId = data[data.length - 1]?.id || '';
+			}
+			
 			console.log('data', data);
 		} catch (error) {
 			console.error('Error getting versions:', error);
@@ -148,6 +155,7 @@
 	};
 
 	onMount(async () => {
+		// First get the live version ID, then get all versions
 		await getLiveVersionId();
 		await getVersions();
 		// Add global keyboard event listener

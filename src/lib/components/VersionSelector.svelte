@@ -27,6 +27,7 @@
 <div class="flex items-center gap-2">
 	<span class="text-sm">Version</span>
 	<Select.Root
+		selected={{ value: currentVersionId, label: selectedVersionDisplay }}
 		onSelectedChange={(selected) => {
 			if (selected) {
 				onVersionChange(selected.value);
