@@ -56,7 +56,7 @@
 				newBlock = { type: 'text', content: '' };
 				break;
 			case 'list':
-				newBlock = { type: 'list', items: [''] };
+				newBlock = { type: 'list', items: [{ title: '', text: '' }] };
 				break;
 			case 'heading':
 				newBlock = { type: 'heading', hierarchy: 1, content: '' };

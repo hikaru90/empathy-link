@@ -9,12 +9,13 @@
 	import { t } from '$lib/translations';
 	import LogOut from 'lucide-svelte/icons/log-out';
 	import SparklePill from '$lib/components/SparklePill.svelte';
-
+	import { cn } from '$lib/utils';
 	interface Props {
 		absolute?: boolean;
+		class?: string;
 	}
 
-	let { absolute = false }: Props = $props();
+	let { absolute = false, class: className }: Props = $props();
 
 	const notifications = [
 		{
@@ -28,7 +29,7 @@
 	let userMenuIsOpen = $state(false);
 </script>
 
-<nav class="{absolute ? 'absolute' : 'fixed'} left-0 top-0 flex w-full items-center justify-between p-4">
+<nav class={cn(absolute ? 'absolute' : 'fixed', 'left-0 top-0 flex w-full items-center justify-between p-4', className)}>
 	<button
 		class="flex size-8 items-center justify-center rounded-full bg-black"
 		onclick={() => (userMenuIsOpen = true)}

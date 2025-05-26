@@ -115,7 +115,7 @@
 </script>
 
 <div class="pb-32 pt-6">
-	<Header />
+	<Header class="z-20" />
 	<div class="max-container py-10">
 		<div class="mb-6 flex items-center justify-center">
 			<!-- <a
@@ -182,6 +182,7 @@
 			{gotoPrevPage}
 			color={currentCategory().color}
 			step={currentPage}
+			class="z-20"
 		/>
 	</div>
 	<Footer />

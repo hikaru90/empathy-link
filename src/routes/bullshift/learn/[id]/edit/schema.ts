@@ -22,7 +22,10 @@ export interface TextBlock {
 
 export interface ListBlock {
   type: "list";
-  items: string[];
+  items: {
+    title: string;
+    text: string;
+  }[];
 }
 
 export interface HeadingBlock {
@@ -75,7 +78,10 @@ const textBlockSchema = z.object({
 
 const listBlockSchema = z.object({
   type: z.literal("list"),
-  items: z.array(z.string())
+  items: z.array(z.object({
+    title: z.string(),
+    text: z.string()
+  }))
 });
 
 const headingBlockSchema = z.object({

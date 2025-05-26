@@ -2,23 +2,43 @@
 	import { marked } from 'marked';
 
 	interface Props {
-		content: object;
-		currentCategory: object;
+		content: {
+			items: {
+				title: string;
+				text: string;
+			}[];
+		};
+		currentCategory: {
+			color: string;
+		};
 	}
 
 	let { content, currentCategory }: Props = $props();
 </script>
 
-{#each content.items as item, index}
-	<div class="mb-3 flex gap-2 rounded-xl bg-white/20 pl-2 py-3 pr-6">
-		<div
-			style="background-color: {currentCategory.color};"
-			class="flex mt-1 ml-1 size-4 flex-shrink-0 items-center justify-center rounded-full text-xs text-white"
-		>
-			{index + 1}
+<div class="flex flex-col gap-4 mb-6 relative">
+	{#each content.items as item, index}
+		<div class="flex flex-col gap-2 rounded-xl border border-white/20 shadow-lg shadow-black/5 p-3 relative z-10">
+			<div class="flex gap-3 items-center">
+				<div
+					style="background-color: {currentCategory.color};"
+					class="flex size-4 flex-shrink-0 items-center justify-center rounded-full text-2xs font-bold"
+				>
+					{index + 1}
+				</div>
+				{#if item.title}
+					<div class="text-[0.95em] font-bold leading-tight">
+						{@html marked(item.title, { breaks: true })}
+					</div>
+				{/if}
+			</div>
+			<div>
+				{#if item.text}
+					<div class="pl-7 pr-1">
+						{@html marked(item.text, { breaks: true })}
+					</div>
+				{/if}
+			</div>
 		</div>
-		<div>
-			{@html marked(item, { breaks: true })}
-		</div>
-	</div>
-{/each}
+	{/each}
+</div>

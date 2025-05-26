@@ -28,23 +28,39 @@
 
 	let isCollapsed = $state(true);
 
-	const updateListItem = (itemIndex: number, value: string) => {
+	const updateListItem = (itemIndex: number, field: 'title' | 'text', value: string) => {
 		if (block.type === 'list') {
 			const newItems = [...block.items];
-			newItems[itemIndex] = value;
+			newItems[itemIndex] = { ...newItems[itemIndex], [field]: value };
 			onUpdate('items', newItems);
 		}
 	};
 
 	const addListItem = () => {
 		if (block.type === 'list') {
-			onUpdate('items', [...block.items, '']);
+			onUpdate('items', [...block.items, { title: '', text: '' }]);
 		}
 	};
 
 	const removeListItem = (itemIndex: number) => {
 		if (block.type === 'list') {
 			onUpdate('items', block.items.filter((_, index) => index !== itemIndex));
+		}
+	};
+
+	const moveListItemUp = (itemIndex: number) => {
+		if (block.type === 'list' && itemIndex > 0) {
+			const newItems = [...block.items];
+			[newItems[itemIndex - 1], newItems[itemIndex]] = [newItems[itemIndex], newItems[itemIndex - 1]];
+			onUpdate('items', newItems);
+		}
+	};
+
+	const moveListItemDown = (itemIndex: number) => {
+		if (block.type === 'list' && itemIndex < block.items.length - 1) {
+			const newItems = [...block.items];
+			[newItems[itemIndex], newItems[itemIndex + 1]] = [newItems[itemIndex + 1], newItems[itemIndex]];
+			onUpdate('items', newItems);
 		}
 	};
 </script>
@@ -163,42 +179,99 @@
 				</div>
 			</div>
 		{:else if block.type === 'list'}
-			<div>
-				<div class="block text-sm font-medium mb-2">List Items</div>
-				{#each block.items as item, itemIndex}
-					<div class="flex items-center gap-2 mb-2">
-						<label for="list-item-{pageIndex}-{blockIndex}-{itemIndex}" class="sr-only">List item {itemIndex + 1}</label>
-						<Input 
-							id="list-item-{pageIndex}-{blockIndex}-{itemIndex}"
-							value={block.items[itemIndex]} 
-							oninput={(e: Event) => {
-								const target = e.target as HTMLInputElement;
-								updateListItem(itemIndex, target.value);
-							}}
-							placeholder="List item..." 
-						/>
-						<button
-							type="button"
-							onclick={() => removeListItem(itemIndex)}
-							class="rounded bg-red-200 px-2 py-1 text-xs text-red-700 hover:bg-red-300"
-						>
-							Remove
-						</button>
-					</div>
-				{/each}
-				<button
-					type="button"
-					onclick={addListItem}
-					class="rounded bg-blue-200 px-2 py-1 text-xs text-blue-700 hover:bg-blue-300"
-				>
-					Add Item
-				</button>
-				<div class="mt-2 border rounded p-2 bg-white">
-					<ul class="list-disc list-inside">
-						{#each block.items as item}
-							{@html marked(item, { breaks: true })}
+			<div class="grid grid-cols-2 gap-4">
+				<div>
+					<div class="block text-sm font-medium mb-2">List Items</div>
+					{#each block.items as item, itemIndex}
+						<div class="space-y-2 mb-4 p-3 border rounded bg-gray-50">
+							<div class="flex items-center justify-between">
+								<span class="text-sm font-medium text-gray-700">Item {itemIndex + 1}</span>
+								<div class="flex items-center gap-1">
+									<button
+										type="button"
+										onclick={() => moveListItemUp(itemIndex)}
+										disabled={itemIndex === 0}
+										class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300 disabled:opacity-50"
+									>
+										↑
+									</button>
+									<button
+										type="button"
+										onclick={() => moveListItemDown(itemIndex)}
+										disabled={itemIndex === block.items.length - 1}
+										class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300 disabled:opacity-50"
+									>
+										↓
+									</button>
+									<button
+										type="button"
+										onclick={() => removeListItem(itemIndex)}
+										class="rounded bg-red-200 px-2 py-1 text-xs text-red-700 hover:bg-red-300"
+									>
+										✕
+									</button>
+								</div>
+							</div>
+							<div>
+								<label for="list-item-title-{pageIndex}-{blockIndex}-{itemIndex}" class="block text-sm font-medium mb-1">Title</label>
+								<Input 
+									id="list-item-title-{pageIndex}-{blockIndex}-{itemIndex}"
+									value={item.title} 
+									oninput={(e: Event) => {
+										const target = e.target as HTMLInputElement;
+										updateListItem(itemIndex, 'title', target.value);
+									}}
+									placeholder="List item title..." 
+								/>
+							</div>
+							<div>
+								<label for="list-item-text-{pageIndex}-{blockIndex}-{itemIndex}" class="block text-sm font-medium mb-1">Text</label>
+								<Textarea rows={6} 
+									id="list-item-text-{pageIndex}-{blockIndex}-{itemIndex}"
+									value={item.text} 
+									oninput={(e: Event) => {
+										const target = e.target as HTMLInputElement;
+										updateListItem(itemIndex, 'text', target.value);
+									}}
+									placeholder="List item text..." 
+								/>
+							</div>
+						</div>
+					{/each}
+					<button
+						type="button"
+						onclick={addListItem}
+						class="rounded bg-blue-200 px-2 py-1 text-xs text-blue-700 hover:bg-blue-300"
+					>
+						Add Item
+					</button>
+				</div>
+				<div>
+					<div class="block text-sm font-medium mb-2">Preview</div>
+					<div class="border rounded p-2 bg-white min-h-[100px] space-y-3">
+						{#each block.items as item, itemIndex}
+							<div class="p-2 border rounded bg-gray-50">
+								<div class="flex items-center gap-2 mb-1">
+									<span class="text-xs text-gray-500">#{itemIndex + 1}</span>
+									{#if item.title}
+										<div class="font-medium text-sm">
+											{@html marked(item.title, { breaks: true })}
+										</div>
+									{/if}
+								</div>
+								{#if item.text}
+									<div class="text-sm text-gray-700 ml-6">
+										{@html marked(item.text, { breaks: true })}
+									</div>
+								{/if}
+							</div>
 						{/each}
-					</ul>
+						{#if block.items.length === 0}
+							<div class="text-gray-500 text-sm text-center py-4">
+								No list items yet
+							</div>
+						{/if}
+					</div>
 				</div>
 			</div>
 		{:else if block.type === 'task'}
