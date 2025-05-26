@@ -10,7 +10,8 @@
 		{ type: 'task' as const, label: 'Task', color: 'green' },
 		{ type: 'timer' as const, label: 'Timer', color: 'orange' },
 		{ type: 'bodymap' as const, label: 'Bodymap', color: 'pink' },
-		{ type: 'taskCompletion' as const, label: 'Task Completion', color: 'teal' }
+		{ type: 'taskCompletion' as const, label: 'Task Completion', color: 'teal' },
+		{ type: 'sortable' as const, label: 'Sortable', color: 'indigo' }
 	];
 </script>
 

@@ -14,6 +14,7 @@
 	import LearnTask from '$lib/components/bullshift/Learn/LearnTask.svelte';
 	import LearnCompletionNotes from '$lib/components/bullshift/Learn/LearnCompletionNotes.svelte';
 	import LearnBodyMap from '$lib/components/LearnBodyMap.svelte';
+	import LearnSortableWithFeedback from '$lib/components/bullshift/Learn/LearnSortableWithFeedback.svelte';
 	import { learningSession } from '$lib/stores/learningSession';
 	import type { LearningSession } from '$routes/bullshift/learn/[id]/edit/schema';
 	import { pb } from '$scripts/pocketbase';
@@ -173,6 +174,17 @@
 						/>
 					{:else if content.type === 'list'}
 						<LearnList {content} currentCategory={currentCategory()} />
+					{:else if content.type === 'sortable'}
+						<LearnSortableWithFeedback 
+							{content} 
+							color={currentCategory().color}
+							currentCategory={currentCategory()}
+							{pageIndex}
+							{blockIndex}
+							session={currentSession}
+							topicVersionId={topic().id}
+							onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'sortable', response, topic().id, content)}
+						/>
 					{/if}
 				{/each}
 			{/if}

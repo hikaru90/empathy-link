@@ -63,6 +63,43 @@
 			onUpdate('items', newItems);
 		}
 	};
+
+	// Sortable block functions
+	const updateSortableItem = (itemIndex: number, field: 'text' | 'correctBucket', value: string) => {
+		if (block.type === 'sortable') {
+			const newItems = [...block.items];
+			newItems[itemIndex] = { ...newItems[itemIndex], [field]: value };
+			onUpdate('items', newItems);
+		}
+	};
+
+	const addSortableItem = () => {
+		if (block.type === 'sortable') {
+			onUpdate('items', [...block.items, { text: '', correctBucket: 'A' }]);
+		}
+	};
+
+	const removeSortableItem = (itemIndex: number) => {
+		if (block.type === 'sortable') {
+			onUpdate('items', block.items.filter((_, index) => index !== itemIndex));
+		}
+	};
+
+	const moveSortableItemUp = (itemIndex: number) => {
+		if (block.type === 'sortable' && itemIndex > 0) {
+			const newItems = [...block.items];
+			[newItems[itemIndex - 1], newItems[itemIndex]] = [newItems[itemIndex], newItems[itemIndex - 1]];
+			onUpdate('items', newItems);
+		}
+	};
+
+	const moveSortableItemDown = (itemIndex: number) => {
+		if (block.type === 'sortable' && itemIndex < block.items.length - 1) {
+			const newItems = [...block.items];
+			[newItems[itemIndex], newItems[itemIndex + 1]] = [newItems[itemIndex + 1], newItems[itemIndex]];
+			onUpdate('items', newItems);
+		}
+	};
 </script>
 
 <div 
@@ -377,6 +414,141 @@
 				</div>
 				<div class="border rounded p-2 bg-white">
 					<div class="text-sm text-gray-600">Preview: Task completion component with checkbox and {block.allowNotes !== false ? 'notes field' : 'no notes field'}</div>
+				</div>
+			</div>
+		{:else if block.type === 'sortable'}
+			<div class="space-y-4">
+				<!-- Bucket Names -->
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label for="sortable-bucketA-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Bucket A Name</label>
+						<Input 
+							id="sortable-bucketA-{pageIndex}-{blockIndex}"
+							value={block.bucketA} 
+							oninput={(e: Event) => {
+								const target = e.target as HTMLInputElement;
+								onUpdate('bucketA', target.value);
+							}}
+							placeholder="First bucket name..." 
+						/>
+					</div>
+					<div>
+						<label for="sortable-bucketB-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Bucket B Name</label>
+						<Input 
+							id="sortable-bucketB-{pageIndex}-{blockIndex}"
+							value={block.bucketB} 
+							oninput={(e: Event) => {
+								const target = e.target as HTMLInputElement;
+								onUpdate('bucketB', target.value);
+							}}
+							placeholder="Second bucket name..." 
+						/>
+					</div>
+				</div>
+
+				<!-- Items Editor -->
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<div class="block text-sm font-medium mb-2">Sortable Items</div>
+						{#each block.items as item, itemIndex}
+							<div class="space-y-2 mb-4 p-3 border rounded bg-gray-50">
+								<div class="flex items-center justify-between">
+									<span class="text-sm font-medium text-gray-700">Item {itemIndex + 1}</span>
+									<div class="flex items-center gap-1">
+										<button
+											type="button"
+											onclick={() => moveSortableItemUp(itemIndex)}
+											disabled={itemIndex === 0}
+											class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300 disabled:opacity-50"
+										>
+											↑
+										</button>
+										<button
+											type="button"
+											onclick={() => moveSortableItemDown(itemIndex)}
+											disabled={itemIndex === block.items.length - 1}
+											class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300 disabled:opacity-50"
+										>
+											↓
+										</button>
+										<button
+											type="button"
+											onclick={() => removeSortableItem(itemIndex)}
+											class="rounded bg-red-200 px-2 py-1 text-xs text-red-700 hover:bg-red-300"
+										>
+											✕
+										</button>
+									</div>
+								</div>
+								<div>
+									<label for="sortable-item-text-{pageIndex}-{blockIndex}-{itemIndex}" class="block text-sm font-medium mb-1">Text</label>
+									<Input 
+										id="sortable-item-text-{pageIndex}-{blockIndex}-{itemIndex}"
+										value={item.text} 
+										oninput={(e: Event) => {
+											const target = e.target as HTMLInputElement;
+											updateSortableItem(itemIndex, 'text', target.value);
+										}}
+										placeholder="Item text..." 
+									/>
+								</div>
+								<div>
+									<label for="sortable-item-bucket-{pageIndex}-{blockIndex}-{itemIndex}" class="block text-sm font-medium mb-1">Correct Bucket</label>
+									<select 
+										id="sortable-item-bucket-{pageIndex}-{blockIndex}-{itemIndex}"
+										value={item.correctBucket} 
+										onchange={(e: Event) => {
+											const target = e.target as HTMLSelectElement;
+											updateSortableItem(itemIndex, 'correctBucket', target.value);
+										}}
+										class="border rounded px-2 py-1 w-full"
+									>
+										<option value="A">{block.bucketA}</option>
+										<option value="B">{block.bucketB}</option>
+									</select>
+								</div>
+							</div>
+						{/each}
+						<button
+							type="button"
+							onclick={addSortableItem}
+							class="rounded bg-blue-200 px-2 py-1 text-xs text-blue-700 hover:bg-blue-300"
+						>
+							Add Item
+						</button>
+					</div>
+					<div>
+						<div class="block text-sm font-medium mb-2">Preview</div>
+						<div class="border rounded p-2 bg-white min-h-[200px]">
+							<div class="text-center mb-4">
+								<h4 class="font-medium">Sort these items into the correct buckets:</h4>
+							</div>
+							<div class="grid grid-cols-2 gap-4 mb-4">
+								<div class="border-2 border-dashed border-gray-300 rounded p-2 min-h-[80px]">
+									<div class="text-sm font-medium text-center text-gray-600">{block.bucketA}</div>
+								</div>
+								<div class="border-2 border-dashed border-gray-300 rounded p-2 min-h-[80px]">
+									<div class="text-sm font-medium text-center text-gray-600">{block.bucketB}</div>
+								</div>
+							</div>
+							<div class="space-y-2">
+								<div class="text-xs text-gray-500 mb-2">Items to sort:</div>
+								{#each block.items as item, itemIndex}
+									{#if item.text}
+										<div class="bg-blue-100 border border-blue-300 rounded px-2 py-1 text-sm cursor-move">
+											{item.text}
+											<span class="text-xs text-gray-500 ml-2">(→ {item.correctBucket === 'A' ? block.bucketA : block.bucketB})</span>
+										</div>
+									{/if}
+								{/each}
+								{#if block.items.filter(item => item.text).length === 0}
+									<div class="text-gray-500 text-sm text-center py-4">
+										No items to sort yet
+									</div>
+								{/if}
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		{/if}

@@ -13,7 +13,8 @@ export type ContentBlock =
   | TaskBlock
   | TimerBlock
   | BodymapBlock
-  | TaskCompletionBlock;
+  | TaskCompletionBlock
+  | SortableBlock;
 
 export interface TextBlock {
   type: "text";
@@ -54,6 +55,16 @@ export interface TaskCompletionBlock {
   taskId?: string; // Optional reference to link with specific task
   allowNotes?: boolean; // Whether to show notes field
   notesPlaceholder?: string; // Custom placeholder for notes
+}
+
+export interface SortableBlock {
+  type: "sortable";
+  bucketA: string; // Name of first bucket
+  bucketB: string; // Name of second bucket
+  items: {
+    text: string;
+    correctBucket: "A" | "B"; // Which bucket this item belongs to
+  }[];
 }
 
 export interface TopicVersion {
@@ -112,6 +123,16 @@ const taskCompletionBlockSchema = z.object({
   notesPlaceholder: z.string().optional()
 });
 
+const sortableBlockSchema = z.object({
+  type: z.literal("sortable"),
+  bucketA: z.string(),
+  bucketB: z.string(),
+  items: z.array(z.object({
+    text: z.string(),
+    correctBucket: z.enum(["A", "B"])
+  }))
+});
+
 const contentBlockSchema = z.discriminatedUnion("type", [
   textBlockSchema,
   listBlockSchema,
@@ -119,7 +140,8 @@ const contentBlockSchema = z.discriminatedUnion("type", [
   taskBlockSchema,
   timerBlockSchema,
   bodymapBlockSchema,
-  taskCompletionBlockSchema
+  taskCompletionBlockSchema,
+  sortableBlockSchema
 ]);
 
 const contentSchema = z.object({
@@ -188,6 +210,14 @@ export interface TaskCompletionResponse extends SessionResponse {
     completed: boolean;
     notes?: string;
     timeSpent?: number; // in seconds
+  };
+}
+
+export interface SortableResponse extends SessionResponse {
+  blockType: 'sortable';
+  response: {
+    userSorting: { [itemText: string]: "A" | "B" | null };
+    completed: boolean;
   };
 }
 

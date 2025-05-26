@@ -73,6 +73,14 @@
 			case 'taskCompletion':
 				newBlock = { type: 'taskCompletion', allowNotes: true };
 				break;
+			case 'sortable':
+				newBlock = { 
+					type: 'sortable', 
+					bucketA: 'Bucket A', 
+					bucketB: 'Bucket B', 
+					items: [{ text: '', correctBucket: 'A' }] 
+				};
+				break;
 			default:
 				return;
 		}

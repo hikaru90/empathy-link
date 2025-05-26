@@ -13,6 +13,7 @@
 	import LearnTask from '$lib/components/bullshift/Learn/LearnTask.svelte';
 	import LearnBodyMap from '$lib/components/LearnBodyMap.svelte';
 	import LearnCompletionNotes from '$lib/components/bullshift/Learn/LearnCompletionNotes.svelte';
+	import LearnSortableWithFeedback from '$lib/components/bullshift/Learn/LearnSortableWithFeedback.svelte';
 	import LearnEditor from '$lib/components/LearnEditor.svelte';
 	import * as Resizable from '$lib/components/ui/resizable';
 	import { blur } from 'svelte/transition';
@@ -251,6 +252,13 @@
 											/>
 										{:else if content.type === 'list'}
 											<LearnList {content} currentCategory={currentCategory()} />
+										{:else if content.type === 'sortable'}
+											<LearnSortableWithFeedback 
+												{content} 
+												currentCategory={currentCategory()}
+												color={currentCategory().color}
+												onResponse={() => {}}
+											/>
 										{/if}
 									{/each}
 								{/if}
