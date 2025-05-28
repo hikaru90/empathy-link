@@ -15,6 +15,9 @@
 	import LearnCompletionNotes from '$lib/components/bullshift/Learn/LearnCompletionNotes.svelte';
 	import LearnBodyMap from '$lib/components/LearnBodyMap.svelte';
 	import LearnSortableWithFeedback from '$lib/components/bullshift/Learn/LearnSortableWithFeedback.svelte';
+	import LearnMultipleChoice from '$lib/components/bullshift/Learn/LearnMultipleChoice.svelte';
+	import LearningSummary from '$lib/components/bullshift/Learn/LearningSummary.svelte';
+	import LearnCompletion from '$lib/components/bullshift/Learn/LearnCompletion.svelte';
 	import { learningSession } from '$lib/stores/learningSession';
 	import type { LearningSession } from '$routes/bullshift/learn/[id]/edit/schema';
 	import { pb } from '$scripts/pocketbase';
@@ -51,15 +54,23 @@
 		window.history.back();
 	};
 	const gotoNextPage = async () => {
-		if (currentPage < topic().content.length - 1) {
+		// Allow navigating beyond content pages to summary and completion
+		if (currentPage < topic().content.length + 1) { // +1 for completion page after summary
 			currentPage++;
-			if (currentSession) {
+			
+			if (currentSession && currentPage < topic().content.length) {
+				// Only update current page in session if still within content pages
 				await learningSession.updateCurrentPage(currentSession.id, currentPage);
 			}
-		} else {
-			// Complete session when reaching the end
-			if (currentSession) {
+			if (currentPage === topic().content.length && currentSession) {
+				// Complete session when reaching the summary page
+				console.log(`Completing learning session for topic: ${currentSession.topic}`);
 				await learningSession.complete(currentSession.id);
+			}
+			if (currentPage === topic().content.length + 1 && currentSession) {
+				// Mark as done when reaching the final completion page
+				console.log(`Marking learning session as done for topic: ${currentSession.topic}`);
+				await learningSession.markAsDone(currentSession.id);
 			}
 		}
 		updateQueryParams();
@@ -67,7 +78,8 @@
 	const gotoPrevPage = async () => {
 		if (currentPage > 0) {
 			currentPage--;
-			if (currentSession) {
+			if (currentSession && currentPage < topic().content.length) {
+				// Only update current page in session if moving within content pages
 				await learningSession.updateCurrentPage(currentSession.id, currentPage);
 			}
 		}
@@ -79,11 +91,12 @@
 		// Uses server-provided user data (no client-side auth checks)
 		if (data.user?.id && data.record?.id && data.record?.expand?.currentVersion?.id) {
 			const userId = data.user.id;
-			const topicId = data.record.expand.currentVersion.id;
+			const mainTopicId = data.record.id; // This is the main topic ID stored in session.topic
+			const topicVersionId = data.record.expand.currentVersion.id; // This is the version ID stored in session.topicVersion
 
-			// Check for existing incomplete session
+			// Check for existing incomplete session - use the MAIN topic ID, not the version ID
 			const existingSessions = await pb.collection('learnSessions').getList(1, 1, {
-				filter: `user = "${userId}" && topic = "${topicId}" && completed = false`,
+				filter: `user = "${userId}" && topic = "${mainTopicId}" && done = false`,
 				sort: '-created'
 			});
 
@@ -100,8 +113,8 @@
 				// Create new session
 				const session = await learningSession.init(
 					userId,  // ← From server data
-					data.record.id,
-					topicId
+					mainTopicId, // ← Main topic ID (what gets stored in session.topic)
+					topicVersionId // ← Version ID (what gets stored in session.topicVersion)
 				);
 				currentSession = session;
 				
@@ -131,69 +144,113 @@
 		{#if currentPage === 0}
 			<LearnTitleCard currentCategory={currentCategory()} topic={topic()} />
 		{/if}
-		{#each topic().content as page, pageIndex}
-			{#if currentPage === pageIndex}
-				{#each page.content as content, blockIndex}
-					{#if content.type === 'text'}
-						<LearnText {content} />
-					{:else if content.type === 'task'}
-						<LearnTask 
-							color={currentCategory().color} 
-							{content} 
-						/>
-					{:else if content.type === 'heading'}
-						<LearnHeading {content} />
-					{:else if content.type === 'timer'}
-						<LearnTimer 
-							duration={content.duration} 
-							color={currentCategory().color}
-							{pageIndex}
-							{blockIndex}
-							session={currentSession}
-							onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'timer', response, topic().id, content)}
-						/>
-					{:else if content.type === 'bodymap'}
-						<LearnBodyMap 
-							{content} 
-							color={currentCategory().color}
-							{pageIndex}
-							{blockIndex}
-							session={currentSession}
-							contentBlock={content}
-							topicVersionId={topic().id}
-							onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'bodymap', response, topic().id, content)}
-						/>
-					{:else if content.type === 'taskCompletion'}
-						<LearnCompletionNotes 
-							{content} 
-							color={currentCategory().color}
-							{pageIndex}
-							{blockIndex}
-							session={currentSession}
-							onResponse={(response) => currentSession && learningSession.saveResponse(currentSession.id, pageIndex, blockIndex, 'taskCompletion', response, topic().id, content)}
-						/>
-					{:else if content.type === 'list'}
-						<LearnList {content} currentCategory={currentCategory()} />
-					{:else if content.type === 'sortable'}
-						<LearnSortableWithFeedback 
-							{content} 
-							color={currentCategory().color}
-							currentCategory={currentCategory()}
-							{pageIndex}
-							{blockIndex}
-							session={currentSession}
-							topicVersionId={topic().id}
-							onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'sortable', response, topic().id, content)}
-						/>
-					{/if}
-				{/each}
-			{/if}
-		{/each}
+
+		<!-- Show completion page if we're past the summary page -->
+		{#if currentPage > topic().content.length}
+			<LearnCompletion 
+				topic={topic()}
+				color={currentCategory().color}
+				onReturnToOverview={() => {
+					window.location.href = '/bullshift/learn';
+				}}
+			/>
+		<!-- Show summary if we're at the summary page -->
+		{:else if currentPage === topic().content.length}
+			<LearningSummary 
+				session={currentSession}
+				topic={topic()}
+				color={currentCategory().color}
+				onFeedbackSubmit={async (feedback) => {
+					if (currentSession) {
+						try {
+							await learningSession.saveFeedback(currentSession.id, feedback);
+							console.log('Feedback saved successfully');
+							// You could show a toast notification here
+						} catch (error) {
+							console.error('Failed to save feedback:', error);
+							// You could show an error notification here
+						}
+					}
+				}}
+			/>
+		{:else}
+			<!-- Show regular content -->
+			{#each topic().content as page, pageIndex}
+				{#if currentPage === pageIndex}
+					{#each page.content as content, blockIndex}
+						{#if content.type === 'text'}
+							<LearnText {content} />
+						{:else if content.type === 'task'}
+							<LearnTask 
+								color={currentCategory().color} 
+								{content} 
+							/>
+						{:else if content.type === 'heading'}
+							<LearnHeading {content} />
+						{:else if content.type === 'timer'}
+							<LearnTimer 
+								duration={content.duration} 
+								color={currentCategory().color}
+								{pageIndex}
+								{blockIndex}
+								session={currentSession}
+								onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'timer', response, topic().id, content)}
+							/>
+						{:else if content.type === 'bodymap'}
+							<LearnBodyMap 
+								{content} 
+								color={currentCategory().color}
+								{pageIndex}
+								{blockIndex}
+								session={currentSession}
+								contentBlock={content}
+								topicVersionId={topic().id}
+								onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'bodymap', response, topic().id, content)}
+							/>
+						{:else if content.type === 'taskCompletion'}
+							<LearnCompletionNotes 
+								{content} 
+								color={currentCategory().color}
+								{pageIndex}
+								{blockIndex}
+								session={currentSession}
+								onResponse={(response) => currentSession && learningSession.saveResponse(currentSession.id, pageIndex, blockIndex, 'taskCompletion', response, topic().id, content)}
+							/>
+						{:else if content.type === 'list'}
+							<LearnList {content} currentCategory={currentCategory()} />
+						{:else if content.type === 'sortable'}
+							<LearnSortableWithFeedback 
+								{content} 
+								color={currentCategory().color}
+								currentCategory={currentCategory()}
+								{pageIndex}
+								{blockIndex}
+								session={currentSession}
+								topicVersionId={topic().id}
+								onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'sortable', response, topic().id, content)}
+							/>
+						{:else if content.type === 'multipleChoice'}
+							<LearnMultipleChoice 
+								{content} 
+								color={currentCategory().color}
+								{pageIndex}
+								{blockIndex}
+								session={currentSession}
+								contentBlock={content}
+								topicVersionId={topic().id}
+								onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'multipleChoice', response, topic().id, content)}
+							/>
+						{/if}
+					{/each}
+				{/if}
+			{/each}
+		{/if}
 		<LearnStepper
 			{gotoNextPage}
 			{gotoPrevPage}
 			color={currentCategory().color}
 			step={currentPage}
+			totalSteps={topic().content.length + 2}
 			class="z-20"
 		/>
 	</div>

@@ -3,6 +3,8 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { marked } from 'marked';
 	import type { ContentBlock } from '$routes/bullshift/learn/[id]/edit/schema';
+	import Plus from 'lucide-svelte/icons/plus';
+	import Trash from 'lucide-svelte/icons/trash';
 
 	const { 
 		block, 
@@ -98,6 +100,65 @@
 			const newItems = [...block.items];
 			[newItems[itemIndex], newItems[itemIndex + 1]] = [newItems[itemIndex + 1], newItems[itemIndex]];
 			onUpdate('items', newItems);
+		}
+	};
+
+	// Multiple choice block functions
+	const updateMultipleChoiceQuestion = (questionIndex: number, field: 'question' | 'explanation', value: string) => {
+		if (block.type === 'multipleChoice') {
+			const newQuestions = [...block.questions];
+			newQuestions[questionIndex] = { ...newQuestions[questionIndex], [field]: value };
+			onUpdate('questions', newQuestions);
+		}
+	};
+
+	const updateMultipleChoiceOption = (questionIndex: number, optionIndex: number, field: 'text' | 'isCorrect', value: string | boolean) => {
+		if (block.type === 'multipleChoice') {
+			const newQuestions = [...block.questions];
+			const newOptions = [...newQuestions[questionIndex].options];
+			newOptions[optionIndex] = { ...newOptions[optionIndex], [field]: value };
+			newQuestions[questionIndex] = { ...newQuestions[questionIndex], options: newOptions };
+			onUpdate('questions', newQuestions);
+		}
+	};
+
+	const addMultipleChoiceQuestion = () => {
+		if (block.type === 'multipleChoice') {
+			const newQuestion = {
+				question: '',
+				options: [
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false }
+				],
+				explanation: ''
+			};
+			onUpdate('questions', [...block.questions, newQuestion]);
+		}
+	};
+
+	const removeMultipleChoiceQuestion = (questionIndex: number) => {
+		if (block.type === 'multipleChoice') {
+			onUpdate('questions', block.questions.filter((_, index) => index !== questionIndex));
+		}
+	};
+
+	const addMultipleChoiceOption = (questionIndex: number) => {
+		if (block.type === 'multipleChoice') {
+			const newQuestions = [...block.questions];
+			const newOptions = [...newQuestions[questionIndex].options, { text: '', isCorrect: false }];
+			newQuestions[questionIndex] = { ...newQuestions[questionIndex], options: newOptions };
+			onUpdate('questions', newQuestions);
+		}
+	};
+
+	const removeMultipleChoiceOption = (questionIndex: number, optionIndex: number) => {
+		if (block.type === 'multipleChoice') {
+			const newQuestions = [...block.questions];
+			const newOptions = newQuestions[questionIndex].options.filter((_, index) => index !== optionIndex);
+			newQuestions[questionIndex] = { ...newQuestions[questionIndex], options: newOptions };
+			onUpdate('questions', newQuestions);
 		}
 	};
 </script>
@@ -418,137 +479,212 @@
 			</div>
 		{:else if block.type === 'sortable'}
 			<div class="space-y-4">
-				<!-- Bucket Names -->
-				<div class="grid grid-cols-2 gap-4">
-					<div>
-						<label for="sortable-bucketA-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Bucket A Name</label>
-						<Input 
-							id="sortable-bucketA-{pageIndex}-{blockIndex}"
-							value={block.bucketA} 
-							oninput={(e: Event) => {
-								const target = e.target as HTMLInputElement;
-								onUpdate('bucketA', target.value);
-							}}
-							placeholder="First bucket name..." 
-						/>
-					</div>
-					<div>
-						<label for="sortable-bucketB-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Bucket B Name</label>
-						<Input 
-							id="sortable-bucketB-{pageIndex}-{blockIndex}"
-							value={block.bucketB} 
-							oninput={(e: Event) => {
-								const target = e.target as HTMLInputElement;
-								onUpdate('bucketB', target.value);
-							}}
-							placeholder="Second bucket name..." 
-						/>
-					</div>
+				<div>
+					<label for="sortable-bucketA-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Bucket A Name</label>
+					<Input 
+						id="sortable-bucketA-{pageIndex}-{blockIndex}"
+						value={block.bucketA} 
+						oninput={(e: Event) => {
+							const target = e.target as HTMLInputElement;
+							onUpdate('bucketA', target.value);
+						}}
+						placeholder="Enter name for bucket A..." 
+					/>
 				</div>
+				<div>
+					<label for="sortable-bucketB-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Bucket B Name</label>
+					<Input 
+						id="sortable-bucketB-{pageIndex}-{blockIndex}"
+						value={block.bucketB} 
+						oninput={(e: Event) => {
+							const target = e.target as HTMLInputElement;
+							onUpdate('bucketB', target.value);
+						}}
+						placeholder="Enter name for bucket B..." 
+					/>
+				</div>
+				
+				<div class="space-y-2">
+					<label class="block text-sm font-medium mb-1">Items to Sort</label>
+					{#each block.items as item, itemIndex}
+						<div class="flex items-start gap-2 p-2 border rounded">
+							<div class="flex-1">
+								<Textarea 
+									value={item.text} 
+									oninput={(e: Event) => {
+										const target = e.target as HTMLTextAreaElement;
+										updateSortableItem(itemIndex, 'text', target.value);
+									}}
+									placeholder="Item text..." 
+									class="h-16"
+								/>
+							</div>
+							<div class="flex flex-col gap-2 pt-2">
+								<div class="text-xs text-gray-600">Correct bucket:</div>
+								<select
+									value={item.correctBucket}
+									onchange={(e: Event) => {
+										const target = e.target as HTMLSelectElement;
+										updateSortableItem(itemIndex, 'correctBucket', target.value as 'A' | 'B');
+									}}
+									class="text-xs border rounded px-1 py-1"
+								>
+									<option value="A">{block.bucketA}</option>
+									<option value="B">{block.bucketB}</option>
+								</select>
+								<button
+									type="button"
+									onclick={() => removeSortableItem(itemIndex)}
+									class="text-red-500 hover:text-red-700 text-xs"
+								>
+									Remove
+								</button>
+							</div>
+						</div>
+					{/each}
+					
+					<button
+						type="button"
+						onclick={addSortableItem}
+						class="text-sm text-gray-600 hover:text-gray-800"
+					>
+						+ Add Item
+					</button>
+				</div>
+				
+				<div class="border rounded p-2 bg-white">
+					<div class="text-sm text-gray-600">Preview: Sortable with {block.items.length} items between "{block.bucketA}" and "{block.bucketB}"</div>
+				</div>
+			</div>
+		{:else if block.type === 'multipleChoice'}
+			<div class="space-y-6">
+				{#each block.questions as question, questionIndex}
+					<div class="border border-gray-300 rounded-lg p-4 bg-gray-50">
+						<div class="flex items-center justify-between mb-4">
+							<h4 class="font-medium">Question {questionIndex + 1}</h4>
+							{#if block.questions.length > 1}
+								<button
+									type="button"
+									onclick={() => removeMultipleChoiceQuestion(questionIndex)}
+									class="p-1 text-red-500 hover:text-red-700"
+								>
+									<Trash class="size-4" />
+								</button>
+							{/if}
+						</div>
 
-				<!-- Items Editor -->
-				<div class="grid grid-cols-2 gap-4">
-					<div>
-						<div class="block text-sm font-medium mb-2">Sortable Items</div>
-						{#each block.items as item, itemIndex}
-							<div class="space-y-2 mb-4 p-3 border rounded bg-gray-50">
-								<div class="flex items-center justify-between">
-									<span class="text-sm font-medium text-gray-700">Item {itemIndex + 1}</span>
-									<div class="flex items-center gap-1">
-										<button
-											type="button"
-											onclick={() => moveSortableItemUp(itemIndex)}
-											disabled={itemIndex === 0}
-											class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300 disabled:opacity-50"
-										>
-											↑
-										</button>
-										<button
-											type="button"
-											onclick={() => moveSortableItemDown(itemIndex)}
-											disabled={itemIndex === block.items.length - 1}
-											class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300 disabled:opacity-50"
-										>
-											↓
-										</button>
-										<button
-											type="button"
-											onclick={() => removeSortableItem(itemIndex)}
-											class="rounded bg-red-200 px-2 py-1 text-xs text-red-700 hover:bg-red-300"
-										>
-											✕
-										</button>
-									</div>
-								</div>
-								<div>
-									<label for="sortable-item-text-{pageIndex}-{blockIndex}-{itemIndex}" class="block text-sm font-medium mb-1">Text</label>
-									<Input 
-										id="sortable-item-text-{pageIndex}-{blockIndex}-{itemIndex}"
-										value={item.text} 
-										oninput={(e: Event) => {
-											const target = e.target as HTMLInputElement;
-											updateSortableItem(itemIndex, 'text', target.value);
-										}}
-										placeholder="Item text..." 
-									/>
-								</div>
-								<div>
-									<label for="sortable-item-bucket-{pageIndex}-{blockIndex}-{itemIndex}" class="block text-sm font-medium mb-1">Correct Bucket</label>
-									<select 
-										id="sortable-item-bucket-{pageIndex}-{blockIndex}-{itemIndex}"
-										value={item.correctBucket} 
-										onchange={(e: Event) => {
-											const target = e.target as HTMLSelectElement;
-											updateSortableItem(itemIndex, 'correctBucket', target.value);
-										}}
-										class="border rounded px-2 py-1 w-full"
-									>
-										<option value="A">{block.bucketA}</option>
-										<option value="B">{block.bucketB}</option>
-									</select>
-								</div>
+						<div class="space-y-4">
+							<div>
+								<label for="multiple-choice-question-{pageIndex}-{blockIndex}-{questionIndex}" class="block text-sm font-medium mb-1">Question</label>
+								<Textarea 
+									id="multiple-choice-question-{pageIndex}-{blockIndex}-{questionIndex}"
+									value={question.question} 
+									oninput={(e: Event) => {
+										const target = e.target as HTMLTextAreaElement;
+										updateMultipleChoiceQuestion(questionIndex, 'question', target.value);
+									}}
+									placeholder="Enter your question..." 
+									class="h-20"
+								/>
 							</div>
-						{/each}
-						<button
-							type="button"
-							onclick={addSortableItem}
-							class="rounded bg-blue-200 px-2 py-1 text-xs text-blue-700 hover:bg-blue-300"
-						>
-							Add Item
-						</button>
-					</div>
-					<div>
-						<div class="block text-sm font-medium mb-2">Preview</div>
-						<div class="border rounded p-2 bg-white min-h-[200px]">
-							<div class="text-center mb-4">
-								<h4 class="font-medium">Sort these items into the correct buckets:</h4>
-							</div>
-							<div class="grid grid-cols-2 gap-4 mb-4">
-								<div class="border-2 border-dashed border-gray-300 rounded p-2 min-h-[80px]">
-									<div class="text-sm font-medium text-center text-gray-600">{block.bucketA}</div>
-								</div>
-								<div class="border-2 border-dashed border-gray-300 rounded p-2 min-h-[80px]">
-									<div class="text-sm font-medium text-center text-gray-600">{block.bucketB}</div>
-								</div>
-							</div>
+
 							<div class="space-y-2">
-								<div class="text-xs text-gray-500 mb-2">Items to sort:</div>
-								{#each block.items as item, itemIndex}
-									{#if item.text}
-										<div class="bg-blue-100 border border-blue-300 rounded px-2 py-1 text-sm cursor-move">
-											{item.text}
-											<span class="text-xs text-gray-500 ml-2">(→ {item.correctBucket === 'A' ? block.bucketA : block.bucketB})</span>
+								<label class="block text-sm font-medium mb-1">Options</label>
+								{#each question.options as option, optionIndex}
+									<div class="flex items-start gap-2 p-2 border rounded {option.isCorrect ? 'border-green-500 bg-green-50' : 'border-gray-200'}">
+										<div class="flex-1">
+											<Textarea 
+												value={option.text} 
+												oninput={(e: Event) => {
+													const target = e.target as HTMLTextAreaElement;
+													updateMultipleChoiceOption(questionIndex, optionIndex, 'text', target.value);
+												}}
+												placeholder="Option {optionIndex + 1}..." 
+												class="h-16"
+											/>
 										</div>
-									{/if}
-								{/each}
-								{#if block.items.filter(item => item.text).length === 0}
-									<div class="text-gray-500 text-sm text-center py-4">
-										No items to sort yet
+										<div class="flex items-center gap-2 pt-2">
+											<label class="flex items-center gap-1 text-sm">
+												<input
+													type="checkbox"
+													checked={option.isCorrect}
+													onchange={(e: Event) => {
+														const target = e.target as HTMLInputElement;
+														updateMultipleChoiceOption(questionIndex, optionIndex, 'isCorrect', target.checked);
+													}}
+													class="rounded"
+												/>
+												Correct
+											</label>
+											{#if question.options.length > 2}
+												<button
+													type="button"
+													onclick={() => removeMultipleChoiceOption(questionIndex, optionIndex)}
+													class="p-1 text-red-500 hover:text-red-700"
+												>
+													<Trash class="size-4" />
+												</button>
+											{/if}
+										</div>
 									</div>
+								{/each}
+
+								{#if question.options.length < 6}
+									<button
+										type="button"
+										onclick={() => addMultipleChoiceOption(questionIndex)}
+										class="mt-2 text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1"
+									>
+										<Plus class="size-4" />
+										Add Option
+									</button>
 								{/if}
+							</div>
+
+							<div>
+								<label for="multiple-choice-explanation-{pageIndex}-{blockIndex}-{questionIndex}" class="block text-sm font-medium mb-1">Explanation (optional)</label>
+								<Textarea 
+									id="multiple-choice-explanation-{pageIndex}-{blockIndex}-{questionIndex}"
+									value={question.explanation || ''} 
+									oninput={(e: Event) => {
+										const target = e.target as HTMLTextAreaElement;
+										updateMultipleChoiceQuestion(questionIndex, 'explanation', target.value || '');
+									}}
+									placeholder="Enter an explanation that will be shown after the user answers..." 
+									class="h-20"
+								/>
 							</div>
 						</div>
 					</div>
+				{/each}
+
+				<div class="flex items-center gap-2">
+					<input
+						id="multiple-choice-allow-multiple-{pageIndex}-{blockIndex}"
+						type="checkbox"
+						checked={block.allowMultiple}
+						onchange={(e: Event) => {
+							const target = e.target as HTMLInputElement;
+							onUpdate('allowMultiple', target.checked);
+						}}
+						class="rounded"
+					/>
+					<label for="multiple-choice-allow-multiple-{pageIndex}-{blockIndex}" class="text-sm font-medium">
+						Allow multiple correct answers
+					</label>
+				</div>
+
+				<button
+					type="button"
+					onclick={addMultipleChoiceQuestion}
+					class="w-full py-2 px-4 border border-dashed border-gray-300 rounded-lg text-gray-600 hover:text-gray-800 hover:border-gray-400 flex items-center justify-center gap-2"
+				>
+					<Plus class="size-4" />
+					Add Question
+				</button>
+
+				<div class="border rounded p-2 bg-white">
+					<div class="text-sm text-gray-600">Preview: Multiple choice quiz with {block.questions.length} questions{block.allowMultiple ? ' (multiple answers allowed)' : ''}</div>
 				</div>
 			</div>
 		{/if}

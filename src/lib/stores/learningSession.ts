@@ -15,22 +15,22 @@ export const learningSession = {
       if (existingSessions.items.length > 0) {
         const latestSession = existingSessions.items[0] as unknown as LearningSession;
         
-        // If latest session is incomplete, resume it
-        if (!latestSession.completed) {
+        // If latest session is incomplete (not done), resume it
+        if (!latestSession.done) {
           return latestSession;
         }
         
-        // If latest session is completed, clean up any old incomplete sessions
+        // If latest session is done, clean up any old incomplete sessions
         // and create a new one (user wants to restart)
         const incompleteSessionIds = existingSessions.items
-          .filter((session: any) => !session.completed)
+          .filter((session: any) => !session.done)
           .map((session: any) => session.id);
           
         if (incompleteSessionIds.length > 0) {
-          // Mark old incomplete sessions as abandoned
+          // Mark old incomplete sessions as done to clean up
           for (const sessionId of incompleteSessionIds) {
             await pb.collection('learnSessions').update(sessionId, {
-              completed: true // Mark as completed to clean up
+              done: true // Mark as done to clean up, preserve completed datetime
             });
           }
         }
@@ -42,7 +42,8 @@ export const learningSession = {
         topic: topicId,
         topicVersion: topicVersionId,
         currentPage: 0,
-        responses: []
+        responses: [],
+        done: false // Initialize as not done
       });
       return newSession as unknown as LearningSession;
     } catch (error) {
@@ -171,14 +172,41 @@ export const learningSession = {
     }
   },
 
-  // Complete the session
+  // Complete the session (set completion datetime)
   async complete(sessionId: string): Promise<void> {
     try {
       await pb.collection('learnSessions').update(sessionId, {
-        completed: true
+        completed: new Date().toISOString()
       });
     } catch (error) {
       console.error('Failed to complete session:', error);
+      throw error;
+    }
+  },
+
+  // Mark session as done (final completion)
+  async markAsDone(sessionId: string): Promise<void> {
+    try {
+      await pb.collection('learnSessions').update(sessionId, {
+        done: true
+      });
+    } catch (error) {
+      console.error('Failed to mark session as done:', error);
+      throw error;
+    }
+  },
+
+  // Save user feedback for the module
+  async saveFeedback(sessionId: string, feedback: { rating: number; feedback: string; improvements: string; }): Promise<void> {
+    try {
+      await pb.collection('learnSessions').update(sessionId, {
+        feedback: {
+          ...feedback,
+          submittedAt: new Date().toISOString()
+        }
+      });
+    } catch (error) {
+      console.error('Failed to save feedback:', error);
       throw error;
     }
   },

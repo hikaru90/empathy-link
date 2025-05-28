@@ -14,7 +14,8 @@ export type ContentBlock =
   | TimerBlock
   | BodymapBlock
   | TaskCompletionBlock
-  | SortableBlock;
+  | SortableBlock
+  | MultipleChoiceBlock;
 
 export interface TextBlock {
   type: "text";
@@ -65,6 +66,19 @@ export interface SortableBlock {
     text: string;
     correctBucket: "A" | "B"; // Which bucket this item belongs to
   }[];
+}
+
+export interface MultipleChoiceBlock {
+  type: "multipleChoice";
+  questions: {
+    question: string;
+    options: {
+      text: string;
+      isCorrect: boolean;
+    }[];
+    explanation?: string;
+  }[];
+  allowMultiple?: boolean; // Whether multiple correct answers are allowed
 }
 
 export interface TopicVersion {
@@ -133,6 +147,19 @@ const sortableBlockSchema = z.object({
   }))
 });
 
+const multipleChoiceBlockSchema = z.object({
+  type: z.literal("multipleChoice"),
+  questions: z.array(z.object({
+    question: z.string(),
+    options: z.array(z.object({
+      text: z.string(),
+      isCorrect: z.boolean()
+    })),
+    explanation: z.string().optional()
+  })),
+  allowMultiple: z.boolean().optional()
+});
+
 const contentBlockSchema = z.discriminatedUnion("type", [
   textBlockSchema,
   listBlockSchema,
@@ -141,7 +168,8 @@ const contentBlockSchema = z.discriminatedUnion("type", [
   timerBlockSchema,
   bodymapBlockSchema,
   taskCompletionBlockSchema,
-  sortableBlockSchema
+  sortableBlockSchema,
+  multipleChoiceBlockSchema
 ]);
 
 const contentSchema = z.object({
@@ -221,6 +249,20 @@ export interface SortableResponse extends SessionResponse {
   };
 }
 
+export interface MultipleChoiceResponse extends SessionResponse {
+  blockType: 'multipleChoice';
+  response: {
+    questionResponses: {
+      questionIndex: number;
+      selectedOptions: number[];
+      isCorrect: boolean;
+      timeSpent: number;
+    }[];
+    completed: boolean;
+    totalTimeSpent: number;
+  };
+}
+
 export interface LearningSession {
   id: string;
   user: string;
@@ -230,5 +272,14 @@ export interface LearningSession {
   responses: SessionResponse[];
   created: string;
   updated: string;
-  completed: boolean;
+  completed?: string; // ISO datetime string when session was completed (reaching summary)
+  done: boolean; // Boolean for final completion (reaching completion page)
+  feedback?: ModuleFeedback; // Optional feedback when module is completed
+}
+
+export interface ModuleFeedback {
+  rating: number; // 1-5 star rating
+  feedback: string; // User's general feedback
+  improvements: string; // Suggestions for improvements
+  submittedAt: string; // Timestamp when feedback was submitted
 }

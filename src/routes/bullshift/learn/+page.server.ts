@@ -15,9 +15,31 @@ export const load: PageServerLoad = async ({ locals }) => {
             expand: 'currentVersion, currentVersion.category'
         });
 
+        // Fetch completion status for each topic if user is logged in
+        let completionStatus: Record<string, boolean> = {};
+        if (user?.id) {
+            try {
+                // Get all completed learning sessions for this user using the new "done" field
+                const completedSessions = await pb.collection('learnSessions').getFullList({
+                    filter: `user = "${user.id}" && done = true`,
+                    fields: 'topic,topicVersion'
+                });
+                
+                // Create a map of completed topic IDs
+                completionStatus = completedSessions.reduce((acc: Record<string, boolean>, session: any) => {
+                    acc[session.topic] = true;
+                    return acc;
+                }, {});
+            } catch (sessionError) {
+                console.error('Error fetching learning session completion status:', sessionError);
+                // Continue without completion status if there's an error
+            }
+        }
+
         return {
             topics,
-            categories
+            categories,
+            completionStatus
         };
     } catch (error) {
         console.error('Error getting full list of topics:', error);

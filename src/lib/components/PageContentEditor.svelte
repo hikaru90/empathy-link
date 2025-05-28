@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Content, ContentBlock } from '$routes/bullshift/learn/[id]/edit/schema';
 	import { Input } from '$lib/components/ui/input';
+	import { Textarea } from '$lib/components/ui/textarea';
 	import ContentBlockEditor from '$lib/components/ContentBlockEditor.svelte';
 	import BlockTypeSelector from '$lib/components/BlockTypeSelector.svelte';
 	import Plus from 'lucide-svelte/icons/plus';
@@ -79,6 +80,22 @@
 					bucketA: 'Bucket A', 
 					bucketB: 'Bucket B', 
 					items: [{ text: '', correctBucket: 'A' }] 
+				};
+				break;
+			case 'multipleChoice':
+				newBlock = { 
+					type: 'multipleChoice', 
+					questions: [{
+						question: '', 
+						options: [
+							{ text: '', isCorrect: false },
+							{ text: '', isCorrect: false },
+							{ text: '', isCorrect: false },
+							{ text: '', isCorrect: false }
+						],
+						explanation: ''
+					}],
+					allowMultiple: false
 				};
 				break;
 			default:

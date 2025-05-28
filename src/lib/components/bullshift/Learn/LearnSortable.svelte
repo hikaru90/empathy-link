@@ -216,7 +216,7 @@
 						</div>
 					{/each}
 					{#if getBucketItems(bucket.id).length === 0}
-							<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full text-sm text-center text-black/60">
+							<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm text-center text-black/60 leading-none">
 								Elemente hier ablegen
 							</div>
 					{/if}

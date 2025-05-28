@@ -14,6 +14,9 @@
 	import LearnBodyMap from '$lib/components/LearnBodyMap.svelte';
 	import LearnCompletionNotes from '$lib/components/bullshift/Learn/LearnCompletionNotes.svelte';
 	import LearnSortableWithFeedback from '$lib/components/bullshift/Learn/LearnSortableWithFeedback.svelte';
+	import LearnMultipleChoice from '$lib/components/bullshift/Learn/LearnMultipleChoice.svelte';
+	import LearningSummary from '$lib/components/bullshift/Learn/LearningSummary.svelte';
+	import LearnCompletion from '$lib/components/bullshift/Learn/LearnCompletion.svelte';
 	import LearnEditor from '$lib/components/LearnEditor.svelte';
 	import * as Resizable from '$lib/components/ui/resizable';
 	import { blur } from 'svelte/transition';
@@ -68,7 +71,7 @@
 		window.history.back();
 	};
 	const gotoNextPage = () => {
-		if (currentPage < topic().content.length - 1) {
+		if (currentPage < topic().content.length + 1) {
 			currentPage++;
 		}
 		updateQueryParams();
@@ -219,50 +222,84 @@
 							{#if currentPage === 0}
 								<LearnTitleCard currentCategory={currentCategory()} topic={topic()} />
 							{/if}
-							{#each topic().content as page, index}
-								{#if currentPage === index}
-									{#each page.content as content, blockIndex}
-										{#if content.type === 'text'}
-											<LearnText {content} />
-										{:else if content.type === 'task'}
-											<LearnTask color={currentCategory().color} {content} />
-										{:else if content.type === 'heading'}
-											<LearnHeading {content} />
-										{:else if content.type === 'timer'}
-											<LearnTimer duration={content.duration} color={currentCategory().color} />
-										{:else if content.type === 'bodymap'}
-											<LearnBodyMap 
-												{content} 
-												color={currentCategory().color}
-												pageIndex={index}
-												{blockIndex}
-												session={null}
-												contentBlock={content}
-												topicVersionId={topic().id}
-												onResponse={() => {}}
-											/>
-										{:else if content.type === 'taskCompletion'}
-											<LearnCompletionNotes 
-												{content} 
-												color={currentCategory().color}
-												pageIndex={index}
-												{blockIndex}
-												session={null}
-												onResponse={() => {}}
-											/>
-										{:else if content.type === 'list'}
-											<LearnList {content} currentCategory={currentCategory()} />
-										{:else if content.type === 'sortable'}
-											<LearnSortableWithFeedback 
-												{content} 
-												currentCategory={currentCategory()}
-												color={currentCategory().color}
-												onResponse={() => {}}
-											/>
-										{/if}
-									{/each}
-								{/if}
-							{/each}
+
+							<!-- Show completion page if we're past the summary page -->
+							{#if currentPage > topic().content.length}
+								<LearnCompletion 
+									topic={topic()}
+									color={currentCategory().color}
+									onReturnToOverview={() => {
+										console.log('Preview completion - would return to overview');
+									}}
+								/>
+							<!-- Show summary if we're at the summary page -->
+							{:else if currentPage === topic().content.length}
+								<LearningSummary 
+									session={null}
+									topic={topic()}
+									color={currentCategory().color}
+									onFeedbackSubmit={(feedback) => {
+										console.log('Preview feedback:', feedback);
+									}}
+								/>
+							{:else}
+								<!-- Show regular content -->
+								{#each topic().content as page, index}
+									{#if currentPage === index}
+										{#each page.content as content, blockIndex}
+											{#if content.type === 'text'}
+												<LearnText {content} />
+											{:else if content.type === 'task'}
+												<LearnTask color={currentCategory().color} {content} />
+											{:else if content.type === 'heading'}
+												<LearnHeading {content} />
+											{:else if content.type === 'timer'}
+												<LearnTimer duration={content.duration} color={currentCategory().color} />
+											{:else if content.type === 'bodymap'}
+												<LearnBodyMap 
+													{content} 
+													color={currentCategory().color}
+													pageIndex={index}
+													{blockIndex}
+													session={null}
+													contentBlock={content}
+													topicVersionId={topic().id}
+													onResponse={() => {}}
+												/>
+											{:else if content.type === 'taskCompletion'}
+												<LearnCompletionNotes 
+													{content} 
+													color={currentCategory().color}
+													pageIndex={index}
+													{blockIndex}
+													session={null}
+													onResponse={() => {}}
+												/>
+											{:else if content.type === 'list'}
+												<LearnList {content} currentCategory={currentCategory()} />
+											{:else if content.type === 'sortable'}
+												<LearnSortableWithFeedback 
+													{content} 
+													currentCategory={currentCategory()}
+													color={currentCategory().color}
+													onResponse={() => {}}
+												/>
+											{:else if content.type === 'multipleChoice'}
+												<LearnMultipleChoice 
+													{content} 
+													color={currentCategory().color}
+													pageIndex={index}
+													{blockIndex}
+													session={null}
+													contentBlock={content}
+													topicVersionId={topic().id}
+													onResponse={() => {}}
+												/>
+											{/if}
+										{/each}
+									{/if}
+								{/each}
+							{/if}
 						</div>
 					</div>
 					<LearnStepper absolute
@@ -270,6 +307,7 @@
 						{gotoPrevPage}
 						color={currentCategory().color}
 						step={currentPage}
+						totalSteps={topic().content.length + 2}
 					/>
 					<Footer absolute />
 					</div>

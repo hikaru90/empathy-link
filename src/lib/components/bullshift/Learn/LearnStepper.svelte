@@ -11,9 +11,32 @@
 		gotoPrevPage: () => void;
 		gotoNextPage: () => void;
 		absolute?: boolean;
+		totalSteps?: number; // Optional: total number of steps including summary
 	}
 
-	let { gotoNextPage, gotoPrevPage, color, class: className = undefined, step, absolute = false }: Props = $props();
+	let { gotoNextPage, gotoPrevPage, color, class: className = undefined, step, absolute = false, totalSteps }: Props = $props();
+
+	// Determine if we're on the last possible step (summary page)
+	const isOnSummaryPage = $derived(() => {
+		if (totalSteps) {
+			return step >= totalSteps - 1; // Summary is the last step
+		}
+		return false; // If totalSteps not provided, assume we can always go forward
+	});
+
+	const getNextButtonText = $derived(() => {
+		if (totalSteps && step === totalSteps - 3) {
+			// On the last content page, next goes to summary
+			return 'Summary';
+		} else if (totalSteps && step === totalSteps - 2) {
+			// On summary page, next goes to completion
+			return 'Complete';
+		} else if (isOnSummaryPage()) {
+			// On completion page, might want to show "Finish" or hide the button
+			return 'Finish';
+		}
+		return $t('default.page.fights.form.general.next');
+	});
 
 	const goForward = () => {
 		scrollToTop()
@@ -45,14 +68,17 @@
 	>
 		<ChevronLeft class="size-4" />
 	</button>
-	<button
-		style="border: 2px solid {color}; box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.3), -4px -4px 8px 0 rgba(255, 255, 255, 0.3);"
-		onclick={() => goForward()}
-		class="flex items-center gap-2 rounded-full px-4 text-sm"
-	>
-		{$t('default.page.fights.form.general.next')}
-		<ArrowRight class="h-3 w-3" />
-	</button>
+	
+	{#if !isOnSummaryPage()}
+		<button
+			style="border: 2px solid {color}; box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.3), -4px -4px 8px 0 rgba(255, 255, 255, 0.3);"
+			onclick={() => goForward()}
+			class="flex items-center gap-2 rounded-full px-4 text-sm"
+		>
+			{getNextButtonText()}
+			<ArrowRight class="h-3 w-3" />
+		</button>
+	{/if}
 </div>
 
 <style lang="scss">

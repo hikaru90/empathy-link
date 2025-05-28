@@ -16,10 +16,9 @@
 
 	interface Props {
 		data: any;
-		children?: import('svelte').Snippet;
 	}
 
-	let { data, children }: Props = $props();
+	let { data }: Props = $props();
 
 	let currentPath: string;
 	if (PUBLIC_INIT_POSTHOG === 'true') {
@@ -132,7 +131,7 @@
 </script>
 
 {#key data.route}
-	{@render children?.()}
+	<slot />
 {/key}
 
 
