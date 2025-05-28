@@ -62,38 +62,79 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 	//end posthog integration
 
-
-
-
-
-
+	// Initialize PocketBase instance for this request
 	event.locals.pb = pb;
-	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
+	
+	// Load authentication state from cookies
+	const cookieHeader = event.request.headers.get('cookie') || '';
+	event.locals.pb.authStore.loadFromCookie(cookieHeader);
 
+	// Track authentication state before refresh attempt
+	const wasAuthenticated = event.locals.pb.authStore.isValid;
 
 	try {
-		// get an up-to-date auth store state by verifying and refreshing the loaded auth model (if any)
-		event.locals.pb.authStore.isValid && await event.locals.pb.collection('users').authRefresh();
-	} catch (_) {
-		// clear the auth store on failed refresh
-		event.locals.pb.authStore.clear();
+		// Attempt to refresh token if we have a valid auth state
+		if (event.locals.pb.authStore.isValid) {
+			await event.locals.pb.collection('users').authRefresh();
+			console.log('Token refresh successful');
+		}
+	} catch (err) {
+		const error = err as { status?: number; message?: string };
+		console.log('Token refresh failed:', error.message || 'Unknown error');
+		
+		// Only clear auth store if the error indicates invalid/expired token
+		if (error.status === 401 || error.status === 403) {
+			console.log('Clearing auth store due to invalid token');
+			event.locals.pb.authStore.clear();
+		} else {
+			// For other errors (network issues, etc.), keep the auth state
+			console.log('Keeping auth state despite refresh error (non-auth error)');
+		}
 	}
 
 	// Set the user in the locals object
 	event.locals.user = serializeNonPOJOs(event.locals.pb.authStore.model) as App.User;
-	const user = event.locals.pb.authStore.baseModel;
-	// initUserSession(user, messages, userId);
 
-	// Update the cookie
+	// Log authentication state changes
+	const isNowAuthenticated = event.locals.pb.authStore.isValid;
+	if (wasAuthenticated && !isNowAuthenticated) {
+		console.log('User was logged out during token refresh');
+	} else if (!wasAuthenticated && isNowAuthenticated) {
+		console.log('User authentication state restored');
+	}
+
+	// Resolve the request
 	const response = await resolve(event);
-	response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie({
-		// secure: import.meta.env.DEV ? false : true
-		secure: false
-	}));
+	
+	// Update the cookie with current auth state
+	try {
+		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie({
+			secure: false // Set to true in production
+		}));
+	} catch (cookieError) {
+		console.error('Failed to set auth cookie:', cookieError);
+	}
 
-	// Protect API routes
+	// Protect API routes with enhanced error handling
 	if (event.url.pathname.startsWith('/api')) {
 		if (!event.locals.pb.authStore.isValid) {
+			console.log(`Unauthorized API access attempt: ${event.url.pathname}`);
+			
+			// Return JSON error for API routes instead of redirect
+			if (event.request.headers.get('accept')?.includes('application/json')) {
+				return new Response(
+					JSON.stringify({ 
+						error: 'Authentication required', 
+						code: 'UNAUTHORIZED',
+						redirectTo: '/app/auth/login'
+					}), 
+					{ 
+						status: 401,
+						headers: { 'Content-Type': 'application/json' }
+					}
+				);
+			}
+			
 			throw redirect(303, '/app/auth/login');
 		}
 	}
@@ -101,10 +142,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// Protect learning routes - require authentication
 	if (event.url.pathname.startsWith('/bullshift/learn')) {
 		if (!event.locals.pb.authStore.isValid) {
+			console.log(`Unauthorized learning route access: ${event.url.pathname}`);
 			throw redirect(303, '/app/auth/login');
 		}
 	}
-
 
 	return response;
 } 

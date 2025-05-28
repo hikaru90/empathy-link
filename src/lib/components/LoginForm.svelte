@@ -20,12 +20,17 @@
 
 	let { class: className = undefined, data }: Props = $props();
 
-	let resetPassordDialogOpen = $state(false);
+	let resetPasswordDialogOpen = $state(false);
+	let isSubmitting = $state(false);
 
 	const form = superForm(data, {
 		resetForm: false,
 		validators: zodClient(formSchema),
+		onSubmit: () => {
+			isSubmitting = true;
+		},
 		onResult: ({ result }) => {
+			isSubmitting = false;
 			console.log('result', result);
 			if (result.type === 'failure') toast.error($t('default.page.login.toasts.error'));
 			if (result.type === 'success') {
@@ -36,9 +41,22 @@
 	});
 
 	const resetPassword = async () => {
-		resetPassordDialogOpen = false;
+		resetPasswordDialogOpen = false;
 		await pb.collection('users').requestPasswordReset($formData.email);
 		toast.success($t('default.page.login.forgotPassword.success'));
+	};
+
+	const openResetDialog = (event: MouseEvent) => {
+		// Prevent any potential event bubbling
+		event.preventDefault();
+		event.stopPropagation();
+		
+		// Don't open dialog if form is being submitted
+		if (isSubmitting) {
+			return;
+		}
+		
+		resetPasswordDialogOpen = true;
 	};
 
 	const { form: formData, errors, enhance, delayed, message, constraints, reset } = form;
@@ -63,12 +81,16 @@
 				<Input {...attrs} bind:value={$formData.password} type="password" />
 								{/snippet}
 				</Form.Control>
-		<Form.Description
-			><button type="button"
-				tabindex="0"
-				onclick={() => (resetPassordDialogOpen = true)}
-				class="text-sm text-muted-foreground hover:underline">{$t('default.page.login.forgotPassword.question')}</button></Form.Description
-		>
+		<Form.Description>
+			<button 
+				type="button"
+				onclick={openResetDialog}
+				disabled={isSubmitting}
+				class="text-sm text-muted-foreground hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+			>
+				{$t('default.page.login.forgotPassword.question')}
+			</button>
+		</Form.Description>
 		<Form.FieldErrors />
 	</Form.Field>
 
@@ -80,7 +102,7 @@
 	</div>
 </form>
 
-<Dialog.Root bind:open={resetPassordDialogOpen} preventScroll={false}>
+<Dialog.Root bind:open={resetPasswordDialogOpen}>
 	<Dialog.Content>
 		<Dialog.Header>
 			<Dialog.Title class="mb-10 leading-tight"
