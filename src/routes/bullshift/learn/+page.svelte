@@ -2,7 +2,8 @@
 	import Header from '$lib/components/bullshift/Header.svelte';
 	import Footer from '$lib/components/bullshift/Footer.svelte';
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
-	import CheckCircle from 'lucide-svelte/icons/check-circle';
+	import BadgeCheck from 'lucide-svelte/icons/badge-check';
+	import PercentageDonut from '$lib/components/PercentageDonut.svelte';
 
 	import type { PageData } from './$types';
 
@@ -59,15 +60,34 @@
 	// Calculate completion by category
 	const getCategoryCompletion = (categoryTopics: any[]) => {
 		const total = categoryTopics.length;
-		const completed = categoryTopics.filter(topic => isTopicCompleted(topic.id)).length;
+		const completed = categoryTopics.filter((topic) => isTopicCompleted(topic.id)).length;
 		const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
 		return { completed, total, percentage };
 	};
 
 	// Check if user has any completed modules to show progress section
 	const hasCompletions = $derived(() => {
+		console.log('data.completionStatus', data.completionStatus);
 		return data.completionStatus && Object.keys(data.completionStatus).length > 0;
 	});
+
+	// Data for the donut chart
+	const donutData = $derived(() => {
+		const stats = completionStats();
+		return [
+			{
+				name: 'Abgeschlossen',
+				count: stats.completed
+			},
+			{
+				name: 'Verbleibend',
+				count: stats.total - stats.completed
+			}
+		];
+	});
+
+	// Colors for the donut chart (green for completed, light gray for remaining)
+	const donutColors = ['#22c55e', '#e5e7eb'];
 </script>
 
 <div class="pt-16">
@@ -82,90 +102,83 @@
 
 		<!-- Progress Summary -->
 		{#if hasCompletions()}
-			<div class="mb-8 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 shadow-lg border border-green-100">
-				<div class="flex items-center justify-between mb-4">
+			<div class="mb-8 rounded-xl bg-white px-4 py-5 shadow-lg shadow-green-800/10">
+				<div class="flex items-center justify-between">
 					<div class="flex items-center gap-3">
-						<div class="bg-green-500 rounded-full p-2">
-							<CheckCircle class="w-5 h-5 text-white" />
+						<PercentageDonut
+							data={donutData()}
+							colors={donutColors}
+							percentage={completionStats().percentage}
+							class="size-16"
+						/>
+						<div class="flex flex-col">
+							<h3 class="text-lg font-bold leading-tight">Dein Fortschritt</h3>
+							<span class="text-xs text-black/50">
+								{completionStats().completed} von {completionStats().total} Modulen abgeschlossen
+							</span>
 						</div>
-						<h3 class="text-lg font-semibold text-gray-900">Dein Fortschritt</h3>
 					</div>
-					<div class="text-sm text-gray-600 font-medium">
-						{completionStats().completed} von {completionStats().total} Modulen abgeschlossen
-					</div>
-				</div>
-				<div class="w-full bg-gray-200 rounded-full h-4 mb-3 shadow-inner">
-					<div 
-						class="bg-gradient-to-r from-green-500 to-green-600 h-4 rounded-full transition-all duration-700 ease-out shadow-sm"
-						style="width: {completionStats().percentage}%"
-					></div>
-				</div>
-				<div class="flex justify-between items-center">
-					<div class="text-sm text-gray-600">
-						{completionStats().percentage}% abgeschlossen
-					</div>
-					{#if completionStats().percentage === 100}
-						<div class="text-sm font-medium text-green-600 flex items-center gap-1">
-							<span>🎉 Alle Module abgeschlossen!</span>
-						</div>
-					{:else if completionStats().percentage >= 75}
-						<div class="text-sm font-medium text-blue-600">
-							Fast geschafft! 💪
-						</div>
-					{:else if completionStats().percentage >= 50}
-						<div class="text-sm font-medium text-purple-600">
-							Auf halbem Weg! 🚀
-						</div>
-					{/if}
 				</div>
 			</div>
 		{/if}
+	</div>
 
-		<div class="flex flex-col gap-10">
-			{#if categories() && data.categories}
-				{#each categories() as category}
-					{@const categoryCompletion = getCategoryCompletion(category.topics)}
-					<div>
-						<div class="flex items-center justify-between mb-4">
-							<h3 class="text-xl font-bold">
-								{currentCategory(category.category)?.nameDE}
-							</h3>
-							{#if categoryCompletion.total > 0}
-								<div class="flex items-center gap-2 text-sm">
-									{#if categoryCompletion.completed === categoryCompletion.total}
-										<div class="flex items-center gap-1 bg-green-100 px-3 py-1 rounded-full">
-											<CheckCircle class="w-4 h-4 text-green-600" />
-											<span class="text-green-700 font-medium">Abgeschlossen</span>
-										</div>
-									{:else}
-										<div class="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
-											<span class="text-gray-700">{categoryCompletion.completed}/{categoryCompletion.total} abgeschlossen</span>
-										</div>
-									{/if}
-								</div>
-							{/if}
+	<div class="mb-20 flex flex-col gap-10">
+		{#if categories() && data.categories}
+			{#each categories() as category}
+				{@const categoryCompletion = getCategoryCompletion(category.topics)}
+				<div class="mb-4">
+					<div class="flex flex-col gap-4">
+						<div class="max-container">
+							<div class="">
+								<h3 class="text-xl font-bold mb-2">
+									{currentCategory(category.category)?.nameDE}
+								</h3>
+
+								{#if categoryCompletion.total > 0}
+									<div class="flex items-center gap-2 text-xs">
+										{#if categoryCompletion.completed === categoryCompletion.total}
+											<div class="flex items-center gap-1 rounded-full bg-green-100 px-3 py-1">
+												<BadgeCheck class="-ml-2 size-4 text-green-600" />
+												<span class="font-medium text-green-700">Abgeschlossen</span>
+											</div>
+										{:else}
+											<div class="flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1">
+												<span class="text-gray-700"
+													>{categoryCompletion.completed}/{categoryCompletion.total} abgeschlossen</span
+												>
+											</div>
+										{/if}
+									</div>
+								{/if}
+							</div>
 						</div>
-						<div class="flex gap-4 flex-wrap">
+					</div>
+
+					<div style="-ms-overflow-style: none; scrollbar-width: none;" class="scroll-snap-x scroll-snap-mandatory overflow-x-auto p-6">
+						<div class="inline-flex gap-4">
 							{#each category.topics as topic}
 								<a
 									style="background-color: {currentCategory(category.category)?.color}"
 									href={`/bullshift/learn/${topic?.id}`}
-									class="relative flex h-60 w-52 items-end justify-start overflow-hidden rounded-lg p-4 text-sm group transition-all duration-300 hover:scale-105 hover:shadow-xl {isTopicCompleted(topic.id) ? 'ring-2 ring-green-500 ring-opacity-60 shadow-lg' : ''}"
+									class="group relative flex h-60 w-52 items-end justify-start overflow-hidden rounded-lg p-4 text-sm transition-all duration-300 hover:scale-105 hover:shadow-xl"
 								>
 									<!-- Completion Badge -->
 									{#if isTopicCompleted(topic.id)}
-										<div class="absolute top-3 right-3 z-20 bg-white rounded-full p-2 shadow-lg ring-2 ring-green-500">
-											<CheckCircle class="w-5 h-5 text-green-600" />
+										<div
+											class="absolute right-3 top-3 flex items-center text-green-600 text-xs bg-white rounded-full px-2 py-1 gap-1"
+										>
+											<BadgeCheck class="size-3" /> 
+											<span>
+												fertig
+											</span>
 										</div>
 										<!-- Completion Ribbon -->
-										<div class="absolute top-0 right-0 z-15 bg-green-500 text-white text-xs font-bold px-2 py-1 transform rotate-12 translate-x-2 -translate-y-1 shadow-md">
-											Fertig
-										</div>
 									{/if}
 
 									<!-- Completion Overlay for subtle dimming -->
 									{#if isTopicCompleted(topic.id)}
-										<div class="absolute inset-0 bg-green-500/10 z-5"></div>
+										<div class="z-5 absolute inset-0 bg-green-500/10"></div>
 									{/if}
 
 									<h4 class="relative z-10 text-xl font-light drop-shadow-md">
@@ -181,9 +194,9 @@
 							{/each}
 						</div>
 					</div>
-				{/each}
-			{/if}
-		</div>
+				</div>
+			{/each}
+		{/if}
 	</div>
 	<Footer />
 </div>

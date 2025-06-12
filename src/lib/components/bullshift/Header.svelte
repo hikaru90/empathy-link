@@ -29,7 +29,7 @@
 	let userMenuIsOpen = $state(false);
 </script>
 
-<nav class={cn(absolute ? 'absolute' : 'fixed', 'left-0 top-0 flex w-full items-center justify-between p-4', className)}>
+<nav class={cn(absolute ? 'absolute' : 'absolute', 'left-0 top-0 flex w-full items-center justify-between p-4', className)}>
 	<button
 		class="flex size-8 items-center justify-center rounded-full bg-black"
 		onclick={() => (userMenuIsOpen = true)}

@@ -50,7 +50,7 @@
 				{/each}
 			</div>
 
-			<div class="max-container pb-16">
+			<div class="max-container pb-16 relative z-0">
 				{#if currentSlug === 'overview'}
 					<StatsOverview data={data} />
 				{:else if currentSlug === 'memories'}

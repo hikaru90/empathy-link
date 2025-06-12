@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ locals }) => {
             try {
                 // Get all completed learning sessions for this user using the new "done" field
                 const completedSessions = await pb.collection('learnSessions').getFullList({
-                    filter: `user = "${user.id}" && done = true`,
+                    filter: `user = "${user.id}" && completed = true`,
                     fields: 'topic,topicVersion'
                 });
                 
