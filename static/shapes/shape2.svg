@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 183 183" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g transform="matrix(1,0,0,1,-227,0)">
-        <g id="shape2" transform="matrix(1.10786,0,0,1.10786,227.318,0)">
-            <rect x="0" y="0" width="164.321" height="164.321" style="fill:none;"/>
-            <g transform="matrix(0.902638,0,0,0.902638,-322.924,-60.9316)">
-                <path d="M432.773,228.611L378.694,228.611L378.694,88.442L518.863,88.442L518.863,142.521C471.349,142.521 432.773,181.097 432.773,228.611Z" style="fill:rgb(82,198,72);"/>
+<svg width="100%" height="100%" viewBox="0 0 185 184" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-221,0)">
+        <g id="shape2" transform="matrix(1.00851,0,0,1.00851,487.078,2.84217e-14)">
+            <rect x="-263.443" y="0" width="182.448" height="182.448" style="fill:none;"/>
+            <g id="shape21" serif:id="shape2" transform="matrix(1.09851,0,0,1.09851,-262.474,0.969419)">
+                <rect x="0" y="0" width="164.321" height="164.321" style="fill:none;"/>
+                <g transform="matrix(0.902638,0,0,0.902638,-322.924,-60.9316)">
+                    <path d="M439.185,195.974C431.19,215.679 412.048,228.57 390.783,228.57C390.783,228.611 390.782,228.611 390.782,228.611C387.576,228.611 384.501,227.337 382.235,225.07C379.968,222.804 378.694,219.729 378.694,216.523C378.694,192.884 378.694,140.237 378.694,110.321C378.694,104.519 380.999,98.953 385.102,94.85C389.205,90.747 394.771,88.442 400.573,88.442L496.984,88.442C502.786,88.442 508.352,90.747 512.455,94.85C516.558,98.953 518.863,104.519 518.863,110.321C518.863,111.418 518.863,112.527 518.863,113.64C518.863,128.609 509.012,141.792 494.657,146.033C469.458,153.361 449.045,171.953 439.185,195.974Z" style="fill:rgb(82,198,72);"/>
+                </g>
             </g>
         </g>
     </g>

@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 183 183" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g transform="matrix(1,0,0,1,-224,-220)">
-        <g id="shape6" transform="matrix(1.10786,0,0,1.10786,223.997,220.416)">
-            <rect x="0" y="0" width="164.321" height="164.321" style="fill:none;"/>
-            <g transform="matrix(0.827871,0,0,0.71301,-276.808,-423.386)">
-                <path d="M433.604,616.113L526.522,801.949L340.686,801.949L433.604,616.113Z" style="fill:rgb(82,198,72);"/>
+<svg width="100%" height="100%" viewBox="0 0 184 185" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,0,-213)">
+        <g id="shape6" transform="matrix(1.00851,0,0,1.00851,265.685,213.372)">
+            <rect x="-263.443" y="0" width="182.448" height="182.448" style="fill:none;"/>
+            <g id="shape61" serif:id="shape6" transform="matrix(1.09851,0,0,1.09851,-262.474,0.969419)">
+                <g>
+                    <rect x="0" y="0" width="164.321" height="164.321" style="fill:none;"/>
+                    <g transform="matrix(0.827871,0,0,0.71301,-276.808,-423.386)">
+                        <path d="M419.189,644.943C422.172,638.978 427.663,635.306 433.604,635.306C439.545,635.306 445.036,638.978 448.019,644.943C463.329,675.562 487.691,724.287 505.217,759.338C509.604,768.114 509.621,778.942 505.261,787.736C500.9,796.529 492.826,801.949 484.087,801.949C453.846,801.949 413.362,801.949 383.121,801.949C374.382,801.949 366.308,796.529 361.947,787.736C357.587,778.942 357.604,768.114 361.991,759.338C379.517,724.287 403.879,675.562 419.189,644.943Z" style="fill:rgb(82,198,72);"/>
+                    </g>
+                </g>
             </g>
         </g>
     </g>

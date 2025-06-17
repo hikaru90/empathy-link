@@ -21,11 +21,11 @@
 	});
 
 	const colors = [
-		'#F0BADA', // Red
-		'#FF9C34', // Green
-		'#080638', // Blue
-		'#17545A', // Yellow
-		'#D8BEFF' // Magenta
+		'#fff', // Red
+		'#222', // Green
+		'#c8c8c8', // Blue
+		'#222', // Yellow
+		'#222' // Magenta
 	];
 
 	const downloadImage = () => {

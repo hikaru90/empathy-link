@@ -13,6 +13,33 @@
 
 	let { data }: Props = $props();
 
+	// Track focused elements for each category
+	let focusedElements = $state<Record<number, number>>({});
+
+	// Function to handle scroll and detect focused element
+	const handleScroll = (event: Event, categoryIndex: number) => {
+		const container = event.target as HTMLElement;
+		const cards = container.querySelectorAll('.card-item');
+		const containerRect = container.getBoundingClientRect();
+		const containerCenter = containerRect.left + containerRect.width / 2;
+
+		let closestIndex = -1;
+		let closestDistance = Infinity;
+
+		cards.forEach((card, index) => {
+			const cardRect = card.getBoundingClientRect();
+			const cardCenter = cardRect.left + cardRect.width / 2;
+			const distance = Math.abs(cardCenter - containerCenter);
+
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				closestIndex = index;
+			}
+		});
+
+		focusedElements = { ...focusedElements, [categoryIndex]: closestIndex };
+	};
+
 	const categories = $derived(() => {
 		console.log('topics', data.topics);
 		if (!data.topics) return [];
@@ -90,6 +117,17 @@
 	const donutColors = ['#22c55e', '#e5e7eb'];
 </script>
 
+<style>
+	.scroll-container {
+		scroll-behavior: smooth;
+	}
+	
+	.card-item {
+		transform: scale(1);
+		transition: transform 0.3s ease;
+	}
+</style>
+
 <div class="pt-16">
 	<Header />
 	<div class="max-container">
@@ -123,15 +161,15 @@
 		{/if}
 	</div>
 
-	<div class="mb-20 flex flex-col gap-10">
+	<div class="mb-20 flex flex-col gap-4">
 		{#if categories() && data.categories}
-			{#each categories() as category}
+			{#each categories() as category, categoryIndex}
 				{@const categoryCompletion = getCategoryCompletion(category.topics)}
-				<div class="mb-4">
-					<div class="flex flex-col gap-4">
+				<div class="">
+					<div class="flex flex-col">
 						<div class="max-container">
 							<div class="">
-								<h3 class="text-xl font-bold mb-2">
+								<h3 class="mb-2 text-xl font-bold">
 									{currentCategory(category.category)?.nameDE}
 								</h3>
 
@@ -155,43 +193,44 @@
 						</div>
 					</div>
 
-					<div style="-ms-overflow-style: none; scrollbar-width: none;" class="scroll-snap-x scroll-snap-mandatory overflow-x-auto p-6">
-						<div class="inline-flex gap-4">
-							{#each category.topics as topic}
+					<div
+						style="-ms-overflow-style: none; scrollbar-width: none;"
+						class="scroll-container snap-x snap-mandatory overflow-x-auto px-6 pt-6 pb-10"
+						onscroll={(e) => handleScroll(e, categoryIndex)}
+					>
+						<div class="flex">
+							{#each category.topics as topic, topicIndex}
 								<a
-									style="background-color: {currentCategory(category.category)?.color}"
 									href={`/bullshift/learn/${topic?.id}`}
-									class="group relative flex h-60 w-52 items-end justify-start overflow-hidden rounded-lg p-4 text-sm transition-all duration-300 hover:scale-105 hover:shadow-xl"
+									class="card-item relative group h-64 w-72 flex-shrink-0 snap-start px-6 -mx-3 text-sm transition-all duration-100"
+									style="transform: {focusedElements[categoryIndex] === topicIndex ? 'scale(1.02)' : 'scale(1)'}"
 								>
-									<!-- Completion Badge -->
-									{#if isTopicCompleted(topic.id)}
-										<div
-											class="absolute right-3 top-3 flex items-center text-green-600 text-xs bg-white rounded-full px-2 py-1 gap-1"
-										>
-											<BadgeCheck class="size-3" /> 
-											<span>
-												fertig
-											</span>
-										</div>
-										<!-- Completion Ribbon -->
-									{/if}
+									<div style="background-color: {currentCategory(category.category)?.color}" class="relative h-full w-full flex items-end justify-start overflow-hidden rounded-lg p-4 transition-all duration-400 delay-100 shadow-md shadow-black/5 {focusedElements[categoryIndex] === topicIndex ? 'shadow-xl shadow-black/10' : ''}">
+										<!-- Completion Badge -->
+										{#if isTopicCompleted(topic.id)}
+											<div
+												class="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white px-2 py-1 text-xs text-green-600 z-20"
+											>
+												<BadgeCheck class="size-3" />
+												<span> fertig </span>
+											</div>
+											<!-- Completion Ribbon -->
+										{/if}
 
-									<!-- Completion Overlay for subtle dimming -->
-									{#if isTopicCompleted(topic.id)}
-										<div class="z-5 absolute inset-0 bg-green-500/10"></div>
-									{/if}
-
-									<h4 class="relative z-10 text-xl font-light drop-shadow-md">
-										<span>{topic.expand?.currentVersion?.titleDE.split('||')[0]}</span>
-										<span>{topic.expand?.currentVersion?.titleDE.split('||')[1]}</span>
-									</h4>
-									<img
-										src={`https://${PUBLIC_BACKEND_URL}/api/files/${topic.expand?.currentVersion?.collectionId}/${topic.expand?.currentVersion?.id}/${topic.expand?.currentVersion?.image}`}
-										alt={`background ${topic.expand?.currentVersion?.titleDE}`}
-										class="absolute left-1/3 top-0 -z-0 w-full -rotate-6 transform transition-transform group-hover:scale-105"
-									/>
+										<h4 class="transition duration-500 delay-200 relative z-10 text-xl font-light {focusedElements[categoryIndex] === topicIndex ? 'text-black' : 'text-black/50'}">
+											<span>{topic.expand?.currentVersion?.titleDE.split('||')[0]}</span>
+											<span>{topic.expand?.currentVersion?.titleDE.split('||')[1]}</span>
+										</h4>
+										<img
+											src={`https://${PUBLIC_BACKEND_URL}/api/files/${topic.expand?.currentVersion?.collectionId}/${topic.expand?.currentVersion?.id}/${topic.expand?.currentVersion?.image}`}
+											alt={`background ${topic.expand?.currentVersion?.titleDE}`}
+											class="absolute left-[20%] top-0 -z-0 w-full -rotate-6 bg-blend-soft-light opacity-30"
+										/>
+									</div>
 								</a>
 							{/each}
+							<!-- Spacer for proper scroll alignment -->
+							<div class="w-52 flex-shrink-0"></div>
 						</div>
 					</div>
 				</div>

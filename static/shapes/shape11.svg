@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 184 183" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g transform="matrix(1,0,0,1,-447,-444)">
-        <g id="shape11" transform="matrix(1.10786,0,0,1.10786,447.994,444.413)">
-            <rect x="0" y="0" width="164.321" height="164.321" style="fill:none;"/>
-            <g transform="matrix(0.638262,-0.638262,0.638262,0.638262,-630.905,270.228)">
-                <path d="M723.554,496.434C676.551,496.434 638.39,458.274 638.39,411.271C638.39,364.268 676.551,326.108 723.554,326.108L723.554,496.434Z" style="fill:rgb(82,198,72);"/>
+<svg width="100%" height="100%" viewBox="0 0 185 185" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-1079,-213)">
+        <g id="shape11" transform="matrix(1.00851,0,0,1.00851,1344.78,213.372)">
+            <rect x="-263.443" y="0" width="182.448" height="182.448" style="fill:none;"/>
+            <g id="shape111" serif:id="shape11" transform="matrix(1.09851,0,0,1.09851,-262.458,0.409515)">
+                <rect x="0" y="0" width="164.321" height="164.321" style="fill:none;"/>
+                <g transform="matrix(0.638262,-0.638262,0.638262,0.638262,-630.905,270.228)">
+                    <path d="M723.554,474.086C723.554,480.281 720.603,486.106 715.607,489.77C710.611,493.433 704.169,494.498 698.26,492.636C663.595,481.83 638.39,449.471 638.39,411.271C638.39,369.534 668.48,334.769 708.131,327.503C711.946,326.806 715.874,327.838 718.853,330.322C721.832,332.805 723.554,336.483 723.554,340.361C723.554,370.009 723.554,438.513 723.554,474.086Z" style="fill:rgb(82,198,72);"/>
+                </g>
             </g>
         </g>
     </g>
