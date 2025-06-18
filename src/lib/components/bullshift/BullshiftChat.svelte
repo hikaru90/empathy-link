@@ -2,7 +2,6 @@
 	import { preventDefault } from 'svelte/legacy';
 	import { marked } from 'marked';
 	import { onMount } from 'svelte';
-	import { locale } from '$lib/translations';
 	import SendHorizontal from 'lucide-svelte/icons/send-horizontal';
 	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
@@ -17,6 +16,7 @@
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import AutoTextarea from '$lib/components/AutoTextarea.svelte';
 	import { pb } from '$scripts/pocketbase';
+	import { getLocale } from '$src/paraglide/runtime';
 
 	interface Feeling {
 		id: string;
@@ -71,6 +71,9 @@
 	let feelingSelectorVisible = $state(false);
 	let needSelectorVisible = $state(false);
 
+	// Get the current locale reactively
+	const locale = $derived(getLocale());
+
 	const handleSendMessage = async () => {
 		if (!userMessage.trim()) return;
 		isLoading = true;
@@ -83,7 +86,7 @@
 					message: userMessage,
 					userId: user!.id,
 					systemInstruction,
-					locale: $locale
+					locale: locale
 				})
 			});
 			const data = await response.json();
@@ -137,7 +140,7 @@
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ user: user, locale: $locale })
+				body: JSON.stringify({ user: user, locale: locale })
 			});
 
 			if (!response.ok) {
@@ -198,7 +201,7 @@
 	};
 	const analyzeChat = async (): Promise<string> => {
 		// Validate required data
-		if (!user || !$locale || !chatId) {
+		if (!user || !locale || !chatId) {
 			throw new Error('Missing required data for chat analysis');
 		}
 
@@ -207,7 +210,7 @@
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ user: user, locale: $locale, chatId })
+			body: JSON.stringify({ user: user, locale: locale, chatId })
 		});
 
 		if (!response.ok) {

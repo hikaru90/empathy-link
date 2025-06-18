@@ -1,5 +1,5 @@
 <script>
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { Button as SparkleButton } from '$lib/components/ui/button-sparkle';
 	import { Button } from '$lib/components/ui/button';
 	import HeroAnimation from '$lib/components/HeroAnimation.svelte';
@@ -20,13 +20,13 @@
 		<h1
 			class="mb-10 max-w-[14em] font-display text-4xl font-semibold leading-[106%] md:text-5xl lg:text-7xl"
 		>
-			{$t('default.page.home.hero')}
+			{m.page_home_hero()}
 		</h1>
 		<a href="/app/auth/login">
 			<SparkleButton
 				class="rounded-lg px-3 py-5 font-bold text-black shadow-lg dark:shadow-gray-300/30 lg:px-6 lg:py-7 lg:text-lg"
 			>
-				{$t('default.page.home.cta')}
+				{m.page_home_cta()}
 			</SparkleButton>
 		</a>
 	</div>

@@ -4,6 +4,7 @@
 	import BullshiftChat from '$lib/components/bullshift/BullshiftChat.svelte';
 	import type { PageData } from './$types';
 	import { onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 
 	interface Props {
 		data: PageData;
@@ -13,7 +14,7 @@
 
 	// Cleanup function
 	onDestroy(async () => {
-		if (data.chatId) {
+		if (browser && data.chatId) {
 			try {
 				// Make a request to cleanup endpoint
 				await fetch('/api/ai/bullshift/cleanup', {

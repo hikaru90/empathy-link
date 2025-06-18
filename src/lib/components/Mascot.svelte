@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { run } from 'svelte/legacy';
-
 	import ChevronUp from 'lucide-svelte/icons/chevron-up'
 	import ChevronDown from 'lucide-svelte/icons/chevron-down'
 	import backgroundImage from '$assets/images/holo3.jpg';
-	import { t, locale } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { onMount, onDestroy } from 'svelte';
+	import { getLocale } from '$src/paraglide/runtime';
+	const locale = $derived(getLocale());
 
 	interface Props {
 		step: number;
@@ -87,7 +88,7 @@
 				},
 				body: JSON.stringify({
 					text: judgement,
-					lang: $locale
+					lang: locale
 				})
 			});
 			const res = await judgementRes.json();

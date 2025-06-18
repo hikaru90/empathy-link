@@ -52,7 +52,10 @@ if (typeof window !== 'undefined') {
       
       return response;
     } catch (error) {
-      console.error('Fetch error:', error);
+      // Don't log AbortErrors as they're normal during navigation
+      if (error instanceof Error && error.name !== 'AbortError') {
+        console.error('Fetch error:', error);
+      }
       throw error;
     }
   };

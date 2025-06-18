@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { generateHslaColors } from '$scripts/helpers';
 	import Donut from '$lib/components/Donut.svelte';
 
@@ -29,7 +29,7 @@
 	>
 		<div class="flex items-center justify-between px-4 pb-2 pt-3">
 			<h2 class="text-md mb-2 font-bold">
-				{$t('default.page.dashboard.needs.heading')}
+				\{m.page_dashboard_needs_heading()}
 			</h2>
 		</div>
 		<div class="flex items-center justify-center">
@@ -41,7 +41,7 @@
 		</div>
 		<div class="px-4 pb-3 pt-2">
 			{#if data.length === 0}
-				{$t('default.page.dashboard.needs.empty')}
+				\{m.page_dashboard_needs_empty()}
 			{:else}
 				{#each data as need, index}
 				{#if showMore || index < 3}

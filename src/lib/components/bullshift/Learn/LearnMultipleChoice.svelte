@@ -2,6 +2,7 @@
 	import { marked } from 'marked';
 	import type { MultipleChoiceBlock } from '$routes/bullshift/learn/[id]/edit/schema';
 	import type { LearningSession } from '$routes/bullshift/learn/[id]/edit/schema';
+	import { m } from '$lib/translations';
 
 	interface Props {
 		content: MultipleChoiceBlock;
@@ -288,7 +289,7 @@
 		{#if showResult}
 			<div class="mt-6 p-4 rounded-lg {getCurrentQuestionResult() ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}">
 				<div class="font-medium mb-2">
-					{getCurrentQuestionResult() ? '🎉 Correct!' : '❌ Incorrect'}
+					{getCurrentQuestionResult() ? (m?.page?.learn?.multipleChoice?.correct?.() ?? '🎉 Correct!') : (m?.page?.learn?.multipleChoice?.incorrect?.() ?? '❌ Incorrect')}
 				</div>
 				
 				{#if currentQuestion().explanation}

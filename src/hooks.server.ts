@@ -1,19 +1,21 @@
-import { locale, loadTranslations } from '$lib/translations';
 import { v4 as uuidv4 } from 'uuid';
 import { serializeNonPOJOs } from '$scripts/helpers';
 import { pb } from '$scripts/pocketbase'
 import { PUBLIC_POSTHOG_KEY } from '$env/static/public';
 import { redirect, type Handle } from '@sveltejs/kit';
+import { sequence } from '@sveltejs/kit/hooks';
+import { paraglideMiddleware } from '$src/paraglide/server';
+
+
 const client = 'empathy_link'
 
-
-export const handle: Handle = async ({ event, resolve }) => {
+const first: Handle = async ({ event, resolve }) => {
 	if (
-    event.url.pathname.startsWith('/.well-known/appspecific/com.chrome.devtools')
-  ) {
-    return new Response(null, { status: 204 });
-  }
-	
+		event.url.pathname.startsWith('/.well-known/appspecific/com.chrome.devtools')
+	) {
+		return new Response(null, { status: 204 });
+	}
+
 	// Get session token and posthog user id
 	let sessionToken = event.cookies.get(`${client}_session_id`);
 	let posthogUserId = event.cookies.get(`${client}_user_id`);
@@ -64,7 +66,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	// Initialize PocketBase instance for this request
 	event.locals.pb = pb;
-	
+
 	// Load authentication state from cookies
 	const cookieHeader = event.request.headers.get('cookie') || '';
 	event.locals.pb.authStore.loadFromCookie(cookieHeader);
@@ -81,7 +83,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	} catch (err) {
 		const error = err as { status?: number; message?: string };
 		console.log('Token refresh failed:', error.message || 'Unknown error');
-		
+
 		// Only clear auth store if the error indicates invalid/expired token
 		if (error.status === 401 || error.status === 403) {
 			console.log('Clearing auth store due to invalid token');
@@ -105,7 +107,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	// Resolve the request
 	const response = await resolve(event);
-	
+
 	// Update the cookie with current auth state
 	try {
 		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie({
@@ -119,22 +121,22 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname.startsWith('/api')) {
 		if (!event.locals.pb.authStore.isValid) {
 			console.log(`Unauthorized API access attempt: ${event.url.pathname}`);
-			
+
 			// Return JSON error for API routes instead of redirect
 			if (event.request.headers.get('accept')?.includes('application/json')) {
 				return new Response(
-					JSON.stringify({ 
-						error: 'Authentication required', 
+					JSON.stringify({
+						error: 'Authentication required',
 						code: 'UNAUTHORIZED',
 						redirectTo: '/app/auth/login'
-					}), 
-					{ 
+					}),
+					{
 						status: 401,
 						headers: { 'Content-Type': 'application/json' }
 					}
 				);
 			}
-			
+
 			throw redirect(303, '/app/auth/login');
 		}
 	}
@@ -148,4 +150,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	return response;
-} 
+}
+
+const paraglideHandle: Handle = ({ event, resolve }) =>
+	paraglideMiddleware(event.request, ({ request: localizedRequest, locale }) => {
+		event.request = localizedRequest;
+		return resolve(event, {
+			transformPageChunk: ({ html }) => {
+				return html.replace('%lang%', locale);
+			}
+		});
+	});
+
+
+export const handle = sequence(first, paraglideHandle);

@@ -1,9 +1,12 @@
 <script lang="ts">
-	import { t, locale } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import IconSelf from '$assets/icons/icon-self.svg?raw';
 	import IconFight from '$assets/icons/icon-fight.svg?raw';
 	import IconFeedback from '$assets/icons/icon-feedback.svg?raw';
 	import IconLearn from '$assets/icons/icon-learn.svg?raw';
+	import { getLocale } from '$src/paraglide/runtime';
+	const locale = $derived(getLocale());
+	
 
 	interface Card {
 		heading: string;
@@ -13,22 +16,22 @@
 
 	let modules = $derived([
 		{
-			heading: $t('default.page.home.components.modules.modules.selfempathy'),
+			heading: m.page_home_components_modules_modules_selfempathy(),
 			icon: IconSelf,
 			delayed: false
 		},
 		{
-			heading: $t('default.page.home.components.modules.modules.fight'),
+			heading: m.page_home_components_modules_modules_fight(),
 			icon: IconFight,
 			delayed: false
 		},
 		{
-			heading: $t('default.page.home.components.modules.modules.feedback'),
+			heading: m.page_home_components_modules_modules_feedback(),
 			icon: IconFeedback,
 			delayed: true
 		},
 		{
-			heading: $t('default.page.home.components.modules.modules.learn'),
+			heading: m.page_home_components_modules_modules_learn(),
 			icon: IconLearn,
 			delayed: true
 		}
@@ -37,7 +40,7 @@
 
 <div class="mb-40 flex flex-col items-center">
 	<h2 class="mb-16 md:mb:20 max-w-[19em] text-center font-display text-2xl font-semibold lg:text-4xl">
-		{$t('default.page.home.components.modules.heading')}
+		{m.page_home_components_modules_heading()}
 	</h2>
 	<div class="relative">
 		<div class="relative flex flex-row flex-wrap justify-center gap-4">
@@ -62,7 +65,7 @@
 									<div
 										class="absolute right-4 top-0.5 -translate-y-full translate-x-full transform rounded-full bg-red-500 px-2 py-0.5 text-xs"
 									>
-										{$locale == 'en' ? 'soon' : 'bald'}
+										{locale == 'en' ? 'soon' : 'bald'}
 									</div>
 								{/if}
 								<span class="text-[10px] md:text-xs dark:text-white">

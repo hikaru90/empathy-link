@@ -1,4 +1,3 @@
-import { loadTranslations } from '$lib/translations';
 import { user } from '$store/auth';
 import { get } from 'svelte/store';
 import { pb } from '$scripts/pocketbase';
@@ -8,6 +7,11 @@ const originalConsoleError = console.error;
 console.error = (...args) => {
 	for (const arg of args) {
 		if (arg instanceof Error) {
+			// Don't log AbortErrors as they're normal during navigation
+			if (arg.name === 'AbortError') {
+				return;
+			}
+			
 			const userId = get(user)?.id;
 			originalConsoleError(arg.message);
 			originalConsoleError(arg.stack);
@@ -28,7 +32,6 @@ console.error = (...args) => {
 
 export const load = async ({ url, data }) => {
 
-	await loadTranslations(data.locale, url.pathname);
 	if (data.user) user.set(data.user);
 	else user.set(undefined);
 

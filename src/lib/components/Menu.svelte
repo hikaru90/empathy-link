@@ -4,14 +4,16 @@
 	import { onMount } from 'svelte';
 	import Logo from '$lib/components/Logo.svelte';
 	import Avatar from '$lib/components/Avatar.svelte';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import * as Popover from '$lib/components/ui/popover';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { locale, locales } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
 	import { scroll } from '$store/page';
 	import { goto } from '$app/navigation';
 	import { debounce } from '$scripts/helpers'
+	import { getLocale, setLocale } from '$src/paraglide/runtime';
+	const locale = $derived(getLocale());
+
 	interface Props {
 		submenu?: import('svelte').Snippet;
 		user: App.User;
@@ -24,8 +26,8 @@
 	let scrollingUp = $state(false);
 
 	let menuItems = $derived([
-		{ label: $t('default.page.home.nav') },
-		{ label: $t('default.page.contact.nav') }
+		{ label: m.page_home_nav() },
+		{ label: m.page_contact_nav() }
 	]);
 
 	const langs = [
@@ -36,7 +38,7 @@
 	const handleSelect: (event: SelectedChangeEvent) => void = (event) => {
 		if (event) {
 			setCookie('locale', event.value);
-			locale.update(() => event.value);
+			setLocale(event.value as 'de' | 'en')
 		}
 	};
 
@@ -82,7 +84,7 @@
 					<Popover.Content class="mt-[10px] w-40 bg-background">
 						<div class="mb-3 border-b border-gray-300/60 pb-3 dark:border-gray-300/20">
 							<Select.Root
-								selected={langs.find((lang) => lang.value === $locale)}
+								selected={langs.find((lang) => lang.value === locale)}
 								onSelectedChange={handleSelect}
 							>
 								<Select.Trigger class="">
@@ -104,7 +106,7 @@
 					</div>
 				{:else}
 					<Button onclick={() => goto('/app/auth/login')} variant="outline">
-						{$t('default.page.login.heading')}
+						{m.page_login_heading()}
 					</Button>
 				{/if}
 			</div>

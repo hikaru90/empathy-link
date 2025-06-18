@@ -4,12 +4,12 @@
 	import { Button } from '$lib/components/ui/button';
 	import { onMount } from 'svelte';
 	import { pb } from '$scripts/pocketbase';
-	import { t, locale } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { startDate, endDate } from '$store/dashboard';
 	import { goto } from '$app/navigation';
 	import { groupBy, sortByKey, generateHslaColors } from '$scripts/helpers';
 	import Donut from '$lib/components/Donut.svelte';
-
+	
 	interface Props {
 		user: App.User;
 	}
@@ -23,7 +23,7 @@
 	let displaySelfcenteredNeeds = $state(false);
 
 	let data = $derived(needs.map((entry) => {
-		return { name: $locale === 'en' ? entry.need.nameEN : entry.need.nameDE, count: entry.count };
+		return { name: locale === 'en' ? entry.need.nameEN : entry.need.nameDE, count: entry.count };
 	}));
 
 	const fetchData = async () => {
@@ -89,7 +89,7 @@
 		<div class="relative z-10 rounded-lg bg-needs-background dark:bg-muted text-needs-foreground shadow-2xl shadow-black/10">
 			<div class="flex items-center justify-between px-4 pb-2 pt-3">
 				<h2 class="text-md mb-2 font-bold">
-					{$t('default.page.dashboard.needs.heading')}
+					\{m.page_dashboard_needs_heading()}
 				</h2>
 				<div class="flex items-center gap-2">
 					<Button
@@ -98,7 +98,7 @@
 							? 'solid-need-button text-white'
 							: 'border-need-button'} h-7 rounded-full px-4 leading-tight transition"
 					>
-						{$t('default.page.dashboard.needs.community')}
+						\{m.page_dashboard_needs_community()}
 					</Button>
 					<Button
 						onclick={() => (displaySelfcenteredNeeds = true)}
@@ -106,7 +106,7 @@
 							? 'solid-need-button text-white'
 							: 'border-need-button'} h-7 rounded-full px-4 leading-tight"
 					>
-						{$t('default.page.dashboard.needs.selfcentered')}
+						\{m.page_dashboard_needs_selfcentered()}
 					</Button>
 				</div>
 			</div>
@@ -119,7 +119,7 @@
 			</div>
 			<div class="px-4 pb-3 pt-2">
 				{#if needs.length === 0}
-					{$t('default.page.dashboard.needs.empty')}
+					\{m.page_dashboard_needs_empty()}
 				{:else}
 					{#each needs as need, index}
 						{#if displaySelfcenteredNeeds === need.need.selfcentered}
@@ -132,7 +132,7 @@
 										class="h-3 w-5 rounded-full"
 									></div>
 									<span>
-										{$locale === 'en' ? need.need.nameEN : need.need.nameDE}
+										{locale === 'en' ? need.need.nameEN : need.need.nameDE}
 									</span>
 								</div>
 								<span>

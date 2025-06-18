@@ -2,7 +2,7 @@
 	import WebsiteMenu from '$lib/components/WebsiteMenu.svelte';
 	import AnimatedHeroBig from '$lib/components/AnimatedHeroBig.svelte';
 	import Locale from '$lib/components/Locale.svelte';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import The4Steps from '$lib/components/The4Steps.svelte';
 	import Modules from '$lib/components/Modules.svelte';
 	import Selfempathy from '$lib/components/Selfempathy.svelte';
@@ -13,6 +13,7 @@
 	import { onMount } from 'svelte';
 	import { backgroundColor, currentSection } from '$store/page';
 	import type { ActionOptions } from 'puppeteer';
+	import { browser } from '$app/environment';
 
 	interface Props {
 		data: App.Locals;
@@ -31,6 +32,8 @@
 	];
 
 	const updateBackgroundColor = () => {
+		if (!browser) return;
+		
 		const targets = targetColors;
 		let newColor = '';
 		let section = '';

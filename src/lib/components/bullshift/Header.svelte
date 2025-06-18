@@ -6,7 +6,6 @@
 	import * as Drawer from '$lib/components/ui/drawer/index.js';
 	// import { Button } from '$lib/components/ui/button/index.js';
 	import { Button } from '$lib/components/ui/button-op1/index.js';
-	import { t } from '$lib/translations';
 	import LogOut from 'lucide-svelte/icons/log-out';
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { cn } from '$lib/utils';
@@ -65,7 +64,7 @@
 							decoration="floating-op1"
 							class="flex !h-10 w-full items-center justify-between gap-3 border-offwhite bg-orange-900 text-red-300 data-[highlighted]:bg-red-200 data-[highlighted]:text-red-500"
 						>
-							{$t('default.menu.profile.logout')}
+							{m.menu_profile_logout()}
 							<LogOut class="size-3" /></Button
 						>
 					</button>

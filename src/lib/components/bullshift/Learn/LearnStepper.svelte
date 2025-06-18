@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button-op1/index.js';
-	import { t } from '$lib/translations';
 	import ArrowRight from 'lucide-svelte/icons/arrow-right';
 	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
+	import { m } from '$lib/translations';
 
 	interface Props {
 		step: number;
@@ -35,7 +35,7 @@
 			// On completion page, might want to show "Finish" or hide the button
 			return 'Finish';
 		}
-		return $t('default.page.fights.form.general.next');
+		return m.page_fights_form_general_next();
 	});
 
 	const goForward = () => {

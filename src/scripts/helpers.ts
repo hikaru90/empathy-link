@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { t, locale } from '$lib/translations';
+import { m } from '$lib/translations';
 import { get } from 'svelte/store';
 
 export const getScrollbarWidth = () => {

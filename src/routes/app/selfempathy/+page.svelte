@@ -3,7 +3,7 @@
 	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
 	import type { PageData } from '../../app/selfempathy/$types.js';
 	import LoginForm from '$lib/components/LoginForm.svelte';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { goto } from '$app/navigation';
 	import { backgroundColor } from '$store/page';
 	import { onMount } from 'svelte';
@@ -30,7 +30,7 @@
 			<div
 				class="relative z-10 mb-8 flex flex-row items-start justify-between py-4 md:items-center md:bg-transparent md:pb-6"
 			>
-				<h1 class="font-heading text-lg font-semibold">{$t('default.page.selfempathy.heading')}</h1>
+				<h1 class="font-heading text-lg font-semibold">{m.page_selfempathy_heading()}</h1>
 			</div>
 
 
@@ -48,7 +48,7 @@
 						<SparkleButton
 							class="flex items-center justify-between gap-10 rounded-full pl-5 pr-3 font-bold text-black dark:shadow-gray-300/30"
 						>
-							{$t('default.page.selfempathy.create')}
+							{m.page_selfempathy_create()}
 							<Heart class="h-4 w-4 text-red-600
 							" />
 						</SparkleButton>

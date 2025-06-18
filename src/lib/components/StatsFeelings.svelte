@@ -4,7 +4,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { onMount } from 'svelte';
 	import { pb } from '$scripts/pocketbase';
-	import { t, locale } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { startDate, endDate } from '$store/dashboard';
 	import { goto } from '$app/navigation';
 	import { groupBy, sortByKey, generateHslaColors } from '$scripts/helpers';
@@ -36,7 +36,7 @@
 	>
 		<div class="flex items-center justify-between px-4 pb-2 pt-3">
 			<h2 class="text-md mb-2 font-bold">
-				{$t('default.page.dashboard.feelings.heading')}
+				{m.page_dashboard_feelings_heading()}
 			</h2>
 		</div>
 		<div class="flex items-center justify-center">
@@ -48,7 +48,7 @@
 		</div>
 		<div class="px-4 pb-3 pt-2">
 			{#if data.length === 0}
-				{$t('default.page.dashboard.feelings.empty')}
+				\{m.page_dashboard_feelings_empty()}
 			{:else}
 				{#each data as feeling, index}
 				{#if showMore || index < 3}

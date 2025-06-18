@@ -3,14 +3,15 @@
 	import X from 'lucide-svelte/icons/x';
 	import LogOut from 'lucide-svelte/icons/log-out';
 	import User from 'lucide-svelte/icons/user'
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Switch } from '$lib/components/ui/switch';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { locale } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
 	import backgroundImage from '$assets/images/holo3.jpg';
+	import { getLocale, setLocale } from '$src/paraglide/runtime';
+	const locale = $derived(getLocale());
 
 
 	interface Props {
@@ -28,7 +29,7 @@
 	const handleSelect = (selected: { value: string } | undefined) => {
 		if (selected) {
 			setCookie('locale', selected.value);
-			locale.update(() => selected.value);
+			setLocale(selected.value as 'de' | 'en')
 		}
 	};
 </script>
@@ -49,7 +50,7 @@
 		<Sheet.Header
 			class="flex flex-row items-center justify-between border-b border-black/10 px-5 py-2"
 		>
-			<Sheet.Title class="pt-0.5">{$t('default.menu.profile.sheet.header')}</Sheet.Title>
+			<Sheet.Title class="pt-0.5">{m.menu_profile_sheet_header()}</Sheet.Title>
 			<Sheet.Close class="!m-0">
 				<Button
 					decoration="floating-op1"
@@ -64,7 +65,7 @@
 			<div>
 				<div class="mb-3 border-b border-gray-300/60 pb-3 dark:border-gray-300/20">
 					<Select.Root
-						selected={langs.find((lang) => lang.value === $locale)}
+						selected={langs.find((lang) => lang.value === locale)}
 						onSelectedChange={handleSelect}
 					>
 						<Select.Trigger class="">
@@ -111,7 +112,7 @@
 							decoration="floating-op1"
 							class="flex !h-10 w-full items-center justify-between gap-3 border-offwhite bg-orange-900 text-red-300 data-[highlighted]:bg-red-200 data-[highlighted]:text-red-500"
 						>
-							{$t('default.menu.profile.logout')}
+							{m.menu.profile.logout()}
 							<LogOut class="size-3" /></Button
 						>
 					</button>

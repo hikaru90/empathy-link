@@ -1,32 +1,5 @@
-import i18n from 'sveltekit-i18n';
-import lang from './lang.json';
+// Paraglide translation utility for SvelteKit
+import { m } from '../paraglide/messages.js';
+import { setLocale, getLocale } from '../paraglide/runtime.js';
 
-/** @type {import('sveltekit-i18n').Config} */
-const config = ({
-  translations: {
-    en: { lang },
-    de: { lang },
-  },
-  initLocale: 'en',
-  loaders: [
-    {
-      locale: 'de',
-      key: 'default',
-      loader: async () => (
-        await import('$locales/de.json')
-      ).default,
-    },
-    {
-      locale: 'en',
-      key: 'default',
-      // routes: ['/'], // you can use regexes as well!
-      loader: async () => (
-        await import('$locales/en.json')
-      ).default,
-    }
-  ],
-});
-
-export const { t, locale, locales, loading, loadTranslations, initialized } = new i18n(config);
-
-loading.subscribe(($loading) => $loading && console.log('Loading translations for the main instance...'));
+export { m, setLocale, getLocale }; 

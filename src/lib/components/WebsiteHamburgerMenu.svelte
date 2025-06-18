@@ -3,7 +3,7 @@
 	import { Button as ButtonOp1 } from '$lib/components/ui/button-op1/index.js';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import X from 'lucide-svelte/icons/x';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { backgroundColor } from '$store/page';
 	import { scrollToElement } from '$scripts/helpers';
 	import Menu from 'lucide-svelte/icons/menu'
@@ -12,8 +12,9 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Switch } from '$lib/components/ui/switch';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { locale, locales } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
+	import { getLocale } from '$src/paraglide/runtime';
+	const locale = $derived(getLocale());
 
 	interface Props {
 		menuItems: any;
@@ -53,7 +54,7 @@
 		<Sheet.Header
 			class="flex flex-row items-center justify-between border-b border-black/10 px-5 py-2.5"
 		>
-			<Sheet.Title class="pt-0.5">{$t('default.menu.title')}</Sheet.Title>
+			<Sheet.Title class="pt-0.5">{m.menu_title()}</Sheet.Title>
 			<Sheet.Close class="!m-0" onclick={() => (dialogOpen = false)}>
 				<ButtonOp1
 					decoration="floating-op1"
@@ -79,7 +80,7 @@
 			</div>
 			<div class="flex flex-col gap-5">
 				<Select.Root
-					selected={langs.find((lang) => lang.value === $locale)}
+					selected={langs.find((lang) => lang.value === locale)}
 					onSelectedChange={handleSelect}
 				>
 					<Select.Trigger class="">
@@ -94,7 +95,7 @@
 				</Select.Root>
 				<div class="mb-3 border-b border-gray-300/30 dark:border-gray-300/20"></div>
 				<Button onclick={() => goto('/app/auth/login')} variant="outline" class="w-full font-bold dark:text-black rounded-lg">
-					{$t('default.page.login.heading')}
+					{m.page_login_heading()}
 				</Button>
 			</div>
 		</div>

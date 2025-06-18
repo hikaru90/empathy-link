@@ -7,7 +7,7 @@
 	import { type SuperValidated, type Infer, defaults, superForm } from 'sveltekit-superforms';
 	import FormStepper from '$lib/components/FormStepper.svelte';
 	import FormStepDisplay from '$lib/components/FormStepDisplay.svelte';
-	import { t, locale } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { get } from 'svelte/store';
 	import { zodClient, zod } from 'sveltekit-superforms/adapters';
 	import {

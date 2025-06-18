@@ -2,7 +2,7 @@
 	import FightOverviewAll from '$lib/components/FightOverviewAll.svelte';
 	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
 	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { Button as SparkleButton } from '$lib/components/ui/button-sparkle';
 	import Plus from 'lucide-svelte/icons/plus'
 	import { onMount } from 'svelte';
@@ -25,7 +25,7 @@
 			<div
 				class="relative z-10 mb-8 flex flex-row items-start justify-between py-4 md:items-center md:bg-transparent md:pb-6"
 			>
-				<h1 class="font-heading text-lg font-semibold">{$t('default.page.fight.heading')}</h1>
+				<h1 class="font-heading text-lg font-semibold">{m.page_fight_heading()}</h1>
 			</div>
 			<ReceivedLinks class="mb-14" />
 			<FightOverviewAll user={data.user} />
@@ -43,7 +43,7 @@
 						<SparkleButton
 							class="flex items-center justify-between gap-10 rounded-full pl-5 pr-3 font-bold text-black dark:shadow-gray-300/30"
 						>
-							{$t('default.page.fights.create')}
+							{m.page_fights_create()}
 							<Plus class="h-4 w-4" />
 						</SparkleButton>
 					</a>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/translations';
 	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
 	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
 	import { page } from '$app/stores';
@@ -9,7 +10,6 @@
 	import { type SuperValidated, type Infer, defaults, superForm } from 'sveltekit-superforms';
 	import ResponseFormStepper from '$lib/components/ResponseFormStepper.svelte';
 	import FormStepDisplay from '$lib/components/FormStepDisplay.svelte';
-	import { t, locale } from '$lib/translations';
 	import { get } from 'svelte/store';
 	import { zodClient, zod } from 'sveltekit-superforms/adapters';
 	import {
@@ -40,6 +40,8 @@
 	import X from 'lucide-svelte/icons/x'
 	import { backgroundColor } from '$store/page';
 	import { browser } from '$app/environment';
+	import { getLocale } from '$src/paraglide/runtime';
+	const locale = $derived(getLocale());
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
 	let feelings = $state([]);
@@ -352,49 +354,49 @@
 			{
 				step: 1,
 				content: [
-					`${fight.expand.owner.firstName} ${$t('default.page.respond.steps.greeting.heading')}. ${$t('default.page.respond.steps.greeting.question')}`
+					`${fight.expand.owner.firstName} ${m.page_respond_steps_greeting_heading()}. ${m.page_respond_steps_greeting_question()}`
 				]
 			},
 			{
 				step: 2,
 				content: [
-					`${$t('default.page.respond.steps.disclaimer.heading')}: ${$t('default.page.respond.steps.disclaimer.description')}`
+					`${m.page_respond_steps_disclaimer_heading()}: ${m.page_respond_steps_disclaimer_description()}`
 				]
 			},
-			{ step: 3, content: [`${$t('default.page.respond.steps.breathe.heading')}`] },
+			{ step: 3, content: [`${m.page_respond_steps_breathe_heading()}`] },
 			{
 				step: 4,
 				content: [
-					`${fight.expand.owner.firstName} ${$t('default.page.respond.steps.ownerObservation.heading')}`
+					`${fight.expand.owner.firstName} ${m.page_respond_steps_ownerObservation_heading()}`
 				]
 			},
 			{
 				step: 5,
 				content: [
-					`${fight.expand.owner.firstName} ${$t('default.page.respond.steps.ownerFeelings.heading')}`
+					`${fight.expand.owner.firstName} ${m.page_respond_steps_ownerFeelings_heading()}`
 				]
 			},
 			{
 				step: 6,
 				content: [
-					`${fight.expand.owner.firstName} ${$t('default.page.respond.steps.ownerNeeds.heading')}`
+					`${fight.expand.owner.firstName} ${m.page_respond_steps_ownerNeeds_heading()}`
 				]
 			},
 			{
 				step: 7,
 				content: [
-					`${fight.expand.owner.firstName} ${$t('default.page.respond.steps.ownerRequest.heading')}`
+					`${fight.expand.owner.firstName} ${m.page_respond_steps_ownerRequest_heading()}`
 				]
 			},
-			{ step: 8, content: [$t('default.page.respond.steps.pause.heading')] },
-			{ step: 9, content: [$t('default.page.fight.create.observation')] },
-			{ step: 10, content: [$t('default.page.fight.create.feelings')] },
-			{ step: 11, content: [$t('default.page.fight.create.needs')] },
-			{ step: 12, content: [$t('default.page.fight.create.request')] },
+			{ step: 8, content: [m.page_respond_steps_pause_heading()] },
+			{ step: 9, content: [m.page_fight_create_observation()] },
+			{ step: 10, content: [m.page_fight_create_feelings()] },
+			{ step: 11, content: [m.page_fight_create_needs()] },
+			{ step: 12, content: [m.page_fight_create_request()] },
 			{
 				step: 13,
-				content: [$t('default.page.respond.steps.success')],
-				errorContent: [$t('default.page.respond.steps.error')]
+				content: [m.page_respond_steps_success()],
+				errorContent: [m.page_respond_steps_error()]
 			}
 		];
 	};
@@ -478,7 +480,7 @@
 								variant="ghost"
 								class="mb-6 flex w-full items-center justify-start gap-2"
 								><CircleHelp />
-								{$t('default.page.respond.steps.greeting.explanationCta')}</Button
+								{m.page_respond_steps_greeting_explanationCta()}</Button
 							>
 						</div>
 					{:else if step === 2}
@@ -487,7 +489,7 @@
 						<div class="form-content flex items-center justify-center">
 							<div class="relative my-40 flex flex-col text-center">
 								<span class="relative z-10 -mb-2">
-									{$t('default.page.respond.steps.breathe.heading')}
+									{m.page_respond_steps_breathe_heading()}
 								</span>
 								<div class="breathe"></div>
 								<div class="breathe2"></div>
@@ -497,7 +499,7 @@
 						<div class="form-content">
 							<div class="form-label pt-10">
 								{fight.expand.owner.firstName}
-								{$t('default.page.respond.steps.ownerObservation.heading')}
+								{m.page_respond_steps_ownerObservation_heading()}
 							</div>
 							<div class="rounded bg-white/10 px-4 py-3 shadow-xl">
 								{fight.observation}
@@ -507,12 +509,12 @@
 						<div class="form-content">
 							<div class="form-label pt-10">
 								{fight.expand.owner.firstName}
-								{$t('default.page.respond.steps.ownerFeelings.heading')}
+								{m.page_respond_steps_ownerFeelings_heading()}
 							</div>
 							<div class="flex flex-wrap items-center gap-2 pb-6">
 								{#each fight.expand.feelings as feeling}
 									<div class="rounded-md bg-white/20 px-4 py-2 shadow-lg">
-										{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
+										{locale === 'de' ? feeling.nameDE : feeling.nameEN}
 									</div>
 								{/each}
 							</div>
@@ -521,12 +523,12 @@
 						<div class="form-content">
 							<div class="form-label pt-10">
 								{fight.expand.owner.firstName}
-								{$t('default.page.respond.steps.ownerNeeds.heading')}
+								{m.page_respond_steps_ownerNeeds_heading()}
 							</div>
 							<div class="flex flex-wrap items-center gap-2 pb-6">
 								{#each fight.expand.needs as need}
 									<div class="rounded-md bg-white/10 px-4 py-2 shadow-lg">
-										{$locale === 'de' ? need.nameDE : need.nameEN}
+										{locale === 'de' ? need.nameDE : need.nameEN}
 									</div>
 								{/each}
 							</div>
@@ -535,7 +537,7 @@
 						<div class="form-content">
 							<div class="form-label pt-10">
 								{fight.expand.owner.firstName}
-								{$t('default.page.respond.steps.ownerRequest.heading')}
+								{m.page_respond_steps_ownerRequest_heading()}
 							</div>
 							<div class="rounded bg-white/10 px-4 py-3 pb-6 shadow-xl">
 								{fight.request}
@@ -544,7 +546,7 @@
 					{:else if step === 8}
 						<div class="form-content flex items-center justify-center">
 							<div class="flex max-w-[18em] flex-col gap-4 pb-6 text-center">
-								<!-- {$t('default.page.respond.steps.pause.heading')} -->
+								<!-- {m.default_page_respond_steps_pause_heading()} -->
 							</div>
 						</div>
 					{:else if step === 9}
@@ -553,7 +555,7 @@
 								<Form.Control >
 									{#snippet children({ attrs })}
 																																		<Form.Label class="form-label"
-											>{$t('default.page.fights.form.observation.label')}</Form.Label
+											>{m.default_page_fights_form_observation_label()}</Form.Label
 										>
 										<Textarea
 											{...attrs}
@@ -573,7 +575,7 @@
 								<Form.Control >
 									{#snippet children({ attrs })}
 																																				<Form.Label class="form-label"
-											>{$t('default.page.fights.form.feelings.label')}</Form.Label
+											>{m.default_page_fights_form_feelings_label()}</Form.Label
 										>
 										<ToggleGroup.Root
 											type="multiple"
@@ -589,8 +591,8 @@
 																.slug}-foreground mb-1 mt-3 flex items-center gap-3 text-xs"
 														>
 															{positive.category === 'true'
-																? $t('default.page.fights.form.general.goodFeelings')
-																: $t('default.page.fights.form.general.badFeelings')}
+																? m.default_page_fights_form_general_goodFeelings()
+																: m.default_page_fights_form_general_badFeelings()}
 															<div
 																class="border-b border-{stepConstructor[step - 1]
 																	.slug}-foreground mr-2 flex-grow border-opacity-20"
@@ -613,7 +615,7 @@
 																				? `bg-white/40 font-bold dark:bg-muted`
 																				: 'border border-white/40 dark:border-white/20'} max-w-[300px] py-0  text-black shadow hover:text-black data-[state=on]:bg-feelings-foreground data-[state=on]:text-white dark:text-white dark:data-[state=on]:bg-feelings-foreground"
 																		>
-																			{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
+																			{locale === 'de' ? feeling.nameDE : feeling.nameEN}
 																		</ToggleGroup.Item>
 																	</button>
 																{/each}
@@ -635,7 +637,7 @@
 								<Form.Control >
 									{#snippet children({ attrs })}
 																																						<Form.Label class="form-label"
-											>{$t('default.page.fights.form.needs.label')}</Form.Label
+											>{m.default_page_fights_form_needs_label()}</Form.Label
 										>
 										<ToggleGroup.Root
 											type="multiple"
@@ -661,7 +663,7 @@
 																		? `bg-white/40 font-bold dark:bg-muted`
 																		: 'border border-white/40 dark:border-white/20'} max-w-[300px] py-0  text-black shadow hover:text-black data-[state=on]:bg-needs-foreground data-[state=on]:text-white dark:text-white dark:data-[state=on]:bg-needs-foreground"
 																>
-																	{$locale === 'de' ? need.nameDE : need.nameEN}
+																	{locale === 'de' ? need.nameDE : need.nameEN}
 																</ToggleGroup.Item>
 															</button>
 														{/each}
@@ -681,7 +683,7 @@
 								<Form.Control >
 									{#snippet children({ attrs })}
 																																								<Form.Label class="form-label"
-											>{$t('default.page.fights.form.request.label')}</Form.Label
+											>{m.default_page_fights_form_request_label()}</Form.Label
 										>
 										<Textarea {...attrs} bind:value={$formData.request} class="min-h-60" />
 																																																{/snippet}
@@ -693,11 +695,11 @@
 					{:else if formSuccess}
 					<div class="form-content">
 							<div class="my-6">
-								{$t('default.page.respond.steps.success.heading')}
+								{m.page_respond_steps_success_heading()}
 							</div>
 						</div>
 					{:else}
-						{$t('default.page.respond.steps.error.heading')}
+						{m.page_respond_steps_error_heading()}
 					{/if}
 				{/key}
 			{/if}
@@ -722,14 +724,14 @@
 	<Drawer.Content class="p-4">
 		<Drawer.Header>
 			<div class="flex items-center justify-between">
-				<Drawer.Title>{$t('default.page.respond.explanationTitle')}</Drawer.Title>
+				<Drawer.Title>{m.page_respond_explanationTitle()}</Drawer.Title>
 				<!-- <Drawer.Description>This action cannot be undone.</Drawer.Description> -->
 				<Drawer.Close>
 					<X class="text-red-600" />
 				</Drawer.Close>
 			</div>
 		</Drawer.Header>
-		<p class="mb-20 p-4">{$t('default.page.respond.explanation')}</p>
+		<p class="mb-20 p-4">{m.page_respond_explanation()}</p>
 	</Drawer.Content>
 </Drawer.Root>
 

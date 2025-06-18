@@ -2,13 +2,13 @@
 	import { createBubbler, preventDefault } from 'svelte/legacy';
 
 	const bubble = createBubbler();
+	import { m } from '$lib/translations';
 	import { daysAgo } from '$scripts/helpers';
 	import AppTopMenu from '$lib/components/AppTopMenu.svelte';
 	import AppBottomMenu from '$lib/components/AppBottomMenu.svelte';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { type SuperValidated, type Infer, defaults, superForm } from 'sveltekit-superforms';
-	import { t, locale } from '$lib/translations';
 	import { zodClient, zod } from 'sveltekit-superforms/adapters';
 	import { pb } from '$scripts/pocketbase';
 	import { onMount, onDestroy } from 'svelte';
@@ -29,6 +29,8 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
+	import { getLocale } from '$src/paraglide/runtime';
+	const locale = $derived(getLocale());
 
 	interface Props {
 		id: string;
@@ -52,7 +54,7 @@
 	});
 
 	const schema = z.object({
-		email: z.string().email({ message: get(t)('default.page.login.form.email.validEmailError') })
+		email: z.string().email({ message: get(m)('default.page.login.form.email.validEmailError') })
 	});
 	type FormSchema = typeof schema;
 
@@ -121,7 +123,7 @@
 				},
 				body: JSON.stringify({
 					template: 'sendLink',
-					locale: $locale,
+					locale: locale,
 					to: $formData.email,
 					owner: record.expand.owner.firstName,
 					recipientName: record.name,
@@ -130,10 +132,10 @@
 			});
 			console.log('sendMailRes', sendMailRes);
 			dialogOpen = false;
-			toast.success($t('default.menu.share.mailLinkConfirmation'));
+			toast.success(m.menu_share_mailLinkConfirmation());
 		} catch (err) {
 			console.log('error sending link per mail', err);
-			toast.error($t('default.menu.share.mailLinkError'));
+			toast.error(m.menu_share_mailLinkError());
 		}
 	};
 
@@ -175,7 +177,7 @@
 			decoration="dark-op1"
 			class="flex items-center gap-2 border-neutral-900 bg-green-700 text-sm text-zinc-200 hover:bg-green-800"
 		>
-			{$t('default.page.fight.resolve')}
+			{m.page_fight_resolve()}
 			<Check class="-mr-2" />
 		</Button>
 		{:else}
@@ -184,7 +186,7 @@
 			decoration="dark-op1"
 			class="flex items-center gap-2 border-neutral-900 bg-red-700 text-sm text-zinc-200 hover:bg-red-800"
 		>
-			{$t('default.page.fight.unresolve')}
+			{m.page_fight_unresolve()}
 			<RotateCcw class="-mr-2" />
 		</Button>
 		{/if}
@@ -193,7 +195,8 @@
 			decoration="dark-op1"
 			class="flex items-center gap-2 border-neutral-900 bg-neutral-800 text-sm text-zinc-200"
 		>
-			{$t('default.menu.share.cta')}
+			{m.menu_share_cta()}
+			{m.menu_share_cta()}
 			<Share2 class="-mr-1" />
 		</Button>
 	</div>
@@ -203,7 +206,7 @@
 	<Drawer.Content class="">
 		<Drawer.Header class="w-full border-b border-black/10">
 			<div class="flex items-center justify-between">
-				<Drawer.Title>{$t('default.menu.share.cta')}</Drawer.Title>
+				<Drawer.Title>{m.menu_share_cta()}</Drawer.Title>
 				<!-- <Drawer.Description>This action cannot be undone.</Drawer.Description> -->
 				<Drawer.Close>
 					<div class="label bg-feelings-background">
@@ -221,18 +224,18 @@
 					use:copy={shareableLink}
 					onsvelte-copy={() => {
 						drawerOpen = false;
-						toast.success($t('default.menu.share.copyLinkConfirmation'));
+						toast.success(m.menu_share_copyLinkConfirmation());
 					}}
 					class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm"
 				>
-					{$t('default.menu.share.copyLink')}
+					{m.menu_share_copyLink()}
 					<Clipboard />
 				</button>
 
 				<button
 					onclick={() => ((drawerOpen = false), (dialogOpen = true))}
 					class="skeumorphic-button flex w-full items-center justify-between rounded-full px-4 py-1.5 text-sm"
-					>{$t('default.menu.share.mailLink')} <Mail /></button
+					>{m.default_menu_share_mailLink} <Mail /></button
 				>
 			</div>
 		</Drawer.Footer>
@@ -243,7 +246,7 @@
 	<Dialog.Content>
 		<Dialog.Header>
 			<Dialog.Title class="mb-10 max-w-[9em] leading-tight"
-				>{$t('default.menu.share.mailDialogText')}</Dialog.Title
+				>{$m.default_menu_share_mailDialogText()}</Dialog.Title
 			>
 			<Dialog.Description>
 				<form
@@ -259,7 +262,7 @@
 									{...attrs}
 									bind:value={$formData.email}
 									type="text"
-									placeholder={$locale === 'en' ? 'E-Mail' : 'E-Mail Adresse'}
+									placeholder={locale === 'en' ? 'E-Mail' : 'E-Mail Adresse'}
 									class="mb-4"
 								/>
 																				{/snippet}
@@ -269,7 +272,7 @@
 					</Form.Field>
 					<div class="flex w-full justify-end">
 						<Button type="submit" class="flex items-center gap-3"
-							>{$t('default.menu.share.cta')} <SendHorizontal /></Button
+							>{$m.default_menu_share_cta()} <SendHorizontal /></Button
 						>
 					</div>
 				</form>

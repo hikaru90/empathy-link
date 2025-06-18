@@ -2,7 +2,7 @@
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { onMount } from 'svelte';
 	import { pb } from '$scripts/pocketbase';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { endDate } from '$store/dashboard';
 	import { goto } from '$app/navigation';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right'
@@ -141,7 +141,7 @@
 			>
 				<div class="mb-4 flex items-center justify-between">
 					<h2 class="text-md font-bold">
-						{$t('default.page.fights.receivedLinks.heading')}
+						\{m.page_fights_receivedLinks_heading()}
 					</h2>
 					<div class="flex items-center gap-1">
 						<Switch
@@ -151,22 +151,22 @@
 							class="scale-75 transform bg-gray-500"
 						/>
 						<Label for="lightMode" class="cursor-pointer"
-							>{$t('default.page.fights.displayResolved')}</Label
+							>{m.page_fights_displayResolved()}</Label
 						>
 					</div>
 				</div>
 				<div class="flex items-center text-2xs text-neutral-400">
 					<div class="w-1/6">
-						{$t('default.page.dashboard.fights.table.resolved')}
+						{m.page_dashboard_fights_table_resolved()}
 					</div>
 					<div class="w-1/3">
-						{$t('default.page.dashboard.fights.table.partner')}
+						{m.page_dashboard_fights_table_partner()}
 					</div>
 					<div class="w-1/4">
-						{$t('default.page.dashboard.fights.table.date')}
+						{m.page_dashboard_fights_table_date()}
 					</div>
 					<div class="w-1/6">
-						{$t('default.page.dashboard.fights.table.opened')}
+						{m.page_dashboard_fights_table_opened()}
 					</div>
 					<div class="w-1/6"></div>
 				</div>

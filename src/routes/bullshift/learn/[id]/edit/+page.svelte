@@ -21,7 +21,7 @@
 	import * as Resizable from '$lib/components/ui/resizable';
 	import { blur } from 'svelte/transition';
 	import SparklePill from '$lib/components/SparklePill.svelte';
-	import { t, initialized, locale } from '$lib/translations';
+	import { t } from '$lib/translations';
 	import '$src/app.pcss';
 	import { Toaster } from '$lib/components/ui/sonner';
 	import AppMenu from '$lib/components/AppMenu.svelte';
@@ -34,6 +34,8 @@
 	import { page } from '$app/stores';
 	import { postHog, featureFlags } from '$store/posthog';
 	import { PUBLIC_INIT_POSTHOG } from '$env/static/public';
+	import { getLocale } from '$src/paraglide/runtime';
+	const locale = $derived(getLocale());
 
 	interface Props {
 		data: PageData;
@@ -100,8 +102,7 @@
 	};
 	const setLangAttribute = () => {
 		if (browser) {
-			const currentLocale = $locale;
-			document.documentElement.lang = currentLocale;
+			document.documentElement.lang = locale;
 		}
 	};
 	$effect(() => {

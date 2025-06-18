@@ -4,12 +4,11 @@
 	import { onMount } from 'svelte';
 	import Logo from '$lib/components/Logo.svelte';
 	import Avatar from '$lib/components/Avatar.svelte';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Switch } from '$lib/components/ui/switch';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { locale, locales } from '$lib/translations';
 	import { setCookie } from '$scripts/helpers';
 	import { scroll } from '$store/page';
 	import { goto } from '$app/navigation';
@@ -27,8 +26,8 @@
 	let scrollingUp = false;
 
 	let menuItems = $derived([
-		{ label: $t('default.page.home.nav') },
-		{ label: $t('default.page.contact.nav') }
+		{ label: m.page_home_nav() },
+		{ label: m.page_contact_nav() }
 	]);
 
 	const langs = [
@@ -82,7 +81,7 @@
 					</div>
 				{:else}
 					<Button onclick={() => goto('/app/auth/login')} decoration="op1" class="dark:text-white">
-						{$t('default.page.login.heading')}
+						{m.page_login_heading()}
 					</Button>
 				{/if}
 			</div>

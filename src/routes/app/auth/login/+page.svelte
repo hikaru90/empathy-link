@@ -2,7 +2,7 @@
 	import Menu from '$lib/components/Menu.svelte';
 	import type { PageData } from './$types.js';
 	import LoginForm from '$lib/components/LoginForm.svelte';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { page } from '$app/stores';
 	import type { PageProps } from './$types';
 
@@ -25,11 +25,11 @@
 				{#if verifyMail}
 					<div class="max-container relative">
 						<div class="text-white">
-							{$t('default.page.login.verifyMail')}
+							{m.page_login_verifyMail()}
 						</div>
 					</div>
 				{/if}
-				<h1 class="font-heading font-bold text-2xl">{$t('default.page.login.heading')}</h1>
+				<h1 class="font-heading font-bold text-2xl">{m.page_login_heading()}</h1>
 				<LoginForm data={data.form} class="w-full max-w-[400px]" />
 			</div>
 		</div>

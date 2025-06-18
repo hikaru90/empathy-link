@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { t, locale } from '$lib/translations';
+import { m } from '$lib/translations';
 import { get } from 'svelte/store';
 
 export const schemaStep1 = z.object({

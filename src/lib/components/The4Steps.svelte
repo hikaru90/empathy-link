@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t, locale } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import Plus from 'lucide-svelte/icons/plus';
 	import IconEye from '$assets/icons/icon-eye.svg?raw';
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
@@ -16,39 +16,39 @@
 
 	let cards = $derived([
 		{
-			heading: $t('default.page.home.components.the4steps.steps.observation.heading'),
+			heading: m.page_home_components_the4steps_steps_observation_heading(),
 			color: 'observation-foreground',
 			backgroundColor: 'observation-background',
 			icon: IconEye,
-			text: $t('default.page.home.components.the4steps.steps.observation.text')
+			text: m.page_home_components_the4steps_steps_observation_text()
 		},
 		{
-			heading: $t('default.page.home.components.the4steps.steps.feelings.heading'),
+			heading: m.page_home_components_the4steps_steps_feelings_heading(),
 			color: 'feelings-foreground',
 			backgroundColor: 'feelings-background',
 			icon: IconHeart,
-			text: $t('default.page.home.components.the4steps.steps.feelings.text')
+			text: m.page_home_components_the4steps_steps_feelings_text()
 		},
 		{
-			heading: $t('default.page.home.components.the4steps.steps.needs.heading'),
+			heading: m.page_home_components_the4steps_steps_needs_heading(),
 			color: 'needs-foreground',
 			backgroundColor: 'needs-background',
 			icon: IconSwirl,
-			text: $t('default.page.home.components.the4steps.steps.needs.text')
+			text: m.page_home_components_the4steps_steps_needs_text()
 		},
 		{
-			heading: $t('default.page.home.components.the4steps.steps.request.heading'),
+			heading: m.page_home_components_the4steps_steps_request_heading(),
 			color: 'request-foreground',
 			backgroundColor: 'request-background',
 			icon: IconSteps,
-			text: $t('default.page.home.components.the4steps.steps.request.text')
+			text: m.page_home_components_the4steps_steps_request_text()
 		}
 	]);
 </script>
 
 <div class="flex flex-col items-center mb-40 pt-12 md:pt-0">
 	<h2 class="mb-16 md:mb:20 max-w-[13em] text-center font-display text-3xl md:text-4xl font-semibold lg:text-5xl">
-		{$t('default.page.home.components.the4steps.heading')}
+		{m.page_home_components_the4steps_heading()}
 	</h2>
 	<div class="relative mb-16 md:mb:20">
     <div class="hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -98,7 +98,7 @@
 	</div>
   <!-- <div class="flex items-center justify-center">
     <Button variant="outline" class="bg-transparent border-2 border-black/60 text-base">
-      {$t('default.page.home.components.the4steps.cta.text')}
+      {m.default_page_home_components_the4steps_cta_text()}
     </Button>
   </div> -->
 </div>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import backgroundImage from '$assets/images/holo3.jpg';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import IconFolder from '$assets/icons/icon-folder.svg?raw';
 	import IconSelf from '$assets/icons/icon-self.svg?raw';
 	import IconFight from '$assets/icons/icon-fight.svg?raw';
@@ -17,48 +17,40 @@
 	let menuItems = $state([
 		{
 			slug: 'home',
-			name: get(t)('default.menu.bar.home'),
+			name: m.menu_bar_home(),
 			path: '/app/dashboard',
 			icon: IconFolder,
 			available: true
 		},
 		{
 			slug: 'selfempathy',
-			name: get(t)('default.menu.bar.selfempathy'),
+			name: m.menu_bar_selfempathy(),
 			path: '/app/selfempathy',
 			icon: IconSelf,
 			available: false
 		},
 		{
 			slug: 'fights',
-			name: get(t)('default.menu.bar.fights'),
+			name: m.menu_bar_fights(),
 			path: '/app/fights',
 			icon: IconFight,
 			available: true
 		},
 		{
 			slug: 'feedback',
-			name: get(t)('default.menu.bar.feedback'),
+			name: m.menu_bar_feedback(),
 			path: '/app/feedback',
 			icon: IconFeedback,
 			available: false
 		},
 		{
 			slug: 'learn',
-			name: get(t)('default.menu.bar.learn'),
+			name: m.menu_bar_learn(),
 			path: '/app/learn',
 			icon: IconLearn,
 			available: false
 		}
 	]);
-	t.subscribe((value) => {
-		const newMenuItems = menuItems.map((entry) => {
-			const translation = value(`default.menu.bar.${entry.slug}`);
-			entry.name = translation;
-			return entry;
-		});
-		menuItems = [...newMenuItems];
-	});
 </script>
 
 <div class="relative h-full w-full p-[1.2em]">

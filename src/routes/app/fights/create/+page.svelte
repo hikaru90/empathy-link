@@ -10,7 +10,7 @@
 	import { type SuperValidated, type Infer, defaults, superForm } from 'sveltekit-superforms';
 	import FormStepper from '$lib/components/FormStepper.svelte';
 	import FormStepDisplay from '$lib/components/FormStepDisplay.svelte';
-	import { t, locale } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { get } from 'svelte/store';
 	import { zodClient, zod } from 'sveltekit-superforms/adapters';
 	import {
@@ -32,6 +32,8 @@
 	import Mascot from '$lib/components/Mascot.svelte';
 	import Share from '$lib/components/Share.svelte';
 	import { backgroundColor } from '$store/page';
+	import { getLocale } from '$src/paraglide/runtime';
+	const locale = $derived(getLocale());
 
 	const data: SuperValidated<Infer<FormSchema>> = defaults(zod(lastStep));
 	let feelings = $state([]);
@@ -70,15 +72,15 @@
 	let currentBackgroundColor = $derived(updateBackgroundColor(step));
 
 	const speechBubbleContentArray = [
-		{ step: 1, content: [$t('default.page.fight.create.info')] },
-		{ step: 2, content: [$t('default.page.fight.create.observation')] },
-		{ step: 3, content: [$t('default.page.fight.create.feelings')] },
-		{ step: 4, content: [$t('default.page.fight.create.needs')] },
-		{ step: 5, content: [$t('default.page.fight.create.request')] },
+		{ step: 1, content: [m_page_fight_create_info()] },
+		{ step: 2, content: [m_page_fight_create_observation()] },
+		{ step: 3, content: [m_page_fight_create_feelings()] },
+		{ step: 4, content: [m_page_fight_create_needs()] },
+		{ step: 5, content: [m_page_fight_create_request()] },
 		{
 			step: 6,
-			content: [$t('default.page.fight.create.success')],
-			errorContent: [$t('default.page.fight.create.error')]
+			content: [m_page_fight_create_success()],
+			errorContent: [m_page_fight_create_error()]
 		}
 	];
 
@@ -177,42 +179,42 @@
 	let stepConstructor = $state([
 		{
 			slug: 'info',
-			name: get(t)('default.page.fights.form.general.steps.info'),
+			name: get(m)('default.page.fights.form.general.steps.info'),
 			icon: IconFolder,
 			invertedTextColor: false,
 			hidden: false
 		},
 		{
 			slug: 'observation',
-			name: get(t)('default.page.fights.form.general.steps.observation'),
+			name: get(m)('default.page.fights.form.general.steps.observation'),
 			icon: IconEye,
 			invertedTextColor: true,
 			hidden: false
 		},
 		{
 			slug: 'feelings',
-			name: get(t)('default.page.fights.form.general.steps.feelings'),
+			name: get(m)('default.page.fights.form.general.steps.feelings'),
 			icon: IconHeart,
 			invertedTextColor: false,
 			hidden: false
 		},
 		{
 			slug: 'needs',
-			name: get(t)('default.page.fights.form.general.steps.needs'),
+			name: get(m)('default.page.fights.form.general.steps.needs'),
 			icon: IconSwirl,
 			invertedTextColor: false,
 			hidden: false
 		},
 		{
 			slug: 'request',
-			name: get(t)('default.page.fights.form.general.steps.request'),
+			name: get(m)('default.page.fights.form.general.steps.request'),
 			icon: IconSteps,
 			invertedTextColor: false,
 			hidden: false
 		},
 		{
 			slug: 'success',
-			name: get(t)('default.page.fights.form.general.steps.success'),
+			name: get(m)('default.page.fights.form.general.steps.success'),
 			icon: IconSteps,
 			invertedTextColor: false,
 			hidden: true
@@ -343,7 +345,7 @@
 								<Form.Control >
 									{#snippet children({ attrs })}
 																<Form.Label class="form-label "
-											>{$t('default.page.fights.form.name.label')}</Form.Label
+											>{m.page_fights_form_name_label()}</Form.Label
 										>
 										<Input {...attrs} bind:value={$formData.name} />
 																								{/snippet}
@@ -355,7 +357,7 @@
 								<Form.Control >
 									{#snippet children({ attrs })}
 																<Form.Label class="form-label "
-											>{$t('default.page.fights.form.title.label')}</Form.Label
+											>{m.page_fights_form_title_label()}</Form.Label
 										>
 										<Input {...attrs} bind:value={$formData.title} />
 																								{/snippet}
@@ -370,7 +372,7 @@
 								<Form.Control >
 									{#snippet children({ attrs })}
 																		<Form.Label class="form-label"
-											>{$t('default.page.fights.form.observation.label')}</Form.Label
+											>{m.page_fights_form_observation_label()}</Form.Label
 										>
 										<Textarea
 											{...attrs}
@@ -390,7 +392,7 @@
 								<Form.Control >
 									{#snippet children({ attrs })}
 																				<Form.Label class="form-label"
-											>{$t('default.page.fights.form.feelings.label')}</Form.Label
+											>{m.page_fights_form_feelings_label()}</Form.Label
 										>
 										<ToggleGroup.Root
 											type="multiple"
@@ -406,8 +408,8 @@
 																.slug}-foreground mb-1 mt-3 flex items-center gap-3 text-xs"
 														>
 															{positive.category === 'true'
-																? $t('default.page.fights.form.general.goodFeelings')
-																: $t('default.page.fights.form.general.badFeelings')}
+																? m.page_fights_form_general_goodFeelings()
+																: m.page_fights_form_general_badFeelings()}
 															<div
 																class="border-b border-{stepConstructor[step - 1]
 																	.slug}-foreground mr-2 flex-grow border-opacity-20"
@@ -430,7 +432,7 @@
 																				? `bg-white/40 dark:bg-muted font-bold`
 																				: 'border border-white/40 dark:border-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-feelings-foreground dark:data-[state=on]:bg-feelings-foreground max-w-[300px]"
 																		>
-																			{$locale === 'de' ? feeling.nameDE : feeling.nameEN}
+																			{locale === 'de' ? feeling.nameDE : feeling.nameEN}
 																		</ToggleGroup.Item>
 																	</button>
 																{/each}
@@ -452,7 +454,7 @@
 								<Form.Control >
 									{#snippet children({ attrs })}
 																						<Form.Label class="form-label"
-											>{$t('default.page.fights.form.needs.label')}</Form.Label
+											>{m.page_fights_form_needs_label()}</Form.Label
 										>
 										<ToggleGroup.Root
 											type="multiple"
@@ -478,7 +480,7 @@
 																	? `bg-white/40 dark:bg-muted font-bold`
 																	: 'border border-white/40 dark:border-white/20'} py-0 text-black  shadow hover:text-black data-[state=on]:text-white dark:text-white data-[state=on]:bg-needs-foreground dark:data-[state=on]:bg-needs-foreground max-w-[300px]"
 																>
-																	{$locale === 'de' ? need.nameDE : need.nameEN}
+																	{locale === 'de' ? need.nameDE : need.nameEN}
 																</ToggleGroup.Item>
 															</button>
 														{/each}
@@ -498,7 +500,7 @@
 								<Form.Control >
 									{#snippet children({ attrs })}
 																								<Form.Label class="form-label"
-											>{$t('default.page.fights.form.request.label')}</Form.Label
+											>{m.page_fights_form_request_label()}</Form.Label
 										>
 										<Textarea {...attrs} bind:value={$formData.request} class="min-h-60" />
 																																{/snippet}

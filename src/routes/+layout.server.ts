@@ -1,5 +1,4 @@
 import type { LayoutServerLoad } from './$types';
-import { loadTranslations, locale } from '$lib/translations';
 // import { getInitialLocale } from '$scripts/helpers';
 // import { getCookie } from '$scripts/helpers';
 
@@ -16,8 +15,6 @@ export const load = (async ({ fetch, url, locals }) => {
   // const postHogRes = await postHogApi.json();
 
   // console.log('postHogRes',postHogRes);
-
-	await loadTranslations(locals.locale, url.pathname);
 
   return {
     url: url.pathname,

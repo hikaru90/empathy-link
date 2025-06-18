@@ -1,15 +1,16 @@
 <script lang="ts">
-  import { locale, locales } from '$lib/translations'
   import * as Select from "$lib/components/ui/select";
   import IconLang from "$assets/icons/icon-lang.svg?raw";
 	import { setCookie } from '$scripts/helpers';
+  import { locales } from '$src/paraglide/runtime'
+  import { setLocale } from '$lib/translations'
 
   type SelectedChangeEvent = { value: string } | undefined;
 
   const handleSelect: (event: SelectedChangeEvent) => void = (event) => {
-    if (event) {
+    if (event && (event.value === 'en' || event.value === 'de')) {
       setCookie('locale', event.value)
-      locale.update(() => event.value)
+      setLocale(event.value)
     }
   }
 </script>
@@ -22,7 +23,7 @@
     </Select.Button>
     <Select.Content >
       <Select.Group>
-        {#each $locales as locale}
+        {#each locales as locale}
         <Select.Item value={locale} label={locale} noIndicator="true" class="p-1"
         >{locale}</Select.Item
         >

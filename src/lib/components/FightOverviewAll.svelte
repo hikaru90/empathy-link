@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { onMount } from 'svelte';
 	import { pb } from '$scripts/pocketbase';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { endDate } from '$store/dashboard';
 	import { goto } from '$app/navigation';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right'
@@ -84,7 +84,7 @@
 		>
 			<div class="flex items-center justify-between mb-4">
 				<h2 class="text-md font-bold">
-					{$t('default.page.fight.title')}
+					{m.page_fight_title()}
 				</h2>
 				<div class="flex items-center gap-1">
 					<Switch
@@ -93,21 +93,21 @@
 						onclick={() => (displayResolved = !displayResolved)}
 						class="bg-gray-500 transform scale-75"
 						/>
-						<Label for="lightMode" class="cursor-pointer">{$t('default.page.fights.displayResolved')}</Label>
+						<Label for="lightMode" class="cursor-pointer">{m.page_fights_displayResolved()}</Label>
 					</div>
 			</div>
 			<div class="flex items-center text-2xs text-neutral-400">
 				<div class="w-1/6">
-					{$t('default.page.dashboard.fights.table.resolved')}
+					{m.page_dashboard_fights_table_resolved()}
 				</div>
 				<div class="w-1/3">
-					{$t('default.page.dashboard.fights.table.partner')}
+					{m.page_dashboard_fights_table_partner()}
 				</div>
 				<div class="w-1/4">
-					{$t('default.page.dashboard.fights.table.date')}
+					{m.page_dashboard_fights_table_date()}
 				</div>
 				<div class="w-1/6">
-					{$t('default.page.dashboard.fights.table.opened')}
+					{m.page_dashboard_fights_table_opened()}
 				</div>
 				<div class="w-1/6"></div>
 			</div>
@@ -173,13 +173,13 @@
 								? 'max-h-4 max-w-10 opacity-100'
 								: 'max-h-0 max-w-0 opacity-0'}"
 						/>
-						{$t('default.page.fights.loadMore')}
+						{m.page_fights_loadMore()}
 						<Plus class="-mr-2 h-4 w-4" />
 					</Button>
 				</div>
 			{:else}
 				<div class="mt-6 flex items-center gap-2 text-2xs text-neutral-400">
-					{$t('default.page.dashboard.fights.endReached')}
+					{m.page_dashboard_fights_endReached()}
 					<div class="mt-0.5 flex-grow border-t border-black/5"></div>
 				</div>
 			{/if}

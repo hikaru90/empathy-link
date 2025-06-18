@@ -1,5 +1,5 @@
 <script>
-  import { t } from '$lib/translations';
+  import { m } from '$lib/translations';
   import { Button as SparkleButton } from "$lib/components/ui/button-sparkle";
   import { Button } from "$lib/components/ui/button";
   
@@ -7,11 +7,11 @@
 
 <div class="py-10 lg:py-32">
   <h1 class="font-display font-semibold text-3xl lg:text-7xl leading-[106%] mb-10 max-w-[10em]">
-    {$t('default.page.home.hero')}
+    {m.page_home_hero()}
   </h1>
   <a href="/app/auth/login">
     <SparkleButton class="shadow-lg dark:shadow-gray-300/30 text-black font-bold lg:text-lg ">
-      {$t('default.page.home.cta')}
+      {m.page_home_cta()}
     </SparkleButton>
   </a>
 </div>

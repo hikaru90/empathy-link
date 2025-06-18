@@ -2,7 +2,6 @@
 	import { pb } from '$scripts/pocketbase';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 	import { onMount } from 'svelte';
-	import { locale } from '$lib/translations';
 	import StatsFeelings from '$src/lib/components/StatsFeelings.svelte';
 	import StatsNeeds from '$src/lib/components/StatsNeeds.svelte';
 	import StatsChatOverview from './StatsChatOverview.svelte';

@@ -3,9 +3,10 @@
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import IconSteps from '$assets/icons/icon-steps.svg?raw';
-	import { locale } from '$lib/translations';
 	import Check from 'lucide-svelte/icons/check'
 	import { user } from '$store/auth';
+	import { getLocale } from '$src/paraglide/runtime';
+	const locale = $derived(getLocale());
 
 	interface Props {
 		record: any;
@@ -90,7 +91,7 @@
 				<div class="flex items-center">
 					<div class="border border-{row.color}-background rounded-full px-2 py-0.5 mb-2 text-xs">
 						{row.overlap}%
-						{$locale === 'en' ? 'overlap' : 'Überschneidung'}
+						{locale === 'en' ? 'overlap' : 'Überschneidung'}
 					</div>
 				</div>
 				{/if}
@@ -101,7 +102,7 @@
 						{#each row.content as entry}
 							<div class="bg-{row.color}-background rounded-full px-2 py-0.5">
 								<!-- {JSON.stringify(entry)} -->
-								{$locale === 'en' ? entry.nameEN : entry.nameDE}
+								{locale === 'en' ? entry.nameEN : entry.nameDE}
 							</div>
 						{/each}
 					</div>

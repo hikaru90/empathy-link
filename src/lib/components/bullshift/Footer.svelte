@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { t } from '$lib/translations';
 	import BotMessageSquare from 'lucide-svelte/icons/bot-message-square';
 	import ChartColumnDecreasing from 'lucide-svelte/icons/chart-column-decreasing';
 	import Book from 'lucide-svelte/icons/book';
 	import Users from 'lucide-svelte/icons/users';
 	import { page } from '$app/state';
 	import { cn } from '$lib/utils';
+	import { m } from '$lib/translations';
 
 	interface Props {
 		absolute?: boolean;
@@ -61,14 +61,16 @@
 		return path.includes(sanitizedRoute);
 	};
 
-	t.subscribe((value) => {
-		const newMenuItems = menuItems.map((entry) => {
-			const translation = value(`default.menu.bar.${entry.slug}`);
-			entry.name = translation;
-			return entry;
-		});
-		menuItems = [...newMenuItems];
-	});
+	console.log('');
+
+	// m.subscribe((value) => {
+	// 	const newMenuItems = menuItems.map((entry) => {
+	// 		const translation = value(`default.menu.bar.${entry.slug}`);
+	// 		entry.name = translation;
+	// 		return entry;
+	// 	});
+	// 	menuItems = [...newMenuItems];
+	// });
 
 </script>
 
@@ -114,7 +116,7 @@
 					<div
 						class="absolute bottom-2.5 left-1/3 translate-x-1/2 transform rounded-full bg-red-400 px-1 text-[6px] text-white"
 					>
-						{$t('default.menu.soon')}
+						{m.menu_soon()}
 					</div>
 				{/if}
 			</div>

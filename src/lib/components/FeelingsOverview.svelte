@@ -4,11 +4,15 @@
 	import { Button } from '$lib/components/ui/button';
 	import { onMount } from 'svelte';
 	import { pb } from '$scripts/pocketbase';
-	import { t, locale } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { startDate, endDate } from '$store/dashboard';
 	import { goto } from '$app/navigation';
 	import { groupBy, sortByKey, generateHslaColors } from '$scripts/helpers';
 	import Donut from '$lib/components/Donut.svelte';
+	import { getLocale } from '$src/paraglide/runtime';
+
+	
+	const locale = $derived(getLocale());
 
 	interface Props {
 		user: App.User;
@@ -24,7 +28,7 @@
 
 	let data = $derived(feelings.map((entry) => {
 		return {
-			name: $locale === 'en' ? entry.feeling.nameEN : entry.feeling.nameDE,
+			name: locale === 'en' ? entry.feeling.nameEN : entry.feeling.nameDE,
 			count: entry.count
 		};
 	}));
@@ -95,7 +99,7 @@
 		>
 			<div class="flex items-center justify-between px-4 pb-2 pt-3">
 				<h2 class="text-md mb-2 font-bold">
-					{$t('default.page.dashboard.feelings.heading')}
+					{m.page_dashboard_feelings_heading()}
 				</h2>
 				<div class="flex items-center gap-2">
 					<Button
@@ -104,7 +108,7 @@
 							? 'solid-button text-white'
 							: 'border-button'} h-7 rounded-full px-4 leading-tight transition"
 					>
-						{$t('default.page.dashboard.feelings.negative')}
+						{m.page_dashboard_feelings_negative()}
 					</Button>
 					<Button
 						onclick={() => (displayPositiveFeelings = true)}
@@ -112,7 +116,7 @@
 							? 'solid-button text-white'
 							: 'border-button'} h-7 rounded-full px-4 leading-tight"
 					>
-						{$t('default.page.dashboard.feelings.positive')}
+						{m.page_dashboard_feelings_positive()}
 					</Button>
 				</div>
 			</div>
@@ -125,7 +129,7 @@
 			</div>
 			<div class="px-4 pb-3 pt-2">
 				{#if feelings.length === 0}
-					{$t('default.page.dashboard.feelings.empty')}
+					{m.page_dashboard_feelings_empty()}
 				{:else}
 					{#each feelings as feeling, index}
 						{#if displayPositiveFeelings === feeling.feeling.positive}
@@ -138,7 +142,7 @@
 										class="h-3 w-5 rounded-full"
 									></div>
 									<span>
-										{$locale === 'en' ? feeling.feeling.nameEN : feeling.feeling.nameDE}
+										{locale === 'en' ? feeling.feeling.nameEN : feeling.feeling.nameDE}
 									</span>
 								</div>
 								<span>

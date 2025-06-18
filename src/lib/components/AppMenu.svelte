@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button } from '$lib/components/ui/button-op1/index.js';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import IconFolder from '$assets/icons/icon-folder.svg?raw';
 	import IconSelf from '$assets/icons/icon-self.svg?raw';
 	import IconFight from '$assets/icons/icon-fight.svg?raw';
@@ -19,49 +19,40 @@
 	let menuItems = $state([
 		{
 			slug: 'home',
-			name: get(t)('default.menu.bar.home'),
+			name: m.menu_bar_home(),
 			path: '/app/dashboard',
 			icon: IconFolder,
 			available: true
 		},
 		{
 			slug: 'selfempathy',
-			name: get(t)('default.menu.bar.selfempathy'),
+			name: m.menu_bar_selfempathy(),
 			path: '/app/selfempathy',
 			icon: IconSelf,
 			available: true
 		},
 		{
 			slug: 'fights',
-			name: get(t)('default.menu.bar.fights'),
+			name: m.menu_bar_fights(),
 			path: '/app/fights',
 			icon: IconFight,
 			available: true
 		},
 		{
 			slug: 'feedback',
-			name: get(t)('default.menu.bar.feedback'),
+			name: m.menu_bar_feedback(),
 			path: '/app/feedback',
 			icon: IconFeedback,
 			available: false
 		},
 		{
 			slug: 'learn',
-			name: get(t)('default.menu.bar.learn'),
+			name: m.menu_bar_learn(),
 			path: '/app/learn',
 			icon: IconLearn,
 			available: false
 		}
 	]);
-
-	t.subscribe((value) => {
-		const newMenuItems = menuItems.map((entry) => {
-			const translation = value(`default.menu.bar.${entry.slug}`);
-			entry.name = translation;
-			return entry;
-		});
-		menuItems = [...newMenuItems];
-	});
 </script>
 
 <!-- <div class="inverted-border fixed bottom-0 left-0 w-full bg-black text-gray-200 px-4 pb-4 pt-2 z-[1002]"> -->
@@ -69,7 +60,7 @@
   {#if !user}
 	<div class="w-full h-full bg-black/60 absolute top-0 left-0 z-10 flex items-center justify-center">
     <Button onclick={() => goto('/app/auth/register')} decoration="dark-op1" class="border-neutral-700">
-      {$t('default.page.register.text')}
+      {m.page_register_text()}
     </Button>
   </div>
 {/if}
@@ -113,7 +104,7 @@
 					<div
 						class="absolute bottom-2.5 left-1/3 translate-x-1/2 transform rounded-full bg-red-600 px-1 text-[6px]"
 					>
-						{$t('default.menu.soon')}
+						{m.menu_soon()}
 					</div>
 				{/if}
 			</div>

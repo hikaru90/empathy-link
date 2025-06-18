@@ -2,8 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { onMount } from 'svelte';
 	import Logo from '$lib/components/Logo.svelte';
-	import { t } from '$lib/translations';
-	import { locale } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { setCookie, scrollToElement } from '$scripts/helpers';
 	import { goto } from '$app/navigation';
 	import { scroll, windowHeight, windowWidth, backgroundColor, currentSection } from '$store/page';
@@ -55,12 +54,12 @@
 		return scrollbarWidth;
 	});
 	let menuItems = $derived(() => [
-		{ label: $t('default.menu.sections.the4steps'), target: 'stepsTarget' },
-		{ label: $t('default.menu.sections.modules'), target: 'modulesTarget' },
-		{ label: $t('default.menu.sections.selfempathy'), target: 'selfempathyTarget' },
-		{ label: $t('default.menu.sections.fight'), target: 'fightTarget' },
-		{ label: $t('default.menu.sections.feedback'), target: 'feedbackTarget' },
-		{ label: $t('default.menu.sections.learn'), target: 'learnTarget' }
+		{ label: m.menu_sections_the4steps(), target: 'stepsTarget' },
+		{ label: m.menu_sections_modules(), target: 'modulesTarget' },
+		{ label: m.menu_sections_selfempathy(), target: 'selfempathyTarget' },
+		{ label: m.menu_sections_fight(), target: 'fightTarget' },
+		{ label: m.menu_sections_feedback(), target: 'feedbackTarget' },
+		{ label: m.menu_sections_learn(), target: 'learnTarget' }
 	]);
 
 	const scrollToTarget = (target) => {
@@ -126,7 +125,7 @@
 			</div>
 			<div class="flex w-1 items-center justify-end gap-4">
 				<a href="/app/auth/login" class="hidden lg:block px-5 py-2 rounded-md bg-black text-white">
-					{$t('default.page.login.heading')}
+					{m.page_login_heading()}
 				</a>
 				<div class="lg:hidden">
 					<WebsiteHamburgerMenu user={user} menuItems={menuItems()} />

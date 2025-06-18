@@ -1,40 +1,51 @@
 <script lang="ts">
-	import { t, locale } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import IconSelf from '$assets/icons/icon-self.svg?raw';
 	import IconFight from '$assets/icons/icon-fight.svg?raw';
 	import IconFeedback from '$assets/icons/icon-feedback.svg?raw';
 	import IconLearn from '$assets/icons/icon-learn.svg?raw';
-	import PhoneMockup from '$lib/components/PhoneMockup.svelte'
+	import PhoneMockup from '$lib/components/PhoneMockup.svelte';
+	import { getLocale } from '$src/paraglide/runtime';
+	const locale = $derived(getLocale());
 
-	let moduleName:string|undefined = $state(undefined)
-  locale.subscribe((value) => {
-		moduleName = value === 'en' ? 'Module' : 'Modul'
+	let moduleName: string | undefined = $state(undefined);
+
+	$effect(() => {
+		moduleName = locale === 'en' ? 'Module' : 'Modul';
 	});
-
 </script>
 
-<div class="flex flex-col lg:flex-row items-center justify-center gap-16 md:gap-20 mb-40">
+<div class="mb-40 flex flex-col items-center justify-center gap-16 md:gap-20 lg:flex-row">
 	<div class="flex flex-col items-center justify-center xl:items-start">
-		<div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite dark:bg-muted p-1">
+		<div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite p-1 dark:bg-muted">
 			<div
-				class="bg-black fill-offwhite dark:fill-neon flex items-center justify-center rounded-full p-1.5 shadow-inner"
+				class="flex items-center justify-center rounded-full bg-black fill-offwhite p-1.5 shadow-inner dark:fill-neon"
 			>
-			{@html IconSelf}
+				{@html IconSelf}
 			</div>
 		</div>
-		<div class="text-black/60 dark:text-white/80 mb-3 ml-0.5">
-			1. { moduleName}
+		<div class="mb-3 ml-0.5 text-black/60 dark:text-white/80">
+			1. {moduleName}
 		</div>
-		<h2 class="font-display text-2xl font-semibold lg:text-4xl mb-8">
-			{$t('default.page.home.components.selfempathy.heading')}
+		<h2 class="mb-8 font-display text-2xl font-semibold lg:text-4xl">
+			{m.page_home_components_selfempathy_heading()}
 		</h2>
 		<p class="max-w-md">
-			{$t('default.page.home.components.selfempathy.description')}
+			{m.page_home_components_selfempathy_description()}
 		</p>
 	</div>
 	<div class="relative flex">
-		<PhoneMockup mockup="screenshot-fight2.png" color="bg-[#618BFF]" inverted class="w-50 md:w-72" />
-		<PhoneMockup mockup="screenshot-dashboard.png" color="bg-[#D7D5D1]" class="w-50 md:w-72 -ml-36" />
+		<PhoneMockup
+			mockup="screenshot-fight2.png"
+			color="bg-[#618BFF]"
+			inverted
+			class="w-50 md:w-72"
+		/>
+		<PhoneMockup
+			mockup="screenshot-dashboard.png"
+			color="bg-[#D7D5D1]"
+			class="w-50 -ml-36 md:w-72"
+		/>
 	</div>
 </div>
 

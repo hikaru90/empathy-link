@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { createEventDispatcher } from 'svelte';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import ArrowRight from 'lucide-svelte/icons/arrow-right'
 	import ChevronLeft from 'lucide-svelte/icons/chevron-left'
 
@@ -53,7 +53,7 @@
 			type="submit"
 			class="light-button group {primaryButtonClass} hover:{primaryButtonClass} relative z-10 m-[1px] flex w-[calc(100%-2px)] items-center justify-between py-6 font-bold text-foreground dark:border-x dark:border-t dark:border-white/5"
 		> -->
-		{$t('default.page.fights.form.general.checkJudgement')}
+		{m.page_fights_form_general_checkJudgement()}
 		<ArrowRight class="h-3 w-3" />
 	</Button>
 	{:else}
@@ -67,7 +67,7 @@
 			type="submit"
 			class="light-button group {primaryButtonClass} hover:{primaryButtonClass} relative z-10 m-[1px] flex w-[calc(100%-2px)] items-center justify-between py-6 font-bold text-foreground dark:border-x dark:border-t dark:border-white/5"
 		> -->
-		{$t('default.page.fights.form.general.next')}
+		{m.page_fights_form_general_next()}
 		<ArrowRight class="h-3 w-3" />
 	</Button>
 	{/if}

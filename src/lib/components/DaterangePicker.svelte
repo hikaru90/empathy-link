@@ -17,7 +17,7 @@
 	// import { enUS, de } from '@internationalized/date/locale-data';
 	import { startDate, endDate } from '$store/dashboard';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { t, locale } from '$lib/translations';
+	import { m } from '$lib/translations';
 
 	const dispatch = createEventDispatcher();
 
@@ -118,7 +118,7 @@
 			<div class="relative">
 				<Dialog.Header>
 					<Dialog.Title class="mb-4 max-w-[9em] leading-tight"
-						>{$t('default.page.dashboard.selectDate')}</Dialog.Title
+						>{m.page.dashboard.selectDate()}</Dialog.Title
 					>
 					<Dialog.Description>
 						<div class="-mx-4">

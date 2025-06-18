@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t, initialized, locale } from '$lib/translations';
+	import { m, setLocale, getLocale } from '$lib/translations';
 	import '$src/app.pcss';
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { blur } from 'svelte/transition';
@@ -56,7 +56,7 @@
 
 	const setLangAttribute = () => {
 		if (browser) {
-			const currentLocale = $locale;
+			const currentLocale = getLocale();
 			document.documentElement.lang = currentLocale;
 		}
 	}
@@ -67,6 +67,12 @@
 		}
 	});
 
+	let currentLocale = getLocale();
+	function switchLocale(locale: 'de' | 'en'
+	) {
+		setLocale(locale);
+		currentLocale = locale;
+	}
 
 	onNavigate((navigation) => {
 		if (!document.startViewTransition) return;
@@ -178,3 +184,4 @@
 <style lang="scss">
 	@use '../assets/styles/style.scss' as *;
 </style>
+

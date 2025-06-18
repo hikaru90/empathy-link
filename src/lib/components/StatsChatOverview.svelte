@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { onMount } from 'svelte';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { goto } from '$app/navigation';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 
@@ -51,7 +51,7 @@
 			</div>
 			<div class="flex items-center text-2xs">
 				<div class="w-1/6">
-					{$t('default.page.dashboard.fights.table.date')}
+					{m.page_dashboard_fights_table_date()}
 				</div>
 				<div class="w-1/3 flex-grow">Titel</div>
 				<div class="w-1/6"></div>

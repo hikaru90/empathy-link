@@ -3,7 +3,7 @@
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { onMount } from 'svelte';
 	import { pb } from '$scripts/pocketbase';
-	import { t, locale } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { startDate, endDate } from '$store/dashboard';
 	import { goto } from '$app/navigation';
 	import Check from 'lucide-svelte/icons/check';
@@ -62,20 +62,20 @@
 			class="rounded-t-xl border-b border-black/5 bg-almostwhite dark:bg-muted px-5 pb-3 pt-4 shadow-2xl shadow-black/10"
 		>
 			<h2 class="text-md mb-2 font-bold">
-				{$t('default.page.dashboard.fights.tableCaption')}
+				{m.page_dashboard_fights_tableCaption()}
 			</h2>
 			<div class="flex items-center text-2xs">
 				<div class="w-1/6">
-					{$t('default.page.dashboard.fights.table.round')}
+					{m.page_dashboard_fights_table_round()}
 				</div>
 				<div class="w-1/3">
-					{$t('default.page.dashboard.fights.table.partner')}
+					{m.page_dashboard_fights_table_partner()}
 				</div>
 				<div class="w-1/4">
-					{$t('default.page.dashboard.fights.table.date')}
+					{m.page_dashboard_fights_table_date()}
 				</div>
 				<div class="w-1/6">
-					{$t('default.page.dashboard.fights.table.opened')}
+					{m.page_dashboard_fights_table_opened()}
 				</div>
 				<div class="w-1/6"></div>
 			</div>

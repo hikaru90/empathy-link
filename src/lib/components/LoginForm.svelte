@@ -4,7 +4,7 @@
 	import { formSchema, type FormSchema } from '$routes/app/auth/login/schema';
 	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
@@ -32,9 +32,9 @@
 		onResult: ({ result }) => {
 			isSubmitting = false;
 			console.log('result', result);
-			if (result.type === 'failure') toast.error($t('default.page.login.toasts.error'));
+			if (result.type === 'failure') toast.error(m_page_login_toasts_error());
 			if (result.type === 'success') {
-				toast.success($t('default.page.login.toasts.success'));
+				toast.success(m_page_login_toasts_success());
 				// goto('/bullshift');
 			}
 		}
@@ -43,7 +43,7 @@
 	const resetPassword = async () => {
 		resetPasswordDialogOpen = false;
 		await pb.collection('users').requestPasswordReset($formData.email);
-		toast.success($t('default.page.login.forgotPassword.success'));
+		toast.success(m_page_login_forgotPassword_success());
 	};
 
 	const openResetDialog = (event: MouseEvent) => {
@@ -67,7 +67,7 @@
 	<Form.Field {form} name="email">
 		<Form.Control >
 			{#snippet children({ attrs })}
-						<Form.Label>{$t('default.page.login.form.email.label')}</Form.Label>
+						<Form.Label>{m.page_login_form_email_label()}</Form.Label>
 				<Input {...attrs} bind:value={$formData.email} type="email" />
 								{/snippet}
 				</Form.Control>
@@ -77,7 +77,7 @@
 	<Form.Field {form} name="password">
 		<Form.Control >
 			{#snippet children({ attrs })}
-						<Form.Label>{$t('default.page.login.form.password.label')}</Form.Label>
+						<Form.Label>{m.page_login_form_password_label()}</Form.Label>
 				<Input {...attrs} bind:value={$formData.password} type="password" />
 								{/snippet}
 				</Form.Control>
@@ -88,7 +88,7 @@
 				disabled={isSubmitting}
 				class="text-sm text-muted-foreground hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
 			>
-				{$t('default.page.login.forgotPassword.question')}
+				\{m.page_login_forgotPassword_question()}
 			</button>
 		</Form.Description>
 		<Form.FieldErrors />
@@ -96,9 +96,9 @@
 
 	<div class="flex items-center justify-between">
 		<a href="/app/auth/register" class="text-sm hover:underline"
-			>{$t('default.page.login.switchToRegister')}</a
+			>{m.page_login_switchToRegister()}</a
 		>
-		<Form.Button type="submit" class="bg-primary text-muted">{$t('default.page.login.cta')}</Form.Button>
+		<Form.Button type="submit" class="bg-primary text-muted">{m.page_login_cta()}</Form.Button>
 	</div>
 </form>
 
@@ -106,13 +106,13 @@
 	<Dialog.Content>
 		<Dialog.Header>
 			<Dialog.Title class="mb-10 leading-tight"
-				>{$t('default.page.login.forgotPassword.heading')}</Dialog.Title
+				>\{m.page_login_forgotPassword_heading()}</Dialog.Title
 			>
 			<Dialog.Description>
-				{$t('default.page.login.forgotPassword.description')}
+				\{m.page_login_forgotPassword_description()}
 				<div class="mt-4 flex justify-end">
 					<Button onclick={resetPassword} class="flex items-center gap-3 bg-muted-dark"
-						>{$t('default.page.login.forgotPassword.heading')}
+						>\{m.page_login_forgotPassword_heading()}
 						<Check class="text-needs-background" /></Button
 					>
 				</div>

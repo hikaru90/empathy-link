@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t, locale } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import backgroundImage from '$assets/images/holo3.jpg';
 	import IconEye from '$assets/icons/icon-eye.svg?raw';
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
@@ -10,37 +10,39 @@
 	import IconFeedback from '$assets/icons/icon-feedback.svg?raw';
 	import IconLearn from '$assets/icons/icon-learn.svg?raw';
 	import PhoneMockup from '$lib/components/PhoneMockup.svelte';
+	import { getLocale } from '$src/paraglide/runtime';
+	const locale = $derived(getLocale());
 
 	let tableRows = $derived([
 		{
 			icon: IconEye,
 			color: 'observation',
 			type: 'text',
-			content: $t('default.page.home.components.feedback.steps.observation')
+			content: m.page_home_components_feedback_steps_observation()
 		},
 		{
 			icon: IconHeart,
 			color: 'feelings',
 			type: 'array',
-			content: $t('default.page.home.components.feedback.steps.feelings')
+			content: m.page_home_components_feedback_steps_feelings()
 		},
 		{
 			icon: IconSwirl,
 			color: 'needs',
 			type: 'array',
-			content: $t('default.page.home.components.feedback.steps.needs')
+			content: m.page_home_components_feedback_steps_needs()
 		},
 		{
 			icon: IconSteps,
 			color: 'request',
 			type: 'text',
-			content: $t('default.page.home.components.feedback.steps.request')
+			content: m.page_home_components_feedback_steps_request()
 		}
 	]);
 
 	let moduleName: string | undefined = $state(undefined);
-	locale.subscribe((value) => {
-		moduleName = value === 'en' ? 'Module' : 'Modul';
+	$effect(() => {
+		moduleName = locale === 'en' ? 'Module' : 'Modul';
 	});
 </script>
 
@@ -58,14 +60,14 @@
 		</div>
 		<div class="relative">
 			<h2 class="mb-8 font-display text-2xl font-semibold lg:text-4xl">
-				{$t('default.page.home.components.learn.heading')}
+				{m.page_home_components_learn_heading()}
 			</h2>
 			<div class="bg-red-500 rounded-full px-2 py-0.5 text-xs text-white absolute -top-0 -right-0 transform translate-x-full -translate-y-full">
-				{$t('default.menu.soon')}
+				{m.menu_soon()}
 			</div>
 		</div>
 		<p class="max-w-md mb-8">
-			{$t('default.page.home.components.learn.description')}
+			{m.page_home_components_learn_description()}
 		</p>
 	</div>
 
