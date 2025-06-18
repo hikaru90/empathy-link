@@ -2,11 +2,13 @@
 	import { preventDefault } from 'svelte/legacy';
 	import { marked } from 'marked';
 	import { onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import SendHorizontal from 'lucide-svelte/icons/send-horizontal';
 	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 	import X from 'lucide-svelte/icons/x';
+	import SquareCheck from 'lucide-svelte/icons/square-check';
 	import Bug from 'lucide-svelte/icons/bug';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
@@ -17,6 +19,7 @@
 	import AutoTextarea from '$lib/components/AutoTextarea.svelte';
 	import { pb } from '$scripts/pocketbase';
 	import { getLocale } from '$src/paraglide/runtime';
+	import { scroll } from '$store/page';
 
 	interface Feeling {
 		id: string;
@@ -272,7 +275,7 @@
 	});
 </script>
 
-{#if user?.role === 'admin'}
+<!-- {#if user?.role === 'admin'}
 	<div class={cn(className, 'flex justify-between')}>
 		<Popover.Root>
 			<Popover.Trigger>
@@ -321,7 +324,7 @@
 			<RotateCcw class="size-3 text-red-500" />
 		</button>
 	</div>
-{/if}
+{/if} -->
 
 {#if chatId}
 	<div class="">
@@ -370,17 +373,15 @@
 		</div>
 
 		<div class="fixed bottom-[62px] left-0 right-0 px-4 pb-6 pt-4">
-			{#if history.length > 0}
 				<button
-					class="absolute -top-6 left-1/2 flex -translate-x-1/2 transform items-center gap-2 rounded-full bg-black px-3 py-1 text-sm text-offwhite"
+					class="{ history.length > 0 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none' } fixed top-4 left-1/2 flex -translate-x-1/2 transform items-center gap-2 rounded-full bg-bullshift px-3 py-1 text-sm shadow-xl transition"
 					onclick={() => {
 						chatTerminationModalVisible = true;
 					}}
 				>
-					Chat beenden
-					<X class="size-4 text-red-400" />
+					Chat abschließen
+					<SquareCheck class="size-4" />
 				</button>
-			{/if}
 			<form
 				onsubmit={preventDefault(handleSendMessage)}
 				class="flex flex-col gap-2 rounded-2xl bg-gradient-to-b from-white to-offwhite p-2 shadow-lg"

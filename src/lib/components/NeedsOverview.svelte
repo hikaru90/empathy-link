@@ -89,7 +89,7 @@
 		<div class="relative z-10 rounded-lg bg-needs-background dark:bg-muted text-needs-foreground shadow-2xl shadow-black/10">
 			<div class="flex items-center justify-between px-4 pb-2 pt-3">
 				<h2 class="text-md mb-2 font-bold">
-					\{m.page_dashboard_needs_heading()}
+					{m.page_dashboard_needs_heading()}
 				</h2>
 				<div class="flex items-center gap-2">
 					<Button
@@ -98,7 +98,7 @@
 							? 'solid-need-button text-white'
 							: 'border-need-button'} h-7 rounded-full px-4 leading-tight transition"
 					>
-						\{m.page_dashboard_needs_community()}
+						{m.page_dashboard_needs_community()}
 					</Button>
 					<Button
 						onclick={() => (displaySelfcenteredNeeds = true)}
@@ -106,7 +106,7 @@
 							? 'solid-need-button text-white'
 							: 'border-need-button'} h-7 rounded-full px-4 leading-tight"
 					>
-						\{m.page_dashboard_needs_selfcentered()}
+						{m.page_dashboard_needs_selfcentered()}
 					</Button>
 				</div>
 			</div>
@@ -119,7 +119,7 @@
 			</div>
 			<div class="px-4 pb-3 pt-2">
 				{#if needs.length === 0}
-					\{m.page_dashboard_needs_empty()}
+					{m.page_dashboard_needs_empty()}
 				{:else}
 					{#each needs as need, index}
 						{#if displaySelfcenteredNeeds === need.need.selfcentered}
