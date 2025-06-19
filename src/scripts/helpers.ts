@@ -1,6 +1,5 @@
 import { browser } from '$app/environment';
-import { m } from '$lib/translations';
-import { get } from 'svelte/store';
+import { getLocale } from '$src/paraglide/runtime';
 
 export const getScrollbarWidth = () => {
 	const scrollDiv = document.createElement('div');
@@ -87,6 +86,7 @@ export const serializeNonPOJOs = (obj: object) => {
 export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const daysAgo = (date) => {
+	const locale = getLocale();
 	const now = new Date();
 	const past = new Date(date);
 
@@ -96,9 +96,7 @@ export const daysAgo = (date) => {
 	// Convert milliseconds to days
 	const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
 
-	console.log('daysAgo', get(locale));
-
-	if (get(locale) === 'en') {
+	if (locale === 'en') {
 		if (diffInDays === 0) {
 			return 'today';
 		} else if (diffInDays === 1) {

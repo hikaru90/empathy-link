@@ -2,21 +2,19 @@ import { z } from 'zod';
 import { m } from '$lib/translations';
 import { get } from 'svelte/store';
 
-console.log('locale', get(locale));
-
 export const formSchema = z.object({
 	firstName: z
 		.string()
-		.min(3, { message: get(m)('default.page.login.form.firstname.tooShortError') })
-		.max(30, { message: get(m)('default.page.login.form.firstname.tooLongError') }),
+		.min(3, { message: m.page_register_form_firstname_tooShortError() })
+		.max(30, { message: m.page_register_form_firstname_tooLongError() }),
 	lastName: z
 		.string()
-		.min(3, { message: get(m)('default.page.login.form.lastname.tooShortError') })
-		.max(30, { message: get(m)('default.page.login.form.lastname.tooLongError') }),
-	email: z.string().email({ message: get(m)('default.page.login.form.email.validEmailError') }),
+		.min(3, { message: m.page_register_form_lastname_tooShortError() })
+		.max(30, { message: m.page_register_form_lastname_tooLongError() }),
+	email: z.string().email({ message: m.page_register_form_email_validEmailError() }),
 	password: z
 		.string()
-		.min(6, { message: get(m)('default.page.login.form.password.tooShortError') })
-		.max(30, { message: get(m)('default.page.login.form.password.tooLongError') })
+		.min(6, { message: m.page_register_form_password_tooShortError() })
+		.max(30, { message: m.page_register_form_password_tooLongError() })
 });
 export type FormSchema = typeof formSchema;

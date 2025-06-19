@@ -3,6 +3,7 @@
 	import type { PageData } from './$types.js';
 	import RegisterForm from '$lib/components/RegisterForm.svelte';
 	import { m } from '$lib/translations';
+
 	interface Props {
 		data: PageData;
 	}

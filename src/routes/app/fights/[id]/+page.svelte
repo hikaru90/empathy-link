@@ -17,6 +17,10 @@
 	import { getLocale } from '$src/paraglide/runtime';
 	const locale = $derived(getLocale());
 
+	$effect(() => {
+		console.log('locale', locale);
+	});
+
 	interface Props {
 		data: App.Locals;
 	}
@@ -102,7 +106,7 @@
 			<AppTopMenu />
 
 				<div class="{record.resolved ? 'max-h-40 px-2 py-2 opacity-100' : 'max-h-0 opacity-0'} -mt-0.5 bg-green-600 flex items-center justify-center  text-white transition-all text-sm">
-					{m.page_fight_resolved())}
+					{m.page_fight_resolved()}
 				</div>
 
 			<div class="max-container">
@@ -110,7 +114,7 @@
 					class="relative z-10 -mx-5 flex flex-row items-center justify-between gap-3 px-5 py-4 md:items-center md:bg-transparent md:pb-6"
 				>
 					<h1 class="font-heading flex-grow text-lg font-semibold">
-						{m.page_fight_heading())}
+						{m.page_fight_heading()}
 						{locale === 'en' ? 'with' : 'mit'}
 						<span class="capitalize">
 							{record.name}
