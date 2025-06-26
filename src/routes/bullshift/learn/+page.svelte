@@ -201,7 +201,7 @@
 						<div class="flex">
 							{#each category.topics as topic, topicIndex}
 								<a
-									href={`/bullshift/learn/${topic?.id}`}
+									href={`/bullshift/learn/${topic?.slug}`}
 									class="card-item relative group h-64 w-72 flex-shrink-0 snap-start px-6 -mx-3 text-sm transition-all duration-100"
 									style="transform: {focusedElements[categoryIndex] === topicIndex ? 'scale(1.02)' : 'scale(1)'}"
 								>

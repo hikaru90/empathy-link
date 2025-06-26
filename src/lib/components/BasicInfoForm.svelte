@@ -23,20 +23,15 @@
 
 
 <Collapsible.Root class="bg-white/80 rounded-md">
-	<div class="flex items-center justify-between space-x-4">
-		{#snippet trigger({ builder })}
-			<Collapsible.Trigger asChild class="w-full">
-				<Button builders={[builder]} variant="ghost" class="p-0 w-full flex items-center justify-between px-3 py-4 h-auto hover:bg-transparent">
-					<h4 class="font-bold">Allgemeine Einstellungen</h4>
-					<div>
-						<ChevronsUpDown class="h-4 w-4 text-black/30" />
-						<span class="sr-only">Toggle</span>
-					</div>
-				</Button>
-			</Collapsible.Trigger>
-		{/snippet}
-		{@render trigger({ builder: (el) => el })}
-	</div>
+	<Collapsible.Trigger asChild class="w-full">
+		<Button variant="ghost" class="p-0 w-full flex items-center justify-between px-3 py-4 h-auto hover:bg-transparent">
+			<h4 class="font-bold">Allgemeine Einstellungen</h4>
+			<div>
+				<ChevronsUpDown class="h-4 w-4 text-black/30" />
+				<span class="sr-only">Toggle</span>
+			</div>
+		</Button>
+	</Collapsible.Trigger>
   <Collapsible.Content class="space-y-2 p-3">
     <div class="space-y-4">
 			<Form.Field {form} name="titleDE">

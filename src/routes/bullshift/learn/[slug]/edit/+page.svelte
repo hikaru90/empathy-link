@@ -21,7 +21,7 @@
 	import * as Resizable from '$lib/components/ui/resizable';
 	import { blur } from 'svelte/transition';
 	import SparklePill from '$lib/components/SparklePill.svelte';
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import '$src/app.pcss';
 	import { Toaster } from '$lib/components/ui/sonner';
 	import AppMenu from '$lib/components/AppMenu.svelte';

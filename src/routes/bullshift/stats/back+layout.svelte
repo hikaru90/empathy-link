@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t, initialized } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import '$src/app.pcss';
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { blur } from 'svelte/transition';

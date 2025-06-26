@@ -29,6 +29,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         } catch (error) {
             console.log('No chat record found, creating a new one');
             const initResponse = await initChat(user, locale);
+            console.log('initResponse:', initResponse);
             chatRecord = await pb.collection('chats').getOne(initResponse.chatId);
             systemPrompt = initResponse.systemInstruction;
         }
@@ -40,8 +41,10 @@ export const load: PageServerLoad = async ({ locals }) => {
             const chat = ai.chats.create(model);
 
             bullshiftChats.set(chatRecord.id, chat);
-        }else{
-            systemPrompt = await bullshiftChats.get(chatRecord.id)?.config?.systemInstruction
+        } else {
+            // Get system instruction for existing chat
+            const {model, systemInstruction} = await getModel(user, locale, chatRecord?.history);
+            systemPrompt = systemInstruction;
         }
 
         return {

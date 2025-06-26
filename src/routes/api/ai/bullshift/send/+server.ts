@@ -44,6 +44,9 @@ const initialState: State = {
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const { chatId, message, userId, systemInstruction, locale } = await request.json();
+		
+		console.log('Send request received:', { chatId, message, userId, locale });
+		console.log('Available chats in memory:', Array.from(bullshiftChats.keys()));
 
 		if (!chatId || !message) {
 			return json({ error: 'Missing required fields' }, { status: 400 });
@@ -51,6 +54,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const chatInMemory = bullshiftChats.get(chatId);
 		if (!chatInMemory) {
+			console.log('Chat not found in memory for chatId:', chatId);
 			return json({ error: 'Chat session not found' }, { status: 404 });
 		}
 		const chatInDb = await pb.collection('chats').getOne(chatId);

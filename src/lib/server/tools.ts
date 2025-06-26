@@ -4,6 +4,7 @@ import { GoogleGenAI, Type } from '@google/genai';
 import type { GenerateContentResponse } from '@google/genai';
 import type { State } from '$routes/api/ai/bullshift/send/+server';
 import type { HistoryEntry } from '$routes/api/ai/selfempathy/initChat/+server';
+import { m, setLocale } from '$lib/translations';
 
 interface Chat {
 	id: string;
@@ -25,38 +26,16 @@ const loadPrompts = async (locale: string) => {
 	return messages.default;
 };
 
-const getLocalizedPrompt = async (locale: string, promptKey: string, variables: Record<string, any> = {}) => {
-	try {
-		const messages = await loadPrompts(locale);
-		let prompt = messages[`ai_prompts_${promptKey}`];
-		
-		if (!prompt) {
-			console.error(`Missing prompt key: ai_prompts_${promptKey} for locale: ${locale}`);
-			// Fallback to English if the prompt doesn't exist in the requested locale
-			if (locale !== 'en') {
-				const enMessages = await loadPrompts('en');
-				prompt = enMessages[`ai_prompts_${promptKey}`];
-			}
-			
-			if (!prompt) {
-				throw new Error(`Prompt key ai_prompts_${promptKey} not found in any locale`);
-			}
-		}
-		
-		// Replace variables in the prompt
-		Object.entries(variables).forEach(([key, value]) => {
-			prompt = prompt.replace(new RegExp(`{${key}}`, 'g'), value);
-		});
-		
-		return prompt;
-	} catch (error) {
-		console.error('Error loading localized prompt:', error);
-		throw error;
-	}
+const getLocalizedPrompt = (promptKey: string, variables: Record<string, any> = {}) => {
+	// Call the translation function directly with variables
+	return m[`ai_prompts_${promptKey}` as keyof typeof m](variables);
 };
 
 export const analyzeChat = async (chatId: string, userId: string, locale: string) => {
 	try {
+		console.log('analyzeChat called with locale:', locale);
+		console.log('Current setLocale available:', typeof setLocale);
+		
 		const feelingsRecords = await pb.collection('feelings').getFullList({
 			sort: 'category,sort'
 		})
@@ -81,10 +60,15 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
       ${concatenatedHistory}
       `;
 
-		const systemInstruction = await getLocalizedPrompt(locale, 'analyzeChat', {
+		console.log('About to call getLocalizedPrompt with feelings:', feelings.slice(0, 3));
+		console.log('About to call getLocalizedPrompt with needs:', needs.slice(0, 3));
+		
+		const systemInstruction = getLocalizedPrompt('analyzeChat', {
 			feelings: feelings.join(', '),
 			needs: needs.join(', ')
 		});
+		
+		console.log('Generated systemInstruction preview:', systemInstruction.substring(0, 200) + '...');
 
 		const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 		const model = {
@@ -204,7 +188,7 @@ export const extractMemories = async (userId: string, locale: string = 'en') => 
 
 			console.log('message', message);
 
-			const systemInstruction = await getLocalizedPrompt(locale, 'extractMemories');
+			const systemInstruction = getLocalizedPrompt('extractMemories');
 
 			const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 			const model = {
@@ -338,7 +322,7 @@ export const defineCurrentStep = async (
 	state: State,
 	locale: string = 'en'
 ): Promise<State> => {
-	const systemInstruction = await getLocalizedPrompt(locale, 'defineCurrentStep', {
+	const systemInstruction = getLocalizedPrompt('defineCurrentStep', {
 		state: JSON.stringify(state)
 	});
 
@@ -390,7 +374,7 @@ export const shouldSaveObservationTool = async (
 	locale: string = 'en',
 	state?: object
 ): Promise<boolean> => {
-	const systemInstruction = await getLocalizedPrompt(locale, 'shouldSaveObservation');
+	const systemInstruction = getLocalizedPrompt('shouldSaveObservation');
 
 	const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 	const model = {
@@ -435,7 +419,7 @@ export const saveObservation = async (
 	state: State,
 	locale: string = 'en'
 ) => {
-	const systemInstruction = await getLocalizedPrompt(locale, 'saveObservation');
+	const systemInstruction = getLocalizedPrompt('saveObservation');
 
 	const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 	const model = {
@@ -488,7 +472,7 @@ export const shouldAnalyzeFeelingsTool = async (
 	userId: string,
 	locale: string = 'en'
 ): Promise<boolean> => {
-	const systemInstruction = await getLocalizedPrompt(locale, 'shouldAnalyzeFeelings');
+	const systemInstruction = getLocalizedPrompt('shouldAnalyzeFeelings');
 
 	const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 	const model = {
@@ -530,7 +514,7 @@ export const analyzeAndSaveFeelings = async (message: string, chatId: string, us
 	const feelings = await pb.collection('feelings').getFullList({
 		sort: 'category,sort'
 	});
-	const systemInstruction = await getLocalizedPrompt(locale, 'analyzeAndSaveFeelings', {
+	const systemInstruction = getLocalizedPrompt('analyzeAndSaveFeelings', {
 		feelings: feelings.map((feeling) => feeling.nameEn).join(', ')
 	});
 

@@ -4,13 +4,13 @@ import { pb } from '$scripts/pocketbase';
 export const load: PageServerLoad = async ({ locals, params, url }) => {
     const user = locals.user;
     const locale = locals.locale;
-    const id = params.id;
+    const slug = params.slug;
 
     try {
         const categories = await pb.collection('topicCategory').getFullList({
             sort: '-created'
         });
-        const record = await pb.collection('topics').getOne(id,{
+        const record = await pb.collection('topics').getFirstListItem(`slug = "${slug}"`,{
             expand: 'currentVersion'
         });
 

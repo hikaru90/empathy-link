@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/translations';
+	import { m } from '$lib/translations';
 	import '$src/app.pcss';
 	import { Toaster } from '$lib/components/ui/sonner';
 	import AppMenu from '$lib/components/AppMenu.svelte';
