@@ -15,8 +15,8 @@
 	class="relative mb-10 overflow-hidden rounded-lg p-4"
 >
 	<h1 class="relative z-10 text-xl font-light">
-		<div class="mb-10">\{m.page_learn_titleCard_title1()}</div>
-		<div class="font-bold">\{m.page_learn_titleCard_title2()}</div>
+		<div class="mb-10">{topic.titleDE.split('||')[0]}</div>
+		<div class="font-bold">{topic.titleDE.split('||')[1]}</div>
 	</h1>
 	<img
 		src={`https://${PUBLIC_BACKEND_URL}/api/files/${topic.collectionId}/${topic.id}/${topic.image}`}
