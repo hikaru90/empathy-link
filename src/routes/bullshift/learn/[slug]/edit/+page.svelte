@@ -44,6 +44,7 @@
 	let { data }: Props = $props();
 
 	let currentPage = $state(data.currentPage || 0);
+	let selectedVersionData = $state(null);
 
 	let currentPath: string;
 	if (PUBLIC_INIT_POSTHOG === 'true') {
@@ -63,17 +64,19 @@
 	let currentCategory = $derived(() => {
 		if (!data.categories || !data.record) return { color: '#000000' };
 		const res = data.categories.find((c) => c.id === data.record?.expand?.currentVersion?.category);
-		return res ? res : { color: '#000000' };
+		return res ? { color: res.color || '#000000' } : { color: '#000000' };
 	});
 	const topic = $derived(() => {
-		if (!data.record?.expand?.currentVersion) return [];
+		// Use selected version data from editor if available, otherwise fall back to server data
+		if (selectedVersionData) return selectedVersionData;
+		if (!data.record?.expand?.currentVersion) return { content: [] };
 		return data.record.expand.currentVersion;
 	});
 	const goBack = () => {
 		window.history.back();
 	};
 	const gotoNextPage = () => {
-		if (currentPage < topic().content.length + 1) {
+		if (currentPage < topic().content.length) {
 			currentPage++;
 		}
 		updateQueryParams();
@@ -224,17 +227,10 @@
 								<LearnTitleCard currentCategory={currentCategory()} topic={topic()} />
 							{/if}
 
-							<!-- Show completion page if we're past the summary page -->
-							{#if currentPage > topic().content.length}
-								<LearnCompletion 
-									topic={topic()}
-									color={currentCategory().color}
-									onReturnToOverview={() => {
-										console.log('Preview completion - would return to overview');
-									}}
-								/>
-							<!-- Show summary if we're at the summary page -->
-							{:else if currentPage === topic().content.length}
+
+
+							<!-- Show summary if we're at the summary page (now the final page) -->
+							{#if currentPage === topic().content.length && topic().content.length > 0}
 								<LearningSummary 
 									session={null}
 									topic={topic()}
@@ -308,7 +304,7 @@
 						{gotoPrevPage}
 						color={currentCategory().color}
 						step={currentPage}
-						totalSteps={topic().content.length + 2}
+						totalSteps={topic().content.length + 1}
 					/>
 					<Footer absolute />
 					</div>
@@ -317,7 +313,11 @@
 		</Resizable.Pane>
 		<Resizable.Handle withHandle />
 		<Resizable.Pane defaultSize={50} class="relative">
-			<LearnEditor {currentPage} topicId={data.topicId} />
+			<LearnEditor 
+				{currentPage} 
+				topicId={data.topicId || ''} 
+				onVersionDataChange={(versionData) => selectedVersionData = versionData}
+			/>
 		</Resizable.Pane>
 	</Resizable.PaneGroup>
 </div>

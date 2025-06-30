@@ -195,7 +195,7 @@
 
 					<div
 						style="-ms-overflow-style: none; scrollbar-width: none;"
-						class="scroll-container snap-x snap-mandatory overflow-x-auto px-6 pt-6 pb-10"
+						class="max-container scroll-container snap-x snap-mandatory overflow-x-auto px-6 pt-6 pb-10"
 						onscroll={(e) => handleScroll(e, categoryIndex)}
 					>
 						<div class="flex">

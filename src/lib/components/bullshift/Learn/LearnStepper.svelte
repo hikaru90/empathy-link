@@ -16,31 +16,31 @@
 
 	let { gotoNextPage, gotoPrevPage, color, class: className = undefined, step, absolute = false, totalSteps }: Props = $props();
 
-	// Determine if we're on the last possible step (summary page)
+	// Determine if we're past the summary page (never hide the button now)
 	const isOnSummaryPage = $derived(() => {
-		if (totalSteps) {
-			return step >= totalSteps - 1; // Summary is the last step
-		}
-		return false; // If totalSteps not provided, assume we can always go forward
+		return false; // Always show the next button, even on summary page
 	});
 
 	const getNextButtonText = $derived(() => {
-		if (totalSteps && step === totalSteps - 3) {
+		if (totalSteps && step === totalSteps - 2) {
 			// On the last content page, next goes to summary
 			return 'Summary';
-		} else if (totalSteps && step === totalSteps - 2) {
-			// On summary page, next goes to completion
-			return 'Complete';
-		} else if (isOnSummaryPage()) {
-			// On completion page, might want to show "Finish" or hide the button
-			return 'Finish';
+		} else if (totalSteps && step === totalSteps - 1) {
+			// On summary page, next goes back to overview
+			return 'Zur Übersicht';
 		}
 		return m.page_fights_form_general_next();
 	});
 
 	const goForward = () => {
-		scrollToTop()
-		gotoNextPage();
+		scrollToTop();
+		
+		// If we're on the summary page, navigate to overview instead of calling gotoNextPage
+		if (totalSteps && step === totalSteps - 1) {
+			window.location.href = '/bullshift/learn';
+		} else {
+			gotoNextPage();
+		}
 	};
 
 	const goBack = () => {

@@ -141,7 +141,7 @@
 			>
 				<div class="mb-4 flex items-center justify-between">
 					<h2 class="text-md font-bold">
-						\{m.page_fights_receivedLinks_heading()}
+						{m.page_fights_receivedLinks_heading()}
 					</h2>
 					<div class="flex items-center gap-1">
 						<Switch

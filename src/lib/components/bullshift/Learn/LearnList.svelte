@@ -16,7 +16,7 @@
 	let { content, currentCategory }: Props = $props();
 </script>
 
-<div class="flex flex-col gap-4 mb-6 relative">
+<div class="flex flex-col gap-4 mb-6 relative z-0">
 	{#each content.items as item, index}
 		<div class="flex flex-col gap-2 rounded-xl border border-white/20 shadow-lg shadow-black/5 p-3 relative z-10">
 			<div class="flex gap-3 items-center">

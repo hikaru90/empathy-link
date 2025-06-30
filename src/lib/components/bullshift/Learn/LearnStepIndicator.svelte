@@ -7,15 +7,19 @@
 
   let { topic, currentPage, currentCategory }: Props = $props();
   
-  // Calculate total steps including summary and completion pages
-  const totalSteps = $derived(() => topic().content.length + 2); // +2 for summary and completion pages
+  // Calculate total steps including summary page only
+  const totalSteps = $derived(() => {
+    const topicData = topic();
+    if (!topicData || !topicData.content) return 1; // Default to just summary if no content
+    return topicData.content.length + 1; // +1 for summary page only
+  });
 </script>
 
 <div class="flex items-center justify-center gap-1 bg-white/20 p-1 rounded-full shadow-xl">
   {#each Array.from({ length: totalSteps() }, (_, index) => index) as stepIndex}
     <div
-      style="background-color: {currentPage >= stepIndex ? currentCategory().color : 'rgba(255,255,255,0.4)'}"
-      class="h-2 w-4 rounded-full {stepIndex >= totalSteps() - 2 ? 'opacity-80' : ''}"
+      style="background-color: {currentPage >= stepIndex ? (currentCategory()?.color || '#666') : 'rgba(255,255,255,0.4)'}"
+      class="h-2 w-4 rounded-full {stepIndex >= totalSteps() - 1 ? 'opacity-80' : ''}"
     ></div>
   {/each}
 </div>

@@ -151,7 +151,7 @@
 	onDestroy(cleanup);
 </script>
 
-<div class="space-y-6">
+<div class="space-y-6 mb-10">
 	<!-- Unsorted Items -->
 	{#if getUnsortedItems().length > 0}
 		<div>

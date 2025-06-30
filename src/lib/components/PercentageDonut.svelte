@@ -57,8 +57,9 @@
 
 <div class={cn('relative', className)}>
   <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-    <div style="font-size: 90%" class="font-bold text-green-600">
-      {displayPercentage()}%
+    <div style="font-size: 90%" class="font-bold text-green-600 whitespace-nowrap">
+      <span>{displayPercentage()}</span>
+			<span class="text-[0.6rem] -ml-[0.15rem]">%</span>
     </div>
   </div>
   <svg 

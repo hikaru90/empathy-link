@@ -48,7 +48,7 @@
 		</div>
 		<div class="px-4 pb-3 pt-2">
 			{#if data.length === 0}
-				\{m.page_dashboard_feelings_empty()}
+				{m.page_dashboard_feelings_empty()}
 			{:else}
 				{#each data as feeling, index}
 				{#if showMore || index < 3}

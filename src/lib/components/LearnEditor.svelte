@@ -4,11 +4,11 @@
 	import { pb } from '$scripts/pocketbase';
 	import { serializeNonPOJOs } from '$scripts/helpers';
 	import { invalidateAll } from '$app/navigation';
-	import type { TopicVersion, Content } from '$routes/bullshift/learn/[id]/edit/schema';
+	import type { TopicVersion, Content } from '../../routes/bullshift/learn/[slug]/edit/schema';
 	import {
 		topicVersionFormSchema,
 		type TopicVersionFormSchema
-	} from '$routes/bullshift/learn/[id]/edit/schema';
+	} from '../../routes/bullshift/learn/[slug]/edit/schema';
 	import { type SuperValidated, type Infer, superForm, defaults } from 'sveltekit-superforms';
 	import { zodClient, zod } from 'sveltekit-superforms/adapters';
 	import VersionSelector from '$lib/components/VersionSelector.svelte';
@@ -16,7 +16,11 @@
 	import BasicInfoForm from '$lib/components/BasicInfoForm.svelte';
 	import PageContentEditor from '$lib/components/PageContentEditor.svelte';
 
-	const { currentPage, topicId } = $props();
+	const { currentPage, topicId, onVersionDataChange }: { 
+		currentPage: any; 
+		topicId: string;
+		onVersionDataChange?: (versionData: TopicVersion | null) => void;
+	} = $props();
 
 	let liveVersionId: string = $state('');
 	let allVersions: TopicVersion[] = $state([]);
@@ -57,10 +61,32 @@
 			};
 
 			console.log('Updating with data:', updatedData);
+			console.log('currentVersionId:', currentVersionId);
+
+			if (!currentVersionId) {
+				console.error('No version selected for update');
+				saveStatus = 'error';
+				setTimeout(() => {
+					saveStatus = 'idle';
+				}, 3000);
+				return;
+			}
 
 			try {
 				await pb.collection('topicVersions').update(currentVersionId, updatedData);
 				console.log('Update successful');
+				
+				// Update the current version data to reflect the changes
+				const updatedVersion = { ...currentVersion!, ...updatedData };
+				
+				// Update the allVersions array with the new data
+				allVersions = allVersions.map(version => 
+					version.id === currentVersionId ? updatedVersion as TopicVersion : version
+				);
+				
+				// Notify parent about the updated version data for preview update
+				onVersionDataChange?.(updatedVersion as TopicVersion);
+				
 				// Set success status
 				saveStatus = 'success';
 				// Invalidate all load functions to reload the page data
@@ -89,9 +115,11 @@
 		if ((event.ctrlKey || event.metaKey) && event.key === 's') {
 			event.preventDefault();
 			// Trigger form submission by finding and clicking the submit button
-			const submitButton = document.querySelector('button[type="submit"]') as HTMLButtonElement;
-			if (submitButton && saveStatus === 'idle') {
-				submitButton.click();
+			if (formElement) {
+				const submitButton = formElement.querySelector('button[type="submit"]') as HTMLButtonElement;
+				if (submitButton && saveStatus === 'idle') {
+					submitButton.click();
+				}
 			}
 		}
 	};
@@ -110,6 +138,9 @@
 				...page,
 				name: page.name || `Page ${page.page || index + 1}`
 			}));
+			
+			// Notify parent about version data change
+			onVersionDataChange?.(currentVersion);
 		}
 	});
 
@@ -123,8 +154,59 @@
 		currentVersionId = versionId;
 	};
 
+	// Create new version handler
+	const handleCreateNewVersion = async () => {
+		try {
+			// Use current version's category if available, otherwise empty string
+			const categoryToUse = currentVersion?.category || '';
+			
+			const newVersion = await pb.collection('topicVersions').create({
+				titleDE: 'New Version',
+				titleEN: 'New Version',
+				descriptionDE: '',
+				descriptionEN: '',
+				category: categoryToUse,
+				image: '',
+				content: [],
+				topic: topicId
+			});
+
+			// Reload versions and select the new one
+			await getVersions();
+			currentVersionId = newVersion.id;
+		} catch (error: any) {
+			console.error('Error creating new version:', error);
+		}
+	};
+
+	// Delete version handler
+	const handleDeleteVersion = async (versionId: string) => {
+		try {
+			await pb.collection('topicVersions').delete(versionId);
+			
+			// Reload versions
+			await getVersions();
+			
+			// If we deleted the current version, select another one
+			if (currentVersionId === versionId) {
+				if (allVersions.length > 0) {
+					currentVersionId = allVersions[0].id;
+				} else {
+					currentVersionId = '';
+				}
+			}
+		} catch (error: any) {
+			console.error('Error deleting version:', error);
+			alert('Failed to delete version. Please try again.');
+		}
+	};
+
 	const getLiveVersionId = async () => {
 		try {
+			if (!topicId) {
+				console.error('Missing topicId');
+				return;
+			}
 			const record = await pb.collection('topics').getOne(topicId);
 			liveVersionId = record.currentVersion || '';
 			console.log('liveVersionId', liveVersionId);
@@ -135,20 +217,42 @@
 
 	const getVersions = async () => {
 		try {
+			if (!topicId) {
+				console.error('Cannot get versions: Missing topicId');
+				return;
+			}
+			
 			const records = await pb.collection('topicVersions').getFullList({
-				filter: `topic = "${topicId}"`
+				filter: `topic = "${topicId}"`,
+				sort: '-created' // Sort by creation date, newest first
 			});
 			const data = serializeNonPOJOs(records) as TopicVersion[];
 			allVersions = data;
 			
-			// Prioritize the live version if available, otherwise use the latest version
-			if (liveVersionId && data.find(v => v.id === liveVersionId)) {
-				currentVersionId = liveVersionId;
-			} else {
-				currentVersionId = data[data.length - 1]?.id || '';
+			console.log('Found versions:', data.length);
+			console.log('Live version ID from topic:', liveVersionId);
+			
+			if (data.length === 0) {
+				console.error('No versions found for topic:', topicId);
+				return;
 			}
 			
-			console.log('data', data);
+			// First priority: use the live version if it exists and is found
+			if (liveVersionId && data.find(v => v.id === liveVersionId)) {
+				currentVersionId = liveVersionId;
+				console.log('Using live version:', liveVersionId);
+			} else {
+				// Second priority: use the most recent version (first in sorted list)
+				currentVersionId = data[0]?.id || '';
+				console.log('Using most recent version:', currentVersionId);
+			}
+			
+			// Ensure we have a valid currentVersionId
+			if (!currentVersionId) {
+				console.error('Failed to set currentVersionId');
+			}
+			
+			console.log('All versions:', data.map(v => ({ id: v.id, created: v.created })));
 		} catch (error) {
 			console.error('Error getting versions:', error);
 		}
@@ -160,6 +264,12 @@
 		await getVersions();
 		// Add global keyboard event listener
 		document.addEventListener('keydown', handleKeyDown);
+		
+		// Debug current state after loading
+		console.log('After loading - topicId:', topicId);
+		console.log('After loading - allVersions:', allVersions.length);
+		console.log('After loading - currentVersionId:', currentVersionId);
+		console.log('After loading - liveVersionId:', liveVersionId);
 	});
 
 	onDestroy(() => {
@@ -176,12 +286,19 @@
 				{currentVersionId}
 				{liveVersionId}
 				onVersionChange={handleVersionSelect}
+				onCreateNewVersion={handleCreateNewVersion}
 			/>
 			<SaveButton {saveStatus} />
 		</div>
 
 		<div class="max-container mt-20 flex-grow overflow-y-auto">
-			<BasicInfoForm {form} {formData} {currentVersion} />
+			<BasicInfoForm 
+				{form} 
+				{formData} 
+				{currentVersion}
+				onDeleteVersion={handleDeleteVersion}
+				canDelete={allVersions.length > 1}
+			/>
 			<PageContentEditor content={$formData.content || []} onContentChange={handleContentChange} />
 		</div>
 	</form>

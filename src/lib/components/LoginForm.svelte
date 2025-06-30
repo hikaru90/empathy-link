@@ -88,7 +88,7 @@
 				disabled={isSubmitting}
 				class="text-sm text-muted-foreground hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
 			>
-				\{m.page_login_forgotPassword_question()}
+				{m.page_login_forgotPassword_question()}
 			</button>
 		</Form.Description>
 		<Form.FieldErrors />
@@ -106,13 +106,13 @@
 	<Dialog.Content>
 		<Dialog.Header>
 			<Dialog.Title class="mb-10 leading-tight"
-				>\{m.page_login_forgotPassword_heading()}</Dialog.Title
+				>{m.page_login_forgotPassword_heading()}</Dialog.Title
 			>
 			<Dialog.Description>
-				\{m.page_login_forgotPassword_description()}
+				{m.page_login_forgotPassword_description()}
 				<div class="mt-4 flex justify-end">
 					<Button onclick={resetPassword} class="flex items-center gap-3 bg-muted-dark"
-						>\{m.page_login_forgotPassword_heading()}
+						>{m.page_login_forgotPassword_heading()}
 						<Check class="text-needs-background" /></Button
 					>
 				</div>

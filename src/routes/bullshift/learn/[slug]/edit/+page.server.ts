@@ -14,13 +14,15 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
             expand: 'currentVersion'
         });
 
-        console.log('record', record);
+        console.log('Found topic record:', record);
+        console.log('Topic ID being passed:', record.id);
+        console.log('Topic slug:', record.slug);
 
         return {
             record,
             categories,
             currentPage: parseInt(url.searchParams.get('page') || '0'),
-            topicId: id
+            topicId: record.id
         };
     } catch (error) {
         console.error('Error getting topic:', error);

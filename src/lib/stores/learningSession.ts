@@ -1,5 +1,5 @@
 import { pb } from '$scripts/pocketbase';
-import type { LearningSession, SessionResponse, ContentBlock, Content } from '$routes/bullshift/learn/[id]/edit/schema';
+import type { LearningSession, SessionResponse, ContentBlock, Content } from '$routes/bullshift/learn/[slug]/edit/schema';
 
 // Simple utility functions for learning session management
 export const learningSession = {
@@ -15,22 +15,23 @@ export const learningSession = {
       if (existingSessions.items.length > 0) {
         const latestSession = existingSessions.items[0] as unknown as LearningSession;
         
-        // If latest session is incomplete (not done), resume it
-        if (!latestSession.done) {
+        // If latest session is incomplete (not completed), resume it
+        if (!latestSession.completed) {
           return latestSession;
         }
         
-        // If latest session is done, clean up any old incomplete sessions
+        // If latest session is completed, clean up any old incomplete sessions
         // and create a new one (user wants to restart)
         const incompleteSessionIds = existingSessions.items
-          .filter((session: any) => !session.done)
+          .filter((session: any) => !session.completed)
           .map((session: any) => session.id);
           
         if (incompleteSessionIds.length > 0) {
-          // Mark old incomplete sessions as done to clean up
+          // Mark old incomplete sessions as completed to clean up
           for (const sessionId of incompleteSessionIds) {
             await pb.collection('learnSessions').update(sessionId, {
-              done: true // Mark as done to clean up, preserve completed datetime
+              completed: true,
+              completedAt: new Date().toISOString()
             });
           }
         }
@@ -43,7 +44,7 @@ export const learningSession = {
         topicVersion: topicVersionId,
         currentPage: 0,
         responses: [],
-        done: false // Initialize as not done
+        completed: false // Initialize as not completed
       });
       return newSession as unknown as LearningSession;
     } catch (error) {
@@ -172,11 +173,12 @@ export const learningSession = {
     }
   },
 
-  // Complete the session (set completion datetime)
+  // Complete the session (set completion flag and datetime)
   async complete(sessionId: string): Promise<void> {
     try {
       await pb.collection('learnSessions').update(sessionId, {
-        completed: new Date().toISOString()
+        completed: true,
+        completedAt: new Date().toISOString()
       });
     } catch (error) {
       console.error('Failed to complete session:', error);
@@ -184,14 +186,15 @@ export const learningSession = {
     }
   },
 
-  // Mark session as done (final completion)
-  async markAsDone(sessionId: string): Promise<void> {
+  // Mark session as fully completed (final completion)
+  async markAsCompleted(sessionId: string): Promise<void> {
     try {
       await pb.collection('learnSessions').update(sessionId, {
-        done: true
+        completed: true,
+        completedAt: new Date().toISOString()
       });
     } catch (error) {
-      console.error('Failed to mark session as done:', error);
+      console.error('Failed to mark session as completed:', error);
       throw error;
     }
   },

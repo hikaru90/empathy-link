@@ -272,8 +272,8 @@ export interface LearningSession {
   responses: SessionResponse[];
   created: string;
   updated: string;
-  completed?: string; // ISO datetime string when session was completed (reaching summary)
-  done: boolean; // Boolean for final completion (reaching completion page)
+  completed?: boolean;
+  completedAt?: string;
   feedback?: ModuleFeedback; // Optional feedback when module is completed
 }
 

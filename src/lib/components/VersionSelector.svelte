@@ -1,15 +1,23 @@
 <script lang="ts">
 	import * as Select from '$lib/components/ui/select/index.js';
-	import type { TopicVersion } from '$routes/bullshift/learn/[id]/edit/schema';
+	import type { TopicVersion } from '../../routes/bullshift/learn/[slug]/edit/schema';
 
 	interface Props {
 		allVersions: TopicVersion[];
 		currentVersionId: string;
 		liveVersionId: string;
 		onVersionChange: (versionId: string) => void;
+		onCreateNewVersion?: () => void;
 	}
 
-	let { allVersions, currentVersionId, liveVersionId, onVersionChange }: Props = $props();
+	let { allVersions, currentVersionId, liveVersionId, onVersionChange, onCreateNewVersion }: Props = $props();
+
+	// Debug logging
+	$effect(() => {
+		console.log('VersionSelector - allVersions:', allVersions.length);
+		console.log('VersionSelector - currentVersionId:', currentVersionId);
+		console.log('VersionSelector - liveVersionId:', liveVersionId);
+	});
 
 	// Derived value for the selected version display
 	let selectedVersionDisplay = $derived(
@@ -27,9 +35,10 @@
 <div class="flex items-center gap-2">
 	<span class="text-sm">Version</span>
 	<Select.Root
-		selected={{ value: currentVersionId, label: selectedVersionDisplay }}
+		selected={currentVersionId ? { value: currentVersionId, label: selectedVersionDisplay } : undefined}
 		onSelectedChange={(selected) => {
 			if (selected) {
+				console.log('Version changed to:', selected.value);
 				onVersionChange(selected.value);
 			}
 		}}
@@ -52,4 +61,13 @@
 		</Select.Content>
 		<Select.Input name="currentVersionId" value={currentVersionId} />
 	</Select.Root>
+	
+	{#if onCreateNewVersion}
+		<button
+			onclick={onCreateNewVersion}
+			class="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 whitespace-nowrap"
+		>
+			+ New Version
+		</button>
+	{/if}
 </div> 
