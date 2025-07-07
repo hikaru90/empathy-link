@@ -11,7 +11,7 @@
 	let { data }: Props = $props();
 
 	let pending = true;
-	let colors = generateHslaColors(179, 100, 15, data.length);
+	let colors = generateHslaColors(242, 81, 8, data.length);
 	let showMore = $state(false);
 
 	onMount(async () => {
@@ -21,11 +21,11 @@
 
 <div class="relative">
 	<div
-		style="background: radial-gradient(circle at center, hsl(var(--needs-background) / 1), transparent 67%);"
+		style="background: radial-gradient(circle at center, hsl(var(--white) / 1), transparent 67%);"
 		class="absolute right-0 top-60 z-0 h-[800px] w-[800px] -translate-y-1/2 translate-x-1/2 transform opacity-50 dark:opacity-40"
 	></div>
 	<div
-		class="relative z-10 rounded-lg bg-needs-background text-needs-foreground shadow-2xl shadow-black/10 dark:bg-muted"
+		class="relative z-10 rounded-lg bg-offwhite shadow-2xl shadow-black/10 dark:bg-muted"
 	>
 		<div class="flex items-center justify-between px-4 pb-2 pt-3">
 			<h2 class="text-md mb-2 font-bold">
@@ -46,7 +46,7 @@
 				{#each data as need, index}
 				{#if showMore || index < 3}
 						<div
-							class="flex items-center justify-between border-t border-needs-foreground/20 py-1 first:border-t-0"
+							class="flex items-center justify-between border-t border-white/10 py-1 first:border-t-0"
 						>
 							<div class="flex items-center gap-4">
 								<div style="background-color: {colors[index]};" class="h-3 w-5 rounded-full"></div>
@@ -62,9 +62,9 @@
 				{/each}
 				<div class="flex justify-center pt-4">
 					{#if !showMore}
-					<button onclick={() => (showMore = true)} class="text-xs rounded-full border border-needs-foreground/20 px-2 py-1">Mehr anzeigen</button>
+					<button onclick={() => (showMore = true)} class="text-xs rounded-full border border-white/20 px-2 py-1">Mehr anzeigen</button>
 					{:else}
-					<button onclick={() => (showMore = false)} class="text-xs rounded-full border border-needs-foreground/20 px-2 py-1">Weniger anzeigen</button>
+					<button onclick={() => (showMore = false)} class="text-xs rounded-full border border-white/20 px-2 py-1">Weniger anzeigen</button>
 					{/if}
 				</div>
 			{/if}

@@ -41,8 +41,8 @@
 				{#each menu as item}
 					<button style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.2);"
 						class="mt-[1px] rounded-full px-3 py-1 shadow-md {currentSlug === item.slug
-							? 'bg-white'
-							: 'bg-offwhite/60 text-neutral-500'}"
+							? 'bg-white/80 border border-white'
+							: 'bg-white/20 text-black/60 border border-black/10'}"
 						onclick={() => (currentSlug = item.slug)}
 					>
 						{item.label}

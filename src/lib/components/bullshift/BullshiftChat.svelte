@@ -543,7 +543,7 @@
 				{#if analyzerIsRunning || memorizerIsRunning}
 					<!-- Loading state with sparkle pill -->
 					<div class="mb-4 flex flex-col items-center gap-3">
-						<SparklePill fast={true} class="w-12" />
+						<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
 						{#if analyzerIsRunning}
 							<p class="text-sm text-gray-600">Dein Chat wird ausgewertet</p>
 						{:else if memorizerIsRunning}

@@ -70,15 +70,15 @@
 				<div class="absolute right-0 top-2 flex items-center gap-2 rounded-full bg-white px-2 py-1">
 					<span class="text-xs text-neutral-500"> Gewissheit </span>
 					{#if memory.confidence === 'certain'}
-						<div class="flex">
+						<div class="flex gap-[1px]">
 							<div class="h-3 w-2 rounded-md border-r border-black/5 bg-green-500"></div>
 							<div class="h-3 w-2 rounded-md border-r border-black/5 bg-green-500"></div>
 							<div class="h-3 w-2 rounded-md bg-green-500"></div>
 						</div>
 					{:else if memory.confidence === 'likely'}
-						<div class="flex">
-							<div class="h-3 w-2 rounded-md border-r border-black/5 bg-yellow-500"></div>
-							<div class="h-3 w-2 rounded-md bg-yellow-500"></div>
+						<div class="flex gap-[1px]">
+							<div class="h-3 w-2 rounded-md border-r border-black/5 bg-blue-300"></div>
+							<div class="h-3 w-2 rounded-md bg-blue-300"></div>
 						</div>
 					{:else}
 						<div class="h-3 w-2 rounded-md bg-orange-500"></div>
