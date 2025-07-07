@@ -34,7 +34,7 @@
 </script>
 
 <div class="">
-	<Header />
+	<Header user={data.user} />
 	<div class="max-container py-16 ">
 		<div class="flex h-full w-full flex-col">
 			{#if data.error}

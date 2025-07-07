@@ -4,17 +4,18 @@
 	import Minus from 'lucide-svelte/icons/minus';
 	import Plus from 'lucide-svelte/icons/plus';
 	import * as Drawer from '$lib/components/ui/drawer/index.js';
-	// import { Button } from '$lib/components/ui/button/index.js';
-	import { Button } from '$lib/components/ui/button-op1/index.js';
+	import { m } from '$lib/translations';
+	import { Button } from '$lib/components/ui/button';
 	import LogOut from 'lucide-svelte/icons/log-out';
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { cn } from '$lib/utils';
 	interface Props {
 		absolute?: boolean;
 		class?: string;
+		user: any;
 	}
 
-	let { absolute = false, class: className }: Props = $props();
+	let { absolute = false, class: className, user }: Props = $props();
 
 	const notifications = [
 		{
@@ -55,14 +56,16 @@
 		<div class="mx-auto w-full max-w-sm">
 			<Drawer.Header class="mt-4">
 				<Drawer.Title>Nutzer</Drawer.Title>
+				{#if user}
+					<div class="text-sm text-muted-foreground">{user.email}</div>
+				{/if}
 			</Drawer.Header>
 			<div class="p-4 pb-24">
 				<form action="/app/auth/logout" method="POST" class="w-full">
 					<button type="submit" class="w-full">
 						<Button
 							wrapperClass="w-full"
-							decoration="floating-op1"
-							class="flex !h-10 w-full items-center justify-between gap-3 border-offwhite bg-orange-900 text-red-300 data-[highlighted]:bg-red-200 data-[highlighted]:text-red-500"
+							class="flex !h-10 w-full items-center justify-between gap-3 border-offwhite bg-red-500 text-red-100 data-[highlighted]:bg-red-200 data-[highlighted]:text-red-500"
 						>
 							{m.menu_profile_logout()}
 							<LogOut class="size-3" /></Button

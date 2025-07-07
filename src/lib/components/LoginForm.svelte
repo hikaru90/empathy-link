@@ -32,9 +32,9 @@
 		onResult: ({ result }) => {
 			isSubmitting = false;
 			console.log('result', result);
-			if (result.type === 'failure') toast.error(m_page_login_toasts_error());
+			if (result.type === 'failure') toast.error(m.page_login_toasts_error());
 			if (result.type === 'success') {
-				toast.success(m_page_login_toasts_success());
+				toast.success(m.page_login_toasts_success());
 				// goto('/bullshift');
 			}
 		}
@@ -43,7 +43,7 @@
 	const resetPassword = async () => {
 		resetPasswordDialogOpen = false;
 		await pb.collection('users').requestPasswordReset($formData.email);
-		toast.success(m_page_login_forgotPassword_success());
+		toast.success(m.page_login_forgotPassword_success());
 	};
 
 	const openResetDialog = (event: MouseEvent) => {
