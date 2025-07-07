@@ -15,10 +15,10 @@
   });
 </script>
 
-<div class="flex items-center justify-center gap-1 bg-white/20 p-1 rounded-full shadow-xl">
+<div class="flex items-center justify-center gap-1 bg-neutral-500/5 shadow-inner p-1 rounded-full">
   {#each Array.from({ length: totalSteps() }, (_, index) => index) as stepIndex}
     <div
-      style="background-color: {currentPage >= stepIndex ? (currentCategory()?.color || '#666') : 'rgba(255,255,255,0.4)'}"
+      style="background-color: {currentPage >= stepIndex ? (currentCategory()?.color || '#666') : 'rgba(255,255,255,0.8)'}"
       class="h-2 w-4 rounded-full {stepIndex >= totalSteps() - 1 ? 'opacity-80' : ''}"
     ></div>
   {/each}

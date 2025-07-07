@@ -19,6 +19,7 @@
 	let userFeedback = $state('');
 	let improvements = $state('');
   let feedbackStarted = $state(false);
+  let feedbackSubmitted = $state(false);
 
 	const handleRatingClick = (rating: number) => {
 		userRating = rating;
@@ -33,12 +34,25 @@
 				improvements: improvements
 			});
 		}
+		feedbackSubmitted = true;
 	};
 </script>
 
 <div class="rounded-lg bg-white p-6 shadow-lg">
   <h2 class="mb-4 font-bold text-gray-900">Feedback</h2>
-  <div class="space-y-6">
+  
+  {#if feedbackSubmitted}
+    <div class="rounded-lg bg-green-50 p-4 border border-green-200">
+      <div class="flex items-center">
+        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+        </svg>
+        <p class="text-green-800 font-medium">Vielen Dank für dein Feedback!</p>
+      </div>
+      <p class="text-green-700 text-sm mt-1">Deine Bewertung und Kommentare helfen uns dabei, unsere Lernmodule zu verbessern.</p>
+    </div>
+  {:else}
+    <div class="space-y-6">
     <!-- Rating -->
     <div>
       <label class="mb-2 block text-sm font-medium text-gray-700">
@@ -49,7 +63,7 @@
           <button
             type="button"
             onclick={() => handleRatingClick(rating)}
-            class="text-3xl transition-colors {userRating >= rating
+            class="cursor-pointer text-3xl transition-colors p-2 {userRating >= rating
               ? 'text-yellow-400'
               : 'text-gray-300'} hover:text-yellow-400"
           >
@@ -98,5 +112,6 @@
       Feedback absenden
     </button>
     {/if}
-  </div>
+    </div>
+  {/if}
 </div>

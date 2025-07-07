@@ -218,7 +218,7 @@
 </script>
 
 <div class="pb-32 pt-6">
-	<Header class="z-20" />
+	<Header class="z-20" user={data.user} />
 	<div class="max-container py-10">
 		<div class="mb-6 flex items-center justify-center">
 			<!-- <a
@@ -234,8 +234,10 @@
 		{#if !showNewSessionConfirm}
 			{#if currentPage === 0}
 				<LearnTitleCard currentCategory={currentCategory()} topic={topic()} />
-			{:else if currentPage === topic().content.length}
-				<!-- Show summary page (now the final page) -->
+			{/if}
+
+			<!-- Show summary page (now the final page) -->
+			{#if currentPage === topic().content.length && topic().content.length > 0}
 				{#await currentSession ? pb.collection('learnSessions').getOne(currentSession.id).then(session => session as unknown as LearningSession) : Promise.resolve(null)}
 					<div class="text-center p-8">
 						<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>

@@ -45,7 +45,33 @@ export const sendMessage = async (
 	}
 };
 
-export const getSystemInstruction = (user: any, locale: string) => {
+// Add this helper function to fetch and format user memories
+const getUserMemories = async (userId: string): Promise<string> => {
+	try {
+		const memories = await pb.collection('memories').getFullList({
+			filter: `user = "${userId}"`,
+			sort: '-created'
+		});
+
+		if (memories.length === 0) {
+			return '';
+		}
+
+		const memoryContext = memories.map(memory => {
+			const confidenceLevel = memory.confidence === 'certain' ? '(high confidence)' : 
+									memory.confidence === 'likely' ? '(medium confidence)' : 
+									'(low confidence)';
+			return `- ${memory.key}: ${memory.value} ${confidenceLevel}`;
+		}).join('\n');
+
+		return `\n\nPrevious information about this user from past conversations:\n${memoryContext}\n\nPlease use this context to personalize your responses while being natural about it.`;
+	} catch (error) {
+		console.error('Error fetching user memories:', error);
+		return '';
+	}
+};
+
+export const getSystemInstruction = async (user: any, locale: string) => {
 	console.log('user object in getSystemInstruction:', user);
 	
 	// Handle different possible user object structures
@@ -53,17 +79,22 @@ export const getSystemInstruction = (user: any, locale: string) => {
 	// Capitalize first letter
 	const capitalizedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
 	
+	// Get user memories
+	const memoriesContext = user?.id ? await getUserMemories(user.id) : '';
+	
 	// Call the translation function directly with the variables
-	return m.ai_system_selfempathy({
+	const baseInstruction = m.ai_system_selfempathy({
 		firstName: capitalizedFirstName,
 		locale: locale
 	});
+
+	return baseInstruction + memoriesContext;
 };
 
-export const getConfig = (user: object, locale: string) => {
+export const getConfig = async (user: object, locale: string) => {
 	return {
 		// temperature: 0.3,
-		systemInstruction: getSystemInstruction(user, locale)
+		systemInstruction: await getSystemInstruction(user, locale)
 		// tools: [
 		// 	{
 		// 		functionDeclarations: [saveObservationFunctionDeclaration]
@@ -86,11 +117,11 @@ export const getModel = async (user: object, locale: string, history?: HistoryEn
 		sort: 'category,sort'
 	});
 
-	const systemInstruction = getSystemInstruction(user, locale);
+	const systemInstruction = await getSystemInstruction(user, locale);
 
 	const model: CreateChatParameters = {
 		model: 'gemini-2.0-flash',
-		config: getConfig(user, locale)
+		config: await getConfig(user, locale)
 	};
 
 	if (history) {
