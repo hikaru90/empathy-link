@@ -5,11 +5,15 @@
 		placeholder: string;
 		value: string;
     class?: string;
+		textarea?: HTMLTextAreaElement;
 	}
 
   let textarea: HTMLTextAreaElement;
 
-	let { placeholder = '', value = $bindable(''), class: className = undefined }: Props = $props();
+	let { placeholder = '', value = $bindable(''), class: className = undefined, textarea: textareaBinding = $bindable() }: Props = $props();
+
+  let previousValue = $state(value);
+  let shouldSetCursorToEnd = $state(false);
 
   const setCursorToEnd = () => {
         const length = textarea.value.length;
@@ -18,9 +22,22 @@
   };
 
   $effect(() => {
-    value = value;
-    changeHeight()
-    setCursorToEnd();
+    // Update the binding
+    textareaBinding = textarea;
+  });
+
+  $effect(() => {
+    // Only set cursor to end if value was changed from outside (not by user typing)
+    if (value !== previousValue) {
+      shouldSetCursorToEnd = value.length > previousValue.length && 
+                            (value.indexOf(previousValue) === 0 || previousValue === '');
+      previousValue = value;
+    }
+    changeHeight();
+    if (shouldSetCursorToEnd) {
+      setCursorToEnd();
+      shouldSetCursorToEnd = false;
+    }
   });
 
 	const changeHeight = () => {

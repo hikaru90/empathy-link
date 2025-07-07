@@ -37,6 +37,7 @@ const config = {
 				'request-background': 'hsl(var(--request-background) / <alpha-value>)',
 				'request-foreground': 'hsl(var(--request-foreground) / <alpha-value>)',
 				'muted-dark': 'hsl(var(--muted-dark) / <alpha-value>)',
+				'black': 'hsl(var(--black) / <alpha-value>)',
 				border: 'hsl(var(--border) / <alpha-value>)',
 				input: 'hsl(var(--input) / <alpha-value>)',
 				ring: 'hsl(var(--ring) / <alpha-value>)',

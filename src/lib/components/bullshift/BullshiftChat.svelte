@@ -10,13 +10,14 @@
 	import X from 'lucide-svelte/icons/x';
 	import SquareCheck from 'lucide-svelte/icons/square-check';
 	import Bug from 'lucide-svelte/icons/bug';
-	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import * as Popover from '$lib/components/ui/popover';
 	import { cn } from '$lib/utils';
+	import IconPaperPlane from '$assets/icons/icon-paper-plane.svg?raw';
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import AutoTextarea from '$lib/components/AutoTextarea.svelte';
+	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { pb } from '$scripts/pocketbase';
 	import { getLocale } from '$src/paraglide/runtime';
 	import { scroll } from '$store/page';
@@ -56,7 +57,8 @@
 
 	let userMessage = $state('');
 	let isLoading = $state(false);
-	let chatContainer: HTMLDivElement = $state();
+	let chatContainer: HTMLDivElement | undefined = $state();
+	let textareaRef: HTMLTextAreaElement | undefined = $state();
 
 	let chatTerminationModalVisible = $state(false);
 
@@ -193,7 +195,6 @@
 				extractMemories(),
 				new Promise(resolve => setTimeout(resolve, 2000))
 			]);
-			await clearChat();
 		} catch (error) {
 			memorizerFailed = true;
 			console.error('Failed to memorize chat:', error);
@@ -228,6 +229,10 @@
 		}
 
 		chatAnalysisId = data.analysis.id;
+		// Update to the new chat ID that was created during analysis
+		chatId = data.initiatedChat.chatId;
+		// Clear the history since we have a new chat
+		history = [];
 		return data.analysis.id;
 	};
 	const extractMemories = async (): Promise<boolean> => {
@@ -253,13 +258,46 @@
 		}
 	};
 	const addText = (text: string) => {
-		let textToAdd = '';
-		if (userMessage && userMessage[userMessage.length - 1] !== ' ') {
-			textToAdd = ' ' + text;
-		} else {
-			textToAdd = text;
+		if (!textareaRef) {
+			// Fallback to old behavior if no textarea ref
+			let textToAdd = '';
+			if (userMessage && userMessage[userMessage.length - 1] !== ' ') {
+				textToAdd = ' ' + text;
+			} else {
+				textToAdd = text;
+			}
+			userMessage += textToAdd;
+			return;
 		}
-		userMessage += textToAdd;
+
+		const textarea = textareaRef;
+		const start = textarea.selectionStart;
+		const end = textarea.selectionEnd;
+		const currentValue = userMessage;
+
+		// Determine what text to add
+		let textToAdd = text;
+		
+		// Add space before if needed (cursor is not at start and previous char is not a space)
+		if (start > 0 && currentValue[start - 1] !== ' ') {
+			textToAdd = ' ' + text;
+		}
+		
+		// Add space after if needed (cursor is not at end and next char is not a space)
+		if (end < currentValue.length && currentValue[end] !== ' ') {
+			textToAdd = textToAdd + ' ';
+		}
+
+		// Insert text at cursor position
+		const newValue = currentValue.substring(0, start) + textToAdd + currentValue.substring(end);
+		userMessage = newValue;
+
+		// Set cursor position after the inserted text
+		setTimeout(() => {
+			const newCursorPos = start + textToAdd.length;
+			textarea.setSelectionRange(newCursorPos, newCursorPos);
+			textarea.focus();
+		}, 0);
 	};
 
 	const autoGrow = (element: HTMLTextAreaElement) => {
@@ -272,6 +310,15 @@
 
 		getFeelings();
 		getNeeds();
+	});
+
+	$effect(() => {
+		// Auto-hide modal when analysis is complete and successful
+		if (!analyzerIsRunning && !memorizerIsRunning && !analyzerFailed && !memorizerFailed && chatAnalysisId && chatTerminationModalVisible) {
+			setTimeout(() => {
+				chatTerminationModalVisible = false;
+			}, 1500); // Show success state for 1.5 seconds before auto-hiding
+		}
 	});
 </script>
 
@@ -377,6 +424,7 @@
 					class="{ history.length > 0 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none' } fixed top-4 left-1/2 flex -translate-x-1/2 transform items-center gap-2 rounded-full bg-bullshift px-3 py-1 text-sm shadow-xl transition"
 					onclick={() => {
 						chatTerminationModalVisible = true;
+						startAnalysis();
 					}}
 				>
 					Chat abschließen
@@ -384,12 +432,13 @@
 				</button>
 			<form
 				onsubmit={preventDefault(handleSendMessage)}
-				class="flex flex-col gap-2 rounded-2xl bg-gradient-to-b from-white to-offwhite p-2 shadow-lg"
+				class="flex flex-col gap-2 rounded-2xl bg-gradient-to-b from-white to-offwhite p-2 border border-white shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
 			>
 				<AutoTextarea
 					bind:value={userMessage}
 					placeholder="Deine Nachricht..."
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
+					bind:textarea={textareaRef}
 				></AutoTextarea>
 
 				<div
@@ -432,11 +481,13 @@
 							style={feelingSelectorVisible
 								? ''
 								: 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}
-							class="flex items-center gap-1 rounded-full {feelingSelectorVisible
-								? 'bg-black/5 text-black/40 shadow-inner'
-								: 'bg-white text-black/60'} px-2 py-1 text-xs"
+							class="flex items-center gap-1 rounded-full pl-1 pr-2 py-1 text-xs {feelingSelectorVisible
+							? 'text-black shadow-inner bg-black/10'
+							: 'text-black/60 bg-white'}"
 						>
-							<div class="w-[1.2em] fill-neutral-500">
+						<div class="w-[1.2em] rounded-full p-[0.1em] {feelingSelectorVisible
+						? 'bg-black fill-white/80'
+						: 'bg-black/10 fill-black/60'}">
 								{@html IconHeart}
 							</div>
 							Gefühle
@@ -450,11 +501,13 @@
 							style="{needSelectorVisible
 								? ''
 								: 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}	"
-							class="flex items-center gap-1 rounded-full {needSelectorVisible
-								? 'bg-black/5 text-black/40 shadow-inner'
-								: 'bg-white text-black/60'} px-2 py-1 text-xs"
+							class="flex items-center gap-1 rounded-full pl-1 pr-2 py-1 text-xs {needSelectorVisible
+								? 'text-black shadow-inner bg-black/10'
+								: 'text-black/60 bg-white'}"
 						>
-							<div class="w-[1.2em] fill-neutral-500">
+							<div class="w-[1.2em] rounded-full p-[0.1em] {needSelectorVisible
+								? 'bg-black fill-white/80'
+								: 'bg-black/10 fill-black/60'}">
 								{@html IconSwirl}
 							</div>
 							Bedürfnisse
@@ -468,9 +521,11 @@
 						}}
 						disabled={isLoading}
 						style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
-						class="flex size-10 items-center justify-center rounded-full bg-bullshift text-black disabled:opacity-50"
+						class="flex size-10 items-center justify-center rounded-full bg-black text-white disabled:opacity-50"
 					>
-						<SendHorizontal class="size-4" />
+						<div class="w-[1.2em] fill-white">
+							{@html IconPaperPlane}
+						</div>
 					</button>
 				</div>
 			</form>
@@ -478,74 +533,56 @@
 	</div>
 {/if}
 
-<Dialog.Root bind:open={chatTerminationModalVisible}>
-	<Dialog.Content>
-		<Dialog.Header>
-			<Dialog.Title>Chat auswerten?</Dialog.Title>
-			<Dialog.Description class="pt-2">
-				{#if analyzerIsRunning}
-					<div class="animate-pulse">Dein Chat wird ausgewertet.</div>
-				{:else if memorizerIsRunning}
-					<div class="animate-pulse">Dein Chat wird abgespeichert.</div>
+{#if chatTerminationModalVisible}
+	<!-- Custom non-interactive modal -->
+	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+		<div class="mx-4 max-w-md rounded-lg bg-white p-6 shadow-xl">
+			<div class="text-center">
+				<h3 class="mb-4 text-lg font-semibold">Chat wird ausgewertet</h3>
+				
+				{#if analyzerIsRunning || memorizerIsRunning}
+					<!-- Loading state with sparkle pill -->
+					<div class="mb-4 flex flex-col items-center gap-3">
+						<SparklePill fast={true} class="w-12" />
+						{#if analyzerIsRunning}
+							<p class="text-sm text-gray-600">Dein Chat wird ausgewertet</p>
+						{:else if memorizerIsRunning}
+							<p class="text-sm text-gray-600">Dein Chat wird abgespeichert</p>
+						{/if}
+					</div>
 				{:else if analyzerFailed || memorizerFailed}
-					{#if analyzerFailed}
-						<div class="">Dein Chat konnte nicht ausgewertet werden.</div>
-					{:else if memorizerFailed}
-						<div class="">Dein Chat konnte nicht abgespeichert werden.</div>
-					{/if}
-				{:else}
-					{#if chatAnalysisId}
-						<div class="">Dein Chat wurde ausgewertet und abgespeichert.</div>
-					{:else}
-						<div class="">Möchtest du den Chat beenden und auswerten lassen?</div>
-					{/if}
-				{/if}
-			</Dialog.Description>
-			<Dialog.Footer>
-				<div class="mt-2 flex flex-grow justify-between gap-4">
-					{#if analyzerIsRunning}
+					<!-- Error state -->
+					<div class="mb-4">
+						{#if analyzerFailed}
+							<p class="mb-4 text-sm text-red-600">Dein Chat konnte nicht ausgewertet werden.</p>
+						{:else if memorizerFailed}
+							<p class="mb-4 text-sm text-red-600">Dein Chat konnte nicht abgespeichert werden.</p>
+						{/if}
 						<Button
-							variant="outline"
-							class="bg-transparent shadow-none"
-							onclick={() => {
-								chatTerminationModalVisible = false;
-								clearChat();
-							}}
-						>
-							Nicht auswerten
-						</Button>
-					{:else if !analyzerFailed && !memorizerFailed && chatAnalysisId}
-						<a
-							href={`/bullshift/stats/chats/${chatAnalysisId}`}
-							class="flex h-9 flex-grow items-center justify-between gap-2 whitespace-nowrap rounded-md bg-black px-4 py-2 text-sm font-medium text-white shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-							onclick={() => {
-								chatAnalysisModalVisible = false;
-							}}
-						>
-							Zur Auswertung
-							<ChevronRight class="size-4" />
-						</a>
-					{:else}
-						<Button
-							class="flex flex-grow items-center justify-between gap-2 bg-black text-white"
+							class="bg-black text-white"
 							onclick={() => {
 								startAnalysis();
 							}}
 						>
-							{#if analyzerFailed || memorizerFailed}
-								Erneut auswerten
-							{:else}
-								Auswerten
-							{/if}
-							{#if analyzerIsRunning}
-								<LoaderCircle class="size-4 animate-spin" />
-							{:else}
-								<ChevronRight class="size-4" />
-							{/if}
+							Erneut versuchen
 						</Button>
-					{/if}
-				</div>
-			</Dialog.Footer>
-		</Dialog.Header>
-	</Dialog.Content>
-</Dialog.Root>
+					</div>
+				{:else if chatAnalysisId}
+					<!-- Success state -->
+					<div class="mb-4 flex flex-col items-center gap-3">
+						<div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+							<SquareCheck class="h-6 w-6 text-green-600" />
+						</div>
+						<p class="text-sm text-gray-600">Dein Chat wurde ausgewertet und abgespeichert</p>
+					</div>
+				{:else}
+					<!-- Initial state -->
+					<div class="mb-4 flex flex-col items-center gap-3">
+						<SparklePill class="w-8" />
+						<p class="text-sm text-gray-600">Chat wird vorbereitet...</p>
+					</div>
+				{/if}
+			</div>
+		</div>
+	</div>
+{/if}

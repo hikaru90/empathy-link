@@ -154,6 +154,23 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 		return responseJson;
 	} catch (error) {
 		console.error('Error analyzing chat:', error);
+		// Return a safe fallback object to prevent the endpoint from crashing
+		return {
+			title: '',
+			observation: '',
+			feelings: [],
+			needs: [],
+			request: '',
+			sentimentPolarity: 0,
+			intensityRatio: 0,
+			emotionalBalance: 0,
+			triggerCount: 0,
+			resolutionCount: 0,
+			escalationRate: 0,
+			empathyRate: 0,
+			messageLength: 0,
+			readabilityScore: 0
+		};
 	}
 };
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import backgroundImage from '$assets/images/holo3.jpg';
+	import backgroundImage from '$assets/images/sparklePill2.webp';
   import { cn } from "$lib/utils.js";
 
 
