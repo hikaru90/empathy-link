@@ -55,10 +55,10 @@
     <div class="space-y-6">
     <!-- Rating -->
     <div>
-      <label class="mb-2 block text-sm font-medium text-gray-700">
+      <div id="rating-label" class="mb-2 block text-sm font-medium text-gray-700">
         Wie würdest du dieses Lernmodul bewerten?
-      </label>
-      <div class="flex gap-2">
+      </div>
+      <div class="flex gap-2" role="radiogroup" aria-labelledby="rating-label">
         {#each [1, 2, 3, 4, 5] as rating}
           <button
             type="button"
@@ -66,6 +66,9 @@
             class="cursor-pointer text-3xl transition-colors p-2 {userRating >= rating
               ? 'text-yellow-400'
               : 'text-gray-300'} hover:text-yellow-400"
+            aria-label="Rate {rating} stars"
+            role="radio"
+            aria-checked={userRating >= rating}
           >
           ★
           </button>

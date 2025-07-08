@@ -98,6 +98,23 @@
 					allowMultiple: false
 				};
 				break;
+			case 'aiQuestion':
+				newBlock = { 
+					type: 'aiQuestion', 
+					question: '', 
+					systemPrompt: 'You are a helpful learning assistant. Provide constructive feedback on the user\'s answer.',
+					placeholder: 'Schreibe deine Antwort hier...'
+				};
+				break;
+			case 'image':
+				newBlock = { 
+					type: 'image', 
+					src: '', 
+					alt: '',
+					caption: '',
+					alignment: 'center'
+				};
+				break;
 			default:
 				return;
 		}
@@ -299,9 +316,11 @@
 					<div class="border-t bg-white p-4">
 						<!-- Content Blocks -->
 						{#if page.content.length === 0}
-							<p class="py-8 text-center text-gray-500">
-								No content blocks yet. Add one above!
-							</p>
+							<div class="py-8 text-center text-gray-500 border-2 border-dashed border-gray-200 rounded-lg">
+								<div class="text-4xl mb-4">📝</div>
+								<p class="text-lg font-medium mb-2">No content blocks yet</p>
+								<p class="text-sm">Add your first block using the buttons below!</p>
+							</div>
 						{:else}
 							{#each page.content as block, blockIndex (blockIndex)}
 								<ContentBlockEditor
@@ -319,7 +338,7 @@
 							{/each}
 						{/if}
 						<!-- Add Block Buttons -->
-						<div class="mb-4 flex flex-wrap gap-2">
+						<div class="flex flex-wrap gap-2">
 							<BlockTypeSelector onAddBlock={(type) => addContentBlock(pageIndex, type)} />
 						</div>
 					</div>

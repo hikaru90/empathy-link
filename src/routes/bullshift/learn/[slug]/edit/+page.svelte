@@ -15,6 +15,7 @@
 	import LearnCompletionNotes from '$lib/components/bullshift/Learn/LearnCompletionNotes.svelte';
 	import LearnSortableWithFeedback from '$lib/components/bullshift/Learn/LearnSortableWithFeedback.svelte';
 	import LearnMultipleChoice from '$lib/components/bullshift/Learn/LearnMultipleChoice.svelte';
+	import LearnAIQuestion from '$lib/components/bullshift/Learn/LearnAIQuestion.svelte';
 	import LearningSummary from '$lib/components/bullshift/Learn/LearningSummary.svelte';
 	import LearnCompletion from '$lib/components/bullshift/Learn/LearnCompletion.svelte';
 	import LearnEditor from '$lib/components/LearnEditor.svelte';
@@ -35,6 +36,7 @@
 	import { postHog, featureFlags } from '$store/posthog';
 	import { PUBLIC_INIT_POSTHOG } from '$env/static/public';
 	import { getLocale } from '$src/paraglide/runtime';
+	import LearnImage from '$lib/components/bullshift/Learn/LearnImage.svelte';
 	const locale = $derived(getLocale());
 
 	interface Props {
@@ -272,6 +274,8 @@
 													session={null}
 													onResponse={() => {}}
 												/>
+											{:else if content.type === 'image'}
+												<LearnImage {content} />
 											{:else if content.type === 'list'}
 												<LearnList {content} currentCategory={currentCategory()} />
 											{:else if content.type === 'sortable'}
@@ -283,6 +287,17 @@
 												/>
 											{:else if content.type === 'multipleChoice'}
 												<LearnMultipleChoice 
+													{content} 
+													color={currentCategory().color}
+													pageIndex={index}
+													{blockIndex}
+													session={null}
+													contentBlock={content}
+													topicVersionId={topic().id}
+													onResponse={() => {}}
+												/>
+											{:else if content.type === 'aiQuestion'}
+												<LearnAIQuestion 
 													{content} 
 													color={currentCategory().color}
 													pageIndex={index}

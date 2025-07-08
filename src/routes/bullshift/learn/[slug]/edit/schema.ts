@@ -15,7 +15,9 @@ export type ContentBlock =
   | BodymapBlock
   | TaskCompletionBlock
   | SortableBlock
-  | MultipleChoiceBlock;
+  | MultipleChoiceBlock
+  | AIQuestionBlock
+  | ImageBlock;
 
 export interface TextBlock {
   type: "text";
@@ -79,6 +81,22 @@ export interface MultipleChoiceBlock {
     explanation?: string;
   }[];
   allowMultiple?: boolean; // Whether multiple correct answers are allowed
+}
+
+export interface AIQuestionBlock {
+  type: "aiQuestion";
+  question: string;
+  systemPrompt: string;
+  placeholder?: string; // Optional placeholder for the answer field
+}
+
+export interface ImageBlock {
+  type: "image";
+  src: string; // URL or file path
+  alt?: string; // Alt text for accessibility
+  caption?: string; // Optional caption
+  width?: number; // Optional width constraint
+  alignment?: 'left' | 'center' | 'right'; // Image alignment
 }
 
 export interface TopicVersion {
@@ -160,6 +178,22 @@ const multipleChoiceBlockSchema = z.object({
   allowMultiple: z.boolean().optional()
 });
 
+const aiQuestionBlockSchema = z.object({
+  type: z.literal("aiQuestion"),
+  question: z.string(),
+  systemPrompt: z.string(),
+  placeholder: z.string().optional()
+});
+
+const imageBlockSchema = z.object({
+  type: z.literal("image"),
+  src: z.string(),
+  alt: z.string().optional(),
+  caption: z.string().optional(),
+  width: z.number().optional(),
+  alignment: z.enum(['left', 'center', 'right']).optional()
+});
+
 const contentBlockSchema = z.discriminatedUnion("type", [
   textBlockSchema,
   listBlockSchema,
@@ -169,7 +203,9 @@ const contentBlockSchema = z.discriminatedUnion("type", [
   bodymapBlockSchema,
   taskCompletionBlockSchema,
   sortableBlockSchema,
-  multipleChoiceBlockSchema
+  multipleChoiceBlockSchema,
+  aiQuestionBlockSchema,
+  imageBlockSchema
 ]);
 
 const contentSchema = z.object({
@@ -260,6 +296,16 @@ export interface MultipleChoiceResponse extends SessionResponse {
     }[];
     completed: boolean;
     totalTimeSpent: number;
+  };
+}
+
+export interface AIQuestionResponse extends SessionResponse {
+  blockType: 'aiQuestion';
+  response: {
+    userAnswer: string;
+    aiResponse: string;
+    timestamp: string;
+    responseTime?: number; // time taken to get AI response
   };
 }
 

@@ -16,12 +16,14 @@
 	import LearnBodyMap from '$lib/components/LearnBodyMap.svelte';
 	import LearnSortableWithFeedback from '$lib/components/bullshift/Learn/LearnSortableWithFeedback.svelte';
 	import LearnMultipleChoice from '$lib/components/bullshift/Learn/LearnMultipleChoice.svelte';
+	import LearnAIQuestion from '$lib/components/bullshift/Learn/LearnAIQuestion.svelte';
 	import LearningSummary from '$lib/components/bullshift/Learn/LearningSummary.svelte';
 	import LearnCompletion from '$lib/components/bullshift/Learn/LearnCompletion.svelte';
 	import { learningSession } from '$lib/stores/learningSession';
 	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import { pb } from '$scripts/pocketbase';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import LearnImage from '$lib/components/bullshift/Learn/LearnImage.svelte';
 
 	interface Props {
 		data: PageData;
@@ -280,6 +282,8 @@
 								/>
 							{:else if content.type === 'heading'}
 								<LearnHeading {content} />
+							{:else if content.type === 'image'}
+								<LearnImage {content} />
 							{:else if content.type === 'timer'}
 								<LearnTimer 
 									duration={content.duration} 
@@ -332,6 +336,17 @@
 									contentBlock={content}
 									topicVersionId={topic().id}
 									onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'multipleChoice', response, topic().id, content)}
+								/>
+							{:else if content.type === 'aiQuestion'}
+								<LearnAIQuestion 
+									{content} 
+									color={currentCategory().color}
+									pageIndex={pageIndex}
+									{blockIndex}
+									session={currentSession}
+									contentBlock={content}
+									topicVersionId={topic().id}
+									onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'aiQuestion', response, topic().id, content)}
 								/>
 							{/if}
 						{/each}

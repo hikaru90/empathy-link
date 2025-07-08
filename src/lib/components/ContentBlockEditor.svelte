@@ -687,6 +687,192 @@
 					<div class="text-sm text-gray-600">Preview: Multiple choice quiz with {block.questions.length} questions{block.allowMultiple ? ' (multiple answers allowed)' : ''}</div>
 				</div>
 			</div>
+		{:else if block.type === 'aiQuestion'}
+			<div class="grid grid-cols-2 gap-4">
+				<div class="space-y-4">
+					<div>
+						<label for="ai-question-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Question (Markdown)</label>
+						<Textarea 
+							id="ai-question-{pageIndex}-{blockIndex}"
+							value={block.question}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLTextAreaElement;
+								onUpdate('question', target.value);
+							}}
+							rows={3}
+							placeholder="Enter the question for users..."
+						/>
+					</div>
+					<div>
+						<label for="ai-system-prompt-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">System Prompt</label>
+						<Textarea 
+							id="ai-system-prompt-{pageIndex}-{blockIndex}"
+							value={block.systemPrompt}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLTextAreaElement;
+								onUpdate('systemPrompt', target.value);
+							}}
+							rows={4}
+							placeholder="Define how the AI should respond to user answers..."
+							class="font-mono text-sm"
+						/>
+					</div>
+					<div>
+						<label for="ai-placeholder-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Answer Placeholder (optional)</label>
+						<Input 
+							id="ai-placeholder-{pageIndex}-{blockIndex}"
+							value={block.placeholder || ''}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLInputElement;
+								onUpdate('placeholder', target.value || undefined);
+							}}
+							placeholder="Custom placeholder for answer field..."
+						/>
+					</div>
+				</div>
+				<div>
+					<div class="block text-sm font-medium mb-1">Preview</div>
+					<div class="border rounded p-4 bg-white space-y-3">
+						<div class="font-medium">
+							{@html marked(block.question || 'Question will appear here...')}
+						</div>
+						<div class="border rounded p-2 bg-gray-50 text-sm text-gray-500">
+							{block.placeholder || 'Schreibe deine Antwort hier...'}
+						</div>
+						<div class="text-xs text-gray-500 border-l-2 border-blue-500 pl-2">
+							<strong>System Prompt:</strong> {block.systemPrompt || 'No system prompt set'}
+						</div>
+					</div>
+				</div>
+			</div>
+		{:else if block.type === 'image'}
+			<div class="grid grid-cols-2 gap-4">
+				<div class="space-y-4">
+					<div>
+						<label for="image-src-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Image URL</label>
+						<Input 
+							id="image-src-{pageIndex}-{blockIndex}"
+							value={block.src}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLInputElement;
+								onUpdate('src', target.value);
+							}}
+							placeholder="https://example.com/image.jpg or /path/to/image.jpg"
+						/>
+					</div>
+					<div>
+						<label for="image-alt-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Alt Text</label>
+						<Input 
+							id="image-alt-{pageIndex}-{blockIndex}"
+							value={block.alt || ''}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLInputElement;
+								onUpdate('alt', target.value || undefined);
+							}}
+							placeholder="Description for accessibility..."
+						/>
+					</div>
+					<div>
+						<label for="image-caption-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Caption (optional)</label>
+						<Input 
+							id="image-caption-{pageIndex}-{blockIndex}"
+							value={block.caption || ''}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLInputElement;
+								onUpdate('caption', target.value || undefined);
+							}}
+							placeholder="Image caption..."
+						/>
+					</div>
+					<div class="grid grid-cols-2 gap-2">
+						<div>
+							<label for="image-width-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Max Width (px)</label>
+							<Input 
+								id="image-width-{pageIndex}-{blockIndex}"
+								type="number"
+								value={block.width || ''}
+								oninput={(e: Event) => {
+									const target = e.target as HTMLInputElement;
+									const value = target.value ? parseInt(target.value) : undefined;
+									onUpdate('width', value);
+								}}
+								placeholder="400"
+								min="50"
+								max="1200"
+							/>
+						</div>
+						<div>
+							<label for="image-alignment-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Alignment</label>
+							<select 
+								id="image-alignment-{pageIndex}-{blockIndex}"
+								value={block.alignment || 'center'}
+								onchange={(e: Event) => {
+									const target = e.target as HTMLSelectElement;
+									onUpdate('alignment', target.value as 'left' | 'center' | 'right');
+								}}
+								class="border rounded px-2 py-1 w-full"
+							>
+								<option value="left">Left</option>
+								<option value="center">Center</option>
+								<option value="right">Right</option>
+							</select>
+						</div>
+					</div>
+					<div>
+						<label class="block text-sm font-medium mb-1">Upload Image</label>
+						<input 
+							type="file"
+							accept="image/*"
+							onchange={async (e: Event) => {
+								const target = e.target as HTMLInputElement;
+								const file = target.files?.[0];
+								if (file) {
+									// You can implement file upload logic here
+									// For now, we'll create a local URL
+									const localUrl = URL.createObjectURL(file);
+									onUpdate('src', localUrl);
+									onUpdate('alt', file.name.replace(/\.[^/.]+$/, ""));
+								}
+							}}
+							class="border rounded px-2 py-1 w-full text-sm"
+						/>
+						<div class="text-xs text-gray-500 mt-1">
+							Or enter a URL above
+						</div>
+					</div>
+				</div>
+				<div>
+					<div class="block text-sm font-medium mb-1">Preview</div>
+					<div class="border rounded p-4 bg-white">
+						{#if block.src}
+							{@const alignmentClass = block.alignment === 'left' ? 'text-left' : block.alignment === 'right' ? 'text-right' : 'text-center'}
+							<div class={alignmentClass}>
+								<div class="inline-block">
+									<img 
+										src={block.src}
+										alt={block.alt || ''}
+										style={block.width ? `max-width: ${block.width}px` : ''}
+										class="max-w-full h-auto rounded shadow-sm"
+										onerror={() => {}}
+									/>
+									{#if block.caption}
+										<div class="mt-2 text-sm text-gray-600 italic">
+											{block.caption}
+										</div>
+									{/if}
+								</div>
+							</div>
+						{:else}
+							<div class="flex items-center justify-center h-32 bg-gray-100 rounded text-gray-500">
+								<div class="text-center">
+									<div class="text-2xl mb-2">🖼️</div>
+									<div class="text-sm">Enter image URL to see preview</div>
+								</div>
+							</div>
+						{/if}
+					</div>
+				</div>
+			</div>
 		{/if}
 	</div>
 	{/if}
