@@ -96,10 +96,15 @@ const chatExistsInMemory = (chatId: string) => {
 	return bullshiftChats.has(chatId);
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		console.log('analyzeChat server');
-		const { user, locale, chatId } = await request.json();
+		const { locale, chatId } = await request.json();
+		const user = locals.user;
+
+		if (!user?.id) {
+			return json({ error: 'User not authenticated' }, { status: 401 });
+		}
 
 		const analysis = await analyzeChat(chatId, user.id, locale);
 		console.log('analysis', analysis);

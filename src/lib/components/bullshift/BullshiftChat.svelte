@@ -205,7 +205,7 @@
 	};
 	const analyzeChat = async (): Promise<string> => {
 		// Validate required data
-		if (!user || !locale || !chatId) {
+		if (!locale || !chatId) {
 			throw new Error('Missing required data for chat analysis');
 		}
 
@@ -214,7 +214,7 @@
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ user: user, locale: locale, chatId })
+			body: JSON.stringify({ locale: locale, chatId })
 		});
 
 		if (!response.ok) {
