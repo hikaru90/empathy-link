@@ -38,7 +38,7 @@
 
 	const animationDuration = 400;
 
-	const handleScroll = (value) => {
+	const handleScroll = (value: number) => {
 		scroll.set(value);
 	};
 	const handleResize = () => {

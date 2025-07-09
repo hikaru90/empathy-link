@@ -42,9 +42,9 @@
 
 	const categories = $derived(() => {
 		console.log('topics', data.topics);
-		if (!data.topics) return [];
+		if (!data.topics || !data.categories) return [];
 		const res = data.topics;
-		// Group topics by category
+		// Group topics by category while preserving order
 		const groupedTopics = res.reduce((acc: Record<string, any[]>, topic: any) => {
 			const category = topic?.expand?.currentVersion?.expand?.category?.id || 'Uncategorized';
 			if (!acc[category]) {
@@ -55,12 +55,18 @@
 		}, {});
 		console.log('groupedTopics', groupedTopics);
 
-		// Convert to array of category groups
+		// Convert to array of category groups and sort by category order
 		const groupedArray = Object.entries(groupedTopics).map(([category, topics]) => ({
 			category,
-			topics
+			topics: topics.sort((a, b) => (a.order || 0) - (b.order || 0)) // Sort topics by order column
 		}));
-		return groupedArray;
+		
+		// Sort categories by their order field
+		return groupedArray.sort((a, b) => {
+			const catA = data.categories?.find(c => c.id === a.category);
+			const catB = data.categories?.find(c => c.id === b.category);
+			return (catA?.order || 0) - (catB?.order || 0);
+		});
 	});
 
 	const currentCategory = (categoryId: string) => {

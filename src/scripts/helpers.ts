@@ -23,7 +23,7 @@ export const getScrollbarWidth = () => {
 	return scrollbarWidth;
 }
 
-const animateScrollTo = (container, to, duration) => {
+const animateScrollTo = (container: HTMLElement, to: number, duration: number) => {
 	var start = container.scrollTop;
 	var change = to - start;
 	var startTime = performance.now();
@@ -31,7 +31,7 @@ const animateScrollTo = (container, to, duration) => {
 	console.log('start',start);
 	console.log('change',change);
 
-	function updateScrollPosition(currentTime) {
+	function updateScrollPosition(currentTime: number) {
 		var elapsed = currentTime - startTime;
 		var progress = elapsed / duration;
 
@@ -42,7 +42,7 @@ const animateScrollTo = (container, to, duration) => {
 		}
 	}
 
-	const easeInOutQuad = (t) => {
+	const easeInOutQuad = (t: number) => {
 		return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 	};
 
@@ -85,13 +85,13 @@ export const serializeNonPOJOs = (obj: object) => {
 
 export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const daysAgo = (date) => {
+export const daysAgo = (date: string | Date) => {
 	const locale = getLocale();
 	const now = new Date();
 	const past = new Date(date);
 
 	// Calculate the difference in milliseconds
-	const diffInMilliseconds = now - past;
+	const diffInMilliseconds = now.getTime() - past.getTime();
 
 	// Convert milliseconds to days
 	const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
@@ -115,7 +115,7 @@ export const daysAgo = (date) => {
 	}
 };
 
-export const copyToClipboard = (text) => {
+export const copyToClipboard = (text: string) => {
 	const input = document.createElement('input');
 	input.setAttribute('value', text);
 	document.body.appendChild(input);
@@ -138,8 +138,8 @@ export const copyToClipboard = (text) => {
 	document.body.removeChild(input);
 };
 
-export const generateHslaColors = (hue, saturation, lightness, length) => {
-	const colors = [];
+export const generateHslaColors = (hue: number, saturation: number, lightness: number, length: number) => {
+	const colors: string[] = [];
 
 	for (let i = 1; i < length + 1; i++) {
 		// Calculate the opacity value
@@ -158,9 +158,9 @@ export const generateHslaColors = (hue, saturation, lightness, length) => {
 	return colors;
 };
 
-export const groupBy = (array: object[], key: string) =>
+export const groupBy = (array: any[], key: string) =>
 	Object.entries(
-		array.reduce((result, currentValue) => {
+		array.reduce((result: Record<string, any[]>, currentValue: any) => {
 			const groupKey = currentValue[key];
 			result[groupKey] = result[groupKey] || [];
 			result[groupKey].push(currentValue);
@@ -168,8 +168,8 @@ export const groupBy = (array: object[], key: string) =>
 		}, {})
 	).map(([category, content]) => ({ category, content }));
 
-export const sortByKey = (array: object[], key: string) => {
-	return array.sort((a, b) => {
+export const sortByKey = (array: any[], key: string) => {
+	return array.sort((a: any, b: any) => {
 		if (a[key] < b[key]) {
 			return 1;
 		}

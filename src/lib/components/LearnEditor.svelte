@@ -201,6 +201,28 @@
 		}
 	};
 
+	// Set version as live handler
+	const handleSetAsLive = async (versionId: string) => {
+		try {
+			// Update the topic's currentVersion field to point to this version
+			await pb.collection('topics').update(topicId, {
+				currentVersion: versionId
+			});
+			
+			// Update the local liveVersionId
+			liveVersionId = versionId;
+			
+			console.log('Version set as live:', versionId);
+			
+			// Optionally invalidate to refresh the data
+			await invalidateAll();
+			
+		} catch (error: any) {
+			console.error('Error setting version as live:', error);
+			alert('Failed to set version as live. Please try again.');
+		}
+	};
+
 	const getLiveVersionId = async () => {
 		try {
 			if (!topicId) {
@@ -296,7 +318,9 @@
 				{form} 
 				{formData} 
 				{currentVersion}
+				{liveVersionId}
 				onDeleteVersion={handleDeleteVersion}
+				onSetAsLive={handleSetAsLive}
 				canDelete={allVersions.length > 1}
 			/>
 			<PageContentEditor content={$formData.content || []} onContentChange={handleContentChange} />

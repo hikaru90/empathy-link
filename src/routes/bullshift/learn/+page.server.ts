@@ -7,7 +7,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
     try {
         const categories = await pb.collection('topicCategory').getFullList({
-            sort: '-created'
+            sort: 'order'
         });
         const topics = await pb.collection('topics').getFullList({
             filter: '',

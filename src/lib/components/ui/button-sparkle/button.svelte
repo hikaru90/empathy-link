@@ -27,7 +27,7 @@
 	}: Props_1 = $props();
 	
 
-	const getRandomValue = (min, max) => {
+	const getRandomValue = (min: number, max: number) => {
 		return Math.round(Math.random() * (max - min) + min);
 	};
 

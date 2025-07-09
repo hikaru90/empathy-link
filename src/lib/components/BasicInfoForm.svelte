@@ -8,16 +8,19 @@
   import * as Collapsible from "$lib/components/ui/collapsible/index.js";
 	import { Button } from '$lib/components/ui/button';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
+	import Rocket from 'lucide-svelte/icons/rocket';
 
 	interface Props {
 		form: any; // SuperForm instance
 		formData: any; // Reactive form store
 		currentVersion?: TopicVersion;
+		liveVersionId?: string;
 		onDeleteVersion?: (versionId: string) => void;
+		onSetAsLive?: (versionId: string) => void;
 		canDelete?: boolean;
 	}
 
-	let { form, formData, currentVersion, onDeleteVersion, canDelete = false }: Props = $props();
+	let { form, formData, currentVersion, liveVersionId, onDeleteVersion, onSetAsLive, canDelete = false }: Props = $props();
 	
 	const handleImageChange = (filename: string) => {
 		$formData.image = filename;
@@ -94,6 +97,40 @@
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
+
+			<!-- Set as Live Section -->
+			{#if currentVersion && onSetAsLive}
+				<div class="pt-4 border-t border-gray-200">
+					<div class="space-y-2">
+						<h5 class="text-sm font-medium text-gray-700">Version Management</h5>
+						{#if currentVersion.id === liveVersionId}
+							<p class="text-xs text-green-600">
+								This version is currently live.
+							</p>
+						{:else}
+							<p class="text-xs text-gray-500">
+								Set this version as the live version that users will see.
+							</p>
+							<Button 
+								type="button"
+								variant="default"
+								size="sm"
+								class="w-full"
+								onclick={() => {
+									if (currentVersion && onSetAsLive) {
+										if (confirm('Are you sure you want to set this version as live? This will make it visible to all users.')) {
+											onSetAsLive(currentVersion.id);
+										}
+									}
+								}}
+							>
+								<Rocket class="w-4 h-4 mr-2" />
+								Set as Live Version
+							</Button>
+						{/if}
+					</div>
+				</div>
+			{/if}
 
 			<!-- Delete Version Section -->
 			{#if canDelete && currentVersion && onDeleteVersion}

@@ -29,13 +29,15 @@
 	];
 
 	const downloadImage = () => {
-		if (!p) return;
+		if (!p || !w || !h) return;
 		
 		// Create a temporary canvas
 		const tempCanvas = document.createElement('canvas');
 		tempCanvas.width = w;
 		tempCanvas.height = h;
 		const ctx = tempCanvas.getContext('2d');
+		
+		if (!ctx) return;
 		
 		// Draw the P5 canvas content
 		ctx.drawImage(p.canvas, 0, 0);
@@ -44,8 +46,10 @@
 		const img = new Image();
 		img.onload = () => {
 			// Apply the mask using globalCompositeOperation
-			ctx.globalCompositeOperation = 'destination-in';
-			ctx.drawImage(img, 0, 0, w, h);
+			if (ctx && w && h) {
+				ctx.globalCompositeOperation = 'destination-in';
+				ctx.drawImage(img, 0, 0, w, h);
+			}
 			
 			// Create download link
 			const link = document.createElement('a');
@@ -160,7 +164,7 @@
 	};
 
 	onMount(() => {
-		p = new P5((p5Instance) => {
+		p = new P5((p5Instance: P5) => {
 			p5Instance.setup = () => {
 				canvas = p5Instance.createCanvas(w, h).parent(canvasParent);
 			};
