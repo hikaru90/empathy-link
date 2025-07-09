@@ -265,14 +265,39 @@
 						placeholder="Heading text..." 
 					/>
 				</div>
+				<div>
+					<label for="heading-subheading-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Subheading (optional)</label>
+					<Input 
+						id="heading-subheading-{pageIndex}-{blockIndex}"
+						value={block.subheading || ''} 
+						oninput={(e: Event) => {
+							const target = e.target as HTMLInputElement;
+							onUpdate('subheading', target.value || undefined);
+						}}
+						placeholder="Optional subheading text..." 
+					/>
+				</div>
 				<div class="border rounded p-2 bg-white">
 					<div class="prose">
-						{#if block.hierarchy === 1}<h1>{block.content}</h1>
-						{:else if block.hierarchy === 2}<h2>{block.content}</h2>
-						{:else if block.hierarchy === 3}<h3>{block.content}</h3>
-						{:else if block.hierarchy === 4}<h4>{block.content}</h4>
-						{:else if block.hierarchy === 5}<h5>{block.content}</h5>
-						{:else if block.hierarchy === 6}<h6>{block.content}</h6>{/if}
+						{#if block.hierarchy === 1}
+							<h1>{block.content}</h1>
+							{#if block.subheading}<p class="text-lg text-gray-600 mt-2">{block.subheading}</p>{/if}
+						{:else if block.hierarchy === 2}
+							<h2>{block.content}</h2>
+							{#if block.subheading}<p class="text-base text-gray-600 mt-2">{block.subheading}</p>{/if}
+						{:else if block.hierarchy === 3}
+							<h3>{block.content}</h3>
+							{#if block.subheading}<p class="text-sm text-gray-600 mt-1">{block.subheading}</p>{/if}
+						{:else if block.hierarchy === 4}
+							<h4>{block.content}</h4>
+							{#if block.subheading}<p class="text-sm text-gray-600 mt-1">{block.subheading}</p>{/if}
+						{:else if block.hierarchy === 5}
+							<h5>{block.content}</h5>
+							{#if block.subheading}<p class="text-xs text-gray-600 mt-1">{block.subheading}</p>{/if}
+						{:else if block.hierarchy === 6}
+							<h6>{block.content}</h6>
+							{#if block.subheading}<p class="text-xs text-gray-600 mt-1">{block.subheading}</p>{/if}
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -374,19 +399,38 @@
 			</div>
 		{:else if block.type === 'task'}
 			<div class="space-y-2">
-				<div>
-					<label for="task-duration-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Duration (seconds)</label>
-					<Input 
-						id="task-duration-{pageIndex}-{blockIndex}"
-						type="number" 
-						value={block.duration} 
-						oninput={(e: Event) => {
+				<div class="flex items-center space-x-2">
+					<input
+						id="task-duration-enabled-{pageIndex}-{blockIndex}"
+						type="checkbox"
+						checked={block.duration !== undefined}
+						onchange={(e: Event) => {
 							const target = e.target as HTMLInputElement;
-							onUpdate('duration', parseInt(target.value) || 0);
+							if (target.checked) {
+								onUpdate('duration', 300); // Default 5 minutes
+							} else {
+								onUpdate('duration', undefined);
+							}
 						}}
-						min="0" 
 					/>
+					<label for="task-duration-enabled-{pageIndex}-{blockIndex}" class="text-sm font-medium">Show duration</label>
 				</div>
+				
+				{#if block.duration !== undefined}
+					<div>
+						<label for="task-duration-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Duration (seconds)</label>
+						<Input 
+							id="task-duration-{pageIndex}-{blockIndex}"
+							type="number" 
+							value={block.duration} 
+							oninput={(e: Event) => {
+								const target = e.target as HTMLInputElement;
+								onUpdate('duration', parseInt(target.value) || 0);
+							}}
+							min="0" 
+						/>
+					</div>
+				{/if}
 				<div class="grid grid-cols-2 gap-4">
 					<div>
 						<label for="task-content-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Content (Markdown)</label>

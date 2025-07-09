@@ -60,10 +60,10 @@
 				newBlock = { type: 'list', items: [{ title: '', text: '' }] };
 				break;
 			case 'heading':
-				newBlock = { type: 'heading', hierarchy: 1, content: '' };
+				newBlock = { type: 'heading', hierarchy: 1, content: '', subheading: '' };
 				break;
 			case 'task':
-				newBlock = { type: 'task', duration: 0, content: '' };
+				newBlock = { type: 'task', content: '' };
 				break;
 			case 'timer':
 				newBlock = { type: 'timer', duration: 60 };

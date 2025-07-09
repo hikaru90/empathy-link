@@ -36,11 +36,12 @@ export interface HeadingBlock {
   type: "heading";
   hierarchy: number; // e.g., 1 for h1, 2 for h2
   content: string;
+  subheading?: string; // Optional subheading text
 }
 
 export interface TaskBlock {
   type: "task";
-  duration: number; // in seconds
+  duration?: number; // in seconds, optional
   content: string;
 }
 
@@ -130,12 +131,13 @@ const listBlockSchema = z.object({
 const headingBlockSchema = z.object({
   type: z.literal("heading"),
   hierarchy: z.number().min(1).max(6),
-  content: z.string()
+  content: z.string(),
+  subheading: z.string().optional()
 });
 
 const taskBlockSchema = z.object({
   type: z.literal("task"),
-  duration: z.number().min(0),
+  duration: z.number().min(0).optional(),
   content: z.string()
 });
 
