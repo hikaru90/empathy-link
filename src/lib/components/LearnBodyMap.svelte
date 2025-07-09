@@ -7,6 +7,7 @@
 	import Trash from 'lucide-svelte/icons/trash';
 	import { learningSession } from '$lib/stores/learningSession';
 	import type { LearningSession } from '$routes/bullshift/learn/[id]/edit/schema';
+	import FeelingSelector from '$lib/components/FeelingSelector.svelte';
 
 	interface Props {
 		content: object;
@@ -19,29 +20,10 @@
 		topicVersionId?: string; // Current topic version ID
 	}
 
-	interface feeling {
-		category: 'true' | 'false';
-		content: {
-			category: string;
-			visible: boolean;
-			content: dbFeeling[];
-		}[];
-	}
-
-	interface dbFeeling {
-		id: string;
-		nameEN: string;
-		nameDE: string;
-		category: string;
-		positive: boolean;
-		sort: number;
-	}
 
 	let { content, color, pageIndex, blockIndex, session, onResponse, contentBlock, topicVersionId }: Props = $props();
 
 	let points = $state<{ id: number; x: number; y: number; feelings: string[] }[]>([]);
-	let feelings = $state<dbFeeling[]>([]);
-	let groupedFeelings = $state<feeling[]>([]);
 	let showFeelings = $state<boolean>(false);
 	let feelingsElement = $state<HTMLElement | null>(null);
 	let activePointId = $state<number | null>(null);
@@ -49,19 +31,19 @@
 	let imageRect: DOMRect | null = null;
 	let previousActivePointId = $state<number | null>(null);
 	let feelingsContainer: HTMLElement | null = null;
+	let feelingsLookup = $state<Map<string, string>>(new Map());
 
-	$effect(() => {
-		if (activePointId !== previousActivePointId) {
-			groupedFeelings = groupedFeelings.map((group) => ({
-				...group,
-				content: group.content.map((category) => ({
-					...category,
-					visible: false
-				}))
-			}));
-			previousActivePointId = activePointId;
-		}
-	});
+	const initFeelingsLookup = async () => {
+		const records = await pb.collection('feelings').getFullList({
+			sort: 'category,sort'
+		});
+		const data = serializeNonPOJOs(records) as any[];
+		const lookup = new Map<string, string>();
+		data.forEach(feeling => {
+			lookup.set(feeling.id, feeling.nameDE);
+		});
+		feelingsLookup = lookup;
+	};
 
 	const updateImageRect = () => {
 		if (imageElement) {
@@ -97,41 +79,6 @@
 
 		activePointId = points.length;
 		points = [...points, { id: activePointId, x: constrainedX, y: constrainedY, feelings: [] }];
-	};
-	const initFeelings = async () => {
-		const records = await pb.collection('feelings').getFullList({
-			sort: 'category,sort'
-		});
-		const data = serializeNonPOJOs(records) as dbFeeling[];
-		feelings = data;
-		let res = groupBy(data, 'positive') as feeling[];
-		res = res.map((entry) => ({
-			category: entry.category as 'true' | 'false',
-			content: groupBy(entry.content, 'category').map((category) => ({
-				...category,
-				visible: false
-			}))
-		}));
-		console.log('feelings res', res);
-		groupedFeelings = res;
-	};
-	const toggleFeelingsCatgeory = (feeling: dbFeeling, category: string) => {
-		if (feeling.nameEN !== category) return;
-		const target0 = groupedFeelings[0].content.find((entry) => entry.category === category);
-		const target1 = groupedFeelings[1].content.find((entry) => entry.category === category);
-		if (target0) target0.visible = !target0.visible;
-		if (target1) target1.visible = !target1.visible;
-		groupedFeelings = [...groupedFeelings];
-	};
-	const categoryIsVisible = (
-		feeling: dbFeeling,
-		category: { category: string; content: any; visible: boolean }
-	) => {
-		const feelingSlug = feeling.nameEN;
-		const categorySlug = category.category;
-		if (feelingSlug === categorySlug) return true;
-		if (category.visible) return true;
-		return false;
 	};
 
 
@@ -425,10 +372,10 @@
 	};
 
 	onMount(() => {
-		const init = async () => {
-			await initFeelings();
-			
-					// Load existing response if available
+		// Initialize feelings lookup
+		initFeelingsLookup();
+		
+		// Load existing response if available
 		if (session && contentBlock) {
 			const existingResponse = learningSession.getResponseByContent(session, contentBlock, pageIndex);
 			if (existingResponse && existingResponse.blockType === 'bodymap') {
@@ -440,9 +387,6 @@
 				}));
 			}
 		}
-		};
-		
-		init();
 		
 		// Update image rect when image loads
 		if (imageElement) {
@@ -490,7 +434,7 @@
 								{#each point.feelings as feeling}
 									<div class="flex items-center justify-center gap-1">
 										<div class="text-center text-xs">
-											{feelings.find((f) => f.id === feeling)?.nameDE}
+											{feelingsLookup.get(feeling) || feeling}
 										</div>
 									</div>
 								{/each}
@@ -537,66 +481,16 @@
 		<div bind:this={feelingsElement}></div>
 		{#each points as point}
 			{#if showFeelings && point.id === activePointId}
-				<ToggleGroup.Root
-					name={point.id}
-					id="feeling-selector"
-					type="multiple"
-					bind:value={point.feelings}
-					onValueChange={(value: string[]) => {
-						console.log('ToggleGroup value change:', value);
-						// Trigger reactivity and save
+				<FeelingSelector
+					selectedFeelings={point.feelings}
+					onFeelingChange={(feelings) => {
+						point.feelings = feelings;
 						points = [...points];
 						saveResponse();
 					}}
-					class="duration-800 flex flex-col gap-4 transition-all"
-				>
-					{#if groupedFeelings.length > 0}
-						<div class="">
-							<div class="-mx-1 flex w-full flex-wrap justify-start transition-all">
-								{#each groupedFeelings as positive}
-									{#each positive.content as category}
-										{#each category.content as feeling}
-											<div
-												class="{categoryIsVisible(feeling, category) ||
-												point.feelings.includes(feeling.id)
-													? 'pointer-events-auto max-w-[300px] p-0.5 opacity-100'
-													: 'pointer-events-none m-0 max-w-0 text-[2px] opacity-0'} block h-7 leading-none transition-all"
-											>
-												{#if feeling.nameEN === category.category}
-													<button
-														type="button"
-														onclick={() => toggleFeelingsCatgeory(feeling, category.category)}
-														class="w-full"
-													>
-														<ToggleGroup.Item
-															value={feeling.id}
-															class="bg-white/40 hover:bg-white/30 h-auto max-w-[300px] rounded-full px-2 py-0.5 text-xs text-black hover:bg-white/30 hover:text-black data-[state=on]:bg-white"
-														>
-															<div
-																class="-ml-0.5 mr-1 size-1.5 rounded-full {positive.category ===
-																'true'
-																	? 'bg-green-400'
-																	: 'bg-red-400'}"
-															></div>
-															{feeling.nameDE}
-														</ToggleGroup.Item>
-													</button>
-												{:else}
-													<ToggleGroup.Item
-														value={feeling.id}
-														class="h-auto max-w-[300px] rounded-full px-2 py-0.5 text-xs text-black hover:bg-white/30 hover:text-black data-[state=on]:bg-white"
-													>
-														{feeling.nameDE}
-													</ToggleGroup.Item>
-												{/if}
-											</div>
-										{/each}
-									{/each}
-								{/each}
-							</div>
-						</div>
-					{/if}
-				</ToggleGroup.Root>
+					pointId={point.id}
+					show={true}
+				/>
 			{/if}
 		{/each}
 	</div>
