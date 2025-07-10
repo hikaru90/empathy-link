@@ -34,15 +34,24 @@
 	let feelingsLookup = $state<Map<string, string>>(new Map());
 
 	const initFeelingsLookup = async () => {
-		const records = await pb.collection('feelings').getFullList({
-			sort: 'category,sort'
-		});
-		const data = serializeNonPOJOs(records) as any[];
-		const lookup = new Map<string, string>();
-		data.forEach(feeling => {
-			lookup.set(feeling.id, feeling.nameDE);
-		});
-		feelingsLookup = lookup;
+		try {
+			const records = await pb.collection('feelings').getFullList({
+				sort: 'category,sort'
+			});
+			const data = serializeNonPOJOs(records) as any[];
+			const lookup = new Map<string, string>();
+			if (data && Array.isArray(data)) {
+				data.forEach(feeling => {
+					if (feeling && feeling.id && feeling.nameDE) {
+						lookup.set(feeling.id, feeling.nameDE);
+					}
+				});
+			}
+			feelingsLookup = lookup;
+		} catch (error) {
+			console.error('Error initializing feelings lookup:', error);
+			feelingsLookup = new Map();
+		}
 	};
 
 	const updateImageRect = () => {
@@ -94,12 +103,16 @@
 	const scrollToFeelings = () => {
 		console.log('scrollToFeelings');
 		setTimeout(() => {
-			if (!feelingsElement) return;
-			const offset = feelingsElement.getBoundingClientRect().top + window.scrollY + 200; // 100px offset from top
-			window.scrollTo({
-				top: offset,
-				behavior: 'smooth'
-			});
+			if (!feelingsElement || !feelingsElement.getBoundingClientRect) return;
+			try {
+				const offset = feelingsElement.getBoundingClientRect().top + window.scrollY + 200; // 100px offset from top
+				window.scrollTo({
+					top: offset,
+					behavior: 'smooth'
+				});
+			} catch (error) {
+				console.error('Error scrolling to feelings:', error);
+			}
 		}, 100);
 	};
 	const handleMove = (e: TouchEvent | MouseEvent) => {

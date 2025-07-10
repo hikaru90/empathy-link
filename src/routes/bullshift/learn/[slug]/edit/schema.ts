@@ -17,7 +17,8 @@ export type ContentBlock =
   | SortableBlock
   | MultipleChoiceBlock
   | AIQuestionBlock
-  | ImageBlock;
+  | ImageBlock
+  | AudioBlock;
 
 export interface TextBlock {
   type: "text";
@@ -98,6 +99,17 @@ export interface ImageBlock {
   caption?: string; // Optional caption
   width?: number; // Optional width constraint
   alignment?: 'left' | 'center' | 'right'; // Image alignment
+}
+
+export interface AudioBlock {
+  type: "audio";
+  src: string; // URL or file path to audio file
+  content?: string; // Optional markdown content to display with the audio
+  title?: string; // Optional title for the audio
+  transcript?: string; // Optional transcript
+  autoplay?: boolean; // Whether to autoplay (default false)
+  loop?: boolean; // Whether to loop (default false)
+  controls?: boolean; // Whether to show controls (default true)
 }
 
 export interface TopicVersion {
@@ -196,6 +208,17 @@ const imageBlockSchema = z.object({
   alignment: z.enum(['left', 'center', 'right']).optional()
 });
 
+const audioBlockSchema = z.object({
+  type: z.literal("audio"),
+  src: z.string(),
+  content: z.string().optional(),
+  title: z.string().optional(),
+  transcript: z.string().optional(),
+  autoplay: z.boolean().optional(),
+  loop: z.boolean().optional(),
+  controls: z.boolean().optional()
+});
+
 const contentBlockSchema = z.discriminatedUnion("type", [
   textBlockSchema,
   listBlockSchema,
@@ -207,7 +230,8 @@ const contentBlockSchema = z.discriminatedUnion("type", [
   sortableBlockSchema,
   multipleChoiceBlockSchema,
   aiQuestionBlockSchema,
-  imageBlockSchema
+  imageBlockSchema,
+  audioBlockSchema
 ]);
 
 const contentSchema = z.object({

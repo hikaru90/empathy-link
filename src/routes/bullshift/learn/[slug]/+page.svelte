@@ -24,6 +24,7 @@
 	import { pb } from '$scripts/pocketbase';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import LearnImage from '$lib/components/bullshift/Learn/LearnImage.svelte';
+	import LearnAudio from '$lib/components/bullshift/Learn/LearnAudio.svelte';
 
 	interface Props {
 		data: PageData;
@@ -53,7 +54,12 @@
 
 	const topic = $derived(() => {
 		if (!data.record?.expand?.currentVersion) return { content: [], titleDE: '', id: '' };
-		return data.record.expand.currentVersion;
+		const version = data.record.expand.currentVersion;
+		// Ensure content is always an array
+		if (!version.content || !Array.isArray(version.content)) {
+			return { ...version, content: [] };
+		}
+		return version;
 	});
 
 	const goBack = () => {
@@ -239,7 +245,7 @@
 			{/if}
 
 			<!-- Show summary page (now the final page) -->
-			{#if currentPage === topic().content.length && topic().content.length > 0}
+			{#if topic().content && currentPage === topic().content.length && topic().content.length > 0}
 				{#await currentSession ? pb.collection('learnSessions').getOne(currentSession.id).then(session => session as unknown as LearningSession) : Promise.resolve(null)}
 					<div class="text-center p-8">
 						<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
@@ -270,7 +276,7 @@
 				{/await}
 			{:else}
 				<!-- Show regular content -->
-				{#each topic().content as page, pageIndex}
+				{#each topic().content || [] as page, pageIndex}
 					{#if currentPage === pageIndex}
 						{#each page.content as content, blockIndex}
 							{#if content.type === 'text'}
@@ -284,6 +290,8 @@
 								<LearnHeading {content} />
 							{:else if content.type === 'image'}
 								<LearnImage {content} />
+							{:else if content.type === 'audio'}
+								<LearnAudio color={currentCategory().color} {content} />
 							{:else if content.type === 'timer'}
 								<LearnTimer 
 									duration={content.duration} 
@@ -360,7 +368,7 @@
 			{gotoPrevPage}
 			color={currentCategory().color}
 			step={currentPage}
-			totalSteps={topic().content.length + 1}
+			totalSteps={(topic().content?.length || 0) + 1}
 			class="z-20"
 		/>
 	</div>

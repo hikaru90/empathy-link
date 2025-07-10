@@ -38,6 +38,8 @@ const config = {
 				'request-foreground': 'hsl(var(--request-foreground) / <alpha-value>)',
 				'muted-dark': 'hsl(var(--muted-dark) / <alpha-value>)',
 				'black': 'hsl(var(--black) / <alpha-value>)',
+				'forest': 'hsl(var(--forest) / <alpha-value>)',
+				'lilac': 'hsl(var(--lilac) / <alpha-value>)',
 				border: 'hsl(var(--border) / <alpha-value>)',
 				input: 'hsl(var(--input) / <alpha-value>)',
 				ring: 'hsl(var(--ring) / <alpha-value>)',

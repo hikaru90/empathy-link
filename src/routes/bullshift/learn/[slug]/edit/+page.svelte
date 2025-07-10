@@ -11,6 +11,8 @@
 	import LearnList from '$lib/components/bullshift/Learn/LearnList.svelte';
 	import LearnText from '$lib/components/bullshift/Learn/LearnText.svelte';
 	import LearnTask from '$lib/components/bullshift/Learn/LearnTask.svelte';
+	import LearnImage from '$lib/components/bullshift/Learn/LearnImage.svelte';
+	import LearnAudio from '$lib/components/bullshift/Learn/LearnAudio.svelte';
 	import LearnBodyMap from '$lib/components/LearnBodyMap.svelte';
 	import LearnCompletionNotes from '$lib/components/bullshift/Learn/LearnCompletionNotes.svelte';
 	import LearnSortableWithFeedback from '$lib/components/bullshift/Learn/LearnSortableWithFeedback.svelte';
@@ -36,7 +38,6 @@
 	import { postHog, featureFlags } from '$store/posthog';
 	import { PUBLIC_INIT_POSTHOG } from '$env/static/public';
 	import { getLocale } from '$src/paraglide/runtime';
-	import LearnImage from '$lib/components/bullshift/Learn/LearnImage.svelte';
 	const locale = $derived(getLocale());
 
 	interface Props {
@@ -243,7 +244,7 @@
 								/>
 							{:else}
 								<!-- Show regular content -->
-								{#each topic().content as page, index}
+								{#each topic().content || [] as page, index}
 									{#if currentPage === index}
 										{#each page.content as content, blockIndex}
 											{#if content.type === 'text'}
@@ -252,6 +253,10 @@
 												<LearnTask color={currentCategory().color} {content} />
 											{:else if content.type === 'heading'}
 												<LearnHeading {content} />
+											{:else if content.type === 'image'}
+												<LearnImage {content} />
+											{:else if content.type === 'audio'}
+												<LearnAudio color={currentCategory().color} {content} />
 											{:else if content.type === 'timer'}
 												<LearnTimer duration={content.duration} color={currentCategory().color} />
 											{:else if content.type === 'bodymap'}

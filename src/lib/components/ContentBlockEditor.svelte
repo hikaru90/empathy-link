@@ -2,14 +2,16 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { marked } from 'marked';
-	import type { ContentBlock } from '$routes/bullshift/learn/[id]/edit/schema';
+	import type { ContentBlock } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import Plus from 'lucide-svelte/icons/plus';
 	import Trash from 'lucide-svelte/icons/trash';
+	import AudioUpload from '$lib/components/AudioUpload.svelte';
 
 	const { 
 		block, 
 		pageIndex, 
 		blockIndex,
+		currentVersion,
 		onUpdate,
 		onMoveUp,
 		onMoveDown,
@@ -20,6 +22,7 @@
 		block: ContentBlock;
 		pageIndex: number;
 		blockIndex: number;
+		currentVersion?: any;
 		onUpdate: (field: string, value: any) => void;
 		onMoveUp: () => void;
 		onMoveDown: () => void;
@@ -46,7 +49,7 @@
 
 	const removeListItem = (itemIndex: number) => {
 		if (block.type === 'list') {
-			onUpdate('items', block.items.filter((_, index) => index !== itemIndex));
+			onUpdate('items', block.items.filter((_: any, index: number) => index !== itemIndex));
 		}
 	};
 
@@ -83,7 +86,7 @@
 
 	const removeSortableItem = (itemIndex: number) => {
 		if (block.type === 'sortable') {
-			onUpdate('items', block.items.filter((_, index) => index !== itemIndex));
+			onUpdate('items', block.items.filter((_: any, index: number) => index !== itemIndex));
 		}
 	};
 
@@ -140,7 +143,7 @@
 
 	const removeMultipleChoiceQuestion = (questionIndex: number) => {
 		if (block.type === 'multipleChoice') {
-			onUpdate('questions', block.questions.filter((_, index) => index !== questionIndex));
+			onUpdate('questions', block.questions.filter((_: any, index: number) => index !== questionIndex));
 		}
 	};
 
@@ -156,7 +159,7 @@
 	const removeMultipleChoiceOption = (questionIndex: number, optionIndex: number) => {
 		if (block.type === 'multipleChoice') {
 			const newQuestions = [...block.questions];
-			const newOptions = newQuestions[questionIndex].options.filter((_, index) => index !== optionIndex);
+			const newOptions = newQuestions[questionIndex].options.filter((_: any, index: number) => index !== optionIndex);
 			newQuestions[questionIndex] = { ...newQuestions[questionIndex], options: newOptions };
 			onUpdate('questions', newQuestions);
 		}
@@ -182,7 +185,10 @@
 		<div class="flex items-center gap-1">
 			<button
 				type="button"
-				onclick={onMoveUp}
+				onclick={(e) => {
+					e.stopPropagation();
+					onMoveUp();
+				}}
 				disabled={!canMoveUp}
 				class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300 disabled:opacity-50"
 			>
@@ -190,7 +196,10 @@
 			</button>
 			<button
 				type="button"
-				onclick={onMoveDown}
+				onclick={(e) => {
+					e.stopPropagation();
+					onMoveDown();
+				}}
 				disabled={!canMoveDown}
 				class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300 disabled:opacity-50"
 			>
@@ -198,7 +207,10 @@
 			</button>
 			<button
 				type="button"
-				onclick={onRemove}
+				onclick={(e) => {
+					e.stopPropagation();
+					onRemove();
+				}}
 				class="rounded bg-red-200 px-1 py-1 text-xs text-red-700 hover:bg-red-300"
 			>
 				✕
@@ -911,6 +923,184 @@
 								<div class="text-center">
 									<div class="text-2xl mb-2">🖼️</div>
 									<div class="text-sm">Enter image URL to see preview</div>
+								</div>
+							</div>
+						{/if}
+					</div>
+				</div>
+			</div>
+		{:else if block.type === 'audio'}
+			<div class="grid grid-cols-2 gap-4">
+				<div class="space-y-4">
+					<div>
+						<label for="audio-src-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Audio URL</label>
+						<Input 
+							id="audio-src-{pageIndex}-{blockIndex}"
+							value={block.src}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLInputElement;
+								onUpdate('src', target.value);
+							}}
+							placeholder="https://example.com/audio.mp3 or /path/to/audio.mp3"
+						/>
+					</div>
+					<div>
+						<label for="audio-title-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Title (optional)</label>
+						<Input 
+							id="audio-title-{pageIndex}-{blockIndex}"
+							value={block.title || ''}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLInputElement;
+								onUpdate('title', target.value || undefined);
+							}}
+							placeholder="Audio title..."
+						/>
+					</div>
+					<div>
+						<label for="audio-content-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Content (Markdown)</label>
+						<Textarea 
+							id="audio-content-{pageIndex}-{blockIndex}"
+							value={block.content || ''}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLTextAreaElement;
+								onUpdate('content', target.value || undefined);
+							}}
+							rows={4}
+							class="font-mono text-sm"
+							placeholder="Enter markdown content to display with the audio..."
+						/>
+					</div>
+					<div>
+						<label for="audio-transcript-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Transcript (optional)</label>
+						<Textarea 
+							id="audio-transcript-{pageIndex}-{blockIndex}"
+							value={block.transcript || ''}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLTextAreaElement;
+								onUpdate('transcript', target.value || undefined);
+							}}
+							rows={4}
+							placeholder="Audio transcript for accessibility..."
+						/>
+					</div>
+					<div class="grid grid-cols-3 gap-2">
+						<div class="flex items-center space-x-2">
+							<input 
+								id="audio-controls-{pageIndex}-{blockIndex}"
+								type="checkbox"
+								checked={block.controls !== false}
+								onchange={(e: Event) => {
+									const target = e.target as HTMLInputElement;
+									onUpdate('controls', target.checked);
+								}}
+								class="rounded"
+							/>
+							<label for="audio-controls-{pageIndex}-{blockIndex}" class="text-sm">Show controls</label>
+						</div>
+						<div class="flex items-center space-x-2">
+							<input 
+								id="audio-autoplay-{pageIndex}-{blockIndex}"
+								type="checkbox"
+								checked={block.autoplay || false}
+								onchange={(e: Event) => {
+									const target = e.target as HTMLInputElement;
+									onUpdate('autoplay', target.checked);
+								}}
+								class="rounded"
+							/>
+							<label for="audio-autoplay-{pageIndex}-{blockIndex}" class="text-sm">Autoplay</label>
+						</div>
+						<div class="flex items-center space-x-2">
+							<input 
+								id="audio-loop-{pageIndex}-{blockIndex}"
+								type="checkbox"
+								checked={block.loop || false}
+								onchange={(e: Event) => {
+									const target = e.target as HTMLInputElement;
+									onUpdate('loop', target.checked);
+								}}
+								class="rounded"
+							/>
+							<label for="audio-loop-{pageIndex}-{blockIndex}" class="text-sm">Loop</label>
+						</div>
+					</div>
+					<div>
+						<label class="block text-sm font-medium mb-1">Upload Audio</label>
+						<AudioUpload 
+							{currentVersion}
+							onAudioUploaded={(audioUrl) => {
+								onUpdate('src', audioUrl);
+								// Extract filename for title if title is empty
+								if (!block.title) {
+									const filename = audioUrl.split('/').pop()?.replace(/\.[^/.]+$/, '') || '';
+									onUpdate('title', filename);
+								}
+							}}
+						/>
+					</div>
+				</div>
+				<div>
+					<div class="block text-sm font-medium mb-1">Preview</div>
+					<div class="border rounded p-4 bg-gray-100">
+						{#if block.src}
+							<div class="bg-blue-500 rounded-xl p-4">
+								{#if block.title}
+									<div class="mb-3 prose prose-lg max-w-none text-white prose-headings:text-white prose-p:text-white prose-strong:text-white prose-em:text-white prose-a:text-white/80 prose-a:underline">
+										{@html marked(block.title)}
+									</div>
+								{/if}
+								
+								<div class="bg-white/10 rounded-lg p-3">
+									{#if block.content}
+										<div class="mb-4 prose prose-sm max-w-none text-white prose-headings:text-white prose-p:text-white prose-strong:text-white prose-em:text-white prose-a:text-white/80 prose-a:underline">
+											{@html marked(block.content)}
+										</div>
+									{/if}
+
+									{#if block.controls !== false}
+										<div class="bg-white/20 rounded-lg p-4">
+											<div class="flex items-center gap-4">
+												<!-- Play Button -->
+												<button
+													class="flex items-center justify-center w-12 h-12 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
+													aria-label="Play"
+												>
+													<svg class="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+														<path d="M8 5v14l11-7z"/>
+													</svg>
+												</button>
+
+												<!-- Time Display -->
+												<div class="flex-1 space-y-2">
+													<div class="flex justify-between text-sm text-white/80">
+														<span>0:00</span>
+														<span>0:00</span>
+													</div>
+													
+													<!-- Progress Bar -->
+													<div class="w-full h-2 bg-white/20 rounded-full">
+														<div class="h-full bg-white/80 rounded-full transition-all duration-100" style="width: 0%"></div>
+													</div>
+												</div>
+											</div>
+										</div>
+									{/if}
+
+									{#if block.transcript}
+										<details class="mt-3 text-sm">
+											<summary class="cursor-pointer font-medium text-white/80 hover:text-white">📝 Show transcript</summary>
+											<div class="mt-2 p-2 bg-white/10 rounded text-white/90 whitespace-pre-wrap">
+												{block.transcript}
+											</div>
+										</details>
+									{/if}
+								</div>
+							</div>
+						{:else}
+							<div class="flex items-center justify-center h-32 bg-gray-200 rounded text-gray-500">
+								<div class="text-center">
+									<div class="text-2xl mb-2">🎵</div>
+									<div class="text-sm">Enter audio URL to see preview</div>
 								</div>
 							</div>
 						{/if}

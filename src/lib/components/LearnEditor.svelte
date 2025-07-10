@@ -323,7 +323,11 @@
 				onSetAsLive={handleSetAsLive}
 				canDelete={allVersions.length > 1}
 			/>
-			<PageContentEditor content={$formData.content || []} onContentChange={handleContentChange} />
+			<PageContentEditor 
+				content={$formData.content || []} 
+				onContentChange={handleContentChange}
+				{currentVersion}
+			/>
 		</div>
 	</form>
 </div>

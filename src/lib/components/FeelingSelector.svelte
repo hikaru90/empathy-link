@@ -41,26 +41,44 @@
 	});
 
 	const initFeelings = async () => {
-		const records = await pb.collection('feelings').getFullList({
-			sort: 'category,sort'
-		});
-		const data = serializeNonPOJOs(records) as dbFeeling[];
-		feelings = data;
-		let res = groupBy(data, 'positive') as feeling[];
-		res = res.map((entry) => ({
-			category: entry.category as 'true' | 'false',
-			content: groupBy(entry.content, 'category').map((category) => ({
-				...category,
-				visible: false
-			}))
-		}));
-		groupedFeelings = res;
+		try {
+			const records = await pb.collection('feelings').getFullList({
+				sort: 'category,sort'
+			});
+			const data = serializeNonPOJOs(records) as dbFeeling[];
+			if (!data || !Array.isArray(data)) {
+				console.error('Invalid feelings data received');
+				return;
+			}
+			
+			feelings = data;
+			let res = groupBy(data, 'positive') as feeling[];
+			if (!res || !Array.isArray(res)) {
+				console.error('Invalid grouped feelings data');
+				return;
+			}
+			
+			res = res.map((entry) => ({
+				category: entry.category as 'true' | 'false',
+				content: groupBy(entry.content, 'category').map((category) => ({
+					...category,
+					visible: false
+				}))
+			}));
+			groupedFeelings = res;
+		} catch (error) {
+			console.error('Error initializing feelings:', error);
+			feelings = [];
+			groupedFeelings = [];
+		}
 	};
 
 	const toggleFeelingsCatgeory = (feeling: dbFeeling, category: string) => {
 		if (feeling.nameEN !== category) return;
-		const target0 = groupedFeelings[0].content.find((entry) => entry.category === category);
-		const target1 = groupedFeelings[1].content.find((entry) => entry.category === category);
+		if (!groupedFeelings || groupedFeelings.length < 2) return;
+		
+		const target0 = groupedFeelings[0]?.content?.find((entry) => entry.category === category);
+		const target1 = groupedFeelings[1]?.content?.find((entry) => entry.category === category);
 		if (target0) target0.visible = !target0.visible;
 		if (target1) target1.visible = !target1.visible;
 		groupedFeelings = [...groupedFeelings];
@@ -93,7 +111,7 @@
 		}}
 		class="duration-800 flex flex-col gap-4 transition-all"
 	>
-		{#if groupedFeelings.length > 0}
+		{#if groupedFeelings && groupedFeelings.length > 0}
 			<div class="">
 				<div class="-mx-1 flex w-full flex-wrap justify-start transition-all">
 					{#each groupedFeelings as positive}

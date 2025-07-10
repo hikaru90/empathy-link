@@ -13,6 +13,7 @@
 		{ type: 'task' as const, label: 'Task' },
 		{ type: 'timer' as const, label: 'Timer' },
 		{ type: 'image' as const, label: 'Image' },
+		{ type: 'audio' as const, label: 'Audio' },
 		{ type: 'bodymap' as const, label: 'Bodymap' },
 		{ type: 'taskCompletion' as const, label: 'Task Completion' },
 		{ type: 'sortable' as const, label: 'Sortable' },

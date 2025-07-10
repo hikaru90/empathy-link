@@ -12,9 +12,10 @@
 	interface Props {
 		content: Content[];
 		onContentChange: (content: Content[]) => void;
+		currentVersion?: any;
 	}
 
-	let { content, onContentChange }: Props = $props();
+	let { content, onContentChange, currentVersion }: Props = $props();
 
 	let draggedBlockIndex: number | null = $state(null);
 	let draggedPageIndex: number | null = $state(null);
@@ -113,6 +114,18 @@
 					alt: '',
 					caption: '',
 					alignment: 'center'
+				};
+				break;
+			case 'audio':
+				newBlock = {
+					type: 'audio',
+					src: '',
+					content: '',
+					title: '',
+					transcript: '',
+					autoplay: false,
+					loop: false,
+					controls: true
 				};
 				break;
 			default:
@@ -327,6 +340,7 @@
 									{block}
 									{pageIndex}
 									{blockIndex}
+									{currentVersion}
 									onUpdate={(field, value) =>
 										updateBlockContent(pageIndex, blockIndex, field, value)}
 									onMoveUp={() => moveBlockUp(pageIndex, blockIndex)}

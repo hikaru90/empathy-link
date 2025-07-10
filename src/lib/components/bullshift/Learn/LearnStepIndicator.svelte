@@ -10,7 +10,7 @@
   // Calculate total steps including summary page only
   const totalSteps = $derived(() => {
     const topicData = topic();
-    if (!topicData || !topicData.content) return 1; // Default to just summary if no content
+    if (!topicData || !topicData.content || !Array.isArray(topicData.content)) return 1; // Default to just summary if no content
     return topicData.content.length + 1; // +1 for summary page only
   });
 </script>
