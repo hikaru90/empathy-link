@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { marked } from 'marked';
 	import { onMount } from 'svelte';
+	import StoryNavigation from './StoryNavigation.svelte';
 
 	interface Props {
 		content: {
@@ -13,9 +14,10 @@
 			controls?: boolean;
 		};
 		color?: string;
+		isPreview?: boolean;
 	}
 
-	let { content, color }: Props = $props();
+	let { content, color, isPreview = false }: Props = $props();
 
 	// Audio player state
 	let audioElement: HTMLAudioElement;
@@ -277,4 +279,14 @@
 			</div>
 		</details>
 	{/if}
+	
+	<div class="mt-4">
+		<StoryNavigation 
+			variant="default"
+			nextText="Continue"
+			prevText="Back"
+			nextDisabled={isPlaying && !hasError}
+			{isPreview}
+		/>
+	</div>
 </div>

@@ -3,6 +3,8 @@
 	import type { MultipleChoiceBlock } from '$routes/bullshift/learn/[id]/edit/schema';
 	import type { LearningSession } from '$routes/bullshift/learn/[id]/edit/schema';
 	import { m } from '$lib/translations';
+	import { getLearningContext } from '$lib/contexts/learningContext';
+	import LearnStepComponent from './LearnStepComponent.svelte';
 
 	interface Props {
 		content: MultipleChoiceBlock;
@@ -24,6 +26,17 @@
 	let showResult = $state(false);
 	let showSummary = $state(false);
 	let totalStartTime = $state<number | null>(null);
+	
+	// Component step management
+	let updateSteps: ((newCurrentStep: number, newTotalSteps?: number) => void) | null = null;
+	
+	// Calculate current step based on question progress
+	const currentStepNumber = $derived(() => {
+		if (showSummary) return totalQuestions() + 1; // Summary is the final step
+		return currentQuestionIndex + 1;
+	});
+	
+	const totalSteps = $derived(() => totalQuestions() + 1); // All questions + summary
 
 	// Load existing response if available
 	$effect(() => {
@@ -102,8 +115,9 @@
 			selectedOptions = [];
 			showResult = false;
 			startTime = Date.now();
+			updateSteps?.(currentStepNumber()); // Update step
 		} else {
-			// All questions completed
+			// All questions completed - auto-advance after 3 seconds
 			showSummary = true;
 			const totalTimeSpent = totalStartTime ? Math.floor((Date.now() - totalStartTime) / 1000) : 0;
 			
@@ -112,6 +126,7 @@
 				completed: true,
 				totalTimeSpent
 			});
+			updateSteps?.(currentStepNumber()); // Update to summary step
 		}
 	};
 
@@ -172,9 +187,22 @@
 	});
 </script>
 
-{#if showSummary}
-	<!-- Summary View -->
-	<div class="mb-6 bg-white/80 rounded-xl p-6 shadow-lg">
+<LearnStepComponent 
+	{pageIndex} 
+	{blockIndex} 
+	componentType="multipleChoice" 
+	totalSteps={totalSteps()}
+	currentStep={currentStepNumber()}
+	let:updateSteps={stepUpdateFn}
+>
+	{#if !updateSteps}
+		<!-- Initialize updateSteps reference -->
+		{(updateSteps = stepUpdateFn) && ''}
+	{/if}
+	
+	{#if showSummary}
+		<!-- Summary View -->
+		<div class="mb-6 bg-white/80 rounded-xl p-6 shadow-lg">
 		<div class="text-center mb-6">
 			<div class="text-3xl font-bold mb-2" class:text-green-600={getOverallScore() >= 80} class:text-yellow-600={getOverallScore() >= 60 && getOverallScore() < 80} class:text-red-600={getOverallScore() < 60}>
 				{getOverallScore()}%
@@ -313,4 +341,5 @@
 			</div>
 		{/if}
 	</div>
-{/if} 
+	{/if}
+</LearnStepComponent> 

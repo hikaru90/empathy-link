@@ -1,0 +1,161 @@
+<script lang="ts">
+	import { getLearningContext } from '$lib/contexts/learningContext';
+	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
+	import ChevronRight from 'lucide-svelte/icons/chevron-right';
+
+	interface Props {
+		showNext?: boolean;
+		showPrev?: boolean;
+		nextText?: string;
+		prevText?: string;
+		nextDisabled?: boolean;
+		prevDisabled?: boolean;
+		variant?: 'default' | 'minimal' | 'floating' | 'inline';
+		customNextAction?: () => void;
+		customPrevAction?: () => void;
+		isPreview?: boolean;
+		class?: string;
+	}
+
+	let { 
+		showNext = true,
+		showPrev = false,
+		nextText = 'Next',
+		prevText = 'Previous',
+		nextDisabled = false,
+		prevDisabled = false,
+		variant = 'default',
+		customNextAction,
+		customPrevAction,
+		isPreview = false,
+		class: className = ''
+	}: Props = $props();
+
+	const learningContext = getLearningContext();
+
+	const handleNext = () => {
+		if (nextDisabled || isPreview) return;
+		
+		if (customNextAction) {
+			customNextAction();
+		} else if (learningContext?.gotoNextPage) {
+			learningContext.gotoNextPage();
+		}
+	};
+
+	const handlePrev = () => {
+		if (prevDisabled || isPreview) return;
+		
+		if (customPrevAction) {
+			customPrevAction();
+		} else if (learningContext?.gotoPrevPage) {
+			learningContext.gotoPrevPage();
+		}
+	};
+
+	const canGoNext = $derived(() => {
+		if (nextDisabled || isPreview) return false;
+		return customNextAction ? true : learningContext?.canGoNext;
+	});
+
+	const canGoPrev = $derived(() => {
+		if (prevDisabled || isPreview) return false;
+		return customPrevAction ? true : learningContext?.canGoPrev;
+	});
+</script>
+
+{#if variant === 'floating'}
+	<!-- Floating navigation buttons -->
+	<div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-3 z-50 {className}">
+		{#if showPrev && canGoPrev}
+			<button 
+				onclick={handlePrev}
+				class="flex items-center justify-center w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm shadow-lg transition-all hover:scale-105 disabled:opacity-50"
+				disabled={!canGoPrev}
+				aria-label={prevText}
+			>
+				<ChevronLeft class="w-5 h-5 text-gray-700" />
+			</button>
+		{/if}
+
+		{#if showNext && canGoNext}
+			<button 
+				onclick={handleNext}
+				class="flex items-center justify-center px-6 h-12 rounded-full bg-blue-500 text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 disabled:bg-gray-400"
+				disabled={!canGoNext}
+			>
+				<span class="mr-2">{nextText}</span>
+				<ChevronRight class="w-4 h-4" />
+			</button>
+		{/if}
+	</div>
+
+{:else if variant === 'minimal'}
+	<!-- Minimal inline navigation -->
+	<div class="flex justify-end items-center mt-6 {className}">
+		{#if showNext && canGoNext}
+			<button 
+				onclick={handleNext}
+				class="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:opacity-50 disabled:bg-gray-400"
+				disabled={!canGoNext}
+			>
+				{nextText}
+				<ChevronRight class="w-4 h-4" />
+			</button>
+		{/if}
+	</div>
+
+{:else if variant === 'inline'}
+	<!-- Simple inline buttons -->
+	<div class="flex items-center gap-3 {className}">
+		{#if showPrev && canGoPrev}
+			<button 
+				onclick={handlePrev}
+				class="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-gray-200 text-gray-700 transition-colors hover:bg-gray-300 disabled:opacity-50"
+				disabled={!canGoPrev}
+			>
+				<ChevronLeft class="w-4 h-4" />
+				{prevText}
+			</button>
+		{/if}
+
+		{#if showNext && canGoNext}
+			<button 
+				onclick={handleNext}
+				class="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:opacity-50 disabled:bg-gray-400"
+				disabled={!canGoNext}
+			>
+				{nextText}
+				<ChevronRight class="w-4 h-4" />
+			</button>
+		{/if}
+	</div>
+
+{:else}
+	<!-- Default navigation -->
+	<div class="flex justify-between items-center mt-6 {className}">
+		{#if showPrev && canGoPrev}
+			<button 
+				onclick={handlePrev}
+				class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-200 text-gray-700 transition-colors hover:bg-gray-300 disabled:opacity-50"
+				disabled={!canGoPrev}
+			>
+				<ChevronLeft class="w-4 h-4" />
+				{prevText}
+			</button>
+		{:else}
+			<div></div>
+		{/if}
+
+		{#if showNext && canGoNext}
+			<button 
+				onclick={handleNext}
+				class="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:opacity-50 disabled:bg-gray-400"
+				disabled={!canGoNext}
+			>
+				{nextText}
+				<ChevronRight class="w-4 h-4" />
+			</button>
+		{/if}
+	</div>
+{/if}

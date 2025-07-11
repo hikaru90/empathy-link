@@ -4,7 +4,7 @@
 	import { pb } from '$scripts/pocketbase';
 	import { serializeNonPOJOs } from '$scripts/helpers';
 	import { invalidateAll } from '$app/navigation';
-	import type { TopicVersion, Content } from '../../routes/bullshift/learn/[slug]/edit/schema';
+	import type { TopicVersion, ContentBlock } from '../../routes/bullshift/learn/[slug]/edit/schema';
 	import {
 		topicVersionFormSchema,
 		type TopicVersionFormSchema
@@ -14,7 +14,7 @@
 	import VersionSelector from '$lib/components/VersionSelector.svelte';
 	import SaveButton from '$lib/components/SaveButton.svelte';
 	import BasicInfoForm from '$lib/components/BasicInfoForm.svelte';
-	import PageContentEditor from '$lib/components/PageContentEditor.svelte';
+	import ContentBlockListEditor from '$lib/components/ContentBlockListEditor.svelte';
 
 	const { currentPage, topicId, onVersionDataChange }: { 
 		currentPage: any; 
@@ -133,21 +133,44 @@
 			$formData.descriptionEN = currentVersion.descriptionEN;
 			$formData.category = currentVersion.category;
 			$formData.image = currentVersion.image;
-			// Ensure all pages have names, add default names if missing
-			$formData.content = (currentVersion.content || []).map((page, index) => ({
-				...page,
-				name: page.name || `Page ${page.page || index + 1}`
-			}));
+			// Set content directly (now it's a flat array)
+			$formData.content = currentVersion.content || [];
 			
 			// Notify parent about version data change
 			onVersionDataChange?.(currentVersion);
 		}
 	});
 
-	// Content change handler for PageContentEditor
-	const handleContentChange = (newContent: Content[]) => {
+	// Content change handler for ContentBlockListEditor
+	const handleContentChange = (newContent: ContentBlock[]) => {
 		$formData.content = newContent;
+		
+		// Update the preview immediately when content changes
+		if (currentVersion) {
+			const updatedVersion = {
+				...currentVersion,
+				content: newContent
+			};
+			onVersionDataChange?.(updatedVersion);
+		}
 	};
+
+	// Watch for form data changes and update preview (for real-time editing)
+	$effect(() => {
+		if (currentVersion && $formData) {
+			const updatedVersion = {
+				...currentVersion,
+				titleDE: $formData.titleDE || currentVersion.titleDE,
+				titleEN: $formData.titleEN || currentVersion.titleEN,
+				descriptionDE: $formData.descriptionDE || currentVersion.descriptionDE,
+				descriptionEN: $formData.descriptionEN || currentVersion.descriptionEN,
+				category: $formData.category || currentVersion.category,
+				image: $formData.image || currentVersion.image,
+				content: $formData.content || currentVersion.content || []
+			};
+			onVersionDataChange?.(updatedVersion);
+		}
+	});
 
 	// Version selection handler
 	const handleVersionSelect = (versionId: string) => {
@@ -221,6 +244,46 @@
 			console.error('Error setting version as live:', error);
 			alert('Failed to set version as live. Please try again.');
 		}
+	};
+
+	// Convert old page structure to new flat structure
+	const convertToFlatStructure = () => {
+		const currentContent = $formData.content || [];
+		
+		// Check if it's already in the old format (has page objects)
+		const isOldFormat = currentContent.some(item => 
+			item && typeof item === 'object' && 'page' in item && 'content' in item
+		);
+		
+		if (!isOldFormat) {
+			alert('Content is already in the new flat format!');
+			return;
+		}
+		
+		// Convert from old format to new format
+		const flatContent = [];
+		
+		// Sort by page number first
+		const sortedPages = [...currentContent].sort((a, b) => a.page - b.page);
+		
+		// Extract all content blocks from all pages
+		for (const page of sortedPages) {
+			if (page.content && Array.isArray(page.content)) {
+				flatContent.push(...page.content);
+			}
+		}
+		
+		// Update form data
+		$formData.content = flatContent;
+		
+		// Update preview immediately
+		onVersionDataChange?.({
+			...currentVersion,
+			content: flatContent
+		});
+		
+		console.log('Converted from old format to new flat format:', flatContent);
+		alert(`Converted ${currentContent.length} pages to ${flatContent.length} content blocks. Don't forget to save!`);
 	};
 
 	const getLiveVersionId = async () => {
@@ -323,7 +386,29 @@
 				onSetAsLive={handleSetAsLive}
 				canDelete={allVersions.length > 1}
 			/>
-			<PageContentEditor 
+			
+			<!-- Migration button for old format -->
+			{#if $formData.content && $formData.content.some(item => item && typeof item === 'object' && 'page' in item && 'content' in item)}
+				<div class="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+					<div class="flex items-center justify-between">
+						<div>
+							<h3 class="text-sm font-medium text-amber-800">Old Format Detected</h3>
+							<p class="text-xs text-amber-700 mt-1">
+								This content uses the old page structure. Convert it to the new flat structure for better performance.
+							</p>
+						</div>
+						<button
+							type="button"
+							onclick={convertToFlatStructure}
+							class="px-3 py-1 bg-amber-600 text-white text-xs font-medium rounded hover:bg-amber-700 transition-colors"
+						>
+							Convert to New Format
+						</button>
+					</div>
+				</div>
+			{/if}
+			
+			<ContentBlockListEditor 
 				content={$formData.content || []} 
 				onContentChange={handleContentChange}
 				{currentVersion}

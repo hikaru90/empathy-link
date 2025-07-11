@@ -1,10 +1,6 @@
 import { z } from 'zod';
 
-export interface Content {
-  page: number;
-  name: string;
-  content: ContentBlock[];
-}
+// Remove the Content interface - we'll work directly with ContentBlock array
 
 export type ContentBlock =
   | TextBlock
@@ -17,8 +13,12 @@ export type ContentBlock =
   | SortableBlock
   | MultipleChoiceBlock
   | AIQuestionBlock
+  | AIQuestionStepBlock
+  | AIResponseStepBlock
   | ImageBlock
-  | AudioBlock;
+  | AudioBlock
+  | NextPageBlock
+  | PageNavigationBlock;
 
 export interface TextBlock {
   type: "text";
@@ -92,6 +92,20 @@ export interface AIQuestionBlock {
   placeholder?: string; // Optional placeholder for the answer field
 }
 
+export interface AIQuestionStepBlock {
+  type: "aiQuestionStep";
+  question: string;
+  systemPrompt: string;
+  placeholder?: string; // Optional placeholder for the answer field
+}
+
+export interface AIResponseStepBlock {
+  type: "aiResponseStep";
+  question: string;
+  systemPrompt: string;
+  placeholder?: string; // Optional placeholder for the answer field (inherited from question step)
+}
+
 export interface ImageBlock {
   type: "image";
   src: string; // URL or file path
@@ -112,6 +126,25 @@ export interface AudioBlock {
   controls?: boolean; // Whether to show controls (default true)
 }
 
+export interface NextPageBlock {
+  type: "nextPage";
+  text?: string; // Button text (default: "Next")
+  variant?: 'default' | 'minimal' | 'floating' | 'large'; // Button style
+  disabled?: boolean; // Whether button is disabled
+  customAction?: string; // Optional custom action identifier
+}
+
+export interface PageNavigationBlock {
+  type: "pageNavigation";
+  showNext?: boolean; // Show next button (default: true)
+  showPrev?: boolean; // Show previous button (default: false)
+  nextText?: string; // Next button text (default: "Next")
+  prevText?: string; // Previous button text (default: "Previous")
+  variant?: 'default' | 'minimal' | 'floating' | 'inline'; // Navigation style
+  nextDisabled?: boolean; // Whether next is disabled
+  prevDisabled?: boolean; // Whether prev is disabled
+}
+
 export interface TopicVersion {
   id: string;
   titleDE: string;
@@ -120,7 +153,7 @@ export interface TopicVersion {
   descriptionEN: string;
   category: string;
   image: string;
-  content: Content[];
+  content: ContentBlock[];
   topic: string;
   created: string;
   updated: string;
@@ -199,6 +232,20 @@ const aiQuestionBlockSchema = z.object({
   placeholder: z.string().optional()
 });
 
+const aiQuestionStepBlockSchema = z.object({
+  type: z.literal("aiQuestionStep"),
+  question: z.string(),
+  systemPrompt: z.string(),
+  placeholder: z.string().optional()
+});
+
+const aiResponseStepBlockSchema = z.object({
+  type: z.literal("aiResponseStep"),
+  question: z.string(),
+  systemPrompt: z.string(),
+  placeholder: z.string().optional()
+});
+
 const imageBlockSchema = z.object({
   type: z.literal("image"),
   src: z.string(),
@@ -219,6 +266,25 @@ const audioBlockSchema = z.object({
   controls: z.boolean().optional()
 });
 
+const nextPageBlockSchema = z.object({
+  type: z.literal("nextPage"),
+  text: z.string().optional(),
+  variant: z.enum(['default', 'minimal', 'floating', 'large']).optional(),
+  disabled: z.boolean().optional(),
+  customAction: z.string().optional()
+});
+
+const pageNavigationBlockSchema = z.object({
+  type: z.literal("pageNavigation"),
+  showNext: z.boolean().optional(),
+  showPrev: z.boolean().optional(),
+  nextText: z.string().optional(),
+  prevText: z.string().optional(),
+  variant: z.enum(['default', 'minimal', 'floating', 'inline']).optional(),
+  nextDisabled: z.boolean().optional(),
+  prevDisabled: z.boolean().optional()
+});
+
 const contentBlockSchema = z.discriminatedUnion("type", [
   textBlockSchema,
   listBlockSchema,
@@ -230,15 +296,13 @@ const contentBlockSchema = z.discriminatedUnion("type", [
   sortableBlockSchema,
   multipleChoiceBlockSchema,
   aiQuestionBlockSchema,
+  aiQuestionStepBlockSchema,
+  aiResponseStepBlockSchema,
   imageBlockSchema,
-  audioBlockSchema
+  audioBlockSchema,
+  nextPageBlockSchema,
+  pageNavigationBlockSchema
 ]);
-
-const contentSchema = z.object({
-  page: z.number().min(1),
-  name: z.string().min(1, "Page name is required"),
-  content: z.array(contentBlockSchema)
-});
 
 export const topicVersionFormSchema = z.object({
   titleDE: z.string().optional(),
@@ -247,7 +311,7 @@ export const topicVersionFormSchema = z.object({
   descriptionEN: z.string().optional(),
   category: z.string().optional(),
   image: z.string().optional(),
-  content: z.array(contentSchema).optional()
+  content: z.array(contentBlockSchema).optional()
 });
 
 export type TopicVersionFormSchema = typeof topicVersionFormSchema;

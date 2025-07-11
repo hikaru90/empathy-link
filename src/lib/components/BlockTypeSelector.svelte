@@ -18,7 +18,11 @@
 		{ type: 'taskCompletion' as const, label: 'Task Completion' },
 		{ type: 'sortable' as const, label: 'Sortable' },
 		{ type: 'multipleChoice' as const, label: 'Multiple Choice' },
-		{ type: 'aiQuestion' as const, label: 'AI Question' }
+		{ type: 'aiQuestion' as const, label: 'AI Question' },
+		{ type: 'aiQuestionStep' as const, label: 'AI Question Step' },
+		{ type: 'aiResponseStep' as const, label: 'AI Response Step' },
+		{ type: 'nextPage' as const, label: 'Next Button' },
+		{ type: 'pageNavigation' as const, label: 'Page Navigation' }
 	];
 </script>
 

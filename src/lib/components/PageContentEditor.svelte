@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Content, ContentBlock } from '$routes/bullshift/learn/[id]/edit/schema';
+	import type { ContentBlock } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import ContentBlockEditor from '$lib/components/ContentBlockEditor.svelte';
@@ -10,16 +10,14 @@
 	import ChevronsDown from 'lucide-svelte/icons/chevron-down';
 
 	interface Props {
-		content: Content[];
-		onContentChange: (content: Content[]) => void;
+		content: ContentBlock[];
+		onContentChange: (content: ContentBlock[]) => void;
 		currentVersion?: any;
 	}
 
 	let { content, onContentChange, currentVersion }: Props = $props();
 
 	let draggedBlockIndex: number | null = $state(null);
-	let draggedPageIndex: number | null = $state(null);
-	let openPageAccordions: Set<number> = $state(new Set([0])); // First page open by default
 
 	// Content Management Functions
 	const addPage = () => {
@@ -107,6 +105,22 @@
 					placeholder: 'Schreibe deine Antwort hier...'
 				};
 				break;
+			case 'aiQuestionStep':
+				newBlock = { 
+					type: 'aiQuestionStep', 
+					question: '', 
+					systemPrompt: 'You are a helpful learning assistant. Provide constructive feedback on the user\'s answer.',
+					placeholder: 'Schreibe deine Antwort hier...'
+				};
+				break;
+			case 'aiResponseStep':
+				newBlock = { 
+					type: 'aiResponseStep', 
+					question: '', 
+					systemPrompt: 'You are a helpful learning assistant. Provide constructive feedback on the user\'s answer.',
+					placeholder: 'Schreibe deine Antwort hier...'
+				};
+				break;
 			case 'image':
 				newBlock = { 
 					type: 'image', 
@@ -126,6 +140,26 @@
 					autoplay: false,
 					loop: false,
 					controls: true
+				};
+				break;
+			case 'nextPage':
+				newBlock = {
+					type: 'nextPage',
+					text: 'Next',
+					variant: 'default',
+					disabled: false
+				};
+				break;
+			case 'pageNavigation':
+				newBlock = {
+					type: 'pageNavigation',
+					showNext: true,
+					showPrev: false,
+					nextText: 'Next',
+					prevText: 'Previous',
+					variant: 'default',
+					nextDisabled: false,
+					prevDisabled: false
 				};
 				break;
 			default:

@@ -4,7 +4,6 @@
 	import { onMount } from 'svelte';
 	import Header from '$lib/components/bullshift/Header.svelte';
 	import Footer from '$lib/components/bullshift/Footer.svelte';
-	import LearnStepper from '$lib/components/bullshift/Learn/LearnStepper.svelte';
 	import LearnTimer from '$lib/components/bullshift/Learn/LearnTimer.svelte';
 	import LearnStepIndicator from '$lib/components/bullshift/Learn/LearnStepIndicator.svelte';
 	import LearnTitleCard from '$lib/components/bullshift/Learn/LearnTitleCard.svelte';
@@ -17,10 +16,16 @@
 	import LearnSortableWithFeedback from '$lib/components/bullshift/Learn/LearnSortableWithFeedback.svelte';
 	import LearnMultipleChoice from '$lib/components/bullshift/Learn/LearnMultipleChoice.svelte';
 	import LearnAIQuestion from '$lib/components/bullshift/Learn/LearnAIQuestion.svelte';
+	import LearnAIQuestionStep from '$lib/components/bullshift/Learn/LearnAIQuestionStep.svelte';
+	import LearnAIResponseStep from '$lib/components/bullshift/Learn/LearnAIResponseStep.svelte';
 	import LearningSummary from '$lib/components/bullshift/Learn/LearningSummary.svelte';
 	import LearnCompletion from '$lib/components/bullshift/Learn/LearnCompletion.svelte';
+	import LearnNextPage from '$lib/components/bullshift/Learn/LearnNextPage.svelte';
+	import LearnPageNavigation from '$lib/components/bullshift/Learn/LearnPageNavigation.svelte';
 	import { learningSession } from '$lib/stores/learningSession';
+	import { setLearningContext } from '$lib/contexts/learningContext';
 	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
+	import type { ComponentStepInfo, ComponentStepState } from '$lib/contexts/learningContext';
 	import { pb } from '$scripts/pocketbase';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import LearnImage from '$lib/components/bullshift/Learn/LearnImage.svelte';
@@ -37,6 +42,7 @@
 	let showNewSessionConfirm = $state(false);
 	let completedSession = $state<LearningSession | null>(null);
 	let sessionInitData = $state<{userId: string, mainTopicId: string, topicVersionId: string} | null>(null);
+	let aiQuestionStep = $state<'question' | 'response' | undefined>(undefined);
 
 	const updateQueryParams = () => {
 		const url = new URL(window.location.href);
@@ -61,6 +67,9 @@
 		}
 		return version;
 	});
+
+	// Get components directly - no more pages structure
+	const components = $derived(() => topic().content || []);
 
 	const goBack = () => {
 		window.history.back();
@@ -108,15 +117,22 @@
 		sessionInitData = null;
 	};
 	const gotoNextPage = async () => {
-		// Allow navigating to summary page only
-		if (currentPage < topic().content.length) { // Only allow going to summary page
+		// Allow navigating to summary page
+		if (currentPage <= components().length) { // Allow going to summary page
 			currentPage++;
 			
-			if (currentSession && currentPage < topic().content.length) {
+			if (currentSession && currentPage <= components().length) {
 				// Only update current page in session if still within content pages
 				await learningSession.updateCurrentPage(currentSession.id, currentPage);
+				// Refresh session data to ensure components get latest responses
+				try {
+					const refreshedSession = await pb.collection('learnSessions').getOne(currentSession.id);
+					currentSession = refreshedSession as unknown as LearningSession;
+				} catch (error) {
+					console.error('Failed to refresh session data:', error);
+				}
 			}
-			if (currentPage === topic().content.length && currentSession) {
+			if (currentPage === components().length + 1 && currentSession) {
 				// Complete and mark session as completed when reaching the summary page
 				console.log(`Completing learning session for topic: ${currentSession.topic}`);
 				await learningSession.complete(currentSession.id);
@@ -128,13 +144,114 @@
 	const gotoPrevPage = async () => {
 		if (currentPage > 0) {
 			currentPage--;
-			if (currentSession && currentPage < topic().content.length) {
+			if (currentSession && currentPage < components().length) {
 				// Only update current page in session if moving within content pages
 				await learningSession.updateCurrentPage(currentSession.id, currentPage);
+				// Refresh session data to ensure components get latest responses
+				try {
+					const refreshedSession = await pb.collection('learnSessions').getOne(currentSession.id);
+					currentSession = refreshedSession as unknown as LearningSession;
+				} catch (error) {
+					console.error('Failed to refresh session data:', error);
+				}
 			}
 		}
 		updateQueryParams();
 	};
+
+	// Component step management
+	let componentSteps = $state<Map<string, ComponentStepInfo>>(new Map());
+	let componentStepsVersion = $state(0); // Force reactivity trigger
+	
+	// Global step state management
+	let componentStepStates = $state<Map<string, ComponentStepState>>(new Map());
+
+	// Set up learning context with reactive state
+	const learningContextState = $state({
+		get currentPage() { return currentPage; },
+		get totalPages() { return components().length + 2; }, // Title + Components + Summary
+		get canGoNext() { return currentPage <= components().length; },
+		get canGoPrev() { return currentPage > 0; },
+		get aiQuestionStep() { return aiQuestionStep; },
+		gotoNextPage: gotoNextPage,
+		gotoPrevPage: gotoPrevPage,
+		gotoPage: async (page: number) => {
+			if (page >= 0 && page <= components().length + 1) {
+				currentPage = page;
+				updateQueryParams();
+				// Refresh session data when navigating directly to a page
+				if (currentSession && page > 0 && page <= components().length) {
+					try {
+						const refreshedSession = await pb.collection('learnSessions').getOne(currentSession.id);
+						currentSession = refreshedSession as unknown as LearningSession;
+					} catch (error) {
+						console.error('Failed to refresh session data:', error);
+					}
+				}
+			}
+		},
+		setAIQuestionStep: (step: 'question' | 'response' | undefined) => {
+			aiQuestionStep = step;
+		},
+		registerComponentSteps: (info: ComponentStepInfo) => {
+			const existing = componentSteps.get(info.componentId);
+			const hasChanged = !existing || 
+				existing.currentStep !== info.currentStep || 
+				existing.totalSteps !== info.totalSteps;
+			
+			componentSteps.set(info.componentId, info);
+			
+			// Only trigger reactivity if something actually changed
+			if (hasChanged) {
+				componentStepsVersion++;
+			}
+		},
+		unregisterComponentSteps: (componentId: string) => {
+			componentSteps.delete(componentId);
+			componentStepsVersion++; // Trigger reactivity
+		},
+		getComponentSteps: () => {
+			// Access version to ensure reactivity
+			componentStepsVersion;
+			return Array.from(componentSteps.values());
+		},
+		
+		// Global step state management
+		getComponentStepState: (pageIndex: number, blockIndex: number) => {
+			const key = `${pageIndex}-${blockIndex}`;
+			return componentStepStates.get(key) || null;
+		},
+		
+		setComponentStepState: (pageIndex: number, blockIndex: number, stepState: ComponentStepState) => {
+			const key = `${pageIndex}-${blockIndex}`;
+			componentStepStates.set(key, stepState);
+		},
+		
+		computeComponentStep: (pageIndex: number, blockIndex: number, componentType: string, session: any) => {
+			// Global logic to determine which step a component should be on
+			if (componentType === 'aiQuestion') {
+				// Check if there's a completed response for this AI question
+				if (session && session.responses) {
+					const existingResponse = session.responses.find(
+						r => r.pageIndex === pageIndex && r.blockIndex === blockIndex && r.blockType === 'aiQuestion'
+					);
+					
+					if (existingResponse && existingResponse.response.userAnswer && existingResponse.response.aiResponse) {
+						// User has completed the interaction, show response step
+						return 2;
+					}
+				}
+				// No completed response, show question step
+				return 1;
+			}
+			
+			// For other component types, default to step 1
+			return 1;
+		}
+	});
+
+	// Set the context
+	setLearningContext(learningContextState);
 
 	// Initialize learning session on mount
 	onMount(async () => {
@@ -225,18 +342,16 @@
 	});
 </script>
 
-<div class="pb-32 pt-6">
+<div class="pb-32 pt-6 h-svh overflow-hidden">
 	<Header class="z-20" user={data.user} />
 	<div class="max-container py-10">
-		<div class="mb-6 flex items-center justify-center">
-			<!-- <a
-				href="/bullshift/learn"
-				class="inline-flex items-center gap-2 rounded-full border border-black/10 py-1 pl-2 pr-4 text-sm"
-			>
-				<ChevronLeft class="size-4" /> zurück
-			</a> -->
-			<LearnStepIndicator {topic} {currentPage} {currentCategory} />
-		</div>
+		<!-- Step indicator -->
+		<LearnStepIndicator 
+			{topic}
+			{currentPage}
+			currentCategory={currentCategory}
+			{aiQuestionStep}
+		/>
 
 		<!-- Only show content if not waiting for user confirmation -->
 		{#if !showNewSessionConfirm}
@@ -245,7 +360,7 @@
 			{/if}
 
 			<!-- Show summary page (now the final page) -->
-			{#if topic().content && currentPage === topic().content.length && topic().content.length > 0}
+			{#if components().length > 0 && currentPage === components().length + 1}
 				{#await currentSession ? pb.collection('learnSessions').getOne(currentSession.id).then(session => session as unknown as LearningSession) : Promise.resolve(null)}
 					<div class="text-center p-8">
 						<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
@@ -274,103 +389,126 @@
 						<p class="text-red-600">Error loading results: {error.message}</p>
 					</div>
 				{/await}
-			{:else}
-				<!-- Show regular content -->
-				{#each topic().content || [] as page, pageIndex}
-					{#if currentPage === pageIndex}
-						{#each page.content as content, blockIndex}
-							{#if content.type === 'text'}
-								<LearnText {content} />
-							{:else if content.type === 'task'}
-								<LearnTask 
-									color={currentCategory().color} 
-									{content} 
-								/>
-							{:else if content.type === 'heading'}
-								<LearnHeading {content} />
-							{:else if content.type === 'image'}
-								<LearnImage {content} />
-							{:else if content.type === 'audio'}
-								<LearnAudio color={currentCategory().color} {content} />
-							{:else if content.type === 'timer'}
-								<LearnTimer 
-									duration={content.duration} 
-									color={currentCategory().color}
-									{pageIndex}
-									{blockIndex}
-									session={currentSession}
-									onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'timer', response, topic().id, content)}
-								/>
-							{:else if content.type === 'bodymap'}
-								<LearnBodyMap 
-									{content} 
-									color={currentCategory().color}
-									{pageIndex}
-									{blockIndex}
-									session={currentSession}
-									contentBlock={content}
-									topicVersionId={topic().id}
-									onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'bodymap', response, topic().id, content)}
-								/>
-							{:else if content.type === 'taskCompletion'}
-								<LearnCompletionNotes 
-									{content} 
-									color={currentCategory().color}
-									{pageIndex}
-									{blockIndex}
-									session={currentSession}
-									onResponse={(response) => currentSession && learningSession.saveResponse(currentSession.id, pageIndex, blockIndex, 'taskCompletion', response, topic().id, content)}
-								/>
-							{:else if content.type === 'list'}
-								<LearnList {content} currentCategory={currentCategory()} />
-							{:else if content.type === 'sortable'}
-								<LearnSortableWithFeedback 
-									{content} 
-									color={currentCategory().color}
-									currentCategory={currentCategory()}
-									{pageIndex}
-									{blockIndex}
-									session={currentSession}
-									topicVersionId={topic().id}
-									onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'sortable', response, topic().id, content)}
-								/>
-							{:else if content.type === 'multipleChoice'}
-								<LearnMultipleChoice 
-									{content} 
-									color={currentCategory().color}
-									{pageIndex}
-									{blockIndex}
-									session={currentSession}
-									contentBlock={content}
-									topicVersionId={topic().id}
-									onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'multipleChoice', response, topic().id, content)}
-								/>
-							{:else if content.type === 'aiQuestion'}
-								<LearnAIQuestion 
-									{content} 
-									color={currentCategory().color}
-									pageIndex={pageIndex}
-									{blockIndex}
-									session={currentSession}
-									contentBlock={content}
-									topicVersionId={topic().id}
-									onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'aiQuestion', response, topic().id, content)}
-								/>
-							{/if}
-						{/each}
-					{/if}
-				{/each}
+			{:else if components().length > 0 && currentPage > 0 && currentPage <= components().length}
+				<!-- Show single component per page -->
+				{@const content = components()[currentPage - 1]}
+				{@const pageIndex = currentPage}
+				{@const blockIndex = 0}
+				{#if content && content.type === 'text'}
+					<LearnText {content} isPreview={false} />
+				{:else if content && content.type === 'task'}
+					<LearnTask 
+						color={currentCategory().color} 
+						{content} 
+						isPreview={false}
+					/>
+				{:else if content && content.type === 'heading'}
+					<LearnHeading {content} isPreview={false} />
+				{:else if content && content.type === 'image'}
+					<LearnImage {content} />
+				{:else if content && content.type === 'audio'}
+					<LearnAudio color={currentCategory().color} {content} isPreview={false} />
+				{:else if content && content.type === 'timer'}
+					<LearnTimer 
+						duration={content.duration} 
+						color={currentCategory().color}
+						{pageIndex}
+						{blockIndex}
+						session={currentSession}
+						onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'timer', response, topic().id, content)}
+					/>
+				{:else if content && content.type === 'bodymap'}
+					<LearnBodyMap 
+						{content} 
+						color={currentCategory().color}
+						{pageIndex}
+						{blockIndex}
+						session={currentSession}
+						contentBlock={content}
+						topicVersionId={topic().id}
+						onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'bodymap', response, topic().id, content)}
+					/>
+				{:else if content && content.type === 'taskCompletion'}
+					<LearnCompletionNotes 
+						{content} 
+						color={currentCategory().color}
+						{pageIndex}
+						{blockIndex}
+						session={currentSession}
+						onResponse={(response) => currentSession && learningSession.saveResponse(currentSession.id, pageIndex, blockIndex, 'taskCompletion', response, topic().id, content)}
+					/>
+				{:else if content && content.type === 'list'}
+					<LearnList {content} currentCategory={currentCategory()} />
+				{:else if content && content.type === 'sortable'}
+					<LearnSortableWithFeedback 
+						{content} 
+						color={currentCategory().color}
+						currentCategory={currentCategory()}
+						{pageIndex}
+						{blockIndex}
+						session={currentSession}
+						topicVersionId={topic().id}
+						onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'sortable', response, topic().id, content)}
+					/>
+				{:else if content && content.type === 'multipleChoice'}
+					<LearnMultipleChoice 
+						{content} 
+						color={currentCategory().color}
+						{pageIndex}
+						{blockIndex}
+						session={currentSession}
+						contentBlock={content}
+						topicVersionId={topic().id}
+						onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'multipleChoice', response, topic().id, content)}
+					/>
+				{:else if content && content.type === 'aiQuestion'}
+					<LearnAIQuestion 
+						{content} 
+						color={currentCategory().color}
+						pageIndex={pageIndex}
+						{blockIndex}
+						session={currentSession}
+						contentBlock={content}
+						topicVersionId={topic().id}
+						onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'aiQuestion', response, topic().id, content)}
+						isPreview={false}
+					/>
+				{:else if content && content.type === 'aiQuestionStep'}
+					<LearnAIQuestionStep 
+						{content} 
+						color={currentCategory().color}
+						pageIndex={pageIndex}
+						{blockIndex}
+						session={currentSession}
+						contentBlock={content}
+						topicVersionId={topic().id}
+						onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'aiQuestionStep', response, topic().id, content)}
+						isPreview={false}
+					/>
+				{:else if content && content.type === 'aiResponseStep'}
+					<LearnAIResponseStep 
+						{content} 
+						color={currentCategory().color}
+						pageIndex={pageIndex}
+						{blockIndex}
+						session={currentSession}
+						contentBlock={content}
+						topicVersionId={topic().id}
+						onResponse={(response) => currentSession && learningSession.saveResponseImmediate(currentSession.id, pageIndex, blockIndex, 'aiResponseStep', response, topic().id, content)}
+						isPreview={false}
+					/>
+				{:else if content && content.type === 'nextPage'}
+					<LearnNextPage {content} isPreview={false} />
+				{:else if content && content.type === 'pageNavigation'}
+					<LearnPageNavigation {content} isPreview={false} />
+				{:else}
+					<div class="p-4 bg-gray-100 rounded-lg">
+						<p class="text-gray-600">Unknown content type: {content?.type || 'undefined'}</p>
+					</div>
+				{/if}
 			{/if}
 		{/if}
 		
-		<LearnStepper
-			{gotoNextPage}
-			{gotoPrevPage}
-			color={currentCategory().color}
-			step={currentPage}
-			totalSteps={(topic().content?.length || 0) + 1}
-			class="z-20"
-		/>
 	</div>
 	<Footer />
 </div>

@@ -4,6 +4,7 @@
   import { learningSession } from '$lib/stores/learningSession';
   import { onMount } from 'svelte';
   import type { LearningSession } from '$routes/bullshift/learn/[id]/edit/schema';
+  import { getLearningContext } from '$lib/contexts/learningContext';
 
   interface Props {
     duration: number;
@@ -23,6 +24,8 @@
 	let interval: ReturnType<typeof setInterval> | null = null;
 	let audio: HTMLAudioElement;
 	let startTime: number | null = null;
+
+	const learningContext = getLearningContext();
 
 	$effect(() => {
 		audio = new Audio('/sounds/ping-82822.mp3');
@@ -60,6 +63,9 @@
 					completed: true,
 					actualDuration
 				});
+
+				// Auto-advance after 2 seconds
+				learningContext.autoAdvanceAfter(2000);
 			}
 		}, 1000);
 	};

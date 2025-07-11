@@ -105,24 +105,12 @@ const first: Handle = async ({ event, resolve }) => {
 		console.log('User authentication state restored');
 	}
 
-	// Resolve the request
-	const response = await resolve(event);
-
-	// Update the cookie with current auth state
-	try {
-		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie({
-			secure: false // Set to true in production
-		}));
-	} catch (cookieError) {
-		console.error('Failed to set auth cookie:', cookieError);
-	}
-
-	// Protect API routes with enhanced error handling
+	// Protect API routes BEFORE resolving the request
 	if (event.url.pathname.startsWith('/api')) {
 		if (!event.locals.pb.authStore.isValid) {
-			console.log(`Unauthorized API access attempt: ${event.url.pathname}`);
+			console.log(`Blocking unauthorized API access: ${event.url.pathname}`);
 
-			// Return JSON error for API routes instead of redirect
+			// Return JSON error for API routes
 			if (event.request.headers.get('accept')?.includes('application/json')) {
 				return new Response(
 					JSON.stringify({
@@ -144,9 +132,21 @@ const first: Handle = async ({ event, resolve }) => {
 	// Protect learning routes - require authentication
 	if (event.url.pathname.startsWith('/bullshift/learn')) {
 		if (!event.locals.pb.authStore.isValid) {
-			console.log(`Unauthorized learning route access: ${event.url.pathname}`);
+			console.log(`Blocking unauthorized learning route access: ${event.url.pathname}`);
 			throw redirect(303, '/app/auth/login');
 		}
+	}
+
+	// Resolve the request
+	const response = await resolve(event);
+
+	// Update the cookie with current auth state
+	try {
+		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie({
+			secure: false // Set to true in production
+		}));
+	} catch (cookieError) {
+		console.error('Failed to set auth cookie:', cookieError);
 	}
 
 	return response;
@@ -156,8 +156,9 @@ const paraglideHandle: Handle = ({ event, resolve }) =>
 	paraglideMiddleware(event.request, ({ request: localizedRequest, locale }) => {
 		event.request = localizedRequest;
 		return resolve(event, {
-			transformPageChunk: ({ html }) => {
-				return html.replace('%lang%', locale);
+			computeComponentStep: (pageIndex: number, blockIndex: number, componentType: string, session: any) => {
+				// In edit mode, always start with step 1 for simplicity
+				return 1;
 			}
 		});
 	});

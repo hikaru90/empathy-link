@@ -3,6 +3,8 @@
 	import type { LearningSession, TopicVersion } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import PercentageDonut from '$lib/components/PercentageDonut.svelte';
 	import FeedbackModule from '$lib/components/bullshift/Learn/FeedbackModule.svelte';
+	import { getLearningContext } from '$lib/contexts/learningContext';
+	import { Button } from '$lib/components/ui/button';
 
 	interface Props {
 		session: LearningSession | null;
@@ -16,6 +18,8 @@
 	}
 
 	let { session, topic, color, onFeedbackSubmit }: Props = $props();
+
+	const learningContext = getLearningContext();
 
 	let userRating = $state(0);
 	let userFeedback = $state('');
@@ -409,6 +413,20 @@
 </script>
 
 <div class="mx-auto max-w-4xl space-y-5">
+	<!-- Back button -->
+	<div class="flex justify-start">
+		<Button
+			onclick={() => learningContext?.gotoPrevPage()}
+			variant="outline"
+			class="flex items-center gap-2"
+		>
+			<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+			</svg>
+			Zurück
+		</Button>
+	</div>
+
 	<div class="rounded-xl bg-white px-4 py-5 shadow-lg shadow-green-800/10">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-3">

@@ -3,11 +3,14 @@
   
 	interface Props {
 		content: object;
+		isPreview?: boolean;
 	}
 
-	let { content }: Props = $props();
+	let { content, isPreview = false }: Props = $props();
 </script>
 
-<div class="mb-4">
-  {@html marked(content.content)}
+<div class="mb-6">
+	<div class="prose prose-lg">
+		{@html marked(content.content || '')}
+	</div>
 </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	
 	interface HeadingContent {
 		hierarchy: number;
 		content: string;
@@ -7,9 +8,10 @@
 
 	interface Props {
 		content: HeadingContent;
+		isPreview?: boolean;
 	}
 
-	let { content }: Props = $props();
+	let { content, isPreview = false }: Props = $props();
 
 	const headingStyles: Record<
 		number,

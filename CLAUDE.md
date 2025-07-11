@@ -185,6 +185,165 @@ Key collections:
 2. Use Tailwind classes with custom color variables
 3. Maintain consistency with design system
 
+#### Learning Content Editor Development (`/learn/[slug]/edit`)
+
+The learning content editor provides a split-pane interface for editing and previewing learning modules. This section covers critical development considerations for maintaining preview synchronization.
+
+##### Architecture Overview
+- **Split-pane Interface**: Left pane shows live preview, right pane shows editor
+- **Real-time Preview**: Changes in editor must immediately reflect in preview
+- **Dual Preview System**: Both editor preview and user-facing preview must stay synchronized
+- **Component-based Content**: Each content block is a standalone component with its own state
+
+##### Critical Development Tasks
+
+###### 1. Preview Synchronization
+When modifying any learning component (`src/lib/components/bullshift/Learn/Learn*.svelte`):
+
+**MUST DO**: Ensure both preview contexts are updated
+- **Editor Preview**: Left pane of `/learn/[slug]/edit` page
+- **User Preview**: Main `/learn/[slug]` page accessed by users
+- **Component Props**: Verify `isPreview` prop is handled correctly in all components
+
+**Key Files to Update**:
+- Component file: `src/lib/components/bullshift/Learn/Learn[ComponentName].svelte`
+- Editor page: `src/routes/bullshift/learn/[slug]/edit/+page.svelte` 
+- User page: `src/routes/bullshift/learn/[slug]/+page.svelte`
+
+###### 2. State Management in Previews
+- **Editor Preview**: Should show sample/mock data, not save responses
+- **User Preview**: Should integrate with learning sessions and save responses
+- **Component State**: Use `isPreview` prop to determine behavior
+- **Session Integration**: Only user preview should interact with `learningSession` store
+
+###### 3. Multi-step Component Handling
+For components with multiple internal steps (like AI questions):
+- **Step Registration**: Use `LearnStepComponent` wrapper for step management
+- **Navigation**: Provide appropriate navigation in both preview modes
+- **Step Indicator**: Ensure `LearnStepIndicator` reflects current step correctly
+- **Context Updates**: Update learning context when step changes
+
+###### 4. Data Flow Patterns
+```typescript
+// Editor preview data flow
+onVersionDataChange -> selectedVersionData -> topic() -> components()
+
+// User preview data flow  
+server data -> topic() -> components()
+```
+
+###### 5. Testing Preview Updates
+When making changes to learning components:
+1. **Test Editor Preview**: Navigate to `/learn/[slug]/edit` and verify changes appear
+2. **Test User Preview**: Navigate to `/learn/[slug]` and verify same changes appear
+3. **Test Component Isolation**: Ensure changes don't affect other component types
+4. **Test Step Navigation**: For multi-step components, verify navigation works in both contexts
+5. **Test Data Persistence**: Ensure user responses are saved (user preview) but not saved (editor preview)
+
+###### 6. Common Issues and Solutions
+- **Empty Preview**: Usually caused by missing `isPreview` prop handling
+- **Broken Navigation**: Often due to learning context not being updated
+- **State Persistence**: Check if component is trying to save data in preview mode
+- **Step Indicator Issues**: Verify component step registration is working correctly
+
+##### Best Practices
+- Always test both preview contexts when modifying learning components
+- Use `isPreview` prop consistently throughout component logic
+- Maintain clear separation between preview and live functionality
+- Update step indicators when adding multi-step components
+- Document any new component-specific preview requirements
+- Use global step state computation instead of component-level step logic
+
+##### Critical Design Principle: Visual Consistency Between Preview and Live
+
+**IMPORTANT**: Preview and live components must look and behave identically from a user perspective. The only differences should be internal functionality (saving data, navigation), not visual appearance or available UI elements.
+
+**Why This Matters**:
+- Content creators need to see exactly what learners will experience
+- Inconsistent previews lead to confusion and poor user experience
+- What you see in the editor should match what users see in the actual learning experience
+
+**Implementation Guidelines**:
+- **Same UI Elements**: Both preview and live modes should show the same buttons, navigation, and interface elements
+- **Consistent Layout**: Identical spacing, positioning, and visual hierarchy
+- **Navigation Strategy**: In preview mode, allow back navigation but disable forward navigation to prevent leaving the preview context
+- **Sample Data**: Use realistic sample data in preview mode to show how the component will actually look
+
+**Example Pattern**:
+```svelte
+<!-- GOOD: Same navigation appears in both modes -->
+<div class="flex justify-between">
+  <!-- Back button - always functional -->
+  <Button
+    onclick={() => learningContext?.gotoPrevPage()}
+    variant="outline"
+  >
+    Back
+  </Button>
+  
+  <!-- Next button - disabled in preview -->
+  <Button
+    onclick={() => {
+      if (isPreview) return;
+      learningContext?.gotoNextPage();
+    }}
+    disabled={isPreview}
+  >
+    Next
+  </Button>
+</div>
+
+<!-- BAD: Different UI between modes -->
+{#if !isPreview}
+  <div class="navigation">
+    <Button onclick={() => learningContext?.gotoPrevPage()}>Back</Button>
+    <Button onclick={() => learningContext?.gotoNextPage()}>Next</Button>
+  </div>
+{:else}
+  <div class="preview-note">Preview mode - navigation disabled</div>
+{/if}
+```
+
+**Key Areas to Maintain Consistency**:
+- Navigation buttons (show but disable in preview)
+- Form elements (show with sample data)
+- Interactive elements (visual feedback without functionality)
+- Multi-step components (allow step navigation in preview)
+- Error states and loading states (show realistic examples)
+
+#### Global Step State Management
+
+**Architecture**: Step state logic is centralized in the learning context rather than handled by individual components.
+
+**Key Functions**:
+- `computeComponentStep(pageIndex, blockIndex, componentType, session)`: Determines which step a component should display based on learning state
+- `getComponentStepState(pageIndex, blockIndex)`: Retrieves stored step state for a component
+- `setComponentStepState(pageIndex, blockIndex, stepState)`: Updates step state for a component
+
+**Benefits**:
+- Consistent step logic across all components
+- Easier to maintain and debug step-related issues
+- Centralized state management prevents step desynchronization
+- Components focus on rendering, not step computation
+
+**Implementation Pattern**:
+```typescript
+// In component:
+const computedStep = learningContext?.computeComponentStep?.(pageIndex, blockIndex, 'aiQuestion', session) || 1;
+currentStep = computedStep === 2 ? 'response' : 'question';
+
+// In learning context:
+computeComponentStep: (pageIndex, blockIndex, componentType, session) => {
+  if (componentType === 'aiQuestion') {
+    const response = session?.responses?.find(r => 
+      r.pageIndex === pageIndex && r.blockIndex === blockIndex && r.blockType === 'aiQuestion'
+    );
+    return (response?.response?.userAnswer && response?.response?.aiResponse) ? 2 : 1;
+  }
+  return 1;
+}
+```
+
 ### Performance Considerations
 - Server-side rendering enabled by default
 - Three.js SSR configuration in `vite.config.ts`

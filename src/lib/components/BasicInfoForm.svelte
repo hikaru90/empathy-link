@@ -28,7 +28,7 @@
 </script>
 
 
-<Collapsible.Root class="bg-white/80 rounded-md">
+<Collapsible.Root class="bg-white/80 rounded-md mb-4">
 	<Collapsible.Trigger class="w-full flex items-center justify-between px-3 py-4 h-auto">
 		<h4 class="font-bold">Allgemeine Einstellungen</h4>
 		<div>

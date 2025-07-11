@@ -31,8 +31,6 @@
 		canMoveDown: boolean;
 	} = $props();
 
-	let isCollapsed = $state(true);
-
 	const updateListItem = (itemIndex: number, field: 'title' | 'text', value: string) => {
 		if (block.type === 'list') {
 			const newItems = [...block.items];
@@ -166,85 +164,33 @@
 	};
 </script>
 
-<div 
-	class="mb-3 border rounded-md border-gray-200 bg-gray-50"
-	draggable="true"
-	role="listitem"
->
-	<!-- Block Header -->
-	<div class="flex items-center justify-between p-2 bg-gray-100 border-b cursor-pointer hover:bg-gray-200"
-	onclick={() => isCollapsed = !isCollapsed}
-	role="button"
-	tabindex="0"
-	onkeydown={(e) => e.key === 'Enter' && (isCollapsed = !isCollapsed)}>
-		<div class="flex items-center gap-2">
-			<span class="text-gray-400 cursor-move">⋮⋮</span>
-			<span class="text-gray-500 text-sm">{isCollapsed ? '▶' : '▼'}</span>
-			<span class="text-sm font-medium capitalize">{block.type}</span>
-		</div>
-		<div class="flex items-center gap-1">
-			<button
-				type="button"
-				onclick={(e) => {
-					e.stopPropagation();
-					onMoveUp();
-				}}
-				disabled={!canMoveUp}
-				class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300 disabled:opacity-50"
-			>
-				↑
-			</button>
-			<button
-				type="button"
-				onclick={(e) => {
-					e.stopPropagation();
-					onMoveDown();
-				}}
-				disabled={!canMoveDown}
-				class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300 disabled:opacity-50"
-			>
-				↓
-			</button>
-			<button
-				type="button"
-				onclick={(e) => {
-					e.stopPropagation();
-					onRemove();
-				}}
-				class="rounded bg-red-200 px-1 py-1 text-xs text-red-700 hover:bg-red-300"
-			>
-				✕
-			</button>
-		</div>
-	</div>
+<div class="p-4">
 
-	<!-- Block Content Editor -->
-	{#if !isCollapsed}
-	<div class="p-3">
-		{#if block.type === 'text'}
-			<div class="grid grid-cols-2 gap-4">
-				<div>
-					<label for="text-content-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Content (Markdown)</label>
-					<Textarea 
-						id="text-content-{pageIndex}-{blockIndex}"
-						value={block.content}
-						oninput={(e: Event) => {
-							const target = e.target as HTMLTextAreaElement;
-							onUpdate('content', target.value);
-						}}
-						rows={8}
-						class="font-mono text-sm"
-						placeholder="Enter markdown content..."
-					/>
-				</div>
-				<div>
-					<div class="block text-sm font-medium mb-1">Preview</div>
-					<div class="border rounded p-2 bg-white min-h-[100px] prose prose-sm">
-						{@html marked(block.content || '')}
-					</div>
+
+{#if block.type === 'text'}
+		<div class="grid grid-cols-2 gap-4">
+			<div>
+				<label for="text-content-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Content (Markdown)</label>
+				<Textarea 
+					id="text-content-{pageIndex}-{blockIndex}"
+					value={block.content}
+					oninput={(e: Event) => {
+						const target = e.target as HTMLTextAreaElement;
+						onUpdate('content', target.value);
+					}}
+					rows={8}
+					class="font-mono text-sm"
+					placeholder="Enter markdown content..."
+				/>
+			</div>
+			<div>
+				<div class="block text-sm font-medium mb-1">Preview</div>
+				<div class="border rounded p-2 bg-white min-h-[100px] prose prose-sm">
+					{@html marked(block.content || '')}
 				</div>
 			</div>
-		{:else if block.type === 'heading'}
+		</div>
+	{:else if block.type === 'heading'}
 			<div class="space-y-2">
 				<div>
 					<label for="heading-hierarchy-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Hierarchy</label>
@@ -801,6 +747,118 @@
 					</div>
 				</div>
 			</div>
+		{:else if block.type === 'aiQuestionStep'}
+			<div class="grid grid-cols-2 gap-4">
+				<div class="space-y-4">
+					<div>
+						<label for="ai-question-step-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Question (Markdown)</label>
+						<Textarea 
+							id="ai-question-step-{pageIndex}-{blockIndex}"
+							value={block.question}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLTextAreaElement;
+								onUpdate('question', target.value);
+							}}
+							rows={3}
+							placeholder="Enter the question for users..."
+						/>
+					</div>
+					<div>
+						<label for="ai-system-prompt-step-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">System Prompt</label>
+						<Textarea 
+							id="ai-system-prompt-step-{pageIndex}-{blockIndex}"
+							value={block.systemPrompt}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLTextAreaElement;
+								onUpdate('systemPrompt', target.value);
+							}}
+							rows={4}
+							placeholder="Define how the AI should respond to user answers..."
+							class="font-mono text-sm"
+						/>
+					</div>
+					<div>
+						<label for="ai-placeholder-step-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Answer Placeholder (optional)</label>
+						<Input 
+							id="ai-placeholder-step-{pageIndex}-{blockIndex}"
+							value={block.placeholder || ''}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLInputElement;
+								onUpdate('placeholder', target.value || undefined);
+							}}
+							placeholder="Custom placeholder for answer field..."
+						/>
+					</div>
+				</div>
+				<div>
+					<div class="block text-sm font-medium mb-1">Preview - Question Step</div>
+					<div class="border rounded p-4 bg-white space-y-3">
+						<div class="font-medium">
+							{@html marked(block.question || 'Question will appear here...')}
+						</div>
+						<div class="border rounded p-2 bg-gray-50 text-sm text-gray-500">
+							{block.placeholder || 'Schreibe deine Antwort hier...'}
+						</div>
+						<div class="text-xs text-gray-500 border-l-2 border-blue-500 pl-2">
+							<strong>System Prompt:</strong> {block.systemPrompt || 'No system prompt set'}
+						</div>
+						<div class="text-xs text-orange-600 bg-orange-50 p-2 rounded">
+							ℹ️ This shows the question step only. Add an AI Response Step block for the second screen.
+						</div>
+					</div>
+				</div>
+			</div>
+		{:else if block.type === 'aiResponseStep'}
+			<div class="grid grid-cols-2 gap-4">
+				<div class="space-y-4">
+					<div>
+						<label for="ai-response-question-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Question (Markdown) - for context</label>
+						<Textarea 
+							id="ai-response-question-{pageIndex}-{blockIndex}"
+							value={block.question}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLTextAreaElement;
+								onUpdate('question', target.value);
+							}}
+							rows={2}
+							placeholder="Enter the same question from the question step..."
+						/>
+					</div>
+					<div>
+						<label for="ai-response-system-prompt-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">System Prompt</label>
+						<Textarea 
+							id="ai-response-system-prompt-{pageIndex}-{blockIndex}"
+							value={block.systemPrompt}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLTextAreaElement;
+								onUpdate('systemPrompt', target.value);
+							}}
+							rows={4}
+							placeholder="Define how the AI should respond to user answers..."
+							class="font-mono text-sm"
+						/>
+					</div>
+					<div class="text-sm text-gray-600 bg-gray-50 p-3 rounded">
+						<strong>Note:</strong> This block shows the user's answer and AI response. Make sure to place this block after the corresponding AI Question Step block.
+					</div>
+				</div>
+				<div>
+					<div class="block text-sm font-medium mb-1">Preview - Response Step</div>
+					<div class="border rounded p-4 bg-white space-y-3">
+						<div class="font-medium">
+							{@html marked(block.question || 'Question will appear here...')}
+						</div>
+						<div class="border rounded p-3 bg-blue-50">
+							<div class="font-medium text-sm text-gray-700 mb-2">User's Answer:</div>
+							<div class="text-sm text-gray-600">Sample user response will appear here...</div>
+						</div>
+						<div class="border rounded p-3 bg-gray-50">
+							<div class="font-medium text-sm text-gray-700 mb-2">AI Response:</div>
+							<div class="text-sm text-gray-600">AI feedback will appear here...</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		{:else if block.type === 'image'}
 			<div class="grid grid-cols-2 gap-4">
 				<div class="space-y-4">
@@ -1107,7 +1165,170 @@
 					</div>
 				</div>
 			</div>
-		{/if}
-	</div>
-	{/if}
-</div> 
+		{:else if block.type === 'nextPage'}
+			<div class="grid grid-cols-2 gap-4">
+				<div class="space-y-4">
+					<div>
+						<label for="nextpage-text-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Button Text</label>
+						<Input 
+							id="nextpage-text-{pageIndex}-{blockIndex}"
+							value={block.text || ''}
+							oninput={(e: Event) => {
+								const target = e.target as HTMLInputElement;
+								onUpdate('text', target.value || undefined);
+							}}
+							placeholder="Next, Continue, Proceed..."
+						/>
+					</div>
+					<div>
+						<label for="nextpage-variant-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Button Style</label>
+						<select 
+							id="nextpage-variant-{pageIndex}-{blockIndex}"
+							value={block.variant || 'default'}
+							onchange={(e: Event) => {
+								const target = e.target as HTMLSelectElement;
+								onUpdate('variant', target.value);
+							}}
+							class="border rounded px-2 py-1 w-full text-sm"
+						>
+							<option value="default">Default</option>
+							<option value="minimal">Minimal</option>
+							<option value="floating">Floating</option>
+							<option value="large">Large</option>
+						</select>
+					</div>
+					<div class="flex items-center space-x-2">
+						<input 
+							id="nextpage-disabled-{pageIndex}-{blockIndex}"
+							type="checkbox"
+							checked={block.disabled || false}
+							onchange={(e: Event) => {
+								const target = e.target as HTMLInputElement;
+								onUpdate('disabled', target.checked);
+							}}
+							class="rounded"
+						/>
+						<label for="nextpage-disabled-{pageIndex}-{blockIndex}" class="text-sm">Disabled by default</label>
+					</div>
+				</div>
+				<div>
+					<div class="block text-sm font-medium mb-1">Preview</div>
+					<div class="border rounded p-4 bg-gray-100">
+						<div class="flex justify-end">
+							<button 
+								class="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white transition-colors {block.disabled ? 'opacity-50' : ''}"
+								disabled={block.disabled}
+							>
+								{block.text || 'Next'}
+								<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+									<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+								</svg>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		{:else if block.type === 'pageNavigation'}
+			<div class="grid grid-cols-2 gap-4">
+				<div class="space-y-4">
+					<div class="grid grid-cols-2 gap-2">
+						<div class="flex items-center space-x-2">
+							<input 
+								id="nav-shownext-{pageIndex}-{blockIndex}"
+								type="checkbox"
+								checked={block.showNext !== false}
+								onchange={(e: Event) => {
+									const target = e.target as HTMLInputElement;
+									onUpdate('showNext', target.checked);
+								}}
+								class="rounded"
+							/>
+							<label for="nav-shownext-{pageIndex}-{blockIndex}" class="text-sm">Show Next</label>
+						</div>
+						<div class="flex items-center space-x-2">
+							<input 
+								id="nav-showprev-{pageIndex}-{blockIndex}"
+								type="checkbox"
+								checked={block.showPrev || false}
+								onchange={(e: Event) => {
+									const target = e.target as HTMLInputElement;
+									onUpdate('showPrev', target.checked);
+								}}
+								class="rounded"
+							/>
+							<label for="nav-showprev-{pageIndex}-{blockIndex}" class="text-sm">Show Previous</label>
+						</div>
+					</div>
+					<div class="grid grid-cols-2 gap-2">
+						<div>
+							<label for="nav-nexttext-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Next Text</label>
+							<Input 
+								id="nav-nexttext-{pageIndex}-{blockIndex}"
+								value={block.nextText || ''}
+								oninput={(e: Event) => {
+									const target = e.target as HTMLInputElement;
+									onUpdate('nextText', target.value || undefined);
+								}}
+								placeholder="Next"
+							/>
+						</div>
+						<div>
+							<label for="nav-prevtext-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Previous Text</label>
+							<Input 
+								id="nav-prevtext-{pageIndex}-{blockIndex}"
+								value={block.prevText || ''}
+								oninput={(e: Event) => {
+									const target = e.target as HTMLInputElement;
+									onUpdate('prevText', target.value || undefined);
+								}}
+								placeholder="Previous"
+							/>
+						</div>
+					</div>
+					<div>
+						<label for="nav-variant-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Navigation Style</label>
+						<select 
+							id="nav-variant-{pageIndex}-{blockIndex}"
+							value={block.variant || 'default'}
+							onchange={(e: Event) => {
+								const target = e.target as HTMLSelectElement;
+								onUpdate('variant', target.value);
+							}}
+							class="border rounded px-2 py-1 w-full text-sm"
+						>
+							<option value="default">Default</option>
+							<option value="minimal">Minimal</option>
+							<option value="floating">Floating</option>
+							<option value="inline">Inline</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div class="block text-sm font-medium mb-1">Preview</div>
+					<div class="border rounded p-4 bg-gray-100">
+						<div class="flex justify-between items-center">
+							{#if block.showPrev}
+								<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-200 text-gray-700">
+									<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+										<path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+									</svg>
+									{block.prevText || 'Previous'}
+								</button>
+							{:else}
+								<div></div>
+							{/if}
+							
+							{#if block.showNext !== false}
+								<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white">
+									{block.nextText || 'Next'}
+									<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+										<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+									</svg>
+								</button>
+							{/if}
+						</div>
+					</div>
+				</div>
+			</div>
+{/if} 
+</div>
