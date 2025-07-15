@@ -25,10 +25,12 @@
 	
 		<Button
 			onclick={gotoNextStep}
-			class="bg-white text-gray-900 hover:bg-gray-100 font-medium px-6 py-3 rounded-lg flex items-center justify-between gap-2 w-full"
+			class="bg-white text-gray-900 hover:bg-gray-100 font-medium pl-6 pr-2 py-3 rounded-full flex items-center justify-between gap-2 w-full"
 		>
 			Starten
-			<ArrowRight class="w-4 h-4" />
+			<div class="size-6 bg-black/5 rounded-full flex items-center justify-center">
+				<ArrowRight class="w-4 h-4" />
+			</div>
 		</Button>
 	
 	{#if topic?.image && topic?.collectionId && topic?.id}

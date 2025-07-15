@@ -3,12 +3,15 @@
 	import { marked } from 'marked';
 	import { Button } from '$lib/components/ui/button';
 	import { learningSession } from '$lib/stores/learningSession';
-	import { Textarea } from '$lib/components/ui/textarea';
+	import AutoTextarea from '$lib/components/AutoTextarea.svelte';
+	import SparklePill from '$lib/components/SparklePill.svelte';
 	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import SendHorizontal from 'lucide-svelte/icons/send-horizontal';
 	import Loader2 from 'lucide-svelte/icons/loader-2';
 	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
+	import IconPaperPlane from '$assets/icons/icon-paper-plane.svg?raw';
+	import ArrowRight from 'lucide-svelte/icons/arrow-right';
 
 	interface Props {
 		content: any;
@@ -146,37 +149,46 @@
 			</div>
 
 			<div class="space-y-2">
-				<div class="flex justify-between">
-					<div></div>
-					<button style="background-color: {color};" class="text-xs rounded-md pl-3 pr-2 py-1 flex items-center gap-1" onclick={() => gotoNextStep?.()}>
-						Zur vorherigen Antwort
-						<ChevronRight class="size-3" />
-					</button>
-
-				</div>
-				<div class="relative">
-					<Textarea
-						id="user-answer-input"
+				<div 
+					class="flex flex-col gap-2 rounded-2xl bg-gradient-to-b from-white to-offwhite p-2 border border-white shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
+				>
+					<AutoTextarea
 						bind:value={userAnswer}
 						placeholder={content.placeholder || 'Schreibe deine Antwort hier...'}
-						rows={4}
-						class="resize-none"
-						onkeydown={handleKeyDown}
+						class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
 					/>
-					<div class="absolute bottom-2 right-2">
-						<Button
+					
+					<div class="flex items-end justify-between">
+						<div>
+							{#if existingResponse()}
+								<button 
+									type="button"
+									onclick={() => gotoNextStep?.()}
+									style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
+									class="flex items-center gap-2 rounded-full pl-3 pr-1 py-1 text-xs bg-white"
+								>
+								Zur vorherigen Antwort
+								<div class="size-4 rounded-full bg-black/5 fill-black/60 flex items-center justify-center">
+									<ChevronRight class="size-3" />
+								</div>
+								</button>
+							{/if}
+						</div>
+						<button
 							onclick={submitAnswer}
-							disabled={!userAnswer.trim() || isLoading }
-							size="sm"
-							style="background-color: {color};"
-							class="text-white hover:opacity-90"
+							disabled={!userAnswer.trim() || isLoading}
+							type="submit"
+							style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
+							class="flex size-10 items-center justify-center rounded-full bg-black text-white disabled:opacity-50"
 						>
 							{#if isLoading}
 								<Loader2 class="size-4 animate-spin" />
 							{:else}
-								<SendHorizontal class="size-4" />
+								<div class="w-[1.2em] fill-white">
+									{@html IconPaperPlane}
+								</div>
 							{/if}
-						</Button>
+						</button>
 					</div>
 				</div>
 
@@ -186,57 +198,27 @@
 						<p class="text-sm text-red-800">{errorMessage}</p>
 					</div>
 				{/if}
-
-				<!-- Loading State -->
-				{#if isLoading}
-					<div class="flex items-center justify-center space-x-2 py-4">
-						<Loader2 class="size-5 animate-spin" style="color: {color};" />
-						<span class="text-sm text-gray-600">KI denkt nach...</span>
-					</div>
-				{/if}
 			</div>
 
 		{:else if internalStep() === 1 && existingResponse()}
-			<!-- Step 2: Show User Answer and AI Response -->
-			<div class="space-y-2">
-				<h3 class="font-medium text-gray-900">
-					{@html marked(content.question)}
-				</h3>
-			</div>
-
 			<!-- AI Response -->
 			{#if hasSubmitted && aiResponse}
-				<div class="space-y-2 rounded-lg bg-gray-50 p-4">
-					<div class="flex items-center justify-between">
-						<h4 class="font-medium text-gray-900">KI-Antwort:</h4>
-						<div class="flex items-center gap-2">
-							{#if responseTime}
-								<span class="text-xs text-gray-500">
-									Antwortzeit: {responseTime}s
-								</span>
-							{/if}
-						</div>
-					</div>
-					<div class="prose prose-sm max-w-none text-gray-700 max-h-40 overflow-y-auto">
+				<div class="space-y-2 rounded-lg flex-grow flex items-center justify-center p-6">
+					<div class="prose prose-sm max-w-none text-gray-700 overflow-y-auto">
 						{@html marked(aiResponse)}
 					</div>
 				</div>
 			{/if}
 
 			<!-- Navigation for next step -->
-			<div class="mt-6 border-t border-gray-200 pt-4">
-				<div class="flex justify-between">
-					<button
-						onclick={() => gotoNextStep?.()}
-						style="background-color: {color};"
-						class="flex items-center gap-2 px-4 py-2 rounded-lg text-white hover:opacity-90 transition-colors"
-					>
-						Weiter
-						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-						</svg>
-					</button>
-				</div>
+			<Button
+			onclick={gotoNextStep}
+			class="bg-white text-gray-900 hover:bg-gray-100 font-medium pl-6 pr-2 py-3 rounded-full flex items-center justify-between gap-2 w-full"
+		>
+			Weiter
+			<div class="size-6 bg-black/5 rounded-full flex items-center justify-center">
+				<ArrowRight class="w-4 h-4" />
 			</div>
+		</Button>
 		{/if}
 </div>

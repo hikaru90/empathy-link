@@ -157,16 +157,12 @@
 	});
 </script>
 
-<div class="via-forest to-lilac relative mb-4 rounded-lg bg-gradient-to-br from-black px-4 py-4">
+<div class="relative flex h-full flex-col justify-between rounded-lg px-4 py-4">
 	{#if content.title}
-		<div class="mb-8 text-xl font-bold leading-snug text-white/90">
+		<div class="mb-8 text-center text-xl font-bold leading-snug">
 			{@html marked(content.title)}
 		</div>
 	{/if}
-
-	<div class="absolute right-0 top-0 m-4 rounded-full bg-white/90 px-3 py-1 text-sm shadow-lg">
-		{formatTime(duration)}
-	</div>
 
 	<!-- Hidden audio element -->
 	<audio
@@ -187,34 +183,35 @@
 
 	<!-- Custom Audio Player -->
 	{#if content.controls !== false}
-		<div class="flex items-end justify-between gap-4">
-			<div
-				class="prose prose-sm prose-headings:text-white prose-p:text-white prose-strong:text-white prose-em:text-white prose-a:text-white/80 prose-a:underline max-w-[16em] text-white/70"
-			>
-				{#if content.content}
-					{@html marked(content.content)}
-				{/if}
-			</div>
+		<div class="flex flex-col items-center justify-between gap-4">
 			<!-- Restart Button (only show when playing) -->
-			{#if isPlaying && !hasError && !isLoading}
-				<button
-					onclick={restart}
-					class="flex size-12 items-center justify-center rounded-full bg-white/70 transition-colors hover:bg-white/90"
-					aria-label="Restart"
-				>
-					<svg class="h-5 w-5 text-black" fill="currentColor" viewBox="0 0 24 24">
-						<path
-							d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"
-						/>
-					</svg>
-				</button>
-			{/if}
-
+			
 			<!-- Play/Pause Button -->
+			<div class="relative">
+				{#if isPlaying && !hasError && !isLoading}
+					<button
+						onclick={restart}
+						class="absolute -top-16 left-1/2 -translate-x-1/2 flex size-10 items-center justify-center rounded-full bg-white z-10"
+						aria-label="Restart"
+					>
+						<svg class="h-5 w-5 text-black" fill="currentColor" viewBox="0 0 24 24">
+							<path
+								d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"
+							/>
+						</svg>
+					</button>
+				{/if}
+				<div
+					class="absolute left-1/2 top-1/2 z-0 size-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20"
+				></div>
+				<div
+					class=" absolute left-1/2 top-1/2 z-0 size-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20"
+				></div>
+			
 			<button
 				onclick={togglePlay}
 				disabled={isLoading || hasError}
-				class="flex size-16 items-center justify-center rounded-full bg-white/90 transition-colors hover:bg-white disabled:opacity-50"
+				class="relative flex size-16 items-center justify-center rounded-full bg-white/90 shadow-lg transition-colors hover:bg-white disabled:opacity-50"
 				aria-label={hasError ? 'Audio error' : isPlaying ? 'Pause' : 'Play'}
 			>
 				{#if hasError}
@@ -240,51 +237,15 @@
 					</svg>
 				{/if}
 			</button>
-
-			<!-- Time Display 
-				<div class="flex-1 space-y-2">
-					{#if hasError}
-						<div class="text-sm text-red-300">Audio file could not be loaded</div>
-					{:else}
-						<div class="flex justify-between text-sm text-white/80">
-							<span>{formatTime(currentTime)}</span>
-							<span>{formatTime(duration)}</span>
-						</div>
-					{/if}
-
-					
-					{#if !hasError}
-						<div class="h-2 w-full cursor-pointer rounded-full bg-white/20" onclick={seek}>
-							<div
-								class="h-full rounded-full bg-white/80 transition-all duration-100"
-								style="width: {progressPercentage}%"
-							></div>
-						</div>
-					{/if}
-				</div> 
-				-->
+		</div>
+			<div class="m-4 rounded-full bg-white/90 px-3 py-1 text-sm relative z-10">
+				{formatTime(duration - currentTime)}
+			</div>
+		</div>
+		<div class="text-center text-sm text-black/40">
+			{#if content.content}
+				{@html marked(content.content)}
+			{/if}
 		</div>
 	{/if}
-
-	{#if content.transcript}
-		<details class="mt-3 text-sm">
-			<summary class="cursor-pointer font-medium text-white/80 hover:text-white">
-				📝 Show transcript
-			</summary>
-			<div
-				class="mt-2 whitespace-pre-wrap rounded bg-white/10 p-3 text-sm leading-relaxed text-white/90"
-			>
-				{content.transcript}
-			</div>
-		</details>
-	{/if}
-	
-	<div class="mt-4">
-		<StoryNavigation 
-			variant="default"
-			nextText="Continue"
-			prevText="Back"
-			nextDisabled={isPlaying && !hasError}
-		/>
-	</div>
 </div>
