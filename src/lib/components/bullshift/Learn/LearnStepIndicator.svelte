@@ -18,8 +18,6 @@
 
 </script>
 
-currentStep: {currentStep}
-totalStepsCount: {totalStepsCount}
 <div class="mb-4 flex items-center justify-center">
 	<div
 		class="flex items-center justify-center gap-1 rounded-full bg-neutral-500/5 p-1 shadow-inner"

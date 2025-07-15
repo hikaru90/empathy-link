@@ -371,7 +371,6 @@
 		totalStepsCount={totalStepsCount()}
 		{currentStep}
 		{currentCategory}
-		{aiQuestionStep}
 		onPrevStep={() => gotoPrevStep()}
 		onNextStep={() => gotoNextStep()}
 	/>
@@ -476,21 +475,12 @@
 				color={currentCategory().color}
 				session={currentSession}
 				contentBlock={content}
+				currentStep={currentStep}
+				totalSteps={totalSteps()}
 				topicVersionId={topic().id}
-				{internalStep}
 				onResponse={(response) => handleResponse('aiQuestion', response, content)}
 				gotoNextStep={() => gotoNextStep()}
 			/>
-		{:else if content && content.type === 'aiQuestionStep'}
-			<LearnAIQuestionStep 
-				{content} 
-				color={currentCategory().color}
-				session={currentSession}
-				contentBlock={content}
-				topicVersionId={topic().id}
-				onResponse={(response: any) => handleResponse('aiQuestionStep', response, content)}
-			/>
-
 		{:else if content && content.type === 'nextPage'}
 			<LearnNextPage {content} {isPreview} />
 		{:else if content && content.type === 'pageNavigation'}

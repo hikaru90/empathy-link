@@ -45,6 +45,38 @@
 - Preview and live modes must look identical visually
 - Only live mode should save data to learning sessions
 
+#### Step System Architecture
+- **Global Step Counter**: Single `currentStep` variable as source of truth for navigation
+- **Step Array Creation**: `totalSteps` is a flattened array of `{ component: string, internalStep: number }`
+- **Step Count Logic**: Use `getComponentStepCount()` where `aiQuestion = 2`, all others `= 1`
+- **Step Flattening**: Multi-step components get multiple entries: `[{component: 'aiQuestion', internalStep: 0}, {component: 'aiQuestion', internalStep: 1}]`
+- **InternalStep Computation**: Components compute `internalStep = $derived(() => totalSteps[currentStep].internalStep)`
+- **Component Props Pattern**: Pass `currentStep` and `totalSteps` to multi-step components, not individual `internalStep`
+- **Component Logic**: Use `internalStep()` to determine which view/state to show (e.g., question input vs AI response)
+
+#### Multi-Step Component Example
+```typescript
+// In multi-step components like LearnAIQuestion:
+interface Props {
+  currentStep: number;
+  totalSteps: { component: string, internalStep: number }[];
+  // ... other props
+}
+
+let { currentStep, totalSteps, ... }: Props = $props();
+
+const internalStep = $derived(() => {
+  return totalSteps[currentStep].internalStep;
+});
+
+// Use internalStep() for conditional rendering:
+{#if internalStep() === 0}
+  <!-- Show question input -->
+{:else if internalStep() === 1}
+  <!-- Show AI response -->
+{/if}
+```
+
 ### AI Integration Patterns
 - AI prompts defined in `src/lib/server/gemini.ts`
 - Memory extraction happens automatically after chats

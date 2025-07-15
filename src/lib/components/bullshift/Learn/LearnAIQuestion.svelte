@@ -8,21 +8,21 @@
 	import SendHorizontal from 'lucide-svelte/icons/send-horizontal';
 	import Loader2 from 'lucide-svelte/icons/loader-2';
 	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
+	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 
 	interface Props {
 		content: any;
 		color: string;
-		pageIndex: number;
-		blockIndex: number;
 		session: LearningSession | null;
 		contentBlock: any;
+		currentStep: number;
+		totalSteps: { component: string, internalStep: number }[];
 		topicVersionId: string;
-		internalStep?: number;
 		onResponse: (response: any) => void;
 		gotoNextStep?: () => void;
 	}
 
-	let { content, color, pageIndex, blockIndex, session, contentBlock, topicVersionId, internalStep = 0, onResponse, gotoNextStep }: Props = $props();
+	let { content, color, session, contentBlock, currentStep, totalSteps, topicVersionId, onResponse, gotoNextStep }: Props = $props();
 
 	let userAnswer = $state('');
 	let aiResponse = $state('');
@@ -30,22 +30,31 @@
 	let hasSubmitted = $state(false);
 	let responseTime = $state<number | null>(null);
 	let errorMessage = $state('');
-	
-	// Simple step management - track whether we've submitted the answer
-	let currentStepNumber = $state(1);
-	
-	const currentStep = $derived(() => {
-		return currentStepNumber;
+
+	const internalStep = $derived(() => {
+		return totalSteps[currentStep].internalStep
 	});
 
-	// Component registration is no longer needed since we removed step management
+	// Check for existing response in session
+	const existingResponse = $derived(() => {
+		if (!session) return null;
+		return session.responses.find(r => r.blockType === 'aiQuestion' && 
+			JSON.stringify(r.blockContent) === JSON.stringify(contentBlock));
+	});
+
+	// Initialize from existing response if available
 	$effect(() => {
-		// Previously registered component steps, but this is no longer needed
-		return () => {
-			// Previously unregistered component steps, but this is no longer needed
-		};
+		if (existingResponse()) {
+			const response = existingResponse()?.response;
+			if (response) {
+				userAnswer = response.userAnswer || '';
+				aiResponse = response.aiResponse || '';
+				hasSubmitted = !!response.aiResponse;
+				responseTime = response.responseTime || null;
+			}
+		}
 	});
-
+	
 	// Clear error message when user starts typing
 	$effect(() => {
 		if (userAnswer && errorMessage) {
@@ -84,10 +93,6 @@
 			aiResponse = data.response;
 			hasSubmitted = true;
 			
-			// Move to step 2 to show the response
-			currentStepNumber = 2;
-			console.log('🔥 AI Question: Moving to step 2');
-
 			// Save the response
 			onResponse({
 				userAnswer: userAnswer.trim(),
@@ -130,21 +135,28 @@
 	};
 </script>
 
-<div class="space-y-4 rounded-lg bg-white/10 p-4 backdrop-blur">
-	<!-- Debug: Show current step -->
-	<div class="text-xs text-gray-500">Debug: currentStep = {currentStep()}</div>
-	{#if currentStep() === 1}
+<div class="space-y-4 rounded-lg backdrop-blur h-full flex flex-col justify-between">
+	<!-- Debug: Show internal step -->
+	{#if internalStep() === 0}
 			<!-- Step 1: Question and Answer Input -->
-			<div class="space-y-2">
+			<div class="space-y-2 flex-grow flex justify-center items-center">
 				<h3 class="font-medium text-gray-900">
 					{@html marked(content.question)}
 				</h3>
 			</div>
 
 			<div class="space-y-2">
+				<div class="flex justify-between">
+					<div></div>
+					<button style="background-color: {color};" class="text-xs rounded-md pl-3 pr-2 py-1 flex items-center gap-1" onclick={() => gotoNextStep?.()}>
+						Zur vorherigen Antwort
+						<ChevronRight class="size-3" />
+					</button>
+
+				</div>
 				<div class="relative">
 					<Textarea
-						id="user-answer-{pageIndex}-{blockIndex}"
+						id="user-answer-input"
 						bind:value={userAnswer}
 						placeholder={content.placeholder || 'Schreibe deine Antwort hier...'}
 						rows={4}
@@ -184,7 +196,7 @@
 				{/if}
 			</div>
 
-		{:else if currentStep() === 2}
+		{:else if internalStep() === 1 && existingResponse()}
 			<!-- Step 2: Show User Answer and AI Response -->
 			<div class="space-y-2">
 				<h3 class="font-medium text-gray-900">
