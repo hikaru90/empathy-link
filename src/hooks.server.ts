@@ -155,12 +155,7 @@ const first: Handle = async ({ event, resolve }) => {
 const paraglideHandle: Handle = ({ event, resolve }) =>
 	paraglideMiddleware(event.request, ({ request: localizedRequest, locale }) => {
 		event.request = localizedRequest;
-		return resolve(event, {
-			computeComponentStep: (pageIndex: number, blockIndex: number, componentType: string, session: any) => {
-				// In edit mode, always start with step 1 for simplicity
-				return 1;
-			}
-		});
+		return resolve(event);
 	});
 
 

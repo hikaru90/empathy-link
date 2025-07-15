@@ -14,10 +14,9 @@
 			controls?: boolean;
 		};
 		color?: string;
-		isPreview?: boolean;
 	}
 
-	let { content, color, isPreview = false }: Props = $props();
+	let { content, color }: Props = $props();
 
 	// Audio player state
 	let audioElement: HTMLAudioElement;
@@ -286,7 +285,6 @@
 			nextText="Continue"
 			prevText="Back"
 			nextDisabled={isPlaying && !hasError}
-			{isPreview}
 		/>
 	</div>
 </div>

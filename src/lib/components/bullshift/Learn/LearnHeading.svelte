@@ -8,10 +8,9 @@
 
 	interface Props {
 		content: HeadingContent;
-		isPreview?: boolean;
 	}
 
-	let { content, isPreview = false }: Props = $props();
+	let { content }: Props = $props();
 
 	const headingStyles: Record<
 		number,

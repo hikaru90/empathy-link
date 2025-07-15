@@ -344,6 +344,89 @@ computeComponentStep: (pageIndex, blockIndex, componentType, session) => {
 }
 ```
 
+#### Static Step Calculation Architecture
+
+**CRITICAL REQUIREMENT**: All learning components must use static step calculation determined by the step indicator. Components must NOT recalculate their total step count at runtime.
+
+**Architecture Principles**:
+- **Single Source of Truth**: The `LearnStepIndicator` component calculates total steps based on static content structure
+- **Static Calculation**: Step counts are determined by component types, not dynamic state
+- **No Runtime Modification**: Components cannot modify their `totalSteps` value during execution
+- **Consistent Navigation**: Step indicator shows consistent progress bars regardless of which page is mounted
+
+**Step Calculation Rules**:
+```typescript
+// In LearnStepIndicator.svelte
+for (const component of topicData.content) {
+  if (component.type === 'aiQuestion') {
+    totalComponentSteps += 2; // Question + Response steps
+  } else {
+    totalComponentSteps += 1; // All other components have 1 step
+  }
+}
+```
+
+**Implementation Requirements**:
+
+1. **LearnStepComponent Usage**:
+   ```svelte
+   <!-- CORRECT: Static totalSteps value -->
+   <LearnStepComponent 
+     totalSteps={2}        // Static value based on component type
+     currentStep={currentStep}
+     let:updateSteps={stepUpdateFn}
+   >
+   
+   <!-- INCORRECT: Dynamic totalSteps calculation -->
+   <LearnStepComponent 
+     totalSteps={calculateSteps()} // ❌ Never do this
+     currentStep={currentStep}
+   >
+   ```
+
+2. **UpdateSteps Function Signature**:
+   ```typescript
+   // CORRECT: Only current step parameter
+   let updateSteps: ((newCurrentStep: number) => void) | null = null;
+   
+   // INCORRECT: Total steps parameter
+   let updateSteps: ((newCurrentStep: number, newTotalSteps?: number) => void) | null = null; // ❌
+   ```
+
+3. **Component Step Management**:
+   ```typescript
+   // CORRECT: Only update current step
+   updateSteps?.(2); // Move to step 2
+   
+   // INCORRECT: Trying to modify total steps
+   updateSteps?.(2, 3); // ❌ Never pass total steps
+   ```
+
+**Multi-Step Component Guidelines**:
+- **AI Questions**: Always use `totalSteps={2}` (question + response)
+- **Single-Step Components**: Always use `totalSteps={1}`
+- **Complex Components**: If a component has internal sub-steps, it should still report `totalSteps={1}` to the step indicator and manage internal navigation independently
+
+**Enforcement**:
+- Components must not contain `newTotalSteps` parameters
+- Components must not dynamically calculate `totalSteps` values
+- Components must not call `updateSteps` with more than one parameter
+- The `LearnStepComponent` must not allow `totalSteps` modification after initialization
+
+**Benefits**:
+- Prevents step indicator from jumping/changing during navigation
+- Consistent user experience across all learning modules
+- Simplified component logic focused on content, not step counting
+- Easier debugging and maintenance of step-related functionality
+
+**Migration Pattern**:
+When updating existing components:
+1. Remove any `totalSteps` calculations or derived values
+2. Set static `totalSteps` value based on component type
+3. Remove `newTotalSteps` parameter from `updateSteps` function signatures
+4. Remove any `updateSteps` calls that modify total steps
+5. Update component to use static step counting
+
 ### Performance Considerations
 - Server-side rendering enabled by default
 - Three.js SSR configuration in `vite.config.ts`

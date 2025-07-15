@@ -1,23 +1,23 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { marked } from 'marked';
-	import type { MultipleChoiceBlock } from '$routes/bullshift/learn/[id]/edit/schema';
-	import type { LearningSession } from '$routes/bullshift/learn/[id]/edit/schema';
+	import { learningSession } from '$lib/stores/learningSession';
+	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import { m } from '$lib/translations';
-	import { getLearningContext } from '$lib/contexts/learningContext';
-	import LearnStepComponent from './LearnStepComponent.svelte';
 
 	interface Props {
-		content: MultipleChoiceBlock;
+		content: any;
 		color: string;
 		pageIndex: number;
 		blockIndex: number;
 		session: LearningSession | null;
-		onResponse: (response: { questionResponses: Array<{ questionIndex: number; selectedOptions: number[]; isCorrect: boolean; timeSpent: number; }>; completed: boolean; totalTimeSpent: number; }) => void;
-		topicVersionId?: string;
-		contentBlock?: MultipleChoiceBlock;
+		contentBlock: any;
+		topicVersionId: string;
+		onResponse: (response: any) => void;
+		onComplete?: () => void;
 	}
 
-	let { content, color, pageIndex, blockIndex, session, onResponse, topicVersionId, contentBlock }: Props = $props();
+	let { content, color, pageIndex, blockIndex, session, contentBlock, topicVersionId, onResponse, onComplete }: Props = $props();
 
 	let currentQuestionIndex = $state(0);
 	let selectedOptions = $state<number[]>([]);
@@ -27,17 +27,6 @@
 	let showSummary = $state(false);
 	let totalStartTime = $state<number | null>(null);
 	
-	// Component step management
-	let updateSteps: ((newCurrentStep: number, newTotalSteps?: number) => void) | null = null;
-	
-	// Calculate current step based on question progress
-	const currentStepNumber = $derived(() => {
-		if (showSummary) return totalQuestions() + 1; // Summary is the final step
-		return currentQuestionIndex + 1;
-	});
-	
-	const totalSteps = $derived(() => totalQuestions() + 1); // All questions + summary
-
 	// Load existing response if available
 	$effect(() => {
 		if (session) {
@@ -50,9 +39,9 @@
 				
 				// If not completed, find the next unanswered question
 				if (!showSummary) {
-					const nextUnanswered = content.questions.findIndex((_, index) => 
-						!questionResponses.some(r => r.questionIndex === index)
-					);
+									const nextUnanswered = content.questions.findIndex((_: any, index: number) => 
+					!questionResponses.some(r => r.questionIndex === index)
+				);
 					currentQuestionIndex = nextUnanswered !== -1 ? nextUnanswered : 0;
 				}
 			}
@@ -87,7 +76,7 @@
 	const submitAnswer = () => {
 		if (selectedOptions.length === 0 || showResult) return;
 
-		const correctOptions = currentQuestion().options.map((option, index) => option.isCorrect ? index : -1).filter(i => i !== -1);
+		const correctOptions = currentQuestion().options.map((option: any, index: number) => option.isCorrect ? index : -1).filter((i: number) => i !== -1);
 		const isCorrect = content.allowMultiple 
 			? selectedOptions.sort().join(',') === correctOptions.sort().join(',')
 			: selectedOptions.length === 1 && correctOptions.includes(selectedOptions[0]);
@@ -115,7 +104,6 @@
 			selectedOptions = [];
 			showResult = false;
 			startTime = Date.now();
-			updateSteps?.(currentStepNumber()); // Update step
 		} else {
 			// All questions completed - auto-advance after 3 seconds
 			showSummary = true;
@@ -126,7 +114,6 @@
 				completed: true,
 				totalTimeSpent
 			});
-			updateSteps?.(currentStepNumber()); // Update to summary step
 		}
 	};
 
@@ -187,20 +174,7 @@
 	});
 </script>
 
-<LearnStepComponent 
-	{pageIndex} 
-	{blockIndex} 
-	componentType="multipleChoice" 
-	totalSteps={totalSteps()}
-	currentStep={currentStepNumber()}
-	let:updateSteps={stepUpdateFn}
->
-	{#if !updateSteps}
-		<!-- Initialize updateSteps reference -->
-		{(updateSteps = stepUpdateFn) && ''}
-	{/if}
-	
-	{#if showSummary}
+{#if showSummary}
 		<!-- Summary View -->
 		<div class="mb-6 bg-white/80 rounded-xl p-6 shadow-lg">
 		<div class="text-center mb-6">
@@ -317,7 +291,7 @@
 		{#if showResult}
 			<div class="mt-6 p-4 rounded-lg {getCurrentQuestionResult() ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}">
 				<div class="font-medium mb-2">
-					{getCurrentQuestionResult() ? (m?.page?.learn?.multipleChoice?.correct?.() ?? '🎉 Correct!') : (m?.page?.learn?.multipleChoice?.incorrect?.() ?? '❌ Incorrect')}
+					{getCurrentQuestionResult() ? '🎉 Correct!' : '❌ Incorrect'}
 				</div>
 				
 				{#if currentQuestion().explanation}
@@ -341,5 +315,4 @@
 			</div>
 		{/if}
 	</div>
-	{/if}
-</LearnStepComponent> 
+	{/if} 

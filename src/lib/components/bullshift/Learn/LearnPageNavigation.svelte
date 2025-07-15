@@ -11,10 +11,9 @@
 			nextDisabled?: boolean;
 			prevDisabled?: boolean;
 		};
-		isPreview?: boolean;
 	}
 
-	let { content, isPreview = false }: Props = $props();
+	let { content }: Props = $props();
 </script>
 
 <div class="mb-4">
@@ -26,6 +25,5 @@
 		variant={content.variant || 'default'}
 		nextDisabled={content.nextDisabled || false}
 		prevDisabled={content.prevDisabled || false}
-		{isPreview}
 	/>
 </div>

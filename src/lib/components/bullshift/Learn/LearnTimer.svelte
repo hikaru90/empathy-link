@@ -1,21 +1,20 @@
 <script lang="ts">
-  import Play from 'lucide-svelte/icons/play';
-  import Pause from 'lucide-svelte/icons/pause';
-  import { learningSession } from '$lib/stores/learningSession';
-  import { onMount } from 'svelte';
-  import type { LearningSession } from '$routes/bullshift/learn/[id]/edit/schema';
-  import { getLearningContext } from '$lib/contexts/learningContext';
+	import { onMount } from 'svelte';
+	import { Check, X, Play, Pause } from 'lucide-svelte';
+	import { learningSession } from '$lib/stores/learningSession';
+	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 
-  interface Props {
-    duration: number;
-    color?: string;
-    pageIndex: number;
-    blockIndex: number;
-    session: LearningSession | null;
-    onResponse: (response: { completed: boolean; actualDuration?: number }) => void;
-  }
+	interface Props {
+		duration: number;
+		color: string;
+		pageIndex: number;
+		blockIndex: number;
+		session: LearningSession | null;
+		onResponse: (response: any) => void;
+		onComplete?: () => void;
+	}
 
-	let { duration, color, pageIndex, blockIndex, session, onResponse }: Props = $props();
+	let { duration, color, pageIndex, blockIndex, session, onResponse, onComplete }: Props = $props();
 
 	let time = $state(duration);
 	let isRunning = $state(false);
@@ -24,8 +23,6 @@
 	let interval: ReturnType<typeof setInterval> | null = null;
 	let audio: HTMLAudioElement;
 	let startTime: number | null = null;
-
-	const learningContext = getLearningContext();
 
 	$effect(() => {
 		audio = new Audio('/sounds/ping-82822.mp3');
@@ -64,8 +61,6 @@
 					actualDuration
 				});
 
-				// Auto-advance after 2 seconds
-				learningContext.autoAdvanceAfter(2000);
 			}
 		}, 1000);
 	};

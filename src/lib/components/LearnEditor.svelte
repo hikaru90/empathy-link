@@ -111,6 +111,16 @@
 
 	// Handle keyboard shortcuts
 	const handleKeyDown = (event: KeyboardEvent) => {
+		// Ignore keydown events from text inputs, textareas, and other editable elements
+		const target = event.target as HTMLElement;
+		if (target.tagName === 'INPUT' || 
+		    target.tagName === 'TEXTAREA' || 
+		    target.contentEditable === 'true' ||
+		    target.closest('input') || 
+		    target.closest('textarea')) {
+			return;
+		}
+		
 		// Check for Ctrl+S (Windows/Linux) or Cmd+S (Mac)
 		if ((event.ctrlKey || event.metaKey) && event.key === 's') {
 			event.preventDefault();

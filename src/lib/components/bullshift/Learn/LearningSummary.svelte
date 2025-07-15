@@ -1,25 +1,21 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { marked } from 'marked';
-	import type { LearningSession, TopicVersion } from '$routes/bullshift/learn/[slug]/edit/schema';
+	import LearnCompletion from './LearnCompletion.svelte';
+	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import PercentageDonut from '$lib/components/PercentageDonut.svelte';
 	import FeedbackModule from '$lib/components/bullshift/Learn/FeedbackModule.svelte';
-	import { getLearningContext } from '$lib/contexts/learningContext';
 	import { Button } from '$lib/components/ui/button';
 
 	interface Props {
 		session: LearningSession | null;
-		topic: TopicVersion;
+		topic: any;
 		color: string;
-		onFeedbackSubmit?: (feedback: {
-			rating: number;
-			feedback: string;
-			improvements: string;
-		}) => void;
+		onFeedbackSubmit: (feedback: any) => void;
+		onComplete?: () => void;
 	}
 
-	let { session, topic, color, onFeedbackSubmit }: Props = $props();
-
-	const learningContext = getLearningContext();
+	let { session, topic, color, onFeedbackSubmit, onComplete }: Props = $props();
 
 	let userRating = $state(0);
 	let userFeedback = $state('');
@@ -416,7 +412,7 @@
 	<!-- Back button -->
 	<div class="flex justify-start">
 		<Button
-			onclick={() => learningContext?.gotoPrevPage()}
+			onclick={() => onComplete?.()}
 			variant="outline"
 			class="flex items-center gap-2"
 		>

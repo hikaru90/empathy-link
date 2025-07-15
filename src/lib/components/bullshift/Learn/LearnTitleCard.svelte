@@ -1,47 +1,35 @@
 <script lang="ts">
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
 	import { m } from '$lib/translations';
-	import { getLearningContext } from '$lib/contexts/learningContext';
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRight from 'lucide-svelte/icons/arrow-right';
-  
+
 	interface Props {
-		currentCategory: { color?: string };
-		topic: { 
-			titleDE?: string; 
-			image?: string; 
-			collectionId?: string; 
-			id?: string;
-		};
+		currentCategory: any;
+		topic: any;
+		gotoNextStep?: () => void;
 	}
 
-	let { currentCategory, topic }: Props = $props();
+	let { currentCategory, topic, gotoNextStep }: Props = $props();
 	
-	const learningContext = getLearningContext();
-	
-	const handleStart = () => {
-		learningContext?.gotoNextPage();
-	};
 </script>
 
 <div
 	style="background-color: {currentCategory?.color || '#ccc'}"
-	class="relative mb-10 overflow-hidden rounded-lg p-6"
+	class="relative mb-10 overflow-hidden rounded-lg p-6 w-full h-full flex items-start justify-between flex-col"
 >
 	<h1 class="relative z-10 text-xl font-light text-white">
-		<div class="mb-10">{topic?.titleDE?.split('||')[0] || 'Loading...'}</div>
+		<div class="mb-1">{topic?.titleDE?.split('||')[0] || 'Loading...'}</div>
 		<div class="font-bold">{topic?.titleDE?.split('||')[1] || ''}</div>
 	</h1>
 	
-	<div class="relative z-10 mt-6">
 		<Button
-			onclick={handleStart}
-			class="bg-white text-gray-900 hover:bg-gray-100 font-medium px-6 py-3 rounded-lg flex items-center gap-2"
+			onclick={gotoNextStep}
+			class="bg-white text-gray-900 hover:bg-gray-100 font-medium px-6 py-3 rounded-lg flex items-center justify-between gap-2 w-full"
 		>
 			Starten
 			<ArrowRight class="w-4 h-4" />
 		</Button>
-	</div>
 	
 	{#if topic?.image && topic?.collectionId && topic?.id}
 		<img

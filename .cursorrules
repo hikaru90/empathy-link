@@ -1,0 +1,184 @@
+# Cursor Rules for Empathy-Link Project
+
+## Technology Stack
+- Framework: SvelteKit with Svelte 5 (runes)
+- Language: TypeScript
+- Database: PocketBase (real-time with auth)
+- AI: Google Gemini for conversational features
+- UI: Tailwind CSS + Shadcn/UI components
+- Deployment: Node.js adapter
+
+## Code Style & Patterns
+
+### Svelte 5 Runes Usage
+- Use `$state()` for reactive state
+- Use `$derived()` for computed values
+- Use `$effect()` for side effects
+- Use `$props()` for component props
+- Always destructure props: `let { prop1, prop2 }: Props = $props();`
+
+### TypeScript Guidelines
+- Always define interfaces for component props
+- Use strict typing for API responses
+- Define types for PocketBase collections
+- Use `type` for union types, `interface` for object shapes
+
+### API Endpoint Structure
+- AI endpoints: `/api/ai/[module]/[action]`
+- Always check authentication: `const user = locals.user;`
+- Return consistent error responses
+- Log errors to PocketBase collections
+
+### Component Architecture
+- Use Shadcn/UI components as base
+- Follow existing patterns in `/src/lib/components/ui/`
+- Maintain consistent design system
+- Use `isPreview` prop for preview/live mode differences
+
+## Project-Specific Rules
+
+### Learning Content Components
+- Components in `/src/lib/components/bullshift/Learn/` must handle `isPreview` prop
+- Use static step calculation, never dynamic `totalSteps`
+- Multi-step components (like AI questions) use `totalSteps={2}`
+- Single-step components use `totalSteps={1}`
+- Preview and live modes must look identical visually
+- Only live mode should save data to learning sessions
+
+### AI Integration Patterns
+- AI prompts defined in `src/lib/server/gemini.ts`
+- Memory extraction happens automatically after chats
+- Each AI module has separate context and behavior
+- Use consistent error handling for AI responses
+
+### Authentication Flow
+- Session-based authentication with PocketBase
+- Route protection in `hooks.server.ts`
+- Check `locals.user` for authentication state
+- Handle token refresh automatically
+
+### State Management
+- Global state in `/src/store/` using Svelte stores
+- Authentication state in `auth.ts`
+- Chat sessions in `chatStore.ts`
+- Learning sessions in `learningSession.ts`
+
+### File Organization
+```
+src/
+├── routes/
+│   ├── app/           # Authenticated application
+│   ├── bullshift/     # AI chat and learning platform
+│   └── api/           # Server-side API endpoints
+├── lib/
+│   ├── components/    # Reusable Svelte components
+│   ├── server/        # Server-side utilities
+│   ├── stores/        # Client-side state management
+│   └── utils/         # Shared utilities
+├── store/             # Global Svelte stores
+└── scripts/           # Server utilities
+```
+
+### Database Patterns
+- Key collections: users, chats, user_memories, feelings, needs, errors
+- Use PocketBase realtime subscriptions for chat
+- Store conversation insights in user_memories
+- Log application errors to errors collection
+
+### Internationalization
+- Base locale: German (de) with English (en) support
+- Messages in `/messages/` JSON files
+- Use `m.[key]()` function in components
+- Import from `$lib/translations.ts`
+
+## Development Guidelines
+
+### Testing
+- Use Playwright for E2E testing
+- Test files in `/tests/` directory
+- Test both preview and live modes for learning components
+
+### Performance
+- Server-side rendering enabled
+- Optimize Three.js SSR configuration
+- Use proper build chunking
+- Implement lazy loading for heavy components
+
+### Error Handling
+- Consistent error responses with status codes
+- Log errors to PocketBase for debugging
+- Show user-friendly error messages
+- Handle AI API failures gracefully
+
+### Common Patterns
+
+#### API Route Structure
+```typescript
+export async function POST({ request, locals }) {
+  const user = locals.user;
+  if (!user) {
+    return json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  // Handle request...
+}
+```
+
+#### Component Props Pattern
+```typescript
+interface Props {
+  required: string;
+  optional?: number;
+  callback?: () => void;
+}
+
+let { required, optional = 0, callback }: Props = $props();
+```
+
+#### Learning Component Pattern
+```svelte
+<script lang="ts">
+  interface Props {
+    content: any;
+    color: string;
+    isPreview?: boolean;
+    onComplete?: () => void;
+  }
+  
+  let { content, color, isPreview = false, onComplete }: Props = $props();
+</script>
+```
+
+## Critical Rules
+
+### Learning Preview System
+- ALWAYS ensure preview and live modes look identical
+- Use `isPreview` to control functionality, not appearance
+- Test both editor preview and user preview when making changes
+- Never modify `totalSteps` dynamically in components
+- Components must not save data in preview mode
+
+### Step Management
+- Use centralized step state computation
+- Components receive computed step state, don't calculate it
+- Step indicator shows consistent progress across all pages
+- Multi-step navigation should work in both preview and live modes
+
+### AI Features
+- Memory persistence is automatic
+- Each chat session has separate context
+- Include previous memories in AI prompts
+- Extract insights after conversations
+
+### Security
+- Always validate user authentication
+- Sanitize user inputs before AI processing
+- Use environment variables for sensitive data
+- Implement proper CORS and CSRF protection
+
+## Commands
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run check` - TypeScript checking
+- `npm run format` - Code formatting
+- `npm run test` - Run tests
+- `npm run machine-translate` - Generate translations 

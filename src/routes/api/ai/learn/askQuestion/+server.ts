@@ -10,8 +10,10 @@ export const POST: RequestHandler = async ({ request }) => {
       return json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    console.log('systemPrompt', systemPrompt);
+
     const chat = ai.chats.create({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.0-flash',
       config: {
         systemInstruction: systemPrompt,
         temperature: 0.7,
@@ -19,7 +21,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-    const prompt = `Question: ${question}\n\nUser's Answer: ${userAnswer}\n\nPlease provide a thoughtful response to the user's answer.`;
+    const prompt = `Question: ${question}\n\nUser's Answer: ${userAnswer}`;
     
     const result = await chat.sendMessage({ message: prompt });
     const response = result.text;

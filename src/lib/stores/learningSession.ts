@@ -1,5 +1,5 @@
 import { pb } from '$scripts/pocketbase';
-import type { LearningSession, SessionResponse, ContentBlock, Content } from '$routes/bullshift/learn/[slug]/edit/schema';
+import type { LearningSession, SessionResponse, ContentBlock } from '$routes/bullshift/learn/[slug]/edit/schema';
 
 // Simple utility functions for learning session management
 export const learningSession = {

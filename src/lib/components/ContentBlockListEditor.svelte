@@ -18,7 +18,7 @@
 
 	let draggedBlockIndex: number | null = $state(null);
 	let dragOverIndex: number | null = $state(null);
-	let collapsedBlocks: boolean[] = $state(new Array(content.length).fill(true));
+	let collapsedBlocks: boolean[] = $state(new Array(content.length).fill(false));
 
 	// Create preview array while dragging
 	let previewContent = $state(content);
@@ -35,16 +35,27 @@
 	});
 
 	// Content Management Functions
-	// Update collapsed state when content changes
-	$effect(() => {
-		collapsedBlocks = new Array(content.length).fill(true);
-	});
+	// Ensure collapsed state array matches content length
+	const ensureCollapsedStateLength = () => {
+		if (collapsedBlocks.length !== content.length) {
+			const newCollapsedBlocks = new Array(content.length).fill(false);
+			// Preserve existing collapse state for blocks that still exist
+			collapsedBlocks.forEach((isCollapsed, index) => {
+				if (index < newCollapsedBlocks.length) {
+					newCollapsedBlocks[index] = isCollapsed;
+				}
+			});
+			collapsedBlocks = newCollapsedBlocks;
+		}
+	};
 
 	const toggleBlockCollapse = (blockIndex: number) => {
+		ensureCollapsedStateLength();
 		collapsedBlocks[blockIndex] = !collapsedBlocks[blockIndex];
 	};
 
 	const addContentBlock = (blockType: ContentBlock['type']) => {
+		ensureCollapsedStateLength();
 		let newBlock: ContentBlock;
 		switch (blockType) {
 			case 'text':
@@ -148,9 +159,11 @@
 	const removeContentBlock = (blockIndex: number) => {
 		const newContent = content.filter((_, index) => index !== blockIndex);
 		onContentChange(newContent);
+		ensureCollapsedStateLength();
 	};
 
 	const updateContentBlock = (blockIndex: number, updatedBlock: ContentBlock) => {
+		ensureCollapsedStateLength();
 		const newContent = [...content];
 		newContent[blockIndex] = updatedBlock;
 		onContentChange(newContent);

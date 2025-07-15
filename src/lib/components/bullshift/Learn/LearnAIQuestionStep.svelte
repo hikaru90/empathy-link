@@ -1,113 +1,89 @@
 <script lang="ts">
-  import { Textarea } from '$lib/components/ui/textarea';
-  import { Button } from '$lib/components/ui/button';
-  import { marked } from 'marked';
-  import type { AIQuestionBlock } from '$routes/bullshift/learn/[slug]/edit/schema';
-  import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
-  import SendHorizontal from 'lucide-svelte/icons/send-horizontal';
-  import Loader2 from 'lucide-svelte/icons/loader-2';
-  import { getLearningContext } from '$lib/contexts/learningContext';
+	import { onMount } from 'svelte';
+	import { marked } from 'marked';
+	import { Button } from '$lib/components/ui/button';
+	import { learningSession } from '$lib/stores/learningSession';
+	import { Textarea } from '$lib/components/ui/textarea';
+	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
+	import SendHorizontal from 'lucide-svelte/icons/send-horizontal';
+	import Loader2 from 'lucide-svelte/icons/loader-2';
 
-  interface Props {
-    content: AIQuestionBlock;
-    color: string;
-    pageIndex: number;
-    blockIndex: number;
-    session: LearningSession | null;
-    onResponse: (response: { userAnswer: string; aiResponse: string; timestamp: string; responseTime?: number; }) => void;
-    topicVersionId?: string;
-    contentBlock?: AIQuestionBlock;
-    isPreview?: boolean;
-  }
+	interface Props {
+		content: any;
+		color: string;
+		pageIndex: number;
+		blockIndex: number;
+		session: LearningSession | null;
+		contentBlock: any;
+		topicVersionId: string;
+		onResponse: (response: any) => void;
+		onComplete?: () => void;
+	}
 
-  let { content, color, pageIndex, blockIndex, session, onResponse, topicVersionId, contentBlock, isPreview = false }: Props = $props();
+	let { content, color, pageIndex, blockIndex, session, contentBlock, topicVersionId, onResponse, onComplete }: Props = $props();
 
-  const learningContext = getLearningContext();
+	let userAnswer = $state('');
+	let isLoading = $state(false);
 
-  let userAnswer = $state('');
-  let isLoading = $state(false);
+	const submitAnswer = async () => {
+		if (!userAnswer.trim() || isLoading) return;
 
-  // Load existing response if available
-  $effect(() => {
-    if (session && !isPreview) {
-      const existingResponse = session.responses.find(
-        r => r.pageIndex === pageIndex && r.blockIndex === blockIndex && r.blockType === 'aiQuestion'
-      );
-      if (existingResponse && existingResponse.response.userAnswer) {
-        userAnswer = existingResponse.response.userAnswer || '';
-        // If we already have both user answer and AI response, auto-advance to next page
-        if (existingResponse.response.aiResponse) {
-          setTimeout(() => {
-            learningContext?.gotoNextPage();
-          }, 100);
-        }
-      }
-    }
-  });
+		isLoading = true;
+		const startTime = Date.now();
 
-  const submitAnswer = async () => {
-    if (!userAnswer.trim() || isLoading || isPreview) return;
+		try {
+			const response = await fetch('/api/ai/learn/askQuestion', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					question: content.question,
+					userAnswer: userAnswer.trim(),
+					systemPrompt: content.systemPrompt
+				})
+			});
 
-    isLoading = true;
-    const startTime = Date.now();
+			if (!response.ok) {
+				throw new Error('Failed to get AI response');
+			}
 
-    try {
-      const response = await fetch('/api/ai/learn/askQuestion', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          question: content.question,
-          userAnswer: userAnswer.trim(),
-          systemPrompt: content.systemPrompt
-        })
-      });
+			const data = await response.json();
+			const endTime = Date.now();
+			const responseTime = Math.floor((endTime - startTime) / 1000);
+			
+			// Save the response
+			onResponse({
+				userAnswer: userAnswer.trim(),
+				aiResponse: data.response,
+				timestamp: new Date().toISOString(),
+				responseTime: responseTime
+			});
 
-      if (!response.ok) {
-        throw new Error('Failed to get AI response');
-      }
+		} catch (error) {
+			console.error('Error getting AI response:', error);
+			// Save error response and advance
+			onResponse({
+				userAnswer: userAnswer.trim(),
+				aiResponse: 'Sorry, I couldn\'t process your answer right now. Please try again.',
+				timestamp: new Date().toISOString()
+			});
+			
+		} finally {
+			isLoading = false;
+		}
+	};
 
-      const data = await response.json();
-      const endTime = Date.now();
-      const responseTime = Math.floor((endTime - startTime) / 1000);
-      
-      // Save the response
-      onResponse({
-        userAnswer: userAnswer.trim(),
-        aiResponse: data.response,
-        timestamp: new Date().toISOString(),
-        responseTime: responseTime
-      });
-
-      // Auto-advance to next page to show the AI response
-      setTimeout(() => {
-        learningContext?.gotoNextPage();
-      }, 500);
-
-    } catch (error) {
-      console.error('Error getting AI response:', error);
-      // Save error response and advance
-      onResponse({
-        userAnswer: userAnswer.trim(),
-        aiResponse: 'Sorry, I couldn\'t process your answer right now. Please try again.',
-        timestamp: new Date().toISOString()
-      });
-      
-      setTimeout(() => {
-        learningContext?.gotoNextPage();
-      }, 500);
-    } finally {
-      isLoading = false;
-    }
-  };
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-      event.preventDefault();
-      submitAnswer();
-    }
-  };
+	const handleKeyDown = (event: KeyboardEvent) => {
+		if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+			event.preventDefault();
+			submitAnswer();
+			return;
+		}
+		
+		// Always prevent event bubbling to parent components
+		event.stopPropagation();
+	};
 </script>
 
 <div class="space-y-4 rounded-lg bg-white/10 p-4 backdrop-blur">
@@ -120,41 +96,38 @@
 
   <!-- Answer Input -->
   <div class="space-y-2">
-    <label class="block text-sm font-medium text-gray-700">
+    <label for="user-answer-input" class="block text-sm font-medium text-gray-700">
       Deine Antwort:
     </label>
     <div class="relative">
       <Textarea
+        id="user-answer-input"
         bind:value={userAnswer}
         placeholder={content.placeholder || "Schreibe deine Antwort hier..."}
         rows={4}
-        disabled={isLoading || isPreview}
+        disabled={isLoading}
         class="resize-none"
         onkeydown={handleKeyDown}
       />
-      {#if !isPreview}
-        <div class="absolute bottom-2 right-2">
-          <Button
-            onclick={submitAnswer}
-            disabled={!userAnswer.trim() || isLoading}
-            size="sm"
-            style="background-color: {color};"
-            class="text-white hover:opacity-90"
-          >
-            {#if isLoading}
-              <Loader2 class="size-4 animate-spin" />
-            {:else}
-              <SendHorizontal class="size-4" />
-            {/if}
-          </Button>
-        </div>
-      {/if}
+      <div class="absolute bottom-2 right-2">
+        <Button
+          onclick={submitAnswer}
+          disabled={!userAnswer.trim() || isLoading}
+          size="sm"
+          style="background-color: {color};"
+          class="text-white hover:opacity-90"
+        >
+          {#if isLoading}
+            <Loader2 class="size-4 animate-spin" />
+          {:else}
+            <SendHorizontal class="size-4" />
+          {/if}
+        </Button>
+      </div>
     </div>
-    {#if !isPreview}
-      <p class="text-xs text-gray-500">
-        Tipp: Drücke Strg+Enter um deine Antwort zu senden
-      </p>
-    {/if}
+    <p class="text-xs text-gray-500">
+      Tipp: Drücke Strg+Enter um deine Antwort zu senden
+    </p>
   </div>
 
   <!-- Loading State -->

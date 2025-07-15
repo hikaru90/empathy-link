@@ -99,6 +99,11 @@
 						const target = e.target as HTMLTextAreaElement;
 						handleNotesChange(target.value);
 					}}
+					onkeydown={(e) => {
+						// Always prevent event bubbling to parent components
+						// This prevents collapsible blocks from folding when typing in text inputs
+						e.stopPropagation();
+					}}
 					placeholder={content.notesPlaceholder || 'Hier kannst du deine Gedanken, Erkenntnisse oder Beobachtungen festhalten...'}
 					rows={4}
 					class="w-full resize-none"

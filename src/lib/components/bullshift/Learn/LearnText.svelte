@@ -3,10 +3,9 @@
   
 	interface Props {
 		content: object;
-		isPreview?: boolean;
 	}
 
-	let { content, isPreview = false }: Props = $props();
+	let { content }: Props = $props();
 </script>
 
 <div class="mb-6">

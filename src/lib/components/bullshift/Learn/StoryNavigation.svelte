@@ -1,71 +1,45 @@
 <script lang="ts">
-	import { getLearningContext } from '$lib/contexts/learningContext';
 	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 
 	interface Props {
+		variant?: 'floating' | 'inline' | 'minimal';
 		showNext?: boolean;
 		showPrev?: boolean;
 		nextText?: string;
 		prevText?: string;
-		nextDisabled?: boolean;
-		prevDisabled?: boolean;
-		autoAdvanceAfter?: number;
-		customNextAction?: () => void;
-		customPrevAction?: () => void;
-		isPreview?: boolean;
-		variant?: 'default' | 'minimal' | 'floating';
+		onNextStep?: () => void;
+		onPrevStep?: () => void;
 	}
 
 	let { 
-		showNext = true, 
-		showPrev = true, 
-		nextText = 'Next', 
+		variant = 'inline',
+		showNext = true,
+		showPrev = false,
+		nextText = 'Next',
 		prevText = 'Previous',
-		nextDisabled = false,
-		prevDisabled = false,
-		autoAdvanceAfter,
-		customNextAction,
-		customPrevAction,
-		isPreview = false,
-		variant = 'default'
+		onNextStep,
+		onPrevStep
 	}: Props = $props();
 
-	const learningContext = getLearningContext();
-
-	$effect(() => {
-		if (autoAdvanceAfter && learningContext?.autoAdvanceAfter && !isPreview) {
-			learningContext.autoAdvanceAfter(autoAdvanceAfter);
-		}
-	});
-
 	const handleNext = () => {
-		if (customNextAction) {
-			customNextAction();
-		} else if (learningContext?.gotoNextPage) {
-			learningContext.gotoNextPage();
+		if (onNextStep) {
+			onNextStep();
 		}
 	};
 
 	const handlePrev = () => {
-		if (customPrevAction) {
-			customPrevAction();
-		} else if (learningContext?.gotoPrevPage) {
-			learningContext.gotoPrevPage();
+		if (onPrevStep) {
+			onPrevStep();
 		}
 	};
 
 	const canGoNext = $derived(() => {
-		if (nextDisabled) return false;
-		// In preview mode, disable next navigation to prevent leaving preview
-		if (isPreview) return false;
-		return customNextAction ? true : learningContext?.canGoNext;
+		return onNextStep ? true : false;
 	});
 
 	const canGoPrev = $derived(() => {
-		if (prevDisabled) return false;
-		// In preview mode, allow back navigation
-		return customPrevAction ? true : learningContext?.canGoPrev;
+		return onPrevStep ? true : false;
 	});
 </script>
 

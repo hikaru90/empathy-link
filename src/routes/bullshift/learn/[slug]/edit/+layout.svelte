@@ -18,9 +18,10 @@
 
 	interface Props {
 		data: any;
+		children: any;
 	}
 
-	let { data }: Props = $props();
+	let { data, children }: Props = $props();
 
 	let currentPath: string;
 	if (PUBLIC_INIT_POSTHOG === 'true') {
@@ -66,22 +67,24 @@
 			});
 		});
 	});
+	const scrollHandler = (event: Event) => {
+		lastKnownScrollPosition = window.scrollY;
+
+		if (!ticking) {
+			window.requestAnimationFrame(() => {
+				handleScroll(lastKnownScrollPosition);
+				ticking = false;
+			});
+
+			ticking = true;
+		}
+	};
+
 	onMount(() => {
 		handleResize();
 		contentReady = true;
 		if (browser) {
-			document.addEventListener('scroll', (event) => {
-				lastKnownScrollPosition = window.scrollY;
-
-				if (!ticking) {
-					window.requestAnimationFrame(() => {
-						handleScroll(lastKnownScrollPosition);
-						ticking = false;
-					});
-
-					ticking = true;
-				}
-			});
+			document.addEventListener('scroll', scrollHandler);
 			window?.addEventListener('resize', handleResize);
 		}
 		setLangAttribute();
@@ -125,21 +128,17 @@
 	});
 	onDestroy(() => {
 		if (browser) {
-			document.removeEventListener('scroll', handleScroll);
+			document.removeEventListener('scroll', scrollHandler);
 			window?.removeEventListener('resize', handleResize);
 		}
 	});
 </script>
 
 {#key data.route}
-	<slot />
+	{@render children()}
 {/key}
 
 
 <style lang="scss">
 	@use '../../../../../assets/styles/style.scss' as *;
-
-	.height-full-screen {
-		height: calc(100svh - 100px);
-	}
 </style>

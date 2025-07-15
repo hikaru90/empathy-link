@@ -1,66 +1,34 @@
 <script lang="ts">
-	import { getLearningContext } from '$lib/contexts/learningContext';
 	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 
 	interface Props {
-		showNext?: boolean;
-		showPrev?: boolean;
-		nextText?: string;
-		prevText?: string;
-		nextDisabled?: boolean;
-		prevDisabled?: boolean;
-		variant?: 'default' | 'minimal' | 'floating' | 'inline';
-		customNextAction?: () => void;
-		customPrevAction?: () => void;
-		isPreview?: boolean;
-		class?: string;
+		content: any;
+		onNextStep?: () => void;
+		onPrevStep?: () => void;
+		onGotoPage?: (page: number) => void;
 	}
 
-	let { 
-		showNext = true,
-		showPrev = false,
-		nextText = 'Next',
-		prevText = 'Previous',
-		nextDisabled = false,
-		prevDisabled = false,
-		variant = 'default',
-		customNextAction,
-		customPrevAction,
-		isPreview = false,
-		class: className = ''
-	}: Props = $props();
-
-	const learningContext = getLearningContext();
+	let { content, onNextStep, onPrevStep, onGotoPage }: Props = $props();
 
 	const handleNext = () => {
-		if (nextDisabled || isPreview) return;
-		
-		if (customNextAction) {
-			customNextAction();
-		} else if (learningContext?.gotoNextPage) {
-			learningContext.gotoNextPage();
+		if (onNextStep) {
+			onNextStep();
 		}
 	};
 
 	const handlePrev = () => {
-		if (prevDisabled || isPreview) return;
-		
-		if (customPrevAction) {
-			customPrevAction();
-		} else if (learningContext?.gotoPrevPage) {
-			learningContext.gotoPrevPage();
+		if (onPrevStep) {
+			onPrevStep();
 		}
 	};
 
 	const canGoNext = $derived(() => {
-		if (nextDisabled || isPreview) return false;
-		return customNextAction ? true : learningContext?.canGoNext;
+		return onNextStep ? true : false;
 	});
 
 	const canGoPrev = $derived(() => {
-		if (prevDisabled || isPreview) return false;
-		return customPrevAction ? true : learningContext?.canGoPrev;
+		return onPrevStep ? true : false;
 	});
 </script>
 

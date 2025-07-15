@@ -507,11 +507,12 @@
 				</div>
 				
 				<div class="space-y-2">
-					<label class="block text-sm font-medium mb-1">Items to Sort</label>
+					<div class="block text-sm font-medium mb-1">Items to Sort</div>
 					{#each block.items as item, itemIndex}
 						<div class="flex items-start gap-2 p-2 border rounded">
 							<div class="flex-1">
 								<Textarea 
+									id="sort-item-{pageIndex}-{blockIndex}-{itemIndex}"
 									value={item.text} 
 									oninput={(e: Event) => {
 										const target = e.target as HTMLTextAreaElement;
@@ -591,11 +592,12 @@
 							</div>
 
 							<div class="space-y-2">
-								<label class="block text-sm font-medium mb-1">Options</label>
+								<div class="block text-sm font-medium mb-1">Options</div>
 								{#each question.options as option, optionIndex}
 									<div class="flex items-start gap-2 p-2 border rounded {option.isCorrect ? 'border-green-500 bg-green-50' : 'border-gray-200'}">
 										<div class="flex-1">
 											<Textarea 
+												id="option-{pageIndex}-{blockIndex}-{questionIndex}-{optionIndex}"
 												value={option.text} 
 												oninput={(e: Event) => {
 													const target = e.target as HTMLTextAreaElement;
@@ -933,8 +935,9 @@
 						</div>
 					</div>
 					<div>
-						<label class="block text-sm font-medium mb-1">Upload Image</label>
+						<label for="image-upload-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Upload Image</label>
 						<input 
+							id="image-upload-{pageIndex}-{blockIndex}"
 							type="file"
 							accept="image/*"
 							onchange={async (e: Event) => {
@@ -1083,7 +1086,7 @@
 						</div>
 					</div>
 					<div>
-						<label class="block text-sm font-medium mb-1">Upload Audio</label>
+						<div class="block text-sm font-medium mb-1">Upload Audio</div>
 						<AudioUpload 
 							{currentVersion}
 							onAudioUploaded={(audioUrl) => {
