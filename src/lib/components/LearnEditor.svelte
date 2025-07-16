@@ -16,10 +16,11 @@
 	import BasicInfoForm from '$lib/components/BasicInfoForm.svelte';
 	import ContentBlockListEditor from '$lib/components/ContentBlockListEditor.svelte';
 
-	const { currentPage, topicId, onVersionDataChange }: { 
-		currentPage: any; 
+	const { currentStep, topicId, onVersionDataChange, onBlockClick }: { 
+		currentStep: any; 
 		topicId: string;
 		onVersionDataChange?: (versionData: TopicVersion | null) => void;
+		onBlockClick?: (step: number) => void;
 	} = $props();
 
 	let liveVersionId: string = $state('');
@@ -32,7 +33,7 @@
 		allVersions.find((version) => version.id === currentVersionId)
 	);
 
-	console.log('currentPage', currentPage);
+	console.log('currentStep', currentStep);
 
 	// Initialize form data
 	const data: SuperValidated<Infer<TopicVersionFormSchema>> = defaults(zod(topicVersionFormSchema));
@@ -422,6 +423,7 @@
 				content={$formData.content || []} 
 				onContentChange={handleContentChange}
 				{currentVersion}
+				onBlockClick={onBlockClick}
 			/>
 		</div>
 	</form>

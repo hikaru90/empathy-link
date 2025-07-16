@@ -11,12 +11,12 @@
 
 	let { data }: Props = $props();
 
-	let currentPage = $state(data.currentPage || 0);
+	let currentStep = $state(data.currentStep || 0);
 	let currentSession = $state<LearningSession | null>(null);
 
-	// Handle page changes from the content renderer
-	const handlePageChange = (page: number) => {
-		currentPage = page;
+	// Handle step changes from the content renderer
+	const handleStepChange = (step: number) => {
+		currentStep = step;
 	};
 
 	// Handle session changes from the content renderer
@@ -33,9 +33,9 @@
 			record={data.record}
 			categories={data.categories || []}
 			user={data.user}
-			initialPage={currentPage}
+			initialStep={currentStep}
 			isPreview={false}
-			onPageChange={handlePageChange}
+			onStepChange={handleStepChange}
 			onSessionChange={handleSessionChange}
 		/>
 		

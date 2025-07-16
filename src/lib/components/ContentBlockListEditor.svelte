@@ -7,18 +7,20 @@
 	import ChevronsUp from 'lucide-svelte/icons/chevron-up';
 	import ChevronsDown from 'lucide-svelte/icons/chevron-down';
 	import GripVertical from 'lucide-svelte/icons/grip-vertical';
+	import { onMount, onDestroy } from 'svelte';
 
 	interface Props {
 		content: ContentBlock[];
 		onContentChange: (content: ContentBlock[]) => void;
 		currentVersion?: any;
+		onBlockClick?: (blockIndex: number) => void;
 	}
 
-	let { content, onContentChange, currentVersion }: Props = $props();
+	let { content, onContentChange, currentVersion, onBlockClick }: Props = $props();
 
 	let draggedBlockIndex: number | null = $state(null);
 	let dragOverIndex: number | null = $state(null);
-	let collapsedBlocks: boolean[] = $state(new Array(content.length).fill(false));
+	let collapsedBlocks: boolean[] = $state(new Array(content.length).fill(true));
 
 	// Create preview array while dragging
 	let previewContent = $state(content);
@@ -38,14 +40,8 @@
 	// Ensure collapsed state array matches content length
 	const ensureCollapsedStateLength = () => {
 		if (collapsedBlocks.length !== content.length) {
-			const newCollapsedBlocks = new Array(content.length).fill(false);
-			// Preserve existing collapse state for blocks that still exist
-			collapsedBlocks.forEach((isCollapsed, index) => {
-				if (index < newCollapsedBlocks.length) {
-					newCollapsedBlocks[index] = isCollapsed;
-				}
-			});
-			collapsedBlocks = newCollapsedBlocks;
+			// Always start with all blocks collapsed
+			collapsedBlocks = new Array(content.length).fill(true);
 		}
 	};
 
@@ -104,24 +100,6 @@
 			case 'aiQuestion':
 				newBlock = {
 					type: 'aiQuestion',
-					question: 'Your question here?',
-					systemPrompt:
-						"You are a helpful learning assistant. Provide constructive feedback on the user's answer.",
-					placeholder: 'Write your answer here...'
-				};
-				break;
-			case 'aiQuestionStep':
-				newBlock = {
-					type: 'aiQuestionStep',
-					question: 'Your question here?',
-					systemPrompt:
-						"You are a helpful learning assistant. Provide constructive feedback on the user's answer.",
-					placeholder: 'Write your answer here...'
-				};
-				break;
-			case 'aiResponseStep':
-				newBlock = {
-					type: 'aiResponseStep',
 					question: 'Your question here?',
 					systemPrompt:
 						"You are a helpful learning assistant. Provide constructive feedback on the user's answer.",
@@ -222,16 +200,46 @@
 		draggedBlockIndex = null;
 		dragOverIndex = null;
 	};
+
+	// Handle keyboard shortcuts
+	const handleKeyDown = (event: KeyboardEvent) => {
+		// Ignore keydown events from text inputs, textareas, and other editable elements
+		const target = event.target as HTMLElement;
+		if (target.tagName === 'INPUT' || 
+		    target.tagName === 'TEXTAREA' || 
+		    target.contentEditable === 'true' ||
+		    target.closest('input') || 
+		    target.closest('textarea')) {
+			return;
+		}
+		
+		// Check for Ctrl+S (Windows/Linux) or Cmd+S (Mac)
+		if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+			event.preventDefault();
+			// Find the form element and trigger save
+			const form = document.querySelector('form[method="POST"]') as HTMLFormElement;
+			if (form) {
+				const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+				if (submitButton) {
+					submitButton.click();
+				}
+			}
+		}
+	};
+
+	onMount(() => {
+		document.addEventListener('keydown', handleKeyDown);
+	});
+
+	onDestroy(() => {
+		document.removeEventListener('keydown', handleKeyDown);
+	});
 </script>
 
 <div class="space-y-4">
 	<!-- Header -->
-	<div class="flex items-center justify-between">
-		<h2 class="text-lg font-semibold">Content Blocks</h2>
-		<div class="flex items-center gap-2">
-			<BlockTypeSelector onSelectType={addContentBlock} />
-		</div>
-	</div>
+
+	<BlockTypeSelector onSelectType={addContentBlock} />
 
 	<!-- Content Blocks List -->
 	<div class="space-y-1">
@@ -250,7 +258,18 @@
 				<!-- Collapsible Header -->
 				<div
 					class="bg-alsmostwhite flex cursor-pointer items-center justify-between border-b p-1 hover:bg-gray-100"
-					onclick={() => toggleBlockCollapse(blockIndex)}
+					onclick={(e) => {
+						// If it's a right click or middle click, don't trigger step jump
+						if (e.button === 2 || e.button === 1) return;
+						
+						// Toggle collapse
+						toggleBlockCollapse(blockIndex);
+						
+						// Jump to step in preview - pass raw block index for proper step calculation
+						if (onBlockClick) {
+							onBlockClick(blockIndex);
+						}
+					}}
 					role="button"
 					tabindex="0"
 					onkeydown={(e) => e.key === 'Enter' && toggleBlockCollapse(blockIndex)}
@@ -267,12 +286,12 @@
 							aria-label="Drag to reorder"
 							role="button"
 							tabindex="0"
-							class="rounded p-1 text-black/20 hover:text-black/60 hover:cursor-grab active:cursor-grabbing"
+							class="rounded p-1 text-black/20 hover:cursor-grab hover:text-black/60 active:cursor-grabbing"
 						>
 							<GripVertical class="size-4" />
 						</div>
 
-						<div class="flex items-center justify-center size-2">
+						<div class="flex size-2 items-center justify-center">
 							<span class="text-2xs text-gray-500">{collapsedBlocks[blockIndex] ? '▶' : '▼'}</span>
 						</div>
 						<span class="text-sm font-medium capitalize">{block.type}</span>

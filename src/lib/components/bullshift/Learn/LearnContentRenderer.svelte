@@ -34,27 +34,47 @@
 	}
 
 	// Navigation helper functions (simplified since context management is removed)
-	const gotoNextStep = () => {
+	const gotoNextStep = async () => {
 		// Simply move to next page
-		console.log('currentStep',currentStep);
-		console.log('totalStepsCount',totalStepsCount());
-		if (currentStep <= totalStepsCount()) {
-			const newPage = currentStep + 1;
-			currentStep = newPage;
-			console.log('🔥 page advanced to:', newPage);
+		if (currentStep < totalStepsCount()) {
+			const newStep = currentStep + 1;
+			currentStep = newStep;
 		}
+		
 		updateQueryParams();
+		
+		// Save current step to session (with error handling for auto-cancellation)
+		if (!isPreview && currentSession) {
+			try {
+				await learningSession.updateCurrentPage(currentSession.id, currentStep);
+			} catch (error: any) {
+				// Don't log auto-cancellation errors as they're expected during navigation
+				if (!error?.message?.includes('autocancelled') && error?.name !== 'AbortError') {
+					console.error('Error saving step to session:', error);
+				}
+			}
+		}
 	}
 
-	const gotoPrevStep = (
-	) => {
-		
+	const gotoPrevStep = async () => {
 		// Simply move to previous page
 		if (currentStep > 0) {
-			const newPage = currentStep - 1;
-			currentStep = newPage;
+			const newStep = currentStep - 1;
+			currentStep = newStep;
 		}
 		updateQueryParams();
+		
+		// Save current step to session (with error handling for auto-cancellation)
+		if (!isPreview && currentSession) {
+			try {
+				await learningSession.updateCurrentPage(currentSession.id, currentStep);
+			} catch (error: any) {
+				// Don't log auto-cancellation errors as they're expected during navigation
+				if (!error?.message?.includes('autocancelled') && error?.name !== 'AbortError') {
+					console.error('Error saving step to session:', error);
+				}
+			}
+		}
 	}
 
 	interface Props {
@@ -63,8 +83,8 @@
 		categories: any[];
 		user?: any;
 		
-		// Page state  
-		initialPage?: number;
+		// Step state  
+		initialStep?: number;
 		
 		// Mode flags
 		isPreview: boolean;
@@ -74,7 +94,7 @@
 		session?: LearningSession | null; // For preview mode
 		
 		// Callbacks
-		onPageChange?: (page: number) => void;
+		onStepChange?: (step: number) => void;
 		onSessionChange?: (session: LearningSession | null) => void;
 	}
 
@@ -82,16 +102,16 @@
 		record,
 		categories,
 		user,
-		initialPage = 0,
+		initialStep = 0,
 		isPreview,
 		selectedVersionData,
 		session,
-		onPageChange,
+		onStepChange,
 		onSessionChange
 	}: Props = $props();
 
-	// Page state
-	let currentStep = $state(initialPage);
+	// Step state
+	let currentStep = $state(initialStep);
 	let aiQuestionStep = $state<'question' | 'response' | undefined>(undefined);
 	
 	// Session state (only for non-preview mode)
@@ -170,7 +190,6 @@
 		return flatSteps;
 	});
 	const totalStepsCount = $derived(() => {
-		console.log('totalSteps',totalSteps());
 		return totalSteps().reduce((acc: number, curr: any) => acc + 1, 0);
 	});
 
@@ -179,14 +198,18 @@
 
 	// Navigation functions
 	const updateQueryParams = () => {
-		if (onPageChange) {
-			onPageChange(currentStep);
+		if (onStepChange) {
+			onStepChange(currentStep);
 		}
-		const url = new URL(window.location.href);
-		url.searchParams.set('page', currentStep.toString());
-		replaceState(url, {
-			page: currentStep
-		});
+		
+		// Only update URL in non-preview mode
+		if (!isPreview) {
+			const url = new URL(window.location.href);
+			url.searchParams.set('step', currentStep.toString());
+			replaceState(url, {
+				step: currentStep
+			});
+		}
 	};
 
 	// Session management functions (only for non-preview mode)
@@ -194,13 +217,11 @@
 		if (!sessionInitData || isPreview) return;
 		
 		try {
-			console.log('🆕 User confirmed, creating new session...');
 			const session = await learningSession.init(
 				sessionInitData.userId,
 				sessionInitData.mainTopicId,
 				sessionInitData.topicVersionId
 			);
-			console.log('✅ New session created:', session.id);
 			currentSession = session;
 			if (onSessionChange) onSessionChange(session);
 			
@@ -213,14 +234,13 @@
 			completedSession = null;
 			sessionInitData = null;
 		} catch (error) {
-			console.error('❌ Error creating new session:', error);
+			console.error('Error creating new session:', error);
 		}
 	};
 
 	const handleContinueOldSession = () => {
 		if (!completedSession || isPreview) return;
 		
-		console.log('🔄 User chose to continue with completed session');
 		currentSession = completedSession;
 		if (onSessionChange) onSessionChange(completedSession);
 		
@@ -236,10 +256,19 @@
 
 	// Note: Learning context management has been removed - components now use direct props
 
-	// Update page when initialPage changes
+	// Update step when initialStep changes (only when initialStep itself changes)
+	let previousInitialStep = $state(initialStep);
 	$effect(() => {
-		if (initialPage !== currentStep) {
-			currentStep = initialPage;
+		if (initialStep !== previousInitialStep && initialStep !== undefined) {
+			currentStep = initialStep;
+			previousInitialStep = initialStep;
+		}
+	});
+
+	// Mark session as completed when reaching summary page
+	$effect(() => {
+		if (!isPreview && currentSession && components().length > 0 && currentStep === totalStepsCount() - 1) {
+			handleSessionCompletion();
 		}
 	});
 
@@ -247,98 +276,58 @@
 	onMount(async () => {
 		if (isPreview) return;
 		
-		console.log('🔍 Session initialization starting...');
-		console.log('📊 Available data:', {
-			hasUser: !!user,
-			userId: user?.id,
-			hasRecord: !!record,
-			recordId: record?.id,
-			hasCurrentVersion: !!record?.expand?.currentVersion,
-			currentVersionId: record?.expand?.currentVersion?.id
-		});
-		
-		// Debug PocketBase auth state
-		console.log('🔐 PocketBase auth state:', {
-			isValid: pb.authStore.isValid,
-			model: pb.authStore.model,
-			token: pb.authStore.token ? 'present' : 'missing'
-		});
-		
 		// Uses server-provided user data (no client-side auth checks)
 		if (user?.id && record?.id && record?.expand?.currentVersion?.id) {
 			const userId = user.id;
 			const mainTopicId = record.id; // This is the main topic ID stored in session.topic
 			const topicVersionId = record.expand.currentVersion.id; // This is the version ID stored in session.topicVersion
 
-			console.log('✅ All required data available, proceeding with session init');
-			console.log('🆔 IDs:', { userId, mainTopicId, topicVersionId });
-
 			try {
 				// Check for existing incomplete session - use the MAIN topic ID, not the version ID
-				console.log('🔍 Checking for existing sessions...');
-				console.log('🔍 Filter query:', `user = "${userId}" && topic = "${mainTopicId}"`);
-				
 				const existingSessions = await pb.collection('learnSessions').getList(1, 1, {
 					filter: `user = "${userId}" && topic = "${mainTopicId}"`,
 					sort: '-created'
 				});
 
-				console.log('📋 Existing sessions found:', existingSessions.items.length);
-
 				if (existingSessions.items.length > 0) {
 					// Check if the latest session is not completed
 					const latestSession = existingSessions.items[0] as unknown as LearningSession;
-					console.log('📋 Latest session completed status:', latestSession.completed);
 					
 					if (!latestSession.completed) {
 						// Resume existing incomplete session
-						console.log('🔄 Resuming existing incomplete session');
 						currentSession = latestSession;
 						if (onSessionChange) onSessionChange(latestSession);
 						
-						// Resume from saved page if available
+						// Resume from saved step if available
 						if (currentSession.currentPage !== currentStep) {
-							console.log('📄 Resuming from saved page:', currentSession.currentPage);
 							currentStep = currentSession.currentPage;
 							updateQueryParams();
 						}
 					} else {
 						// Latest session is completed, ask user if they want to start a new one
-						console.log('🆕 Latest session is completed, asking user if they want to start anew...');
 						completedSession = latestSession;
 						sessionInitData = { userId, mainTopicId, topicVersionId };
 						showNewSessionConfirm = true;
-						console.log('📋 Dialog state set - showNewSessionConfirm:', showNewSessionConfirm);
 					}
 				} else {
 					// Create new session
-					console.log('🆕 Creating new session...');
 					const session = await learningSession.init(
 						userId,  // ← From server data
 						mainTopicId, // ← Main topic ID (what gets stored in session.topic)
 						topicVersionId // ← Version ID (what gets stored in session.topicVersion)
 					);
-					console.log('✅ New session created:', session.id);
 					currentSession = session;
 					if (onSessionChange) onSessionChange(session);
 					
-					// Resume from saved page if available
+					// Resume from saved step if available
 					if (session.currentPage !== currentStep) {
-						console.log('📄 Setting page from new session:', session.currentPage);
 						currentStep = session.currentPage;
 						updateQueryParams();
 					}
 				}
 			} catch (error) {
-				console.error('❌ Error during session initialization:', error);
+				console.error('Error during session initialization:', error);
 			}
-		} else {
-			console.log('❌ Missing required data for session initialization');
-			console.log('Missing:', {
-				user: !user?.id ? 'user ID' : null,
-				record: !record?.id ? 'record ID' : null,
-				currentVersion: !record?.expand?.currentVersion?.id ? 'current version ID' : null
-			});
 		}
 	});
 
@@ -361,8 +350,11 @@
 				blockContent: content
 			};
 
+			// Ensure responses array exists
+			const existingResponses = session.responses || [];
+			
 			// Remove any existing response for this step
-			const updatedResponses = session.responses.filter(r => !(r.pageIndex === currentStep && r.blockIndex === 0));
+			const updatedResponses = existingResponses.filter(r => !(r.pageIndex === currentStep && r.blockIndex === 0));
 			updatedResponses.push(newResponse);
 
 			const updatedSession = {
@@ -381,7 +373,9 @@
 				await learningSession.saveResponseImmediate(session.id, currentStep, 0, validBlockType, response, topic().id, content);
 				// Refresh session data if callback provided
 				if (onSessionChange) {
-					const refreshedSession = await pb.collection('learnSessions').getOne(session.id);
+					const refreshedSession = await pb.collection('learnSessions').getOne(session.id, {
+						requestKey: `refreshSession-${session.id}-${Date.now()}`
+					});
 					const refreshedLearningSession = refreshedSession as unknown as LearningSession;
 					currentSession = refreshedLearningSession;
 					onSessionChange(refreshedLearningSession);
@@ -395,17 +389,30 @@
 	// Helper function to handle feedback saving
 	const handleFeedbackSubmit = async (feedback: any) => {
 		if (isPreview || !currentSession) {
-			console.log('Preview feedback:', feedback);
 			return;
 		}
 		
 		try {
 			await learningSession.saveFeedback(currentSession.id, feedback);
-			console.log('Feedback saved successfully');
 		} catch (error) {
 			console.error('Failed to save feedback:', error);
 		}
 	};
+
+	// Helper function to mark session as completed
+	const handleSessionCompletion = async () => {
+		if (isPreview || !currentSession) {
+			return;
+		}
+		
+		try {
+			await learningSession.complete(currentSession.id);
+		} catch (error) {
+			console.error('Failed to mark session as completed:', error);
+		}
+	};
+
+
 </script>
 
 {#if !showNewSessionConfirm}
@@ -419,9 +426,11 @@
 		onPrevStep={() => gotoPrevStep()}
 		onNextStep={() => gotoNextStep()}
 	/>
-
+	
 	{#if currentStep === 0}
-		<LearnTitleCard currentCategory={currentCategory()} topic={topic()} gotoNextStep={() => gotoNextStep()} />
+		<LearnTitleCard currentCategory={currentCategory()} topic={topic()} gotoNextStep={async () => {
+			await gotoNextStep();
+		}} />
 	{/if}
 
 	<!-- Show summary page (only on the last step) -->
@@ -460,7 +469,7 @@
 		{@const content = components()[componentIndex]}
 		{@const internalStep = stepData.internalStep}
 		{#if content && content.type === 'text'}
-			<LearnText {content} {isPreview} />
+			<LearnText {content} gotoNextStep={() => gotoNextStep()} />
 		{:else if content && content.type === 'task'}
 			<LearnTask 
 				color={currentCategory().color} 

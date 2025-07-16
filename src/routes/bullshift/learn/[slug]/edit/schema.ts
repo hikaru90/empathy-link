@@ -13,8 +13,6 @@ export type ContentBlock =
   | SortableBlock
   | MultipleChoiceBlock
   | AIQuestionBlock
-  | AIQuestionStepBlock
-  | AIResponseStepBlock
   | ImageBlock
   | AudioBlock
   | NextPageBlock

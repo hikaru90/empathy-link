@@ -139,6 +139,10 @@
 		} else {
 			// Mark as completed when audio finishes naturally
 			markCompleted('played');
+			// Delay gotoNextStep by 1 second to prevent request conflicts
+			setTimeout(() => {
+				gotoNextStep?.();
+			}, 1000);
 		}
 	};
 

@@ -31,7 +31,7 @@
 
 	let { data }: Props = $props();
 
-	let currentPage = $state(data.currentPage || 0);
+	let currentStep = $state(data.currentStep || 0);
 	let selectedVersionData = $state<any>(null);
 	
 	// Create mock session for preview mode - exists only in memory
@@ -40,23 +40,49 @@
 		user: data.user?.id || 'preview-user',
 		topic: data.topicId || 'preview-topic',
 		topicVersion: 'preview-version',
-		currentPage: currentPage,
+		currentPage: currentStep,
 		responses: [],
 		created: new Date().toISOString(),
 		updated: new Date().toISOString(),
 		completed: false
 	});
 
-	// Handle page changes from the content renderer
-	const handlePageChange = (page: number) => {
-		currentPage = page;
+	// Function to calculate step number for a given block index
+	const calculateStepForBlockIndex = (blockIndex: number, content: any[] = []) => {
+		if (!content || content.length === 0) return 1; // Default to step 1 if no content
+		
+		let step = 1; // Start at step 1 (after title step 0)
+		
+		for (let i = 0; i < blockIndex && i < content.length; i++) {
+			const component = content[i];
+			if (component.type === 'aiQuestion') {
+				step += 2; // aiQuestion takes 2 steps
+			} else {
+				step += 1; // All other components take 1 step
+			}
+		}
+		
+		return step;
+	};
+
+	// Handle step changes from the content renderer
+	const handleStepChange = (step: number) => {
+		currentStep = step;
 		// Update mock session page as well
-		mockSession.currentPage = page;
+		mockSession.currentPage = step;
 		const url = new URL(window.location.href);
-		url.searchParams.set('page', currentPage.toString());
+		url.searchParams.set('step', currentStep.toString());
 		replaceState(url, {
-			page: currentPage
+			step: currentStep
 		});
+	};
+
+	// Handle block clicks from the editor - calculate correct step
+	const handleBlockClick = (blockIndex: number) => {
+		// Get current content from selectedVersionData or fallback to record data
+		const content = selectedVersionData?.content || data.record?.expand?.currentVersion?.content || [];
+		const step = calculateStepForBlockIndex(blockIndex, content);
+		handleStepChange(step);
 	};
 
 	// Handle session changes from the content renderer (for preview mode)
@@ -235,11 +261,11 @@
 								record={data.record}
 								categories={data.categories || []}
 								user={data.user}
-								initialPage={currentPage}
+								initialStep={currentStep}
 								isPreview={true}
 								{selectedVersionData}
 								session={mockSession}
-								onPageChange={handlePageChange}
+								onStepChange={handleStepChange}
 								onSessionChange={handleSessionChange}
 							/>
 						</div>
@@ -252,9 +278,10 @@
 		<Resizable.Handle withHandle />
 		<Resizable.Pane defaultSize={50} class="relative">
 			<LearnEditor 
-				{currentPage} 
+				{currentStep} 
 				topicId={data.topicId || ''} 
 				onVersionDataChange={(versionData) => selectedVersionData = versionData}
+				onBlockClick={handleBlockClick}
 			/>
 		</Resizable.Pane>
 	</Resizable.PaneGroup>

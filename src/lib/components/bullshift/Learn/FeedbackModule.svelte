@@ -21,9 +21,21 @@
   let feedbackStarted = $state(false);
   let feedbackSubmitted = $state(false);
 
-	const handleRatingClick = (rating: number) => {
+	const handleRatingClick = (rating: number, event?: Event) => {
+		console.log('Star clicked:', rating, event?.type);
+		if (event) {
+			event.preventDefault();
+		}
 		userRating = rating;
-    feedbackStarted = true;
+		feedbackStarted = true;
+	};
+
+	const handleRatingTouch = (rating: number, event: TouchEvent) => {
+		console.log('Star touched:', rating);
+		event.preventDefault();
+		event.stopPropagation();
+		userRating = rating;
+		feedbackStarted = true;
 	};
 
 	const submitFeedback = () => {
@@ -38,7 +50,7 @@
 	};
 </script>
 
-<div class="rounded-lg bg-white p-6 shadow-lg">
+<div class="rounded-lg bg-white p-6 shadow-xl mb-6 relative shadow-black/10">
   <h2 class="mb-4 font-bold text-gray-900">Feedback</h2>
   
   {#if feedbackSubmitted}
@@ -54,7 +66,7 @@
   {:else}
     <div class="space-y-6">
     <!-- Rating -->
-    <div>
+    <div class="relative z-10">
       <div id="rating-label" class="mb-2 block text-sm font-medium text-gray-700">
         Wie würdest du dieses Lernmodul bewerten?
       </div>
@@ -62,15 +74,18 @@
         {#each [1, 2, 3, 4, 5] as rating}
           <button
             type="button"
-            onclick={() => handleRatingClick(rating)}
-            class="cursor-pointer text-3xl transition-colors p-2 {userRating >= rating
-              ? 'text-yellow-400'
-              : 'text-gray-300'} hover:text-yellow-400"
+            onclick={(e) => handleRatingClick(rating, e)}
+            ontouchstart={(e) => handleRatingTouch(rating, e)}
+            class="cursor-pointer transition-colors size-8 touch-manipulation flex items-center justify-center rounded-md relative z-20 {userRating >= rating
+              ? 'text-yellow-400 bg-yellow-50'
+              : 'text-gray-300 bg-gray-50'} hover:text-yellow-400 hover:bg-yellow-50"
             aria-label="Rate {rating} stars"
             role="radio"
             aria-checked={userRating >= rating}
           >
-          ★
+            <svg class="size-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
           </button>
         {/each}
       </div>

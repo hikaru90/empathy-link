@@ -6,6 +6,7 @@
 	import PercentageDonut from '$lib/components/PercentageDonut.svelte';
 	import FeedbackModule from '$lib/components/bullshift/Learn/FeedbackModule.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 
 	interface Props {
 		session: LearningSession | null;
@@ -422,7 +423,10 @@
 	});
 </script>
 
-<div class="mx-auto max-w-4xl space-y-5">
+<div
+	class="h-[calc(100vh-140px)] max-w-4xl space-y-5 overflow-y-auto overflow-x-hidden -mx-6 px-6"
+	style="touch-action: pan-y;"
+>
 	<!-- Back button -->
 
 	<div class="rounded-xl bg-white px-4 py-5 shadow-lg shadow-green-800/10">
@@ -449,15 +453,13 @@
 			style="background: radial-gradient(circle at center, hsl(var(--offwhite) / 1), transparent 67%);"
 			class="absolute right-0 top-60 z-0 h-[800px] w-[800px] -translate-y-1/2 translate-x-1/2 transform opacity-50 dark:opacity-40"
 		></div>
-		<div
-			class="relative z-10 rounded-lg bg-white shadow-2xl shadow-black/10 dark:bg-muted"
-		>
+		<div class="relative z-10 rounded-lg bg-white shadow-2xl shadow-black/10 dark:bg-muted">
 			<div class="px-6 pb-6 pt-5">
 				<h2 class="text-md mb-4 font-bold">Deine Lernzusammenfasung</h2>
 
 				<div class="flex flex-col gap-4">
 					{#each statCards() as card}
-						<div class="rounded-lg p-4 text-center bg-black/5">
+						<div class="rounded-lg bg-black/5 p-4 text-center">
 							<div class="text-2xl font-bold">
 								{card.value}
 							</div>
@@ -487,11 +489,24 @@
 	{/if}
 
 	<!-- Module Feedback -->
-	<FeedbackModule 
-		feedbackType="learnContent" 
-		name={topic.titleDE || 'Learning Module'}
-		{color}
-		{onFeedbackSubmit}
-	/>
+	<div class="relative">
+		<FeedbackModule
+			feedbackType="learnContent"
+			name={topic.titleDE || 'Learning Module'}
+			{color}
+			{onFeedbackSubmit}
+		/>
+	</div>
 
+	<div class="flex items-center justify-center relative z-10">
+		<a
+			href="/bullshift/learn"
+			class="bg-black text-white font-medium pl-6 pr-1.5 py-3 rounded-full flex items-center justify-between gap-2 w-full"
+		>
+			<span class="">Zurück zur Lernübersicht</span>
+			<div class="size-6 bg-white/20 rounded-full flex items-center justify-center">
+				<ChevronRight class="size-3" />
+			</div>
+		</a>
+	</div>
 </div>

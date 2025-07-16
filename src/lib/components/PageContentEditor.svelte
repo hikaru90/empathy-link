@@ -387,7 +387,7 @@
 						{/if}
 						<!-- Add Block Buttons -->
 						<div class="flex flex-wrap gap-2">
-							<BlockTypeSelector onAddBlock={(type) => addContentBlock(pageIndex, type)} />
+							<BlockTypeSelector onSelectType={(type) => addContentBlock(pageIndex, type)} />
 						</div>
 					</div>
 				{/if}

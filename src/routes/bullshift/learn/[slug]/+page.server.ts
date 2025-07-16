@@ -20,7 +20,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
         return {
             record,
             categories,
-            currentPage: parseInt(url.searchParams.get('page') || '0'),
+            currentStep: parseInt(url.searchParams.get('step') || '0'),
             user
         };
     } catch (error) {

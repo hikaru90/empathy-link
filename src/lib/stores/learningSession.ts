@@ -95,7 +95,9 @@ export const learningSession = {
     const timer = setTimeout(async () => {
       try {
         // Get current session
-        const session = await pb.collection('learnSessions').getOne(sessionId) as unknown as LearningSession;
+        const session = await pb.collection('learnSessions').getOne(sessionId, {
+          requestKey: `getSession-${sessionId}-${Date.now()}`
+        }) as unknown as LearningSession;
         
         const newResponse: SessionResponse = {
           pageIndex,
@@ -117,6 +119,8 @@ export const learningSession = {
         // Update session in database
         await pb.collection('learnSessions').update(sessionId, {
           responses: updatedResponses
+        }, {
+          requestKey: `saveResponse-${sessionId}-${pageIndex}-${blockIndex}-${Date.now()}`
         });
         
         // Clean up timer
@@ -150,7 +154,9 @@ export const learningSession = {
     
     try {
       // Get current session
-      const session = await pb.collection('learnSessions').getOne(sessionId) as unknown as LearningSession;
+      const session = await pb.collection('learnSessions').getOne(sessionId, {
+        requestKey: `getSessionImmediate-${sessionId}-${Date.now()}`
+      }) as unknown as LearningSession;
       
       const newResponse: SessionResponse = {
         pageIndex,
@@ -172,6 +178,8 @@ export const learningSession = {
       // Update session in database
       await pb.collection('learnSessions').update(sessionId, {
         responses: updatedResponses
+      }, {
+        requestKey: `saveResponseImmediate-${sessionId}-${pageIndex}-${blockIndex}-${Date.now()}`
       });
     } catch (error) {
       console.error('Failed to save response immediately:', error);
@@ -184,6 +192,8 @@ export const learningSession = {
     try {
       await pb.collection('learnSessions').update(sessionId, {
         currentPage: pageIndex
+      }, {
+        requestKey: `updateCurrentPage-${sessionId}-${pageIndex}-${Date.now()}`
       });
     } catch (error) {
       console.error('Failed to update current page:', error);
@@ -197,6 +207,8 @@ export const learningSession = {
       await pb.collection('learnSessions').update(sessionId, {
         completed: true,
         completedAt: new Date().toISOString()
+      }, {
+        requestKey: `complete-${sessionId}-${Date.now()}`
       });
     } catch (error) {
       console.error('Failed to complete session:', error);
@@ -210,6 +222,8 @@ export const learningSession = {
       await pb.collection('learnSessions').update(sessionId, {
         completed: true,
         completedAt: new Date().toISOString()
+      }, {
+        requestKey: `markAsCompleted-${sessionId}-${Date.now()}`
       });
     } catch (error) {
       console.error('Failed to mark session as completed:', error);
@@ -225,6 +239,8 @@ export const learningSession = {
           ...feedback,
           submittedAt: new Date().toISOString()
         }
+      }, {
+        requestKey: `saveFeedback-${sessionId}-${Date.now()}`
       });
     } catch (error) {
       console.error('Failed to save feedback:', error);
