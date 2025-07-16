@@ -6,6 +6,13 @@ export const learningSession = {
   // Initialize or resume a learning session (one session per user per topic)
   async init(userId: string, topicId: string, topicVersionId: string): Promise<LearningSession> {
     try {
+      console.log('🔄 learningSession.init called with:', { userId, topicId, topicVersionId });
+      console.log('🔐 PocketBase auth state in init:', {
+        isValid: pb.authStore.isValid,
+        model: pb.authStore.model?.id,
+        token: pb.authStore.token ? 'present' : 'missing'
+      });
+      
       // Check for existing session (completed or incomplete)
       const existingSessions = await pb.collection('learnSessions').getList(1, 50, {
         filter: `user = "${userId}" && topic = "${topicId}"`,
@@ -38,6 +45,15 @@ export const learningSession = {
       }
 
       // Create new session (first time or restarting after completion)
+      console.log('🆕 Creating new session with data:', {
+        user: userId,
+        topic: topicId,
+        topicVersion: topicVersionId,
+        currentPage: 0,
+        responses: [],
+        completed: false
+      });
+      
       const newSession = await pb.collection('learnSessions').create({
         user: userId,
         topic: topicId,
@@ -46,6 +62,8 @@ export const learningSession = {
         responses: [],
         completed: false // Initialize as not completed
       });
+      
+      console.log('✅ New session created successfully:', newSession.id);
       return newSession as unknown as LearningSession;
     } catch (error) {
       console.error('Failed to initialize learning session:', error);

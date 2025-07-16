@@ -1,18 +1,16 @@
 <script lang="ts">
 	import { Textarea } from '$lib/components/ui/textarea';
-	import type { TaskCompletionBlock } from '$routes/bullshift/learn/[id]/edit/schema';
-	import type { LearningSession } from '$routes/bullshift/learn/[id]/edit/schema';
+	import type { TaskCompletionBlock } from '$routes/bullshift/learn/[slug]/edit/schema';
+	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 
 	interface Props {
 		content: TaskCompletionBlock;
 		color: string;
-		pageIndex: number;
-		blockIndex: number;
 		session: LearningSession | null;
 		onResponse: (response: any) => void;
 	}
 
-	let { content, color, pageIndex, blockIndex, session, onResponse }: Props = $props();
+	let { content, color, session, onResponse }: Props = $props();
 
 	let completed = $state(false);
 	let notes = $state('');
@@ -23,7 +21,7 @@
 	$effect(() => {
 		if (session) {
 			const existingResponse = session.responses.find(
-				r => r.pageIndex === pageIndex && r.blockIndex === blockIndex && r.blockType === 'taskCompletion'
+				r => r.blockType === 'taskCompletion'
 			);
 			if (existingResponse) {
 				completed = existingResponse.response.completed || false;
@@ -89,11 +87,11 @@
 		<!-- Notes Section -->
 		{#if content.allowNotes !== false}
 			<div class="space-y-2">
-				<label for="completion-notes-{pageIndex}-{blockIndex}" class="block text-sm font-medium text-gray-700">
+				<label for="completion-notes" class="block text-sm font-medium text-gray-700">
 					Notizen (optional)
 				</label>
 				<Textarea
-					id="completion-notes-{pageIndex}-{blockIndex}"
+					id="completion-notes"
 					value={notes}
 					oninput={(e) => {
 						const target = e.target as HTMLTextAreaElement;

@@ -7,14 +7,12 @@
 	interface Props {
 		duration: number;
 		color: string;
-		pageIndex: number;
-		blockIndex: number;
 		session: LearningSession | null;
 		onResponse: (response: any) => void;
 		onComplete?: () => void;
 	}
 
-	let { duration, color, pageIndex, blockIndex, session, onResponse, onComplete }: Props = $props();
+	let { duration, color, session, onResponse, onComplete }: Props = $props();
 
 	let time = $state(duration);
 	let isRunning = $state(false);
@@ -31,8 +29,9 @@
 	// Load existing response if available
 	onMount(() => {
 		if (!session) return;
-		const existingResponse = learningSession.getResponse(session, pageIndex, blockIndex);
-		if (existingResponse && existingResponse.blockType === 'timer') {
+		// Find timer response in session
+		const existingResponse = session.responses.find(r => r.blockType === 'timer');
+		if (existingResponse) {
 			isCompleted = existingResponse.response.completed || false;
 		}
 	});

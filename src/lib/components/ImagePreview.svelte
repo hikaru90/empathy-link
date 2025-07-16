@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { pb } from '$scripts/pocketbase';
-	import type { TopicVersion } from '$routes/bullshift/learn/[id]/edit/schema';
+	import type { TopicVersion } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import { Button } from '$lib/components/ui/button';
 	import Upload from 'lucide-svelte/icons/upload';
 	import Trash2 from 'lucide-svelte/icons/trash-2';

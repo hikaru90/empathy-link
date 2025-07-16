@@ -101,6 +101,20 @@
 						stats.bodymapInteractions += response.response.points.length;
 					}
 					break;
+
+				case 'aiQuestion':
+					if (response.response.aiResponse) {
+						stats.totalTasks++;
+						stats.tasksCompleted++;
+					}
+					break;
+
+				case 'audio':
+					if (response.response.completed) {
+						stats.totalTasks++;
+						stats.tasksCompleted++;
+					}
+					break;
 			}
 		});
 
@@ -410,18 +424,6 @@
 
 <div class="mx-auto max-w-4xl space-y-5">
 	<!-- Back button -->
-	<div class="flex justify-start">
-		<Button
-			onclick={() => onComplete?.()}
-			variant="outline"
-			class="flex items-center gap-2"
-		>
-			<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-			</svg>
-			Zurück
-		</Button>
-	</div>
 
 	<div class="rounded-xl bg-white px-4 py-5 shadow-lg shadow-green-800/10">
 		<div class="flex items-center justify-between">

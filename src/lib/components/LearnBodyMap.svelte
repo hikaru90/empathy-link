@@ -6,14 +6,12 @@
 	import Pencil from 'lucide-svelte/icons/pencil';
 	import Trash from 'lucide-svelte/icons/trash';
 	import { learningSession } from '$lib/stores/learningSession';
-	import type { LearningSession } from '$routes/bullshift/learn/[id]/edit/schema';
+	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import FeelingSelector from '$lib/components/FeelingSelector.svelte';
 
 	interface Props {
 		content: object;
 		color: string;
-		pageIndex: number;
-		blockIndex: number;
 		session: LearningSession | null;
 		onResponse: (response: { points: Array<{ x: number; y: number; feelings: string[] }> }) => void;
 		contentBlock?: any; // The actual content block for content-based identification
@@ -21,7 +19,7 @@
 	}
 
 
-	let { content, color, pageIndex, blockIndex, session, onResponse, contentBlock, topicVersionId }: Props = $props();
+	let { content, color, session, onResponse, contentBlock, topicVersionId }: Props = $props();
 
 	let points = $state<{ id: number; x: number; y: number; feelings: string[] }[]>([]);
 	let showFeelings = $state<boolean>(false);
@@ -390,8 +388,9 @@
 		
 		// Load existing response if available
 		if (session && contentBlock) {
-			const existingResponse = learningSession.getResponseByContent(session, contentBlock, pageIndex);
-			if (existingResponse && existingResponse.blockType === 'bodymap') {
+			const existingResponse = session.responses.find(r => r.blockType === 'bodymap' && 
+				JSON.stringify(r.blockContent) === JSON.stringify(contentBlock));
+			if (existingResponse) {
 				points = existingResponse.response.points.map((point: any, index: number) => ({
 					id: index,
 					x: point.x,
@@ -431,7 +430,7 @@
 			use:interactionAction
 			class="bodyscan-map relative touch-none"
 			tabindex="0"
-			style="touch-action: none;"
+			style="touch-action: manipulation;"
 		>
 			{#each points as point, i}
 				<div

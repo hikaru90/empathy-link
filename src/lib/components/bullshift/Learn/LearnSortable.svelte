@@ -165,7 +165,7 @@
 						ontouchstart={(e) => handleTouchStart(e, item.text)}
 						role="button"
 						tabindex="0"
-						style="background-color: {color}; box-shadow: 0 6px 4px 0 rgba(0, 0, 0, 0.1); touch-action: none;"
+						style="background-color: {color}; box-shadow: 0 6px 4px 0 rgba(0, 0, 0, 0.1); touch-action: manipulation;"
 						class="rounded-md px-2 py-1 text-sm cursor-move hover:bg-blue-200 transition-colors select-none"
 						class:opacity-50={draggedItem === item.text}
 					>
@@ -208,7 +208,7 @@
 							ontouchstart={(e) => handleTouchStart(e, item.text)}
 							role="button"
 							tabindex="0"
-							style="background-color: {color}; box-shadow: 0 6px 4px 0 rgba(0, 0, 0, 0.1); touch-action: none;"
+							style="background-color: {color}; box-shadow: 0 6px 4px 0 rgba(0, 0, 0, 0.1); touch-action: manipulation;"
 							class="rounded-md px-2 py-1 text-sm cursor-move hover:bg-blue-200 transition-colors select-none"
 							class:opacity-50={draggedItem === item.text}
 						>

@@ -8,8 +8,6 @@
 	interface Props {
 		content: any;
 		color: string;
-		pageIndex: number;
-		blockIndex: number;
 		session: LearningSession | null;
 		contentBlock: any;
 		topicVersionId: string;
@@ -17,7 +15,7 @@
 		onComplete?: () => void;
 	}
 
-	let { content, color, pageIndex, blockIndex, session, contentBlock, topicVersionId, onResponse, onComplete }: Props = $props();
+	let { content, color, session, contentBlock, topicVersionId, onResponse, onComplete }: Props = $props();
 
 	let currentQuestionIndex = $state(0);
 	let selectedOptions = $state<number[]>([]);
@@ -31,7 +29,7 @@
 	$effect(() => {
 		if (session) {
 			const existingResponse = session.responses.find(
-				r => r.pageIndex === pageIndex && r.blockIndex === blockIndex && r.blockType === 'multipleChoice'
+				r => r.blockType === 'multipleChoice'
 			);
 			if (existingResponse) {
 				questionResponses = existingResponse.response.questionResponses || [];

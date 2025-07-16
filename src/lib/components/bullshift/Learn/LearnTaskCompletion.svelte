@@ -1,7 +1,7 @@
 <script lang="ts">
   import { learningSession } from '$lib/stores/learningSession';
   import { onMount } from 'svelte';
-  import type { LearningSession } from '$routes/bullshift/learn/[id]/edit/schema';
+  	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
   
 	interface Props {
 		content: {

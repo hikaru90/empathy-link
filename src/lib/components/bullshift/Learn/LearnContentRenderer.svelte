@@ -36,6 +36,8 @@
 	// Navigation helper functions (simplified since context management is removed)
 	const gotoNextStep = () => {
 		// Simply move to next page
+		console.log('currentStep',currentStep);
+		console.log('totalStepsCount',totalStepsCount());
 		if (currentStep <= totalStepsCount()) {
 			const newPage = currentStep + 1;
 			currentStep = newPage;
@@ -69,6 +71,7 @@
 		
 		// Editor specific
 		selectedVersionData?: any;
+		session?: LearningSession | null; // For preview mode
 		
 		// Callbacks
 		onPageChange?: (page: number) => void;
@@ -82,6 +85,7 @@
 		initialPage = 0,
 		isPreview,
 		selectedVersionData,
+		session,
 		onPageChange,
 		onSessionChange
 	}: Props = $props();
@@ -95,6 +99,11 @@
 	let showNewSessionConfirm = $state(false);
 	let completedSession = $state<LearningSession | null>(null);
 	let sessionInitData = $state<{userId: string, mainTopicId: string, topicVersionId: string} | null>(null);
+
+	// Use provided session in preview mode, otherwise use currentSession
+	const activeSession = $derived(() => {
+		return isPreview ? (session || null) : currentSession;
+	});
 
 	// Derived values
 	const currentCategory = $derived(() => {
@@ -248,6 +257,13 @@
 			currentVersionId: record?.expand?.currentVersion?.id
 		});
 		
+		// Debug PocketBase auth state
+		console.log('🔐 PocketBase auth state:', {
+			isValid: pb.authStore.isValid,
+			model: pb.authStore.model,
+			token: pb.authStore.token ? 'present' : 'missing'
+		});
+		
 		// Uses server-provided user data (no client-side auth checks)
 		if (user?.id && record?.id && record?.expand?.currentVersion?.id) {
 			const userId = user.id;
@@ -328,22 +344,51 @@
 
 	// Helper function to handle response saving
 	const handleResponse = async (blockType: string, response: any, content: any) => {
-		if (isPreview || !currentSession) return;
+		const session = activeSession();
+		if (!session) return;
 		
-		try {
-			// Cast blockType to the expected union type
+		if (isPreview) {
+			// For preview mode, update the mock session in memory
 			const validBlockType = blockType as "text" | "list" | "heading" | "task" | "timer" | "bodymap" | "taskCompletion" | "sortable" | "multipleChoice" | "aiQuestion" | "aiQuestionStep" | "aiResponseStep" | "image" | "audio" | "nextPage" | "pageNavigation";
-			// Use currentStep as the identifier since it's our single source of truth
-			await learningSession.saveResponseImmediate(currentSession.id, currentStep, 0, validBlockType, response, topic().id, content);
-			// Refresh session data if callback provided
+			
+			const newResponse = {
+				pageIndex: currentStep,
+				blockIndex: 0,
+				blockType: validBlockType,
+				response,
+				timestamp: new Date().toISOString(),
+				topicVersionId: topic().id,
+				blockContent: content
+			};
+
+			// Remove any existing response for this step
+			const updatedResponses = session.responses.filter(r => !(r.pageIndex === currentStep && r.blockIndex === 0));
+			updatedResponses.push(newResponse);
+
+			const updatedSession = {
+				...session,
+				responses: updatedResponses,
+				updated: new Date().toISOString()
+			};
+
 			if (onSessionChange) {
-				const refreshedSession = await pb.collection('learnSessions').getOne(currentSession.id);
-				const refreshedLearningSession = refreshedSession as unknown as LearningSession;
-				currentSession = refreshedLearningSession;
-				onSessionChange(refreshedLearningSession);
+				onSessionChange(updatedSession);
 			}
-		} catch (error) {
-			console.error('Failed to save response:', error);
+		} else {
+			// For live mode, save to database
+			try {
+				const validBlockType = blockType as "text" | "list" | "heading" | "task" | "timer" | "bodymap" | "taskCompletion" | "sortable" | "multipleChoice" | "aiQuestion" | "aiQuestionStep" | "aiResponseStep" | "image" | "audio" | "nextPage" | "pageNavigation";
+				await learningSession.saveResponseImmediate(session.id, currentStep, 0, validBlockType, response, topic().id, content);
+				// Refresh session data if callback provided
+				if (onSessionChange) {
+					const refreshedSession = await pb.collection('learnSessions').getOne(session.id);
+					const refreshedLearningSession = refreshedSession as unknown as LearningSession;
+					currentSession = refreshedLearningSession;
+					onSessionChange(refreshedLearningSession);
+				}
+			} catch (error) {
+				console.error('Failed to save response:', error);
+			}
 		}
 	};
 
@@ -381,8 +426,9 @@
 
 	<!-- Show summary page (only on the last step) -->
 	{#if components().length > 0 && currentStep === totalStepsCount() - 1}
-		{#if !isPreview && currentSession}
-			{#await pb.collection('learnSessions').getOne(currentSession.id).then(session => session as unknown as LearningSession)}
+		{@const currentActiveSession = activeSession()}
+		{#if !isPreview && currentActiveSession}
+			{#await pb.collection('learnSessions').getOne(currentActiveSession.id).then(session => session as unknown as LearningSession)}
 				<div class="text-center p-8">
 					<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
 					<p class="mt-4 text-gray-600">Loading your results...</p>
@@ -401,7 +447,7 @@
 			{/await}
 		{:else}
 			<LearningSummary 
-				session={null}
+				session={currentActiveSession || null}
 				topic={topic()}
 				color={currentCategory().color}
 				onFeedbackSubmit={handleFeedbackSubmit}
@@ -425,19 +471,25 @@
 		{:else if content && content.type === 'image'}
 			<LearnImage {content} />
 		{:else if content && content.type === 'audio'}
-			<LearnAudio color={currentCategory().color} {content} {isPreview} />
+			<LearnAudio 
+				color={currentCategory().color} 
+				{content} 
+				session={activeSession()}
+				onResponse={(response) => handleResponse('audio', response, content)}
+				gotoNextStep={() => gotoNextStep()} 
+			/>
 		{:else if content && content.type === 'timer'}
 			<LearnTimer 
 				duration={content.duration} 
 				color={currentCategory().color}
-				session={currentSession}
+				session={activeSession()}
 				onResponse={(response) => handleResponse('timer', response, content)}
 			/>
 		{:else if content && content.type === 'bodymap'}
 			<LearnBodyMap 
 				{content} 
 				color={currentCategory().color}
-				session={currentSession}
+				session={activeSession()}
 				contentBlock={content}
 				topicVersionId={topic().id}
 				onResponse={(response) => handleResponse('bodymap', response, content)}
@@ -446,7 +498,7 @@
 			<LearnCompletionNotes 
 				{content} 
 				color={currentCategory().color}
-				session={currentSession}
+				session={activeSession()}
 				onResponse={(response) => handleResponse('taskCompletion', response, content)}
 			/>
 		{:else if content && content.type === 'list'}
@@ -456,7 +508,7 @@
 				{content} 
 				color={currentCategory().color}
 				currentCategory={currentCategory()}
-				session={currentSession}
+				session={activeSession()}
 				topicVersionId={topic().id}
 				onResponse={(response) => handleResponse('sortable', response, content)}
 			/>
@@ -464,7 +516,7 @@
 			<LearnMultipleChoice 
 				{content} 
 				color={currentCategory().color}
-				session={currentSession}
+				session={activeSession()}
 				contentBlock={content}
 				topicVersionId={topic().id}
 				onResponse={(response) => handleResponse('multipleChoice', response, content)}
@@ -473,7 +525,7 @@
 			<LearnAIQuestion 
 				{content} 
 				color={currentCategory().color}
-				session={currentSession}
+				session={activeSession()}
 				contentBlock={content}
 				currentStep={currentStep}
 				totalSteps={totalSteps()}
@@ -482,9 +534,9 @@
 				gotoNextStep={() => gotoNextStep()}
 			/>
 		{:else if content && content.type === 'nextPage'}
-			<LearnNextPage {content} {isPreview} />
+			<LearnNextPage {content} />
 		{:else if content && content.type === 'pageNavigation'}
-			<LearnPageNavigation {content} {isPreview} />
+			<LearnPageNavigation {content} />
 		{:else}
 			<div class="p-4 bg-gray-100 rounded-lg">
 				<p class="text-gray-600">Unknown content type: {content?.type || 'undefined'}</p>

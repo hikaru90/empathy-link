@@ -114,30 +114,7 @@
 		}
 	};
 
-	const handleKeyDown = (event: KeyboardEvent) => {
-		// Handle Ctrl+Enter / Cmd+Enter for submission
-		if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-			event.preventDefault();
-			submitAnswer();
-			return;
-		}
-		
-		// Always prevent event bubbling to parent components
-		event.stopPropagation();
-		
-		// Only prevent default for specific problematic keys that might trigger navigation
-		if (event.key === 'Backspace' || event.key === 'Escape' || event.key === 'Enter') {
-			// Check if we're in a text input context and prevent default behavior
-			const target = event.target as HTMLElement;
-			if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') {
-				// For backspace in text inputs, don't prevent default (allow normal deletion)
-				// but do prevent it from bubbling up to trigger any parent handlers
-				return;
-			}
-		}
-	};
 </script>
-
 <div class="space-y-4 rounded-lg backdrop-blur h-full flex flex-col justify-between">
 	<!-- Debug: Show internal step -->
 	{#if internalStep() === 0}
@@ -199,7 +176,7 @@
 					</div>
 				{/if}
 			</div>
-
+			
 		{:else if internalStep() === 1 && existingResponse()}
 			<!-- AI Response -->
 			{#if hasSubmitted && aiResponse}
@@ -213,10 +190,10 @@
 			<!-- Navigation for next step -->
 			<Button
 			onclick={gotoNextStep}
-			class="bg-white text-gray-900 hover:bg-gray-100 font-medium pl-6 pr-2 py-3 rounded-full flex items-center justify-between gap-2 w-full"
+			class="bg-black text-white font-medium pl-6 pr-1.5 py-3 rounded-full flex items-center justify-between gap-2 w-full"
 		>
 			Weiter
-			<div class="size-6 bg-black/5 rounded-full flex items-center justify-center">
+			<div class="size-6 bg-white/20 rounded-full flex items-center justify-center">
 				<ArrowRight class="w-4 h-4" />
 			</div>
 		</Button>

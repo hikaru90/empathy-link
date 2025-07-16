@@ -24,6 +24,15 @@ const config = {
 			fontSize: {
 				'2xs': '0.5rem'
 			},
+			animation: {
+        expand: 'expand 1s ease-in-out infinite alternate',
+      },
+			keyframes: {
+        expand: {
+          '0%': { transform: 'scale(1)' },
+          '100%': { transform: 'scale(1.2)' },
+        }
+      },
 			colors: {
 				'bullshift': 'hsl(var(--bullshift) / <alpha-value>)',
 				'info-background': 'hsl(var(--info-background) / <alpha-value>)',

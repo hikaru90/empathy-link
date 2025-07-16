@@ -168,7 +168,7 @@
 
 
 {#if block.type === 'text'}
-		<div class="grid grid-cols-2 gap-4">
+		<div class="flex flex-col gap-2">
 			<div>
 				<label for="text-content-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Content (Markdown)</label>
 				<Textarea 
@@ -182,12 +182,6 @@
 					class="font-mono text-sm"
 					placeholder="Enter markdown content..."
 				/>
-			</div>
-			<div>
-				<div class="block text-sm font-medium mb-1">Preview</div>
-				<div class="border rounded p-2 bg-white min-h-[100px] prose prose-sm">
-					{@html marked(block.content || '')}
-				</div>
 			</div>
 		</div>
 	{:else if block.type === 'heading'}
@@ -260,7 +254,7 @@
 				</div>
 			</div>
 		{:else if block.type === 'list'}
-			<div class="grid grid-cols-2 gap-4">
+			<div class="flex flex-col gap-2">
 				<div>
 					<div class="block text-sm font-medium mb-2">List Items</div>
 					{#each block.items as item, itemIndex}
@@ -327,33 +321,6 @@
 						Add Item
 					</button>
 				</div>
-				<div>
-					<div class="block text-sm font-medium mb-2">Preview</div>
-					<div class="border rounded p-2 bg-white min-h-[100px] space-y-3">
-						{#each block.items as item, itemIndex}
-							<div class="p-2 border rounded bg-gray-50">
-								<div class="flex items-center gap-2 mb-1">
-									<span class="text-xs text-gray-500">#{itemIndex + 1}</span>
-									{#if item.title}
-										<div class="font-medium text-sm">
-											{@html marked(item.title, { breaks: true })}
-										</div>
-									{/if}
-								</div>
-								{#if item.text}
-									<div class="text-sm text-gray-700 ml-6">
-										{@html marked(item.text, { breaks: true })}
-									</div>
-								{/if}
-							</div>
-						{/each}
-						{#if block.items.length === 0}
-							<div class="text-gray-500 text-sm text-center py-4">
-								No list items yet
-							</div>
-						{/if}
-					</div>
-				</div>
 			</div>
 		{:else if block.type === 'task'}
 			<div class="space-y-2">
@@ -389,7 +356,7 @@
 						/>
 					</div>
 				{/if}
-				<div class="grid grid-cols-2 gap-4">
+				<div class="flex flex-col gap-2">
 					<div>
 						<label for="task-content-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Content (Markdown)</label>
 						<Textarea 
@@ -403,12 +370,6 @@
 							class="font-mono text-sm"
 							placeholder="Enter task description..."
 						/>
-					</div>
-					<div>
-						<div class="block text-sm font-medium mb-1">Preview</div>
-						<div class="border rounded p-2 bg-white min-h-[75px] prose prose-sm">
-							{@html marked(block.content || '')}
-						</div>
 					</div>
 				</div>
 			</div>
@@ -474,9 +435,6 @@
 						}}
 						placeholder="Custom placeholder for notes field..." 
 					/>
-				</div>
-				<div class="border rounded p-2 bg-white">
-					<div class="text-sm text-gray-600">Preview: Task completion component with checkbox and {block.allowNotes !== false ? 'notes field' : 'no notes field'}</div>
 				</div>
 			</div>
 		{:else if block.type === 'sortable'}
@@ -555,9 +513,6 @@
 					</button>
 				</div>
 				
-				<div class="border rounded p-2 bg-white">
-					<div class="text-sm text-gray-600">Preview: Sortable with {block.items.length} items between "{block.bucketA}" and "{block.bucketB}"</div>
-				</div>
 			</div>
 		{:else if block.type === 'multipleChoice'}
 			<div class="space-y-6">
@@ -687,12 +642,9 @@
 					Add Question
 				</button>
 
-				<div class="border rounded p-2 bg-white">
-					<div class="text-sm text-gray-600">Preview: Multiple choice quiz with {block.questions.length} questions{block.allowMultiple ? ' (multiple answers allowed)' : ''}</div>
-				</div>
 			</div>
 		{:else if block.type === 'aiQuestion'}
-			<div class="grid grid-cols-2 gap-4">
+			<div class="flex flex-col gap-2">
 				<div class="space-y-4">
 					<div>
 						<label for="ai-question-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Question (Markdown)</label>
@@ -734,23 +686,9 @@
 						/>
 					</div>
 				</div>
-				<div>
-					<div class="block text-sm font-medium mb-1">Preview</div>
-					<div class="border rounded p-4 bg-white space-y-3">
-						<div class="font-medium">
-							{@html marked(block.question || 'Question will appear here...')}
-						</div>
-						<div class="border rounded p-2 bg-gray-50 text-sm text-gray-500">
-							{block.placeholder || 'Schreibe deine Antwort hier...'}
-						</div>
-						<div class="text-xs text-gray-500 border-l-2 border-blue-500 pl-2">
-							<strong>System Prompt:</strong> {block.systemPrompt || 'No system prompt set'}
-						</div>
-					</div>
-				</div>
 			</div>
 		{:else if block.type === 'aiQuestionStep'}
-			<div class="grid grid-cols-2 gap-4">
+			<div class="flex flex-col gap-2">
 				<div class="space-y-4">
 					<div>
 						<label for="ai-question-step-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Question (Markdown)</label>
@@ -792,26 +730,9 @@
 						/>
 					</div>
 				</div>
-				<div>
-					<div class="block text-sm font-medium mb-1">Preview - Question Step</div>
-					<div class="border rounded p-4 bg-white space-y-3">
-						<div class="font-medium">
-							{@html marked(block.question || 'Question will appear here...')}
-						</div>
-						<div class="border rounded p-2 bg-gray-50 text-sm text-gray-500">
-							{block.placeholder || 'Schreibe deine Antwort hier...'}
-						</div>
-						<div class="text-xs text-gray-500 border-l-2 border-blue-500 pl-2">
-							<strong>System Prompt:</strong> {block.systemPrompt || 'No system prompt set'}
-						</div>
-						<div class="text-xs text-orange-600 bg-orange-50 p-2 rounded">
-							ℹ️ This shows the question step only. Add an AI Response Step block for the second screen.
-						</div>
-					</div>
-				</div>
 			</div>
 		{:else if block.type === 'aiResponseStep'}
-			<div class="grid grid-cols-2 gap-4">
+			<div class="flex flex-col gap-2">
 				<div class="space-y-4">
 					<div>
 						<label for="ai-response-question-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Question (Markdown) - for context</label>
@@ -844,25 +765,9 @@
 						<strong>Note:</strong> This block shows the user's answer and AI response. Make sure to place this block after the corresponding AI Question Step block.
 					</div>
 				</div>
-				<div>
-					<div class="block text-sm font-medium mb-1">Preview - Response Step</div>
-					<div class="border rounded p-4 bg-white space-y-3">
-						<div class="font-medium">
-							{@html marked(block.question || 'Question will appear here...')}
-						</div>
-						<div class="border rounded p-3 bg-blue-50">
-							<div class="font-medium text-sm text-gray-700 mb-2">User's Answer:</div>
-							<div class="text-sm text-gray-600">Sample user response will appear here...</div>
-						</div>
-						<div class="border rounded p-3 bg-gray-50">
-							<div class="font-medium text-sm text-gray-700 mb-2">AI Response:</div>
-							<div class="text-sm text-gray-600">AI feedback will appear here...</div>
-						</div>
-					</div>
-				</div>
 			</div>
 		{:else if block.type === 'image'}
-			<div class="grid grid-cols-2 gap-4">
+			<div class="flex flex-col gap-2">
 				<div class="space-y-4">
 					<div>
 						<label for="image-src-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Image URL</label>
@@ -958,40 +863,9 @@
 						</div>
 					</div>
 				</div>
-				<div>
-					<div class="block text-sm font-medium mb-1">Preview</div>
-					<div class="border rounded p-4 bg-white">
-						{#if block.src}
-							{@const alignmentClass = block.alignment === 'left' ? 'text-left' : block.alignment === 'right' ? 'text-right' : 'text-center'}
-							<div class={alignmentClass}>
-								<div class="inline-block">
-									<img 
-										src={block.src}
-										alt={block.alt || ''}
-										style={block.width ? `max-width: ${block.width}px` : ''}
-										class="max-w-full h-auto rounded shadow-sm"
-										onerror={() => {}}
-									/>
-									{#if block.caption}
-										<div class="mt-2 text-sm text-gray-600 italic">
-											{block.caption}
-										</div>
-									{/if}
-								</div>
-							</div>
-						{:else}
-							<div class="flex items-center justify-center h-32 bg-gray-100 rounded text-gray-500">
-								<div class="text-center">
-									<div class="text-2xl mb-2">🖼️</div>
-									<div class="text-sm">Enter image URL to see preview</div>
-								</div>
-							</div>
-						{/if}
-					</div>
-				</div>
 			</div>
 		{:else if block.type === 'audio'}
-			<div class="grid grid-cols-2 gap-4">
+			<div class="flex flex-col gap-2">
 				<div class="space-y-4">
 					<div>
 						<label for="audio-src-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Audio URL</label>
@@ -1100,76 +974,9 @@
 						/>
 					</div>
 				</div>
-				<div>
-					<div class="block text-sm font-medium mb-1">Preview</div>
-					<div class="border rounded p-4 bg-gray-100">
-						{#if block.src}
-							<div class="bg-blue-500 rounded-xl p-4">
-								{#if block.title}
-									<div class="mb-3 prose prose-lg max-w-none text-white prose-headings:text-white prose-p:text-white prose-strong:text-white prose-em:text-white prose-a:text-white/80 prose-a:underline">
-										{@html marked(block.title)}
-									</div>
-								{/if}
-								
-								<div class="bg-white/10 rounded-lg p-3">
-									{#if block.content}
-										<div class="mb-4 prose prose-sm max-w-none text-white prose-headings:text-white prose-p:text-white prose-strong:text-white prose-em:text-white prose-a:text-white/80 prose-a:underline">
-											{@html marked(block.content)}
-										</div>
-									{/if}
-
-									{#if block.controls !== false}
-										<div class="bg-white/20 rounded-lg p-4">
-											<div class="flex items-center gap-4">
-												<!-- Play Button -->
-												<button
-													class="flex items-center justify-center w-12 h-12 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
-													aria-label="Play"
-												>
-													<svg class="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-														<path d="M8 5v14l11-7z"/>
-													</svg>
-												</button>
-
-												<!-- Time Display -->
-												<div class="flex-1 space-y-2">
-													<div class="flex justify-between text-sm text-white/80">
-														<span>0:00</span>
-														<span>0:00</span>
-													</div>
-													
-													<!-- Progress Bar -->
-													<div class="w-full h-2 bg-white/20 rounded-full">
-														<div class="h-full bg-white/80 rounded-full transition-all duration-100" style="width: 0%"></div>
-													</div>
-												</div>
-											</div>
-										</div>
-									{/if}
-
-									{#if block.transcript}
-										<details class="mt-3 text-sm">
-											<summary class="cursor-pointer font-medium text-white/80 hover:text-white">📝 Show transcript</summary>
-											<div class="mt-2 p-2 bg-white/10 rounded text-white/90 whitespace-pre-wrap">
-												{block.transcript}
-											</div>
-										</details>
-									{/if}
-								</div>
-							</div>
-						{:else}
-							<div class="flex items-center justify-center h-32 bg-gray-200 rounded text-gray-500">
-								<div class="text-center">
-									<div class="text-2xl mb-2">🎵</div>
-									<div class="text-sm">Enter audio URL to see preview</div>
-								</div>
-							</div>
-						{/if}
-					</div>
-				</div>
 			</div>
 		{:else if block.type === 'nextPage'}
-			<div class="grid grid-cols-2 gap-4">
+			<div class="flex flex-col gap-2">
 				<div class="space-y-4">
 					<div>
 						<label for="nextpage-text-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Button Text</label>
@@ -1214,25 +1021,9 @@
 						<label for="nextpage-disabled-{pageIndex}-{blockIndex}" class="text-sm">Disabled by default</label>
 					</div>
 				</div>
-				<div>
-					<div class="block text-sm font-medium mb-1">Preview</div>
-					<div class="border rounded p-4 bg-gray-100">
-						<div class="flex justify-end">
-							<button 
-								class="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white transition-colors {block.disabled ? 'opacity-50' : ''}"
-								disabled={block.disabled}
-							>
-								{block.text || 'Next'}
-								<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-									<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-								</svg>
-							</button>
-						</div>
-					</div>
-				</div>
 			</div>
 		{:else if block.type === 'pageNavigation'}
-			<div class="grid grid-cols-2 gap-4">
+			<div class="flex flex-col gap-2">
 				<div class="space-y-4">
 					<div class="grid grid-cols-2 gap-2">
 						<div class="flex items-center space-x-2">
@@ -1262,7 +1053,7 @@
 							<label for="nav-showprev-{pageIndex}-{blockIndex}" class="text-sm">Show Previous</label>
 						</div>
 					</div>
-					<div class="grid grid-cols-2 gap-2">
+					<div class="flex flex-col gap-2">
 						<div>
 							<label for="nav-nexttext-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Next Text</label>
 							<Input 
@@ -1304,32 +1095,6 @@
 							<option value="floating">Floating</option>
 							<option value="inline">Inline</option>
 						</select>
-					</div>
-				</div>
-				<div>
-					<div class="block text-sm font-medium mb-1">Preview</div>
-					<div class="border rounded p-4 bg-gray-100">
-						<div class="flex justify-between items-center">
-							{#if block.showPrev}
-								<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-200 text-gray-700">
-									<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-										<path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-									</svg>
-									{block.prevText || 'Previous'}
-								</button>
-							{:else}
-								<div></div>
-							{/if}
-							
-							{#if block.showNext !== false}
-								<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white">
-									{block.nextText || 'Next'}
-									<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-										<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-									</svg>
-								</button>
-							{/if}
-						</div>
 					</div>
 				</div>
 			</div>

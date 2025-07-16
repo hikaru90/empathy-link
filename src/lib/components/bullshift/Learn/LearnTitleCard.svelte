@@ -16,19 +16,19 @@
 
 <div
 	style="background-color: {currentCategory?.color || '#ccc'}"
-	class="relative mb-10 overflow-hidden rounded-lg p-6 w-full h-full flex items-start justify-between flex-col"
+	class="relative overflow-hidden rounded-lg p-6 w-full h-full flex items-start justify-between flex-col flex-grow"
 >
-	<h1 class="relative z-10 text-xl font-light text-white">
+	<h1 class="relative z-10 text-xl font-light text-black">
 		<div class="mb-1">{topic?.titleDE?.split('||')[0] || 'Loading...'}</div>
 		<div class="font-bold">{topic?.titleDE?.split('||')[1] || ''}</div>
 	</h1>
 	
 		<Button
 			onclick={gotoNextStep}
-			class="bg-white text-gray-900 hover:bg-gray-100 font-medium pl-6 pr-2 py-3 rounded-full flex items-center justify-between gap-2 w-full"
+			class="bg-black text-white font-medium pl-6 pr-2 py-3 rounded-full flex items-center justify-between gap-2 w-full"
 		>
 			Starten
-			<div class="size-6 bg-black/5 rounded-full flex items-center justify-center">
+			<div class="size-6 bg-white/20 rounded-full flex items-center justify-center">
 				<ArrowRight class="w-4 h-4" />
 			</div>
 		</Button>

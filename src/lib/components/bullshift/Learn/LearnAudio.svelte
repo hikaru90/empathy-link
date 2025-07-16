@@ -2,6 +2,7 @@
 	import { marked } from 'marked';
 	import { onMount } from 'svelte';
 	import StoryNavigation from './StoryNavigation.svelte';
+	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 
 	interface Props {
 		content: {
@@ -14,9 +15,12 @@
 			controls?: boolean;
 		};
 		color?: string;
+		session?: any;
+		onResponse?: (response: any) => void;
+		gotoNextStep?: () => void;
 	}
 
-	let { content, color }: Props = $props();
+	let { content, color, session, onResponse, gotoNextStep }: Props = $props();
 
 	// Audio player state
 	let audioElement: HTMLAudioElement;
@@ -26,12 +30,43 @@
 	let isLoading = $state(true);
 	let hasError = $state(false);
 	let volume = $state(1);
+	let isCompleted = $state(false);
+
+	// Load existing completion state from session
+	$effect(() => {
+		if (session && session.responses) {
+			const existingResponse = session.responses.find(
+				(r: any) => r.blockType === 'audio' && 
+				JSON.stringify(r.blockContent) === JSON.stringify(content)
+			);
+			if (existingResponse) {
+				isCompleted = existingResponse.response.completed || false;
+			}
+		}
+	});
 
 	// Format time helper
 	const formatTime = (time: number): string => {
 		const minutes = Math.floor(time / 60);
 		const seconds = Math.floor(time % 60);
 		return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+	};
+
+	// Mark audio as completed
+	const markCompleted = (method: 'played' | 'skipped') => {
+		if (isCompleted) return;
+		
+		isCompleted = true;
+		
+		if (onResponse) {
+			onResponse({
+				completed: true,
+				method: method,
+				timeListened: currentTime,
+				totalDuration: duration,
+				timestamp: new Date().toISOString()
+			});
+		}
 	};
 
 	// Play/pause toggle
@@ -101,6 +136,9 @@
 		if (content.loop) {
 			audioElement.currentTime = 0;
 			audioElement.play();
+		} else {
+			// Mark as completed when audio finishes naturally
+			markCompleted('played');
 		}
 	};
 
@@ -157,13 +195,7 @@
 	});
 </script>
 
-<div class="relative flex h-full flex-col justify-between rounded-lg px-4 py-4">
-	{#if content.title}
-		<div class="mb-8 text-center text-xl font-bold leading-snug">
-			{@html marked(content.title)}
-		</div>
-	{/if}
-
+<div class="relative flex h-full flex-col justify-between rounded-lg">
 	<!-- Hidden audio element -->
 	<audio
 		bind:this={audioElement}
@@ -181,71 +213,94 @@
 		Your browser does not support the audio element.
 	</audio>
 
+	{#if content.title}
+		<div class="relative z-10 mb-8 text-center text-xl font-bold leading-snug">
+			{@html marked(content.title)}
+		</div>
+	{/if}
+
 	<!-- Custom Audio Player -->
 	{#if content.controls !== false}
 		<div class="flex flex-col items-center justify-between gap-4">
 			<!-- Restart Button (only show when playing) -->
-			
+
 			<!-- Play/Pause Button -->
 			<div class="relative">
 				{#if isPlaying && !hasError && !isLoading}
 					<button
 						onclick={restart}
-						class="absolute -top-16 left-1/2 -translate-x-1/2 flex size-10 items-center justify-center rounded-full bg-white z-10"
+						class="absolute -top-16 left-1/2 z-10 flex size-8 -translate-x-1/2 items-center justify-center rounded-full bg-black"
 						aria-label="Restart"
 					>
-						<svg class="h-5 w-5 text-black" fill="currentColor" viewBox="0 0 24 24">
+						<svg class="size-3 text-white" fill="currentColor" viewBox="0 0 24 24">
 							<path
 								d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"
 							/>
 						</svg>
 					</button>
 				{/if}
-				<div
-					class="absolute left-1/2 top-1/2 z-0 size-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20"
-				></div>
-				<div
-					class=" absolute left-1/2 top-1/2 z-0 size-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20"
-				></div>
-			
-			<button
-				onclick={togglePlay}
-				disabled={isLoading || hasError}
-				class="relative flex size-16 items-center justify-center rounded-full bg-white/90 shadow-lg transition-colors hover:bg-white disabled:opacity-50"
-				aria-label={hasError ? 'Audio error' : isPlaying ? 'Pause' : 'Play'}
-			>
-				{#if hasError}
-					<!-- Error Icon -->
-					<svg class="h-6 w-6 text-red-400" fill="currentColor" viewBox="0 0 24 24">
-						<path
-							d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-						/>
-					</svg>
-				{:else if isLoading}
-					<div
-						class="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"
-					></div>
-				{:else if isPlaying}
-					<!-- Pause Icon -->
-					<svg class="h-6 w-6 text-black" fill="currentColor" viewBox="0 0 24 24">
-						<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-					</svg>
-				{:else}
-					<!-- Play Icon -->
-					<svg class="ml-0.5 h-6 w-6 text-black" fill="currentColor" viewBox="0 0 24 24">
-						<path d="M8 5v14l11-7z" />
-					</svg>
-				{/if}
-			</button>
-		</div>
-			<div class="m-4 rounded-full bg-white/90 px-3 py-1 text-sm relative z-10">
+				<div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
+					<div class="size-40 animate-expand rounded-full bg-white/30"></div>
+				</div>
+				<div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
+					<div class="size-28 animate-expand rounded-full bg-white/40 delay-100"></div>
+				</div>
+
+				<button
+					onclick={togglePlay}
+					disabled={isLoading || hasError}
+					class="relative flex size-16 items-center justify-center rounded-full bg-black shadow-lg transition-colors disabled:opacity-50"
+					aria-label={hasError ? 'Audio error' : isPlaying ? 'Pause' : 'Play'}
+				>
+					{#if hasError}
+						<!-- Error Icon -->
+						<svg class="h-6 w-6 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+							<path
+								d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+							/>
+						</svg>
+					{:else if isLoading}
+						<div
+							class="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"
+						></div>
+					{:else if isPlaying}
+						<!-- Pause Icon -->
+						<svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+							<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+						</svg>
+					{:else}
+						<!-- Play Icon -->
+						<svg class="ml-0.5 h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+							<path d="M8 5v14l11-7z" />
+						</svg>
+					{/if}
+				</button>
+			</div>
+			<div class="relative z-10 m-4 rounded-full bg-white/90 px-3 py-1 text-sm">
 				{formatTime(duration - currentTime)}
 			</div>
 		</div>
-		<div class="text-center text-sm text-black/40">
+	{/if}
+	<div class="flex flex-col">
+		<div class="pb-4 text-center text-sm text-black/40">
 			{#if content.content}
 				{@html marked(content.content)}
 			{/if}
 		</div>
-	{/if}
+		<div class="flex items-center justify-center">
+			<button
+				onclick={() => {
+					markCompleted('skipped');
+					audioElement.pause();
+					gotoNextStep?.();
+				}}
+				class="flex items-center gap-2 rounded-full bg-white/90 py-1 pl-3 pr-1 text-xs"
+			>
+				<span class="text-black/60">{isCompleted ? 'Weiter' : 'Überspringen'}</span>
+				<div class="flex size-4 items-center justify-center rounded-full bg-black/5">
+					<ChevronRight class="size-3" />
+				</div>
+			</button>
+		</div>
+	</div>
 </div>

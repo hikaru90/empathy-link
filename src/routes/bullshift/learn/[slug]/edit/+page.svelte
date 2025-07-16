@@ -5,6 +5,7 @@
 	import Footer from '$lib/components/bullshift/Footer.svelte';
 	import LearnContentRenderer from '$lib/components/bullshift/Learn/LearnContentRenderer.svelte';
 	import LearnEditor from '$lib/components/LearnEditor.svelte';
+	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import * as Resizable from '$lib/components/ui/resizable';
 	import { blur } from 'svelte/transition';
 	import SparklePill from '$lib/components/SparklePill.svelte';
@@ -32,15 +33,38 @@
 
 	let currentPage = $state(data.currentPage || 0);
 	let selectedVersionData = $state<any>(null);
+	
+	// Create mock session for preview mode - exists only in memory
+	let mockSession = $state<LearningSession>({
+		id: 'preview-session',
+		user: data.user?.id || 'preview-user',
+		topic: data.topicId || 'preview-topic',
+		topicVersion: 'preview-version',
+		currentPage: currentPage,
+		responses: [],
+		created: new Date().toISOString(),
+		updated: new Date().toISOString(),
+		completed: false
+	});
 
 	// Handle page changes from the content renderer
 	const handlePageChange = (page: number) => {
 		currentPage = page;
+		// Update mock session page as well
+		mockSession.currentPage = page;
 		const url = new URL(window.location.href);
 		url.searchParams.set('page', currentPage.toString());
 		replaceState(url, {
 			page: currentPage
 		});
+	};
+
+	// Handle session changes from the content renderer (for preview mode)
+	const handleSessionChange = (session: LearningSession | null) => {
+		if (session) {
+			// Update our mock session with new responses
+			mockSession = { ...session };
+		}
 	};
 
 	let currentPath: string;
@@ -203,17 +227,20 @@
 						in:blur={{ duration: animationDuration, delay: animationDuration }}
 						out:blur={{ duration: animationDuration }}
 					>
-					<div class="pb-32 pt-6 relative h-svh overflow-y-auto scrollableArea">
+					<div class="pb-[82px] pt-6 h-svh overflow-hidden">
 						<Header absolute user={data.user} />
-						<div class="max-container py-10">
+						<div class="max-container py-10 w-full h-full">
 							<!-- Use centralized content renderer -->
 							<LearnContentRenderer 
 								record={data.record}
 								categories={data.categories || []}
+								user={data.user}
 								initialPage={currentPage}
 								isPreview={true}
 								{selectedVersionData}
+								session={mockSession}
 								onPageChange={handlePageChange}
+								onSessionChange={handleSessionChange}
 							/>
 						</div>
 					</div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ContentBlock } from '$routes/bullshift/learn/[id]/edit/schema';
+	import type { ContentBlock } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 
 	const { onAddBlock }: { onAddBlock: (blockType: ContentBlock['type']) => void } = $props();
