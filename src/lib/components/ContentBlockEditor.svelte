@@ -5,6 +5,10 @@
 	import type { ContentBlock } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import Plus from 'lucide-svelte/icons/plus';
 	import Trash from 'lucide-svelte/icons/trash';
+	import Copy from 'lucide-svelte/icons/copy';
+	import ChevronsUp from 'lucide-svelte/icons/chevron-up';
+	import ChevronsDown from 'lucide-svelte/icons/chevron-down';
+	import GripVertical from 'lucide-svelte/icons/grip-vertical';
 	import AudioUpload from '$lib/components/AudioUpload.svelte';
 
 	const { 
@@ -13,23 +17,33 @@
 		blockIndex,
 		currentVersion,
 		onUpdate,
+		onBlockClick,
+		onDuplicate,
 		onMoveUp,
 		onMoveDown,
 		onRemove,
 		canMoveUp,
-		canMoveDown
+		canMoveDown,
+		onDragStart,
+		onDragEnd
 	}: {
 		block: ContentBlock;
 		pageIndex: number;
 		blockIndex: number;
 		currentVersion?: any;
 		onUpdate: (field: string, value: any) => void;
-		onMoveUp: () => void;
-		onMoveDown: () => void;
-		onRemove: () => void;
-		canMoveUp: boolean;
-		canMoveDown: boolean;
+		onBlockClick?: () => void;
+		onDuplicate?: () => void;
+		onMoveUp?: () => void;
+		onMoveDown?: () => void;
+		onRemove?: () => void;
+		canMoveUp?: boolean;
+		canMoveDown?: boolean;
+		onDragStart?: (e: DragEvent) => void;
+		onDragEnd?: () => void;
 	} = $props();
+
+	let isCollapsed = $state(true);
 
 	const updateListItem = (itemIndex: number, field: 'title' | 'text', value: string) => {
 		if (block.type === 'list') {
@@ -164,10 +178,117 @@
 	};
 </script>
 
-<div class="p-4">
+<div class="relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200">
+	<!-- Collapsible Header -->
+	<div
+		class="bg-alsmostwhite flex cursor-pointer items-center justify-between border-b p-1 hover:bg-gray-100"
+		onclick={(e) => {
+			// If it's a right click or middle click, don't trigger step jump
+			if (e.button === 2 || e.button === 1) return;
+			
+			// Toggle collapse
+			isCollapsed = !isCollapsed;
+			
+			// Jump to step in preview
+			if (onBlockClick) {
+				onBlockClick();
+			}
+		}}
+	>
+		<div class="flex items-center gap-2">
+			<!-- Drag Handle -->
+			{#if onDragStart}
+				<div
+					class="cursor-grab p-1 text-gray-400 hover:text-gray-600"
+					draggable="true"
+					ondragstart={onDragStart}
+					ondragend={onDragEnd}
+				>
+					<GripVertical class="size-4" />
+				</div>
+			{/if}
 
+			<!-- Block Type Icon -->
+			<img
+				src={`/blocks/${block.type}.svg`}
+				alt={block.type}
+				class="size-6"
+			/>
 
-{#if block.type === 'text'}
+			<!-- Block Type Label -->
+			<span class="text-sm font-medium text-gray-700">
+				{block.type.charAt(0).toUpperCase() + block.type.slice(1)}
+			</span>
+		</div>
+
+		<div class="flex items-center gap-1">
+			<!-- Action Buttons -->
+			{#if onDuplicate}
+				<button
+					type="button"
+					class="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+					onclick={(e) => {
+						e.stopPropagation();
+						onDuplicate();
+					}}
+					title="Duplicate block"
+				>
+					<Copy class="size-4" />
+				</button>
+			{/if}
+
+			{#if onMoveUp}
+				<button
+					type="button"
+					class="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+					onclick={(e) => {
+						e.stopPropagation();
+						onMoveUp();
+					}}
+					disabled={!canMoveUp}
+					class:opacity-50={!canMoveUp}
+					title="Move up"
+				>
+					<ChevronsUp class="size-4" />
+				</button>
+			{/if}
+
+			{#if onMoveDown}
+				<button
+					type="button"
+					class="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+					onclick={(e) => {
+						e.stopPropagation();
+						onMoveDown();
+					}}
+					disabled={!canMoveDown}
+					class:opacity-50={!canMoveDown}
+					title="Move down"
+				>
+					<ChevronsDown class="size-4" />
+				</button>
+			{/if}
+
+			{#if onRemove}
+				<button
+					type="button"
+					class="rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600"
+					onclick={(e) => {
+						e.stopPropagation();
+						onRemove();
+					}}
+					title="Remove block"
+				>
+					<Trash class="size-4" />
+				</button>
+			{/if}
+		</div>
+	</div>
+
+	<!-- Collapsible Content -->
+	{#if !isCollapsed}
+		<div class="p-4">
+			{#if block.type === 'text'}
 		<div class="flex flex-col gap-2">
 			<div>
 				<label for="text-content-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Content (Markdown)</label>
@@ -184,75 +305,7 @@
 				/>
 			</div>
 		</div>
-	{:else if block.type === 'heading'}
-			<div class="space-y-2">
-				<div>
-					<label for="heading-hierarchy-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Hierarchy</label>
-					<select 
-						id="heading-hierarchy-{pageIndex}-{blockIndex}"
-						value={block.hierarchy} 
-						onchange={(e: Event) => {
-							const target = e.target as HTMLSelectElement;
-							onUpdate('hierarchy', parseInt(target.value));
-						}}
-						class="border rounded px-2 py-1"
-					>
-						<option value={1}>H1</option>
-						<option value={2}>H2</option>
-						<option value={3}>H3</option>
-						<option value={4}>H4</option>
-						<option value={5}>H5</option>
-						<option value={6}>H6</option>
-					</select>
-				</div>
-				<div>
-					<label for="heading-content-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Content</label>
-					<Input 
-						id="heading-content-{pageIndex}-{blockIndex}"
-						value={block.content} 
-						oninput={(e: Event) => {
-							const target = e.target as HTMLInputElement;
-							onUpdate('content', target.value);
-						}}
-						placeholder="Heading text..." 
-					/>
-				</div>
-				<div>
-					<label for="heading-subheading-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Subheading (optional)</label>
-					<Input 
-						id="heading-subheading-{pageIndex}-{blockIndex}"
-						value={block.subheading || ''} 
-						oninput={(e: Event) => {
-							const target = e.target as HTMLInputElement;
-							onUpdate('subheading', target.value || undefined);
-						}}
-						placeholder="Optional subheading text..." 
-					/>
-				</div>
-				<div class="border rounded p-2 bg-white">
-					<div class="prose">
-						{#if block.hierarchy === 1}
-							<h1>{block.content}</h1>
-							{#if block.subheading}<p class="text-lg text-gray-600 mt-2">{block.subheading}</p>{/if}
-						{:else if block.hierarchy === 2}
-							<h2>{block.content}</h2>
-							{#if block.subheading}<p class="text-base text-gray-600 mt-2">{block.subheading}</p>{/if}
-						{:else if block.hierarchy === 3}
-							<h3>{block.content}</h3>
-							{#if block.subheading}<p class="text-sm text-gray-600 mt-1">{block.subheading}</p>{/if}
-						{:else if block.hierarchy === 4}
-							<h4>{block.content}</h4>
-							{#if block.subheading}<p class="text-sm text-gray-600 mt-1">{block.subheading}</p>{/if}
-						{:else if block.hierarchy === 5}
-							<h5>{block.content}</h5>
-							{#if block.subheading}<p class="text-xs text-gray-600 mt-1">{block.subheading}</p>{/if}
-						{:else if block.hierarchy === 6}
-							<h6>{block.content}</h6>
-							{#if block.subheading}<p class="text-xs text-gray-600 mt-1">{block.subheading}</p>{/if}
-						{/if}
-					</div>
-				</div>
-			</div>
+	
 		{:else if block.type === 'list'}
 			<div class="flex flex-col gap-2">
 				<div>
@@ -389,6 +442,32 @@
 				<p class="text-sm text-gray-500 mt-1">
 					{Math.floor(block.duration / 60)}m {block.duration % 60}s
 				</p>
+			</div>
+		{:else if block.type === 'breathe'}
+			<div class="space-y-4">
+				<div>
+					<label for="breathe-duration-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Default Duration</label>
+					<select 
+						id="breathe-duration-{pageIndex}-{blockIndex}"
+						value={block.duration || 60}
+						onchange={(e: Event) => {
+							const target = e.target as HTMLSelectElement;
+							onUpdate('duration', parseInt(target.value) || 60);
+						}}
+						class="border rounded px-2 py-1 w-full"
+					>
+						<option value={15}>15 Sekunden</option>
+						<option value={30}>30 Sekunden</option>
+						<option value={60}>1 Minute</option>
+						<option value={120}>2 Minuten</option>
+					</select>
+				</div>
+				<div class="text-sm text-gray-600 bg-gray-50 p-3 rounded">
+					<strong>5-7 Breathing Pattern:</strong> This breathing exercise uses a 5-second inhale, 7-second exhale pattern. 
+					Users can choose from 15 seconds, 30 seconds, 1 minute, or 2 minutes.
+					<br><br>
+					<strong>Audio:</strong> Make sure you have added breathe-in.mp3 and breathe-out.mp3 files to the /static/audio/ directory for synchronized audio feedback.
+				</div>
 			</div>
 		{:else if block.type === 'bodymap'}
 			<div class="text-center py-4 text-gray-500">
@@ -1098,5 +1177,7 @@
 					</div>
 				</div>
 			</div>
-{/if} 
+	{/if} 
+		</div>
+	{/if}
 </div>

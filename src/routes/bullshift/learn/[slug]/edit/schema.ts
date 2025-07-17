@@ -8,6 +8,7 @@ export type ContentBlock =
   | HeadingBlock
   | TaskBlock
   | TimerBlock
+  | BreatheBlock
   | BodymapBlock
   | TaskCompletionBlock
   | SortableBlock
@@ -47,6 +48,11 @@ export interface TaskBlock {
 export interface TimerBlock {
   type: "timer";
   duration: number; // in seconds
+}
+
+export interface BreatheBlock {
+  type: "breathe";
+  duration?: number; // duration in seconds, default 60 (1 minute)
 }
 
 export interface BodymapBlock {
@@ -189,6 +195,11 @@ const timerBlockSchema = z.object({
   duration: z.number().min(0)
 });
 
+const breatheBlockSchema = z.object({
+  type: z.literal("breathe"),
+  duration: z.union([z.literal(15), z.literal(30), z.literal(60), z.literal(120)]).optional() // 15s, 30s, 1min, 2min
+});
+
 const bodymapBlockSchema = z.object({
   type: z.literal("bodymap")
 });
@@ -289,6 +300,7 @@ const contentBlockSchema = z.discriminatedUnion("type", [
   headingBlockSchema,
   taskBlockSchema,
   timerBlockSchema,
+  breatheBlockSchema,
   bodymapBlockSchema,
   taskCompletionBlockSchema,
   sortableBlockSchema,

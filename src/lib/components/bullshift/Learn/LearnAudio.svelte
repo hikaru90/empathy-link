@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { marked } from 'marked';
 	import { onMount } from 'svelte';
-	import StoryNavigation from './StoryNavigation.svelte';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
+	import LearnGotoNextButton from '$lib/components/bullshift/Learn/LearnGotoNextButton.svelte';
 
 	interface Props {
 		content: {
@@ -36,8 +36,8 @@
 	$effect(() => {
 		if (session && session.responses) {
 			const existingResponse = session.responses.find(
-				(r: any) => r.blockType === 'audio' && 
-				JSON.stringify(r.blockContent) === JSON.stringify(content)
+				(r: any) =>
+					r.blockType === 'audio' && JSON.stringify(r.blockContent) === JSON.stringify(content)
 			);
 			if (existingResponse) {
 				isCompleted = existingResponse.response.completed || false;
@@ -55,9 +55,9 @@
 	// Mark audio as completed
 	const markCompleted = (method: 'played' | 'skipped') => {
 		if (isCompleted) return;
-		
+
 		isCompleted = true;
-		
+
 		if (onResponse) {
 			onResponse({
 				completed: true,
@@ -291,20 +291,18 @@
 				{@html marked(content.content)}
 			{/if}
 		</div>
-		<div class="flex items-center justify-center">
-			<button
-				onclick={() => {
+
+		<div class="flex justify-center">
+			<LearnGotoNextButton
+				variant="secondary"
+				onClick={() => {
 					markCompleted('skipped');
 					audioElement.pause();
 					gotoNextStep?.();
 				}}
-				class="flex items-center gap-2 rounded-full bg-white/90 py-1 pl-3 pr-1 text-xs"
 			>
-				<span class="text-black/60">{isCompleted ? 'Weiter' : 'Überspringen'}</span>
-				<div class="flex size-4 items-center justify-center rounded-full bg-black/5">
-					<ChevronRight class="size-3" />
-				</div>
-			</button>
+				{isCompleted ? 'Weiter' : 'Überspringen'}
+			</LearnGotoNextButton>
 		</div>
 	</div>
 </div>

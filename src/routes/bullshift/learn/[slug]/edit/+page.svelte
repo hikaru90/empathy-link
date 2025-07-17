@@ -143,10 +143,13 @@
 	const globalKeyDownHandler = (event: KeyboardEvent) => {
 		const target = event.target as HTMLElement;
 		
-		// If the event is from a text input or textarea, don't interfere
+		// If the event is from a text input or textarea, only handle specific keys
 		if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true') {
-			// For text inputs, stop propagation to prevent any parent handlers from firing
-			event.stopPropagation();
+			// Only stop propagation for backspace to prevent browser navigation
+			// Allow other keys like Ctrl+S to bubble up to save handlers
+			if (event.key === 'Backspace') {
+				event.stopPropagation();
+			}
 			return;
 		}
 		

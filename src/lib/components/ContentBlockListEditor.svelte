@@ -7,6 +7,7 @@
 	import ChevronsUp from 'lucide-svelte/icons/chevron-up';
 	import ChevronsDown from 'lucide-svelte/icons/chevron-down';
 	import GripVertical from 'lucide-svelte/icons/grip-vertical';
+	import Copy from 'lucide-svelte/icons/copy';
 	import { onMount, onDestroy } from 'svelte';
 
 	interface Props {
@@ -20,7 +21,6 @@
 
 	let draggedBlockIndex: number | null = $state(null);
 	let dragOverIndex: number | null = $state(null);
-	let collapsedBlocks: boolean[] = $state(new Array(content.length).fill(true));
 
 	// Create preview array while dragging
 	let previewContent = $state(content);
@@ -37,21 +37,7 @@
 	});
 
 	// Content Management Functions
-	// Ensure collapsed state array matches content length
-	const ensureCollapsedStateLength = () => {
-		if (collapsedBlocks.length !== content.length) {
-			// Always start with all blocks collapsed
-			collapsedBlocks = new Array(content.length).fill(true);
-		}
-	};
-
-	const toggleBlockCollapse = (blockIndex: number) => {
-		ensureCollapsedStateLength();
-		collapsedBlocks[blockIndex] = !collapsedBlocks[blockIndex];
-	};
-
 	const addContentBlock = (blockType: ContentBlock['type']) => {
-		ensureCollapsedStateLength();
 		let newBlock: ContentBlock;
 		switch (blockType) {
 			case 'text':
@@ -60,14 +46,14 @@
 			case 'list':
 				newBlock = { type: 'list', items: [{ title: '', text: '' }] };
 				break;
-			case 'heading':
-				newBlock = { type: 'heading', hierarchy: 1, content: '', subheading: '' };
-				break;
 			case 'task':
 				newBlock = { type: 'task', content: '' };
 				break;
 			case 'timer':
 				newBlock = { type: 'timer', duration: 60 };
+				break;
+			case 'breathe':
+				newBlock = { type: 'breathe', duration: 60 };
 				break;
 			case 'bodymap':
 				newBlock = { type: 'bodymap' };
@@ -137,11 +123,9 @@
 	const removeContentBlock = (blockIndex: number) => {
 		const newContent = content.filter((_, index) => index !== blockIndex);
 		onContentChange(newContent);
-		ensureCollapsedStateLength();
 	};
 
 	const updateContentBlock = (blockIndex: number, updatedBlock: ContentBlock) => {
-		ensureCollapsedStateLength();
 		const newContent = [...content];
 		newContent[blockIndex] = updatedBlock;
 		onContentChange(newContent);
@@ -210,12 +194,14 @@
 		    target.contentEditable === 'true' ||
 		    target.closest('input') || 
 		    target.closest('textarea')) {
+			// Don't prevent default for input fields, just return early
 			return;
 		}
 		
 		// Check for Ctrl+S (Windows/Linux) or Cmd+S (Mac)
 		if ((event.ctrlKey || event.metaKey) && event.key === 's') {
 			event.preventDefault();
+			event.stopPropagation();
 			// Find the form element and trigger save
 			const form = document.querySelector('form[method="POST"]') as HTMLFormElement;
 			if (form) {
@@ -245,7 +231,7 @@
 	<div class="space-y-1">
 		{#each previewContent as block, blockIndex}
 			<div
-				class="relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200"
+				class="relative"
 				class:ring-2={draggedBlockIndex !== null && dragOverIndex === blockIndex}
 				class:ring-blue-400={draggedBlockIndex !== null && dragOverIndex === blockIndex}
 				class:bg-blue-50={draggedBlockIndex !== null && dragOverIndex === blockIndex}
@@ -255,117 +241,25 @@
 				role="region"
 				aria-label="Content block {blockIndex + 1}"
 			>
-				<!-- Collapsible Header -->
-				<div
-					class="bg-alsmostwhite flex cursor-pointer items-center justify-between border-b p-1 hover:bg-gray-100"
-					onclick={(e) => {
-						// If it's a right click or middle click, don't trigger step jump
-						if (e.button === 2 || e.button === 1) return;
-						
-						// Toggle collapse
-						toggleBlockCollapse(blockIndex);
-						
-						// Jump to step in preview - pass raw block index for proper step calculation
-						if (onBlockClick) {
-							onBlockClick(blockIndex);
-						}
+				<ContentBlockEditor
+					{block}
+					pageIndex={blockIndex}
+					{blockIndex}
+					{currentVersion}
+					onBlockClick={() => onBlockClick?.(blockIndex)}
+					onDuplicate={() => duplicateContentBlock(blockIndex)}
+					onMoveUp={() => moveContentBlock(blockIndex, blockIndex - 1)}
+					onMoveDown={() => moveContentBlock(blockIndex, blockIndex + 1)}
+					onRemove={() => removeContentBlock(blockIndex)}
+					canMoveUp={blockIndex > 0}
+					canMoveDown={blockIndex < content.length - 1}
+					onDragStart={(e) => handleDragStart(e, blockIndex)}
+					onDragEnd={handleDragEnd}
+					onUpdate={(field, value) => {
+						const updatedBlock = { ...block, [field]: value };
+						updateContentBlock(blockIndex, updatedBlock);
 					}}
-					role="button"
-					tabindex="0"
-					onkeydown={(e) => e.key === 'Enter' && toggleBlockCollapse(blockIndex)}
-				>
-					<div class="flex items-center gap-2">
-						<!-- Drag Handle -->
-						<div
-							draggable="true"
-							ondragstart={(e) => handleDragStart(e, blockIndex)}
-							ondragend={handleDragEnd}
-							onclick={(e) => e.stopPropagation()}
-							onkeydown={(e) => e.stopPropagation()}
-							title="Drag to reorder"
-							aria-label="Drag to reorder"
-							role="button"
-							tabindex="0"
-							class="rounded p-1 text-black/20 hover:cursor-grab hover:text-black/60 active:cursor-grabbing"
-						>
-							<GripVertical class="size-4" />
-						</div>
-
-						<div class="flex size-2 items-center justify-center">
-							<span class="text-2xs text-gray-500">{collapsedBlocks[blockIndex] ? '▶' : '▼'}</span>
-						</div>
-						<span class="text-sm font-medium capitalize">{block.type}</span>
-						<span class="text-xs text-gray-400">#{blockIndex + 1}</span>
-					</div>
-					<div class="flex items-center gap-1 p-1">
-						<!-- Move up -->
-						<button
-							type="button"
-							onclick={(e) => {
-								e.stopPropagation();
-								moveContentBlock(blockIndex, blockIndex - 1);
-							}}
-							disabled={blockIndex === 0}
-							class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300 disabled:opacity-50"
-						>
-							↑
-						</button>
-						<!-- Move down -->
-						<button
-							type="button"
-							onclick={(e) => {
-								e.stopPropagation();
-								moveContentBlock(blockIndex, blockIndex + 1);
-							}}
-							disabled={blockIndex === content.length - 1}
-							class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300 disabled:opacity-50"
-						>
-							↓
-						</button>
-						<!-- Duplicate -->
-						<button
-							type="button"
-							onclick={(e) => {
-								e.stopPropagation();
-								duplicateContentBlock(blockIndex);
-							}}
-							class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300"
-							title="Duplicate block"
-						>
-							+
-						</button>
-						<!-- Delete -->
-						<button
-							type="button"
-							onclick={(e) => {
-								e.stopPropagation();
-								removeContentBlock(blockIndex);
-							}}
-							class="rounded bg-red-200 px-1 py-1 text-xs text-red-700 hover:bg-red-300"
-						>
-							✕
-						</button>
-					</div>
-				</div>
-
-				<!-- Block Editor (conditionally shown) -->
-				{#if !collapsedBlocks[blockIndex]}
-					<ContentBlockEditor
-						{block}
-						pageIndex={blockIndex}
-						{blockIndex}
-						{currentVersion}
-						onUpdate={(field, value) => {
-							const updatedBlock = { ...block, [field]: value };
-							updateContentBlock(blockIndex, updatedBlock);
-						}}
-						onMoveUp={() => moveContentBlock(blockIndex, blockIndex - 1)}
-						onMoveDown={() => moveContentBlock(blockIndex, blockIndex + 1)}
-						onRemove={() => removeContentBlock(blockIndex)}
-						canMoveUp={blockIndex > 0}
-						canMoveDown={blockIndex < content.length - 1}
-					/>
-				{/if}
+				/>
 			</div>
 		{/each}
 	</div>

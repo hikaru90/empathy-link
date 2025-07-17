@@ -8,10 +8,10 @@
 
 	const blockTypes = [
 		{ type: 'text' as const, label: 'Text' },
-		{ type: 'heading' as const, label: 'Heading' },
 		{ type: 'list' as const, label: 'List' },
 		{ type: 'task' as const, label: 'Task' },
 		{ type: 'timer' as const, label: 'Timer' },
+		{ type: 'breathe' as const, label: 'Breathe' },
 		{ type: 'image' as const, label: 'Image' },
 		{ type: 'audio' as const, label: 'Audio' },
 		{ type: 'bodymap' as const, label: 'Bodymap' },

@@ -5,8 +5,7 @@
 	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import PercentageDonut from '$lib/components/PercentageDonut.svelte';
 	import FeedbackModule from '$lib/components/bullshift/Learn/FeedbackModule.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import ChevronRight from 'lucide-svelte/icons/chevron-right';
+	import LearnGotoNextButton from '$lib/components/bullshift/Learn/LearnGotoNextButton.svelte';
 
 	interface Props {
 		session: LearningSession | null;
@@ -499,14 +498,8 @@
 	</div>
 
 	<div class="flex items-center justify-center relative z-10">
-		<a
-			href="/bullshift/learn"
-			class="bg-black text-white font-medium pl-6 pr-1.5 py-3 rounded-full flex items-center justify-between gap-2 w-full"
-		>
-			<span class="">Zurück zur Lernübersicht</span>
-			<div class="size-6 bg-white/20 rounded-full flex items-center justify-center">
-				<ChevronRight class="size-3" />
-			</div>
-		</a>
+		<LearnGotoNextButton variant="link" href="/bullshift/learn">
+			Zurück zur Lernübersicht
+		</LearnGotoNextButton>
 	</div>
 </div>

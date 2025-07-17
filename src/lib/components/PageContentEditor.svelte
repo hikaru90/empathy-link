@@ -58,14 +58,14 @@
 			case 'list':
 				newBlock = { type: 'list', items: [{ title: '', text: '' }] };
 				break;
-			case 'heading':
-				newBlock = { type: 'heading', hierarchy: 1, content: '', subheading: '' };
-				break;
 			case 'task':
 				newBlock = { type: 'task', content: '' };
 				break;
 			case 'timer':
 				newBlock = { type: 'timer', duration: 60 };
+				break;
+			case 'breathe':
+				newBlock = { type: 'breathe', duration: 60 };
 				break;
 			case 'bodymap':
 				newBlock = { type: 'bodymap' };

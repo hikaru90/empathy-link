@@ -20,6 +20,7 @@
 	import LearnPageNavigation from '$lib/components/bullshift/Learn/LearnPageNavigation.svelte';
 	import LearnImage from '$lib/components/bullshift/Learn/LearnImage.svelte';
 	import LearnAudio from '$lib/components/bullshift/Learn/LearnAudio.svelte';
+	import LearnBreathe from '$lib/components/bullshift/Learn/LearnBreathe.svelte';
 	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import { learningSession } from '$lib/stores/learningSession';
 	import { pb } from '$scripts/pocketbase';
@@ -493,6 +494,14 @@
 				color={currentCategory().color}
 				session={activeSession()}
 				onResponse={(response) => handleResponse('timer', response, content)}
+			/>
+		{:else if content && content.type === 'breathe'}
+			<LearnBreathe 
+				{content} 
+				pageIndex={currentStep}
+				blockIndex={componentIndex}
+				isPreview={isPreview}
+				gotoNextStep={() => gotoNextStep()}
 			/>
 		{:else if content && content.type === 'bodymap'}
 			<LearnBodyMap 

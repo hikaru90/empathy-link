@@ -119,12 +119,14 @@
 		    target.contentEditable === 'true' ||
 		    target.closest('input') || 
 		    target.closest('textarea')) {
+			// Don't prevent default for input fields, just return early
 			return;
 		}
 		
 		// Check for Ctrl+S (Windows/Linux) or Cmd+S (Mac)
 		if ((event.ctrlKey || event.metaKey) && event.key === 's') {
 			event.preventDefault();
+			event.stopPropagation();
 			// Trigger form submission by finding and clicking the submit button
 			if (formElement) {
 				const submitButton = formElement.querySelector('button[type="submit"]') as HTMLButtonElement;
