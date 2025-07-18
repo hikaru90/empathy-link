@@ -3,12 +3,11 @@
 	import { pb } from '$scripts/pocketbase';
 	import { serializeNonPOJOs, groupBy } from '$scripts/helpers';
 	import * as ToggleGroup from '$lib/components/ui/toggle-group';
-	import Pencil from 'lucide-svelte/icons/pencil';
 	import Trash from 'lucide-svelte/icons/trash';
 	import { learningSession } from '$lib/stores/learningSession';
 	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import FeelingSelector from '$lib/components/FeelingSelector.svelte';
-
+	import LearnGotoNextButton from './bullshift/Learn/LearnGotoNextButton.svelte';
 	interface Props {
 		content: object;
 		color: string;
@@ -16,6 +15,7 @@
 		onResponse: (response: { points: Array<{ x: number; y: number; feelings: string[] }> }) => void;
 		contentBlock?: any; // The actual content block for content-based identification
 		topicVersionId?: string; // Current topic version ID
+		gotoNextStep: () => void;
 	}
 
 
@@ -137,6 +137,9 @@
 	};
 	const dragPointAction = (node: HTMLElement, index: number) => {
 		let isDraggingPoint = false;
+		let startTime = 0;
+		let startX = 0;
+		let startY = 0;
 
 		const handleStart = (e: TouchEvent | MouseEvent) => {
 			// Don't start drag if clicking on controls
@@ -144,6 +147,17 @@
 			if (target.closest('.point-controls')) {
 				return;
 			}
+			
+			// Record start time and position for click detection
+			startTime = Date.now();
+			if (e instanceof TouchEvent) {
+				startX = e.touches[0].clientX;
+				startY = e.touches[0].clientY;
+			} else {
+				startX = e.clientX;
+				startY = e.clientY;
+			}
+			
 			e.stopPropagation();
 			e.preventDefault();
 			activePointId = index;
@@ -178,10 +192,30 @@
 			points = [...points];
 		};
 
-		const handleEnd = () => {
+		const handleEnd = (e: TouchEvent | MouseEvent) => {
 			if (isDraggingPoint) {
-				// Save response when point position changes
-				saveResponse();
+				const endTime = Date.now();
+				const timeDiff = endTime - startTime;
+				
+				// Check if it was a click (short time, small movement)
+				let endX = 0, endY = 0;
+				if (e instanceof TouchEvent) {
+					endX = e.changedTouches[0].clientX;
+					endY = e.changedTouches[0].clientY;
+				} else {
+					endX = e.clientX;
+					endY = e.clientY;
+				}
+				
+				const distance = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+				
+				// If it was a click (short time and small movement), trigger the click handler
+				if (timeDiff < 200 && distance < 10) {
+					handlePointClick(index);
+				} else {
+					// Save response when point position changes (actual drag)
+					saveResponse();
+				}
 			}
 			isDraggingPoint = false;
 		};
@@ -317,52 +351,7 @@
 			}
 		};
 	};
-	const pencilButtonAction = (node: HTMLElement) => {
-		const handleStart = (e: TouchEvent | MouseEvent) => {
-			// Only prevent default if we're actually on the button
-			if (e.target === node || node.contains(e.target as Node)) {
-				e.preventDefault();
-				e.stopPropagation();
-			}
-		};
 
-		const handleEnd = (e: TouchEvent | MouseEvent) => {
-			// Only trigger if we're actually on the button
-			if (e.target === node || node.contains(e.target as Node)) {
-				e.preventDefault();
-				e.stopPropagation();
-				const index = parseInt(node.dataset.index || '0', 10);
-				activePointId = index;
-				showFeelings = true;
-				scrollToFeelings();
-			}
-		};
-
-		const handleClick = (e: MouseEvent) => {
-			e.preventDefault();
-			e.stopPropagation();
-			const index = parseInt(node.dataset.index || '0', 10);
-			activePointId = index;
-			showFeelings = true;
-			scrollToFeelings();
-		};
-
-		node.addEventListener('touchstart', handleStart, { passive: false });
-		node.addEventListener('touchend', handleEnd, { passive: false });
-		node.addEventListener('mousedown', handleStart);
-		node.addEventListener('mouseup', handleEnd);
-		node.addEventListener('click', handleClick);
-
-		return {
-			destroy() {
-				node.removeEventListener('touchstart', handleStart);
-				node.removeEventListener('touchend', handleEnd);
-				node.removeEventListener('mousedown', handleStart);
-				node.removeEventListener('mouseup', handleEnd);
-				node.removeEventListener('click', handleClick);
-			}
-		};
-	};
 
 	// Add this function to handle clicks outside
 	const handleClickOutside = (event: MouseEvent) => {
@@ -379,6 +368,15 @@
 				showFeelings = false;
 				activePointId = null;
 			}
+		}
+	};
+
+	const handlePointClick = (pointId: number) => {
+		activePointId = pointId;
+		showFeelings = true;
+		const point = points.find(p => p.id === pointId);
+		if (point && point.feelings.length === 0) {
+			scrollToFeelings();
 		}
 	};
 
@@ -422,25 +420,28 @@
 <br />
 {JSON.stringify(points)} -->
 
-<div class="flex justify-center mb-6">
+<div class="flex justify-center mb-6 h-full">
 	<div class="relative flex w-full flex-col items-center justify-center gap-1">
 		<div
 			role="button"
 			aria-label="bodyscan map"
 			use:interactionAction
-			class="bodyscan-map relative touch-none"
+			class="bodyscan-map relative touch-none flex-shrink-0"
 			tabindex="0"
 			style="touch-action: manipulation;"
 		>
 			{#each points as point, i}
 				<div
-					class="point-dot absolute z-10 -m-2.5 size-5 rounded-full bg-white"
+					class="point-dot absolute z-10 -m-2.5 size-8 rounded-full bg-white shadow-md cursor-pointer flex items-center justify-center"
 					style="left: {point.x}px; top: {point.y}px;"
 					use:dragPointAction={i}
 				>
+				<div class="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-center text-xs rounded-full px-1 py-0.5">
+					{point.feelings.length}
+				</div>
 					<div class="pointer-events-none relative z-10 h-full w-full">
 						<div
-							class="point-controls absolute bottom-full left-1/2 z-10 mb-2 flex -translate-x-1/2 transform flex-col items-center gap-1 rounded-[18px] bg-white "
+							class="point-controls absolute left-1/2 z-10 flex -translate-x-1/2 transform flex-col items-center gap-1 rounded-xl bg-white shadow-md {point.y < 78 ? 'top-full mt-2' : 'bottom-full mb-2'} {i === activePointId ? 'opacity-100' : 'opacity-0'}"
 						>
 							<div class="flex flex-col gap-1 px-2 pt-2 {i === activePointId ? '' : 'pb-2'}">
 								{#each point.feelings as feeling}
@@ -452,25 +453,16 @@
 								{/each}
 							</div>
 							{#if i === activePointId}
-								<div class="flex items-center gap-1 px-2 pb-2">
-									<button
-										aria-label="edit feelings"
-										use:pencilButtonAction
-										data-index={i}
-										class="point-control pointer-events-auto touch-none"
-										type="button"
-									>
-										<Pencil class="size-4" />
-									</button>
-									<div class="h-4 w-[1px] bg-black/5"></div>
+								<div class="flex items-center gap-1 px-2 pb-2 mt-1">
 									<button
 										aria-label="remove point"
 										use:trashButtonAction
 										data-index={i}
-										class="point-control pointer-events-auto touch-none"
+										class="point-control pointer-events-auto touch-none bg-red-500 flex items-center gap-1 rounded-md min-w-24 text-white justify-between px-2 py-0.5"
 										type="button"
 									>
-										<Trash class="size-4" />
+										<span class="text-xs">löschen</span>
+										<Trash class="size-3" />
 									</button>
 								</div>
 							{/if}
@@ -485,25 +477,48 @@
 				bind:this={imageElement}
 				src="/learn/character.svg"
 				alt="bodyscan"
-				class="w-52"
+				class="w-48"
 				onload={updateImageRect}
 			/>
 		</div>
 
-		<div bind:this={feelingsElement}></div>
-		{#each points as point}
-			{#if showFeelings && point.id === activePointId}
-				<FeelingSelector
-					selectedFeelings={point.feelings}
-					onFeelingChange={(feelings) => {
-						point.feelings = feelings;
-						points = [...points];
-						saveResponse();
-					}}
-					pointId={point.id}
-					show={true}
-				/>
+		<div bind:this={feelingsElement} class=""></div>
+
+
+
+
+		<div class="flex-grow w-full overflow-y-auto overflow-x-hidden p-1">
+			{#if showFeelings}
+			{#each points as point}
+				{#if point.id === activePointId}
+					<FeelingSelector
+						selectedFeelings={point.feelings}
+						onFeelingChange={(feelings) => {
+							point.feelings = feelings;
+							points = [...points];
+							saveResponse();
+						}}
+						pointId={point.id}
+						show={true}
+					/>
+				{/if}
+			{/each}
+			{:else}
+				<div class="text-center text-sm text-gray-500">
+					Klicke auf den Körper, um zu beginnen
+				</div>
 			{/if}
-		{/each}
+		</div>
+
+		<LearnGotoNextButton
+		onClick={() => {
+			if (gotoNextStep) {
+				gotoNextStep();
+			}
+		}}
+	>
+		Weiter
+	</LearnGotoNextButton>
+
 	</div>
 </div>

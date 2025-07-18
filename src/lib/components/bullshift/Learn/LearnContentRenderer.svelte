@@ -511,6 +511,7 @@
 				contentBlock={content}
 				topicVersionId={topic().id}
 				onResponse={(response) => handleResponse('bodymap', response, content)}
+				gotoNextStep={() => gotoNextStep()}
 			/>
 		{:else if content && content.type === 'taskCompletion'}
 			<LearnCompletionNotes 
@@ -520,7 +521,7 @@
 				onResponse={(response) => handleResponse('taskCompletion', response, content)}
 			/>
 		{:else if content && content.type === 'list'}
-			<LearnList {content} currentCategory={currentCategory()} />
+			<LearnList {content} currentCategory={currentCategory()} gotoNextStep={() => gotoNextStep()} />
 		{:else if content && content.type === 'sortable'}
 			<LearnSortableWithFeedback 
 				{content} 

@@ -452,14 +452,14 @@
 						value={block.duration || 60}
 						onchange={(e: Event) => {
 							const target = e.target as HTMLSelectElement;
-							onUpdate('duration', parseInt(target.value) || 60);
+							onUpdate('duration', parseInt(target.value));
 						}}
-						class="border rounded px-2 py-1 w-full"
+						class="border rounded px-2 py-1 w-full text-sm"
 					>
-						<option value={15}>15 Sekunden</option>
-						<option value={30}>30 Sekunden</option>
-						<option value={60}>1 Minute</option>
-						<option value={120}>2 Minuten</option>
+						<option value="15">15 Sekunden</option>
+						<option value="30">30 Sekunden</option>
+						<option value="60">1 Minute</option>
+						<option value="120">2 Minuten</option>
 					</select>
 				</div>
 				<div class="text-sm text-gray-600 bg-gray-50 p-3 rounded">
