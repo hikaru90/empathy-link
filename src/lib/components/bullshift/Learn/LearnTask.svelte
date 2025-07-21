@@ -52,12 +52,4 @@
     </div>
   {/if}
 
-  <!-- Manual navigation for uncompleted tasks -->
-  {#if !isCompleted}
-    <StoryNavigation 
-      variant="minimal"
-      nextText="Skip"
-      nextDisabled={false}
-    />
-  {/if}
 </div>

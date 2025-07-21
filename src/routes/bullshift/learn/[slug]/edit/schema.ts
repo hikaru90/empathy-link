@@ -22,6 +22,13 @@ export type ContentBlock =
 export interface TextBlock {
   type: "text";
   content: string;
+  ctaText?: string; // Optional CTA button text
+  sources?: {
+    sort: number;
+    title: string;
+    url: string;
+    author: string;
+  }[];
 }
 
 export interface ListBlock {
@@ -96,20 +103,6 @@ export interface AIQuestionBlock {
   placeholder?: string; // Optional placeholder for the answer field
 }
 
-export interface AIQuestionStepBlock {
-  type: "aiQuestionStep";
-  question: string;
-  systemPrompt: string;
-  placeholder?: string; // Optional placeholder for the answer field
-}
-
-export interface AIResponseStepBlock {
-  type: "aiResponseStep";
-  question: string;
-  systemPrompt: string;
-  placeholder?: string; // Optional placeholder for the answer field (inherited from question step)
-}
-
 export interface ImageBlock {
   type: "image";
   src: string; // URL or file path
@@ -166,7 +159,14 @@ export interface TopicVersion {
 // Zod schemas for content blocks
 const textBlockSchema = z.object({
   type: z.literal("text"),
-  content: z.string()
+  content: z.string(),
+  ctaText: z.string().optional(), // Optional CTA button text
+  sources: z.array(z.object({
+    sort: z.number(),
+    title: z.string(),
+    url: z.string(),
+    author: z.string()
+  })).optional() // Optional sources list
 });
 
 const listBlockSchema = z.object({
@@ -241,20 +241,6 @@ const aiQuestionBlockSchema = z.object({
   placeholder: z.string().optional()
 });
 
-const aiQuestionStepBlockSchema = z.object({
-  type: z.literal("aiQuestionStep"),
-  question: z.string(),
-  systemPrompt: z.string(),
-  placeholder: z.string().optional()
-});
-
-const aiResponseStepBlockSchema = z.object({
-  type: z.literal("aiResponseStep"),
-  question: z.string(),
-  systemPrompt: z.string(),
-  placeholder: z.string().optional()
-});
-
 const imageBlockSchema = z.object({
   type: z.literal("image"),
   src: z.string(),
@@ -306,8 +292,6 @@ const contentBlockSchema = z.discriminatedUnion("type", [
   sortableBlockSchema,
   multipleChoiceBlockSchema,
   aiQuestionBlockSchema,
-  aiQuestionStepBlockSchema,
-  aiResponseStepBlockSchema,
   imageBlockSchema,
   audioBlockSchema,
   nextPageBlockSchema,

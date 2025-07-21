@@ -13,9 +13,7 @@
 	import LearnSortableWithFeedback from '$lib/components/bullshift/Learn/LearnSortableWithFeedback.svelte';
 	import LearnMultipleChoice from '$lib/components/bullshift/Learn/LearnMultipleChoice.svelte';
 	import LearnAIQuestion from '$lib/components/bullshift/Learn/LearnAIQuestion.svelte';
-	import LearnAIQuestionStep from '$lib/components/bullshift/Learn/LearnAIQuestionStep.svelte';
 	import LearningSummary from '$lib/components/bullshift/Learn/LearningSummary.svelte';
-	import LearnCompletion from '$lib/components/bullshift/Learn/LearnCompletion.svelte';
 	import LearnNextPage from '$lib/components/bullshift/Learn/LearnNextPage.svelte';
 	import LearnPageNavigation from '$lib/components/bullshift/Learn/LearnPageNavigation.svelte';
 	import LearnImage from '$lib/components/bullshift/Learn/LearnImage.svelte';
@@ -158,19 +156,22 @@
 
 	const totalSteps = $derived(() => {
 		if (!topic().content) return [];
-		const componentData = topic().content?.map((el: any) => {
+		const componentData = topic().content?.map((el: any, index: number) => {
 			return {
 				component: el.type,
-				stepCount: getComponentStepCount(el)
+				stepCount: getComponentStepCount(el),
+				blockIndex: index
 			}
 		});
 		componentData.unshift({
 			component: 'title',
-			stepCount: 1
+			stepCount: 1,
+			blockIndex: -1
 		});
 		componentData.push({
 			component: 'summary',
-			stepCount: 1
+			stepCount: 1,
+			blockIndex: -1
 		});
 
 		// Flatten the steps array to account for multi-step components
@@ -179,12 +180,14 @@
 				// Create an array with proper internal step indices
 				return Array(component.stepCount).fill(null).map((_, index) => ({
 					component: component.component,
-					internalStep: index
+					internalStep: index,
+					blockIndex: component.blockIndex
 				}));
 			}
 			return {
 				component: component.component,
-				internalStep: 0
+				internalStep: 0,
+				blockIndex: component.blockIndex
 			};
 		});
 
@@ -466,8 +469,7 @@
 	{:else if components().length > 0 && currentStep > 0 && currentStep < totalStepsCount() - 1}
 		<!-- Show single component per step -->
 		{@const stepData = totalSteps()[currentStep]}
-		{@const componentIndex = topic().content.findIndex((comp: any) => comp.type === stepData.component)}
-		{@const content = components()[componentIndex]}
+		{@const content = stepData.blockIndex >= 0 ? components()[stepData.blockIndex] : null}
 		{@const internalStep = stepData.internalStep}
 		{#if content && content.type === 'text'}
 			<LearnText {content} gotoNextStep={() => gotoNextStep()} />
@@ -499,7 +501,7 @@
 			<LearnBreathe 
 				{content} 
 				pageIndex={currentStep}
-				blockIndex={componentIndex}
+				blockIndex={stepData.blockIndex}
 				isPreview={isPreview}
 				gotoNextStep={() => gotoNextStep()}
 			/>
@@ -513,7 +515,7 @@
 				onResponse={(response) => handleResponse('bodymap', response, content)}
 				gotoNextStep={() => gotoNextStep()}
 			/>
-		{:else if content && content.type === 'taskCompletion'}
+		
 			<LearnCompletionNotes 
 				{content} 
 				color={currentCategory().color}
