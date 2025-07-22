@@ -367,6 +367,19 @@
 		const session = activeSession();
 		if (!session) return;
 
+		// For multi-step components, find the original page where this component started
+		let targetPageIndex = currentStep;
+		if (blockType === 'feelingsDetective') {
+			// Find the first occurrence of this feelingsDetective block in the session
+			const existingResponse = session.responses?.find(r => 
+				r.blockType === 'feelingsDetective' && 
+				JSON.stringify(r.blockContent) === JSON.stringify(content)
+			);
+			if (existingResponse) {
+				targetPageIndex = existingResponse.pageIndex;
+			}
+		}
+
 		if (isPreview) {
 			// For preview mode, update the mock session in memory
 			const validBlockType = blockType as
@@ -375,21 +388,20 @@
 				| 'heading'
 				| 'task'
 				| 'timer'
+				| 'breathe'
 				| 'bodymap'
 				| 'taskCompletion'
 				| 'sortable'
 				| 'multipleChoice'
 				| 'aiQuestion'
 				| 'feelingsDetective'
-				| 'aiQuestionStep'
-				| 'aiResponseStep'
 				| 'image'
 				| 'audio'
 				| 'nextPage'
 				| 'pageNavigation';
 
 			const newResponse = {
-				pageIndex: currentStep,
+				pageIndex: targetPageIndex,
 				blockIndex: 0,
 				blockType: validBlockType,
 				response,
@@ -401,9 +413,9 @@
 			// Ensure responses array exists
 			const existingResponses = session.responses || [];
 
-			// Remove any existing response for this step
+			// Remove any existing response for this block type and content
 			const updatedResponses = existingResponses.filter(
-				(r) => !(r.pageIndex === currentStep && r.blockIndex === 0)
+				(r) => !(r.blockType === blockType && JSON.stringify(r.blockContent) === JSON.stringify(content))
 			);
 			updatedResponses.push(newResponse);
 
@@ -425,21 +437,20 @@
 					| 'heading'
 					| 'task'
 					| 'timer'
+					| 'breathe'
 					| 'bodymap'
 					| 'taskCompletion'
 					| 'sortable'
 					| 'multipleChoice'
 					| 'aiQuestion'
 					| 'feelingsDetective'
-					| 'aiQuestionStep'
-					| 'aiResponseStep'
 					| 'image'
 					| 'audio'
 					| 'nextPage'
 					| 'pageNavigation';
 				await learningSession.saveResponseImmediate(
 					session.id,
-					currentStep,
+					targetPageIndex,
 					0,
 					validBlockType,
 					response,

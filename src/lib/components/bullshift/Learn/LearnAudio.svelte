@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 	import LearnGotoNextButton from '$lib/components/bullshift/Learn/LearnGotoNextButton.svelte';
+	import LearnSplashScreen from '$lib/components/bullshift/Learn/LearnSplashScreen.svelte';
 
 	interface Props {
 		content: {
@@ -31,8 +32,16 @@
 	let hasError = $state(false);
 	let volume = $state(1);
 	let isCompleted = $state(false);
+	let splashDone = $state(false);
 
-	// Load existing completion state from session
+	let splashContentClass = $derived(() => {
+		if (splashDone) {
+			return 'opacity-100 scale-100';
+		}
+		return 'opacity-0 scale-0';
+	});
+ 
+
 	$effect(() => {
 		if (session && session.responses) {
 			const existingResponse = session.responses.find(
@@ -44,15 +53,11 @@
 			}
 		}
 	});
-
-	// Format time helper
 	const formatTime = (time: number): string => {
 		const minutes = Math.floor(time / 60);
 		const seconds = Math.floor(time % 60);
 		return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 	};
-
-	// Mark audio as completed
 	const markCompleted = (method: 'played' | 'skipped') => {
 		if (isCompleted) return;
 
@@ -68,8 +73,6 @@
 			});
 		}
 	};
-
-	// Play/pause toggle
 	const togglePlay = async () => {
 		if (!audioElement || isLoading) return;
 
@@ -85,8 +88,6 @@
 			isLoading = false;
 		}
 	};
-
-	// Seek to position
 	const seek = (event: MouseEvent) => {
 		if (!audioElement) return;
 
@@ -97,40 +98,30 @@
 
 		audioElement.currentTime = percentage * duration;
 	};
-
-	// Restart track
 	const restart = () => {
 		if (!audioElement) return;
 		audioElement.currentTime = 0;
 	};
-
-	// Audio event handlers
 	const handleLoadedMetadata = () => {
 		duration = audioElement.duration || 0;
 		isLoading = false;
 	};
-
 	const handleCanPlay = () => {
 		isLoading = false;
 	};
-
 	const handleLoadStart = () => {
 		isLoading = true;
 	};
-
 	const handleTimeUpdate = () => {
 		currentTime = audioElement.currentTime || 0;
 	};
-
 	const handlePlay = () => {
 		isPlaying = true;
 		isLoading = false;
 	};
-
 	const handlePause = () => {
 		isPlaying = false;
 	};
-
 	const handleEnded = () => {
 		isPlaying = false;
 		if (content.loop) {
@@ -145,14 +136,12 @@
 			}, 1000);
 		}
 	};
-
 	const handleError = (event: Event) => {
 		console.error('Audio loading error:', event);
 		isLoading = false;
 		isPlaying = false;
 		hasError = true;
 	};
-
 	onMount(() => {
 		// Check if audio source is valid
 		if (!content.src || content.src.trim() === '') {
@@ -192,131 +181,124 @@
 			audioElement?.removeEventListener('error', clearTimeoutOnLoad);
 		};
 	});
-
-	// Progress percentage
 	const progressPercentage = $derived(() => {
 		return duration > 0 ? (currentTime / duration) * 100 : 0;
 	});
 </script>
 
-<div class="relative flex h-full flex-col items-center justify-center rounded-lg">
-	a
-</div>
+	<LearnSplashScreen 
+		color={color} 
+		text="Zeit zu Meditieren"
+		on:splashDone={() => {
+			splashDone = true;
+		}}
+	/>
 
-<div class="relative flex h-full flex-col justify-between rounded-lg">
-	<!-- Hidden audio element -->
-	<audio
-		bind:this={audioElement}
-		src={content.src}
-		preload="metadata"
-		onloadstart={handleLoadStart}
-		onloadedmetadata={handleLoadedMetadata}
-		oncanplay={handleCanPlay}
-		ontimeupdate={handleTimeUpdate}
-		onplay={handlePlay}
-		onpause={handlePause}
-		onended={handleEnded}
-		onerror={handleError}
-	>
-		Your browser does not support the audio element.
-	</audio>
 
-	<div>
-	</div>
-	<!-- {#if content.title}
+
+	<div class="relative flex h-full animate-splashContent flex-col justify-between rounded-lg transition-all transform duration-1000 {splashContentClass()}">
+		<!-- Hidden audio element -->
+		<audio
+			bind:this={audioElement}
+			src={content.src}
+			preload="metadata"
+			onloadstart={handleLoadStart}
+			onloadedmetadata={handleLoadedMetadata}
+			oncanplay={handleCanPlay}
+			ontimeupdate={handleTimeUpdate}
+			onplay={handlePlay}
+			onpause={handlePause}
+			onended={handleEnded}
+			onerror={handleError}
+		>
+			Your browser does not support the audio element.
+		</audio>
+
+		<div></div>
+		<!-- {#if content.title}
 		<div class="relative z-10 mb-8 text-center text-xl font-bold leading-snug">
 			{@html marked(content.title)}
 		</div>
 	{/if} -->
 
-	<!-- Custom Audio Player -->
-	{#if content.controls !== false}
-		<div class="flex flex-col items-center justify-between gap-4">
-			
-
-
-
-			<!-- Play/Pause Button -->
-			<div class="relative">
-				{#if isPlaying && !hasError && !isLoading}
-					<button
-						onclick={restart}
-						class="absolute -top-16 left-1/2 z-10 flex size-8 -translate-x-1/2 items-center justify-center rounded-full bg-black"
-						aria-label="Restart"
-					>
-						<svg class="size-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-							<path
-								d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"
-							/>
-						</svg>
-					</button>
-				{/if}
-				<div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
-					<div class="size-40 animate-expand rounded-full bg-white/30"></div>
-				</div>
-				<div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
-					<div class="size-28 animate-expand rounded-full bg-white/40 delay-100"></div>
-				</div>
-
-				<button
-					onclick={togglePlay}
-					disabled={isLoading || hasError}
-					class="relative flex size-16 items-center justify-center rounded-full bg-black shadow-lg transition-colors disabled:opacity-50"
-					aria-label={hasError ? 'Audio error' : isPlaying ? 'Pause' : 'Play'}
-				>
-					{#if hasError}
-						<!-- Error Icon -->
-						<svg class="h-6 w-6 text-red-400" fill="currentColor" viewBox="0 0 24 24">
-							<path
-								d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-							/>
-						</svg>
-					{:else if isLoading}
-						<div
-							class="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"
-						></div>
-					{:else if isPlaying}
-						<!-- Pause Icon -->
-						<svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-							<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-						</svg>
-					{:else}
-						<!-- Play Icon -->
-						<svg class="ml-0.5 h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-							<path d="M8 5v14l11-7z" />
-						</svg>
+		<!-- Custom Audio Player -->
+		{#if content.controls !== false}
+			<div class="flex flex-col items-center justify-between gap-4">
+				<!-- Play/Pause Button -->
+				<div class="relative">
+					{#if isPlaying && !hasError && !isLoading}
+						<button
+							onclick={restart}
+							class="absolute -top-16 left-1/2 z-10 flex size-8 -translate-x-1/2 items-center justify-center rounded-full bg-black"
+							aria-label="Restart"
+						>
+							<svg class="size-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+								<path
+									d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"
+								/>
+							</svg>
+						</button>
 					{/if}
-				</button>
-			</div>
-			<div class="relative z-10 m-4 rounded-full bg-white/90 px-3 py-1 text-sm">
-				{formatTime(duration - currentTime)}
-			</div>
-		</div>
-	{/if}
-	<div class="flex flex-col">
-		<div class="pb-4 text-center text-sm text-black/40">
-			{#if content.content}
-				{@html marked(content.content)}
-			{/if}
-		</div>
+					<div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
+						<div class="size-40 animate-expand rounded-full bg-white/30"></div>
+					</div>
+					<div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
+						<div class="size-28 animate-expand rounded-full bg-white/40 delay-100"></div>
+					</div>
 
-		<div class="flex justify-center">
-			<LearnGotoNextButton
-				variant="secondary"
-				onClick={() => {
-					markCompleted('skipped');
-					audioElement.pause();
-					gotoNextStep?.();
-				}}
-			>
-				{isCompleted ? 'Weiter' : 'Überspringen'}
-			</LearnGotoNextButton>
+					<button
+						onclick={togglePlay}
+						disabled={isLoading || hasError}
+						class="relative flex size-16 items-center justify-center rounded-full bg-black shadow-lg transition-colors disabled:opacity-50"
+						aria-label={hasError ? 'Audio error' : isPlaying ? 'Pause' : 'Play'}
+					>
+						{#if hasError}
+							<!-- Error Icon -->
+							<svg class="h-6 w-6 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+								<path
+									d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+								/>
+							</svg>
+						{:else if isLoading}
+							<div
+								class="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"
+							></div>
+						{:else if isPlaying}
+							<!-- Pause Icon -->
+							<svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+								<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+							</svg>
+						{:else}
+							<!-- Play Icon -->
+							<svg class="ml-0.5 h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+								<path d="M8 5v14l11-7z" />
+							</svg>
+						{/if}
+					</button>
+				</div>
+				<div class="relative z-10 m-4 rounded-full bg-white/90 px-3 py-1 text-sm">
+					{formatTime(duration - currentTime)}
+				</div>
+			</div>
+		{/if}
+		<div class="flex flex-col">
+			<div class="pb-4 text-center text-sm text-black/40">
+				{#if content.content}
+					{@html marked(content.content)}
+				{/if}
+			</div>
+
+			<div class="flex justify-center">
+				<LearnGotoNextButton
+					variant="secondary"
+					onClick={() => {
+						markCompleted('skipped');
+						audioElement.pause();
+						gotoNextStep?.();
+					}}
+				>
+					{isCompleted ? 'Weiter' : 'Überspringen'}
+				</LearnGotoNextButton>
+			</div>
 		</div>
 	</div>
-</div>
-
-<style lang="scss">
-	.splash {
-		animation: splash 1s ease-in-out;
-	}
-</style>

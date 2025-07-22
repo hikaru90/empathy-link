@@ -20,14 +20,14 @@
 
 <div class="mb-4 flex items-center justify-center">
 	<div
-		class="flex items-center justify-center gap-1 rounded-full bg-neutral-500/5 p-1 shadow-inner"
+		class="flex items-center justify-center gap-0.5 rounded-full bg-neutral-500/5 p-1 shadow-inner w-3/4"
 	>
 		{#each Array.from({ length: totalStepsCount }, (_, index) => index) as stepIndex}
 			<div
 				style="background-color: {currentStep >= stepIndex
 					? currentCategory()?.color || '#666'
 					: 'rgba(255,255,255,0.8)'}"
-				class="h-2 w-4 rounded-full {stepIndex >= totalStepsCount ? 'opacity-80' : ''}"
+				class="h-2 flex-grow rounded-md {stepIndex >= totalStepsCount ? 'opacity-80' : ''}"
 			></div>
 		{/each}
 	</div>

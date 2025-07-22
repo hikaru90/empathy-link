@@ -326,7 +326,6 @@ export type TopicVersionFormSchema = typeof topicVersionFormSchema;
 
 // Learning Session Response Types
 export interface SessionResponse {
-  pageIndex: number;
   blockIndex: number;
   blockType: ContentBlock['type'];
   response: any;

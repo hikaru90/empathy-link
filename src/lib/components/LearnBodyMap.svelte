@@ -7,7 +7,9 @@
 	import { learningSession } from '$lib/stores/learningSession';
 	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import FeelingSelector from '$lib/components/FeelingSelector.svelte';
-	import LearnGotoNextButton from './bullshift/Learn/LearnGotoNextButton.svelte';
+	import LearnGotoNextButton from '$lib/components/bullshift/Learn/LearnGotoNextButton.svelte';
+	import LearnSplashScreen from '$lib/components/bullshift/Learn/LearnSplashScreen.svelte';
+
 	interface Props {
 		content: object;
 		color: string;
@@ -30,6 +32,14 @@
 	let previousActivePointId = $state<number | null>(null);
 	let feelingsContainer: HTMLElement | null = null;
 	let feelingsLookup = $state<Map<string, string>>(new Map());
+		let splashDone = $state(false);
+
+let splashContentClass = $derived(() => {
+	if (splashDone) {
+		return 'opacity-100 scale-100';
+	}
+	return 'opacity-0 scale-0';
+});
 
 	const initFeelingsLookup = async () => {
 		try {
@@ -58,11 +68,13 @@
 		}
 	};
 	const constrainPoint = (x: number, y: number): { x: number; y: number } => {
-		if (!imageRect) return { x, y };
+		// Get the image element to constrain to its bounds
+		const image = document.querySelector('.bodyscan-map img') as HTMLImageElement;
+		if (!image) return { x, y };
 
-		// Constrain x and y to be within the image bounds
-		const constrainedX = Math.max(0, Math.min(x, imageRect.width));
-		const constrainedY = Math.max(0, Math.min(y, imageRect.height));
+		// Constrain x and y to be within the image bounds (relative to the bodyscan map container)
+		const constrainedX = Math.max(0, Math.min(x, image.offsetWidth));
+		const constrainedY = Math.max(0, Math.min(y, image.offsetHeight));
 
 		return { x: constrainedX, y: constrainedY };
 	};
@@ -170,7 +182,7 @@
 			e.stopPropagation();
 			
 			// Get the main container (bodyscan-map) to calculate relative position
-			const container = node.closest('.bodyscan-map') as HTMLElement;
+			const container = document.querySelector('.bodyscan-map') as HTMLElement;
 			if (!container) return;
 			
 			const rect = container.getBoundingClientRect();
@@ -187,6 +199,8 @@
 
 			// Constrain the dragged point to image bounds
 			const { x: constrainedX, y: constrainedY } = constrainPoint(x, y);
+
+			console.log('Drag coordinates:', { x, y, constrainedX, constrainedY, activePointId });
 
 			points[activePointId] = { ...points[activePointId], x: constrainedX, y: constrainedY };
 			points = [...points];
@@ -250,6 +264,12 @@
 			if (target.closest('.point-dot') || target.closest('.point-controls')) {
 				return;
 			}
+			
+			// Don't create a new point if feelings div is open - let handleClickOutside handle it
+			if (showFeelings) {
+				return;
+			}
+			
 			drawPoint(e);
 			isMouseDown = true;
 			hasCreatedPoint = true;
@@ -420,13 +440,21 @@
 <br />
 {JSON.stringify(points)} -->
 
-<div class="flex justify-center mb-6 h-full">
-	<div class="relative flex w-full flex-col items-center justify-center gap-1">
+
+<div class="relative flex justify-center mb-6 h-full">
+	<LearnSplashScreen 
+		color={color} 
+		text="Zeit zu Fühlen"
+		on:splashDone={() => {
+			splashDone = true;
+		}}
+	/>
+	<div class="relative flex w-full flex-col items-center justify-center gap-1 transition-all transform duration-1000 {splashContentClass()}">
 		<div
 			role="button"
 			aria-label="bodyscan map"
 			use:interactionAction
-			class="bodyscan-map relative touch-none flex-shrink-0"
+			class="bodyscan-map relative touch-none flex-shrink-0 z-10"
 			tabindex="0"
 			style="touch-action: manipulation;"
 		>
@@ -436,41 +464,40 @@
 					style="left: {point.x}px; top: {point.y}px;"
 					use:dragPointAction={i}
 				>
-				<div class="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-center text-xs rounded-full px-1 py-0.5">
-					{point.feelings.length}
-				</div>
-					<div class="pointer-events-none relative z-10 h-full w-full">
-						<div
-							class="point-controls absolute left-1/2 z-10 flex -translate-x-1/2 transform flex-col items-center gap-1 rounded-xl bg-white shadow-md {point.y < 78 ? 'top-full mt-2' : 'bottom-full mb-2'} {i === activePointId ? 'opacity-100' : 'opacity-0'}"
-						>
-							<div class="flex flex-col gap-1 px-2 pt-2 {i === activePointId ? '' : 'pb-2'}">
-								{#each point.feelings as feeling}
-									<div class="flex items-center justify-center gap-1">
-										<div class="text-center text-xs">
-											{feelingsLookup.get(feeling) || feeling}
-										</div>
-									</div>
-								{/each}
-							</div>
-							{#if i === activePointId}
-								<div class="flex items-center gap-1 px-2 pb-2 mt-1">
-									<button
-										aria-label="remove point"
-										use:trashButtonAction
-										data-index={i}
-										class="point-control pointer-events-auto touch-none bg-red-500 flex items-center gap-1 rounded-md min-w-24 text-white justify-between px-2 py-0.5"
-										type="button"
-									>
-										<span class="text-xs">löschen</span>
-										<Trash class="size-3" />
-									</button>
-								</div>
-							{/if}
-						</div>
-						<div
-							class="pointer-events-none absolute left-0 top-0 -z-10 h-full w-full animate-ping rounded-full bg-white"
-						></div>
+					<!-- Point number indicator -->
+					<div class="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-center text-xs rounded-full px-1 py-0.5">
+						{point.feelings.length}
 					</div>
+					
+					<!-- Point controls (positioned outside the draggable area) -->
+					<div class="point-controls absolute left-1/2 z-20 flex -translate-x-1/2 transform flex-col items-center gap-1 rounded-xl bg-white shadow-md {point.y < 78 ? 'top-full mt-2' : 'bottom-full mb-2'} {i === activePointId ? 'opacity-100' : 'opacity-0'} pointer-events-auto">
+						<div class="flex flex-col gap-1 px-2 pt-2 {i === activePointId ? '' : 'pb-2'}">
+							{#each point.feelings as feeling}
+								<div class="flex items-center justify-center gap-1">
+									<div class="text-center text-xs">
+										{feelingsLookup.get(feeling) || feeling}
+									</div>
+								</div>
+							{/each}
+						</div>
+						{#if i === activePointId}
+							<div class="flex items-center gap-1 px-2 pb-2 mt-1">
+								<button
+									aria-label="remove point"
+									use:trashButtonAction
+									data-index={i}
+									class="point-control pointer-events-auto touch-none bg-red-500 flex items-center gap-1 rounded-md min-w-24 text-white justify-between px-2 py-0.5"
+									type="button"
+								>
+									<span class="text-xs">löschen</span>
+									<Trash class="size-3" />
+								</button>
+							</div>
+						{/if}
+					</div>
+					
+					<!-- Animated ping effect -->
+					<div class="pointer-events-none absolute left-0 top-0 -z-10 h-full w-full animate-ping rounded-full bg-white"></div>
 				</div>
 			{/each}
 			<img

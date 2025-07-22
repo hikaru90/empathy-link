@@ -7,6 +7,9 @@
 	import IconPaperPlane from '$assets/icons/icon-paper-plane.svg?raw';
 	import LearnGotoNextButton from '$lib/components/bullshift/Learn/LearnGotoNextButton.svelte';
 	import FeelingSelector from '$lib/components/FeelingSelector.svelte';
+	import LearnSplashScreen from '$lib/components/bullshift/Learn/LearnSplashScreen.svelte';
+	import { pb } from '$scripts/pocketbase';
+	import { serializeNonPOJOs } from '$scripts/helpers';
 
 	interface Props {
 		content: any;
@@ -43,6 +46,15 @@
 	let isLoading = $state(false);
 	let errorMessage = $state('');
 	let responseTime = $state<number | null>(null);
+	let splashDone = $state(false);
+	let feelingsLookup = $state<Map<string, string>>(new Map());
+
+	let splashContentClass = $derived(() => {
+		if (splashDone) {
+			return 'opacity-100 scale-100';
+		}
+		return 'opacity-0 scale-0';
+	});
 
 
 	const internalStep = $derived(() => {
@@ -71,6 +83,11 @@
 				aiSummary = response.aiSummary || '';
 			}
 		}
+	});
+
+	// Initialize feelings lookup
+	$effect(() => {
+		initFeelingsLookup();
 	});
 
 	// Clear error message when user starts typing
@@ -187,6 +204,13 @@
 	};
 
 	const generateSummary = async () => {
+		console.log('generateSummary called', { 
+			isLoading, 
+			situationInput: situationInput.trim(), 
+			thoughtsInput: thoughtsInput.trim(), 
+			selectedFeelings 
+		});
+		
 		if (isLoading) return;
 
 		// Validate that we have the required data
@@ -205,11 +229,14 @@
 		const startTime = Date.now();
 
 		try {
+			// Convert feeling IDs to feeling names
+			const feelingNames = selectedFeelings.map(id => feelingsLookup.get(id) || id);
+			
 			const requestData = {
 				step: 'summary',
 				situation: situationInput,
 				thoughts: thoughtsInput,
-				feelings: selectedFeelings
+				feelings: feelingNames
 			};
 			
 
@@ -242,7 +269,7 @@
 				responseTime: responseTime
 			});
 
-			gotoNextStep?.();
+			// Don't call gotoNextStep here - the summary should be displayed in the same step
 		} catch (error) {
 			console.error('Error generating summary:', error);
 			errorMessage = "Sorry, I couldn't generate the summary right now. Please try again.";
@@ -251,12 +278,42 @@
 		}
 	};
 
+	const initFeelingsLookup = async () => {
+		try {
+			const records = await pb.collection('feelings').getFullList({
+				sort: 'category,sort',
+				requestKey: 'feelingsDetective'
+			});
+			const data = serializeNonPOJOs(records) as any[];
+			const lookup = new Map<string, string>();
+			if (data && Array.isArray(data)) {
+				data.forEach(feeling => {
+					if (feeling && feeling.id && feeling.nameDE) {
+						lookup.set(feeling.id, feeling.nameDE);
+					}
+				});
+			}
+			feelingsLookup = lookup;
+		} catch (error) {
+			console.error('Error initializing feelings lookup:', error);
+			feelingsLookup = new Map();
+		}
+	};
+
 	const handleFeelingChange = (feelings: string[]) => {
 		selectedFeelings = feelings;
 	};
 </script>
 
-<div class="flex h-full flex-col justify-between space-y-4 rounded-lg backdrop-blur">
+<LearnSplashScreen 
+		color={color} 
+		text="Zeit zu Üben"
+		on:splashDone={() => {
+			splashDone = true;
+		}}
+	/>
+
+<div class="flex h-full flex-col justify-between space-y-4 rounded-lg backdrop-blur transition-all transform duration-1000 {splashContentClass()}">
 	{#if internalStep() === 0}
 		<!-- Step 1: Situation Input -->
 		<div class="flex flex-grow items-center justify-center space-y-2">
@@ -271,7 +328,7 @@
 			>
 				<AutoTextarea
 					bind:value={situationInput}
-					placeholder="Beschreibe hier deine Situation..."
+					placeholder="Mein Chef meinte ich würde seine Erwartungen enttäuschen..."
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none max-w-xs"
 				/>
 
@@ -347,7 +404,7 @@
 		<!-- Step 3: Thoughts and Judgments Input -->
 		<div class="flex flex-grow items-center justify-center space-y-2">
 			<h3 class="font-medium text-gray-900 max-w-xs">
-				Was ging dir spontan durch den Kopf? Welche Urteile hast du über dich gehabt?
+				Welche Urteile und Bewertungen hattest Du spontan im Kopf?
 			</h3>
 		</div>
 
@@ -357,7 +414,7 @@
 			>
 				<AutoTextarea
 					bind:value={thoughtsInput}
-					placeholder="Beschreibe deine spontanen Gedanken und Urteile..."
+					placeholder="Ich habe gedacht ich sei nicht gut genug..."
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
 				/>
 
@@ -391,11 +448,11 @@
 		<div class="flex flex-grow flex-col justify-center space-y-4">
 			<div class="text-center font-medium text-gray-900 flex-grow flex items-center justify-center">
 				<h3 class="max-w-xs">
-					Wähle die Gefühle aus, die du in dieser Situation hattest:
+					Welche Gefühle löst diese Situation in Dir aus?
 				</h3>
 			</div>
 
-			<div class="overflow-y-auto">
+			<div class="overflow-y-auto overflow-x-hidden max-h-64">
 				<FeelingSelector
 					{selectedFeelings}
 					onFeelingChange={handleFeelingChange}
@@ -405,16 +462,20 @@
 			</div>
 		</div>
 
-		<LearnGotoNextButton
-			onClick={submitFeelings}
-			disabled={selectedFeelings.length === 0 || isLoading}
-		>
-			{#if isLoading}
-				<Loader2 class="size-4 animate-spin" />
-			{:else}
+		{#if isLoading}
+			<div class="flex items-center justify-center">
+				<Loader2 class="size-6 animate-spin" />
+				<span class="ml-2">Speichere...</span>
+			</div>
+		{:else if selectedFeelings.length === 0}
+			<div class="text-center text-gray-500">
+				Bitte wähle mindestens ein Gefühl aus
+			</div>
+		{:else}
+			<LearnGotoNextButton onClick={submitFeelings}>
 				Weiter
-			{/if}
-		</LearnGotoNextButton>
+			</LearnGotoNextButton>
+		{/if}
 	{:else if internalStep() === 4 && !aiSummary}
 		<!-- Step 5: Generate Summary -->
 		<div class="flex flex-grow items-center justify-center space-y-2">
@@ -423,17 +484,25 @@
 			</h3>
 		</div>
 
-		<LearnGotoNextButton onClick={generateSummary} disabled={isLoading}>
-			{#if isLoading}
-				<Loader2 class="size-4 animate-spin" />
-			{:else}
+		<!-- Debug info -->
+		<div class="text-xs text-gray-500 text-center">
+			Step: {internalStep()}, AI Summary: {aiSummary ? 'Yes' : 'No'}, Loading: {isLoading}
+		</div>
+
+		{#if isLoading}
+			<div class="flex items-center justify-center">
+				<Loader2 class="size-6 animate-spin" />
+				<span class="ml-2">Erstelle Zusammenfassung...</span>
+			</div>
+		{:else}
+			<LearnGotoNextButton onClick={generateSummary}>
 				Zusammenfassung erstellen
-			{/if}
-		</LearnGotoNextButton>
+			</LearnGotoNextButton>
+		{/if}
 	{:else if internalStep() === 4 && aiSummary}
 		<!-- Step 5: Display Summary -->
 		<div class="flex flex-grow items-center justify-center space-y-2 rounded-lg p-6">
-			<div class="prose prose-sm max-w-none overflow-y-auto text-gray-700">
+			<div class="prose prose-sm max-w-sm overflow-y-auto text-gray-700 max-h-80">
 				{@html marked(aiSummary)}
 			</div>
 		</div>

@@ -44,10 +44,8 @@ Bitte spiegele diese Situation neutral und verständnisvoll wider, ohne Bewertun
         return json({ error: 'Missing required fields for summary step', details: errorDetails }, { status: 400 });
       }
 
-      systemPrompt = `Du bist ein einfühlsamer Coach, der Menschen dabei hilft, ihre emotionalen Erkenntnisse zu verstehen.
-      Erstelle eine mitfühlende Zusammenfassung der Person's Selbstreflexion, die ihre Situation, Gedanken und Gefühle würdigt.
-      Biete sanfte Erkenntnisse und ermutigende Worte, ohne zu urteilen oder zu bewerten.
-      Fokussiere dich auf Selbstmitgefühl und das Verstehen der eigenen emotionalen Reaktionen.`;
+      systemPrompt = `Du bist ein experte für gewaltfreie kommunikation. Du existierst in dem Lernmodul "Wie fühlst du dich eigentlich? Gefühle erkennen
+". Du erstellst eine zusammenfassung für den letzten Schritt einer lern-session die "Gefühlsdtektiv" heißt. Es geht darum dem nutzer zu erklären, dass es sinnvoll ist, sich mit seinen gefühlen auseinander zu setzen. Er musste dafür eine schwierige situation beschreiben und gedanken oder urteile die er im kopf hatte schildern. danach sollte er sich mit seinen gefühlen auseinander setzen und aus einer liste gefühle aussuchen die er oder sie hatte. Deine Aufgabe ist es, eine zusammenfassung zu erstellen, die dem nutzer hilft, den sinn und mehrwert der auseinandersetzung mit seinen gefühlen zu verstehen. Du redest direkt mit dem nutzer. Antworte nur mit unformattiertem text. Ohne begrüßung oder abschluss. Du bist der letzte schritt in einem mehrstufigen prozess. Du kannst Bedürfnisse erwähnen, aber fokussiere dich in der antwort auf die gefühle. Bitte gib dem Nutzer keine Aufgaben, mit deiner antwort ist das lernmodul abgeschlossen.`;
 
       const feelingsText = Array.isArray(feelings) && feelings.length > 0 
         ? feelings.join(', ') 

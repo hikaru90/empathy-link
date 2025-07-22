@@ -40,6 +40,33 @@
 		localSelectedFeelings = selectedFeelings;
 	});
 
+	// Auto-expand categories for pre-selected feelings (only once when feelings are loaded)
+	$effect(() => {
+		if (selectedFeelings.length > 0 && groupedFeelings.length > 0 && feelings.length > 0) {
+			let needsUpdate = false;
+			
+			selectedFeelings.forEach(feelingId => {
+				const feeling = feelings.find(f => f.id === feelingId);
+				if (feeling) {
+					// Find and expand the category that contains this feeling
+					groupedFeelings.forEach(positive => {
+						positive.content.forEach(category => {
+							if (category.content.some(f => f.id === feelingId) && !category.visible) {
+								category.visible = true;
+								needsUpdate = true;
+							}
+						});
+					});
+				}
+			});
+			
+			// Only update if we actually changed something
+			if (needsUpdate) {
+				groupedFeelings = [...groupedFeelings];
+			}
+		}
+	});
+
 	const initFeelings = async () => {
 		try {
 			const records = await pb.collection('feelings').getFullList({
