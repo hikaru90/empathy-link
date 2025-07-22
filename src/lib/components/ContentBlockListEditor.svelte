@@ -92,6 +92,12 @@
 					placeholder: 'Write your answer here...'
 				};
 				break;
+			case 'feelingsDetective':
+				newBlock = {
+					type: 'feelingsDetective',
+					question: 'Beschreibe eine Situation, die du erlebt hast:'
+				};
+				break;
 			case 'image':
 				newBlock = { type: 'image', src: '', alt: 'Image description' };
 				break;
@@ -228,7 +234,7 @@
 	<BlockTypeSelector onSelectType={addContentBlock} />
 
 	<!-- Content Blocks List -->
-	<div class="space-y-1">
+	<div class="space-y-1 pb-16">
 		{#each previewContent as block, blockIndex}
 			<div
 				class="relative"

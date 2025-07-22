@@ -260,18 +260,21 @@
 				</div>
 			{/if}
 
-			<!-- Block Type Icon -->
-			<img
+			<div class="flex items-center flex-shrink-0 shadow-inner shadow-black/10 bg-black/5 pl-1 pr-2 rounded-md">
+
+				<!-- Block Type Icon -->
+				<img
 				src={`/blocks/${block.type}.svg`}
 				alt={block.type}
 				class="size-6"
-			/>
-
-			<!-- Block Type Label -->
-			<span class="text-sm font-medium text-gray-700">
-				{block.type.charAt(0).toUpperCase() + block.type.slice(1)}
-			</span>
-			<span class="whitespace-nowrap text-xs overflow-hidden text-ellipsis">{block.content}</span>
+				/>
+				
+				<!-- Block Type Label -->
+				<span class="text-sm font-medium text-gray-700">
+					{block.type.charAt(0).toUpperCase() + block.type.slice(1)}
+				</span>
+			</div>
+				<span class="whitespace-nowrap text-xs overflow-hidden text-ellipsis">{block.content}</span>
 		</div>
 
 		<div class="flex items-center gap-1 flex-shrink-0">
@@ -978,6 +981,37 @@
 						</div>
 						<div class="text-sm text-gray-600 bg-gray-50 p-3 rounded">
 							<strong>Note:</strong> This block shows the user's answer and AI response. Make sure to place this block after the corresponding AI Question Step block.
+						</div>
+					</div>
+				</div>
+			{:else if block.type === 'feelingsDetective'}
+				<div class="flex flex-col gap-2">
+					<div class="space-y-4">
+						<div>
+							<label for="feelings-detective-question-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Situation Question (optional)</label>
+							<Textarea 
+								id="feelings-detective-question-{pageIndex}-{blockIndex}"
+								value={block.question || ''}
+								oninput={(e: Event) => {
+									const target = e.target as HTMLTextAreaElement;
+									onUpdate('question', target.value || undefined);
+								}}
+								rows={2}
+								placeholder="Beschreibe eine Situation, die du erlebt hast:"
+							/>
+							<div class="text-xs text-gray-500 mt-1">
+								Default question will be used if left empty
+							</div>
+						</div>
+						<div class="text-sm text-gray-600 bg-blue-50 p-3 rounded">
+							<strong>Feelings Detective Process:</strong>
+							<ol class="list-decimal list-inside mt-2 space-y-1">
+								<li>User describes a situation</li>
+								<li>AI provides non-judgmental reflection</li>
+								<li>User shares spontaneous thoughts and self-judgments</li>
+								<li>User selects feelings using the feelings selector</li>
+								<li>AI generates a compassionate summary</li>
+							</ol>
 						</div>
 					</div>
 				</div>

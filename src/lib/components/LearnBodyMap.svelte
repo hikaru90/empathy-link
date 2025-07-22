@@ -19,7 +19,7 @@
 	}
 
 
-	let { content, color, session, onResponse, contentBlock, topicVersionId }: Props = $props();
+	let { content, color, session, onResponse, contentBlock, topicVersionId, gotoNextStep }: Props = $props();
 
 	let points = $state<{ id: number; x: number; y: number; feelings: string[] }[]>([]);
 	let showFeelings = $state<boolean>(false);

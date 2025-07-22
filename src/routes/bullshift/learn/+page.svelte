@@ -70,7 +70,9 @@
 	});
 
 	const currentCategory = (categoryId: string) => {
-		return data.categories?.find((c) => c.id === categoryId);
+		// First try to find the category in the categories array
+		const category = data.categories?.find((c) => c.id === categoryId);
+		return category;
 	};
 
 	const isTopicCompleted = (topicId: string) => {
@@ -168,7 +170,14 @@
 	</div>
 
 	<div class="mb-20 flex flex-col gap-4">
-		{#if categories() && data.categories}
+		{#if !data.categories || !data.topics}
+			<div class="flex h-64 w-full items-center justify-center">
+				<div class="text-center">
+					<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+					<p class="mt-4 text-gray-600">Loading learning modules...</p>
+				</div>
+			</div>
+		{:else if categories() && data.categories}
 			{#each categories() as category, categoryIndex}
 				{@const categoryCompletion = getCategoryCompletion(category.topics)}
 				<div class="">
@@ -211,7 +220,7 @@
 									class="card-item relative group h-64 w-72 flex-shrink-0 snap-start px-6 -mx-3 text-sm transition-all duration-100"
 									style="transform: {focusedElements[categoryIndex] === topicIndex ? 'scale(1.02)' : 'scale(1)'}"
 								>
-									<div style="background-color: {currentCategory(category.category)?.color}" class="relative h-full w-full flex items-end justify-start overflow-hidden rounded-lg p-4 transition-all duration-400 delay-100 shadow-md shadow-black/5 {focusedElements[categoryIndex] === topicIndex ? 'shadow-xl shadow-black/10' : ''}">
+									<div style="background-color: {currentCategory(category.category)?.color || '#6b7280'}" class="relative h-full w-full flex items-end justify-start overflow-hidden rounded-lg p-4 transition-all duration-400 delay-100 shadow-md shadow-black/5 {focusedElements[categoryIndex] === topicIndex ? 'shadow-xl shadow-black/10' : ''}">
 										<!-- Completion Badge -->
 										{#if isTopicCompleted(topic.id)}
 											<div

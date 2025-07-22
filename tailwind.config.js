@@ -6,11 +6,11 @@ const config = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	safelist: [
 		'dark',
-		{ pattern: /-info/},
-		{ pattern: /-observation/},
-		{ pattern: /-feelings/},
-		{ pattern: /-needs/},
-		{ pattern: /-request/},
+		{ pattern: /-info/ },
+		{ pattern: /-observation/ },
+		{ pattern: /-feelings/ },
+		{ pattern: /-needs/ },
+		{ pattern: /-request/ },
 	],
 	theme: {
 		container: {
@@ -25,14 +25,24 @@ const config = {
 				'2xs': '0.5rem'
 			},
 			animation: {
-        expand: 'expand 1s ease-in-out infinite alternate',
-      },
+				expand: 'expand 1s ease-in-out infinite alternate',
+				splash: 'splash 1s ease-in-out',
+				splashContent: 'splashContent 1s ease-in-out'
+			},
 			keyframes: {
-        expand: {
-          '0%': { transform: 'scale(1)' },
-          '100%': { transform: 'scale(1.2)' },
-        }
-      },
+				expand: {
+					'0%': { transform: 'scale(1)' },
+					'100%': { transform: 'scale(1.2)' },
+				},
+				splash: {
+					'0%': { opacity: 0, transform: 'scale(1)' },
+					'100%': { opacity: 1, transform: 'scale(1.2)' },
+				},
+				splashContent: {
+					'0%': { opacity: 0, transform: 'scale(1)' },
+					'100%': { opacity: 1, transform: 'scale(1.2)' },
+				},
+			},
 			colors: {
 				'bullshift': 'hsl(var(--bullshift) / <alpha-value>)',
 				'info-background': 'hsl(var(--info-background) / <alpha-value>)',
@@ -87,7 +97,7 @@ const config = {
 					foreground: 'hsl(var(--card-foreground) / <alpha-value>)'
 				}
 			},
-			
+
 			fontFamily: {
 				sans: ['Inter, sans-serif'],
 				display: ['Inter Tight, sans-serif']

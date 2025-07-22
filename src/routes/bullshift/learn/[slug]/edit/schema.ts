@@ -14,6 +14,7 @@ export type ContentBlock =
   | SortableBlock
   | MultipleChoiceBlock
   | AIQuestionBlock
+  | FeelingsDetectiveBlock
   | ImageBlock
   | AudioBlock
   | NextPageBlock
@@ -101,6 +102,11 @@ export interface AIQuestionBlock {
   question: string;
   systemPrompt: string;
   placeholder?: string; // Optional placeholder for the answer field
+}
+
+export interface FeelingsDetectiveBlock {
+  type: "feelingsDetective";
+  question?: string; // Optional custom question for situation input
 }
 
 export interface ImageBlock {
@@ -241,6 +247,11 @@ const aiQuestionBlockSchema = z.object({
   placeholder: z.string().optional()
 });
 
+const feelingsDetectiveBlockSchema = z.object({
+  type: z.literal("feelingsDetective"),
+  question: z.string().optional()
+});
+
 const imageBlockSchema = z.object({
   type: z.literal("image"),
   src: z.string(),
@@ -292,6 +303,7 @@ const contentBlockSchema = z.discriminatedUnion("type", [
   sortableBlockSchema,
   multipleChoiceBlockSchema,
   aiQuestionBlockSchema,
+  feelingsDetectiveBlockSchema,
   imageBlockSchema,
   audioBlockSchema,
   nextPageBlockSchema,
@@ -390,6 +402,19 @@ export interface AIQuestionResponse extends SessionResponse {
     aiResponse: string;
     timestamp: string;
     responseTime?: number; // time taken to get AI response
+  };
+}
+
+export interface FeelingsDetectiveResponse extends SessionResponse {
+  blockType: 'feelingsDetective';
+  response: {
+    situationInput: string;
+    aiReflection: string;
+    thoughtsInput: string;
+    selectedFeelings: string[]; // feeling IDs
+    aiSummary: string;
+    timestamp: string;
+    responseTime?: number;
   };
 }
 

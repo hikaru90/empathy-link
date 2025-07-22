@@ -13,6 +13,7 @@
 	import LearnSortableWithFeedback from '$lib/components/bullshift/Learn/LearnSortableWithFeedback.svelte';
 	import LearnMultipleChoice from '$lib/components/bullshift/Learn/LearnMultipleChoice.svelte';
 	import LearnAIQuestion from '$lib/components/bullshift/Learn/LearnAIQuestion.svelte';
+	import LearnFeelingsDetective from '$lib/components/bullshift/Learn/LearnFeelingsDetective.svelte';
 	import LearningSummary from '$lib/components/bullshift/Learn/LearningSummary.svelte';
 	import LearnNextPage from '$lib/components/bullshift/Learn/LearnNextPage.svelte';
 	import LearnPageNavigation from '$lib/components/bullshift/Learn/LearnPageNavigation.svelte';
@@ -23,6 +24,7 @@
 	import { learningSession } from '$lib/stores/learningSession';
 	import { pb } from '$scripts/pocketbase';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import SparklePill from '$lib/components/SparklePill.svelte';
 
 	// Learning Context Types (kept for compatibility but no longer used for context management)
 	export interface LearningNavigationContext {
@@ -39,9 +41,9 @@
 			const newStep = currentStep + 1;
 			currentStep = newStep;
 		}
-		
+
 		updateQueryParams();
-		
+
 		// Save current step to session (with error handling for auto-cancellation)
 		if (!isPreview && currentSession) {
 			try {
@@ -53,7 +55,7 @@
 				}
 			}
 		}
-	}
+	};
 
 	const gotoPrevStep = async () => {
 		// Simply move to previous page
@@ -62,7 +64,7 @@
 			currentStep = newStep;
 		}
 		updateQueryParams();
-		
+
 		// Save current step to session (with error handling for auto-cancellation)
 		if (!isPreview && currentSession) {
 			try {
@@ -74,24 +76,24 @@
 				}
 			}
 		}
-	}
+	};
 
 	interface Props {
 		// Data from server
 		record: any;
 		categories: any[];
 		user?: any;
-		
-		// Step state  
+
+		// Step state
 		initialStep?: number;
-		
+
 		// Mode flags
 		isPreview: boolean;
-		
+
 		// Editor specific
 		selectedVersionData?: any;
 		session?: LearningSession | null; // For preview mode
-		
+
 		// Callbacks
 		onStepChange?: (step: number) => void;
 		onSessionChange?: (session: LearningSession | null) => void;
@@ -112,23 +114,33 @@
 	// Step state
 	let currentStep = $state(initialStep);
 	let aiQuestionStep = $state<'question' | 'response' | undefined>(undefined);
-	
+
 	// Session state (only for non-preview mode)
 	let currentSession = $state<LearningSession | null>(null);
 	let showNewSessionConfirm = $state(false);
 	let completedSession = $state<LearningSession | null>(null);
-	let sessionInitData = $state<{userId: string, mainTopicId: string, topicVersionId: string} | null>(null);
+	let sessionInitData = $state<{
+		userId: string;
+		mainTopicId: string;
+		topicVersionId: string;
+	} | null>(null);
 
 	// Use provided session in preview mode, otherwise use currentSession
 	const activeSession = $derived(() => {
-		return isPreview ? (session || null) : currentSession;
+		return isPreview ? session || null : currentSession;
 	});
 
 	// Derived values
 	const currentCategory = $derived(() => {
-		if (!categories || !record) return { color: '#000000' };
-		const res = categories.find((c) => c.id === record?.expand?.currentVersion?.category);
-		return res ? { color: res.color || '#000000' } : { color: '#000000' };
+		if (!record?.expand?.currentVersion?.expand?.category) {
+			// Fallback to categories array if expanded category is not available
+			if (!categories || !record) return { color: '#000000' };
+			const res = categories.find((c) => c.id === record?.expand?.currentVersion?.category);
+			return res ? { color: res.color || '#000000' } : { color: '#000000' };
+		}
+		// Use expanded category data
+		const category = record.expand.currentVersion.expand.category;
+		return { color: category.color || '#000000' };
 	});
 
 	const topic = $derived(() => {
@@ -137,7 +149,12 @@
 			return selectedVersionData;
 		}
 		if (!record?.expand?.currentVersion) {
-			return { content: [], titleDE: isPreview ? 'Loading...' : '', titleEN: isPreview ? 'Loading...' : '', id: '' };
+			return {
+				content: [],
+				titleDE: isPreview ? 'Loading...' : '',
+				titleEN: isPreview ? 'Loading...' : '',
+				id: ''
+			};
 		}
 		const version = record.expand.currentVersion;
 		// Ensure content is always an array
@@ -151,8 +168,11 @@
 		if (component.type === 'aiQuestion') {
 			return 2;
 		}
+		if (component.type === 'feelingsDetective') {
+			return 5;
+		}
 		return 1;
-	}
+	};
 
 	const totalSteps = $derived(() => {
 		if (!topic().content) return [];
@@ -161,7 +181,7 @@
 				component: el.type,
 				stepCount: getComponentStepCount(el),
 				blockIndex: index
-			}
+			};
 		});
 		componentData.unshift({
 			component: 'title',
@@ -178,11 +198,13 @@
 		const flatSteps = componentData.flatMap((component: any) => {
 			if (component.stepCount > 1) {
 				// Create an array with proper internal step indices
-				return Array(component.stepCount).fill(null).map((_, index) => ({
-					component: component.component,
-					internalStep: index,
-					blockIndex: component.blockIndex
-				}));
+				return Array(component.stepCount)
+					.fill(null)
+					.map((_, index) => ({
+						component: component.component,
+						internalStep: index,
+						blockIndex: component.blockIndex
+					}));
 			}
 			return {
 				component: component.component,
@@ -205,7 +227,7 @@
 		if (onStepChange) {
 			onStepChange(currentStep);
 		}
-		
+
 		// Only update URL in non-preview mode
 		if (!isPreview) {
 			const url = new URL(window.location.href);
@@ -219,7 +241,7 @@
 	// Session management functions (only for non-preview mode)
 	const handleStartNewSession = async () => {
 		if (!sessionInitData || isPreview) return;
-		
+
 		try {
 			const session = await learningSession.init(
 				sessionInitData.userId,
@@ -228,11 +250,11 @@
 			);
 			currentSession = session;
 			if (onSessionChange) onSessionChange(session);
-			
+
 			// Reset to first page for new session
 			currentStep = 0;
 			updateQueryParams();
-			
+
 			// Close confirmation dialog
 			showNewSessionConfirm = false;
 			completedSession = null;
@@ -244,14 +266,14 @@
 
 	const handleContinueOldSession = () => {
 		if (!completedSession || isPreview) return;
-		
+
 		currentSession = completedSession;
 		if (onSessionChange) onSessionChange(completedSession);
-		
+
 		// Go to summary step to show results
 		currentStep = totalStepsCount() - 1;
 		updateQueryParams();
-		
+
 		// Close confirmation dialog
 		showNewSessionConfirm = false;
 		completedSession = null;
@@ -271,7 +293,12 @@
 
 	// Mark session as completed when reaching summary page
 	$effect(() => {
-		if (!isPreview && currentSession && components().length > 0 && currentStep === totalStepsCount() - 1) {
+		if (
+			!isPreview &&
+			currentSession &&
+			components().length > 0 &&
+			currentStep === totalStepsCount() - 1
+		) {
 			handleSessionCompletion();
 		}
 	});
@@ -279,7 +306,7 @@
 	// Session initialization (only for non-preview mode)
 	onMount(async () => {
 		if (isPreview) return;
-		
+
 		// Uses server-provided user data (no client-side auth checks)
 		if (user?.id && record?.id && record?.expand?.currentVersion?.id) {
 			const userId = user.id;
@@ -296,12 +323,12 @@
 				if (existingSessions.items.length > 0) {
 					// Check if the latest session is not completed
 					const latestSession = existingSessions.items[0] as unknown as LearningSession;
-					
+
 					if (!latestSession.completed) {
 						// Resume existing incomplete session
 						currentSession = latestSession;
 						if (onSessionChange) onSessionChange(latestSession);
-						
+
 						// Resume from saved step if available
 						if (currentSession.currentPage !== currentStep) {
 							currentStep = currentSession.currentPage;
@@ -316,13 +343,13 @@
 				} else {
 					// Create new session
 					const session = await learningSession.init(
-						userId,  // ← From server data
+						userId, // ← From server data
 						mainTopicId, // ← Main topic ID (what gets stored in session.topic)
 						topicVersionId // ← Version ID (what gets stored in session.topicVersion)
 					);
 					currentSession = session;
 					if (onSessionChange) onSessionChange(session);
-					
+
 					// Resume from saved step if available
 					if (session.currentPage !== currentStep) {
 						currentStep = session.currentPage;
@@ -339,11 +366,28 @@
 	const handleResponse = async (blockType: string, response: any, content: any) => {
 		const session = activeSession();
 		if (!session) return;
-		
+
 		if (isPreview) {
 			// For preview mode, update the mock session in memory
-			const validBlockType = blockType as "text" | "list" | "heading" | "task" | "timer" | "bodymap" | "taskCompletion" | "sortable" | "multipleChoice" | "aiQuestion" | "aiQuestionStep" | "aiResponseStep" | "image" | "audio" | "nextPage" | "pageNavigation";
-			
+			const validBlockType = blockType as
+				| 'text'
+				| 'list'
+				| 'heading'
+				| 'task'
+				| 'timer'
+				| 'bodymap'
+				| 'taskCompletion'
+				| 'sortable'
+				| 'multipleChoice'
+				| 'aiQuestion'
+				| 'feelingsDetective'
+				| 'aiQuestionStep'
+				| 'aiResponseStep'
+				| 'image'
+				| 'audio'
+				| 'nextPage'
+				| 'pageNavigation';
+
 			const newResponse = {
 				pageIndex: currentStep,
 				blockIndex: 0,
@@ -356,9 +400,11 @@
 
 			// Ensure responses array exists
 			const existingResponses = session.responses || [];
-			
+
 			// Remove any existing response for this step
-			const updatedResponses = existingResponses.filter(r => !(r.pageIndex === currentStep && r.blockIndex === 0));
+			const updatedResponses = existingResponses.filter(
+				(r) => !(r.pageIndex === currentStep && r.blockIndex === 0)
+			);
 			updatedResponses.push(newResponse);
 
 			const updatedSession = {
@@ -373,8 +419,33 @@
 		} else {
 			// For live mode, save to database
 			try {
-				const validBlockType = blockType as "text" | "list" | "heading" | "task" | "timer" | "bodymap" | "taskCompletion" | "sortable" | "multipleChoice" | "aiQuestion" | "aiQuestionStep" | "aiResponseStep" | "image" | "audio" | "nextPage" | "pageNavigation";
-				await learningSession.saveResponseImmediate(session.id, currentStep, 0, validBlockType, response, topic().id, content);
+				const validBlockType = blockType as
+					| 'text'
+					| 'list'
+					| 'heading'
+					| 'task'
+					| 'timer'
+					| 'bodymap'
+					| 'taskCompletion'
+					| 'sortable'
+					| 'multipleChoice'
+					| 'aiQuestion'
+					| 'feelingsDetective'
+					| 'aiQuestionStep'
+					| 'aiResponseStep'
+					| 'image'
+					| 'audio'
+					| 'nextPage'
+					| 'pageNavigation';
+				await learningSession.saveResponseImmediate(
+					session.id,
+					currentStep,
+					0,
+					validBlockType,
+					response,
+					topic().id,
+					content
+				);
 				// Refresh session data if callback provided
 				if (onSessionChange) {
 					const refreshedSession = await pb.collection('learnSessions').getOne(session.id, {
@@ -395,7 +466,7 @@
 		if (isPreview || !currentSession) {
 			return;
 		}
-		
+
 		try {
 			await learningSession.saveFeedback(currentSession.id, feedback);
 		} catch (error) {
@@ -408,160 +479,194 @@
 		if (isPreview || !currentSession) {
 			return;
 		}
-		
+
 		try {
 			await learningSession.complete(currentSession.id);
 		} catch (error) {
 			console.error('Failed to mark session as completed:', error);
 		}
 	};
-
-
 </script>
 
 {#if !showNewSessionConfirm}
-	<!-- Step indicator -->
-	<LearnStepIndicator 
-		{topic}
-		totalSteps={totalSteps()}
-		totalStepsCount={totalStepsCount()}
-		{currentStep}
-		{currentCategory}
-		onPrevStep={() => gotoPrevStep()}
-		onNextStep={() => gotoNextStep()}
-	/>
-	
-	{#if currentStep === 0}
-		<LearnTitleCard currentCategory={currentCategory()} topic={topic()} gotoNextStep={async () => {
-			await gotoNextStep();
-		}} />
-	{/if}
-
-	<!-- Show summary page (only on the last step) -->
-	{#if components().length > 0 && currentStep === totalStepsCount() - 1}
-		{@const currentActiveSession = activeSession()}
-		{#if !isPreview && currentActiveSession}
-			{#await pb.collection('learnSessions').getOne(currentActiveSession.id).then(session => session as unknown as LearningSession)}
-				<div class="text-center p-8">
-					<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-					<p class="mt-4 text-gray-600">Loading your results...</p>
+	<!-- Loading state - ensure data is fully loaded -->
+	{#if !record || !categories || !record.expand?.currentVersion}
+		<div class="flex h-full w-full items-center justify-center">
+			<div class="text-center">
+				<div
+					class="flex h-svh items-center justify-center"
+				>
+					<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
 				</div>
-			{:then reloadedSession}
-				<LearningSummary 
-					session={reloadedSession}
+			</div>
+		</div>
+	{:else}
+		<!-- Step indicator -->
+		<LearnStepIndicator
+			{topic}
+			totalSteps={totalSteps()}
+			totalStepsCount={totalStepsCount()}
+			{currentStep}
+			{currentCategory}
+			onPrevStep={() => gotoPrevStep()}
+			onNextStep={() => gotoNextStep()}
+		/>
+
+		{#if currentStep === 0}
+			<LearnTitleCard
+				currentCategory={currentCategory()}
+				topic={topic()}
+				gotoNextStep={async () => {
+					await gotoNextStep();
+				}}
+			/>
+		{/if}
+
+		<!-- Show summary page (only on the last step) -->
+		{#if components().length > 0 && currentStep === totalStepsCount() - 1}
+			{@const currentActiveSession = activeSession()}
+			{#if !isPreview && currentActiveSession}
+				{#await pb
+					.collection('learnSessions')
+					.getOne(currentActiveSession.id)
+					.then((session) => session as unknown as LearningSession)}
+					<div class="p-8 text-center">
+						<div
+							class="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-gray-900"
+						></div>
+						<p class="mt-4 text-gray-600">Loading your results...</p>
+					</div>
+				{:then reloadedSession}
+					<LearningSummary
+						session={reloadedSession}
+						topic={topic()}
+						color={currentCategory().color}
+						onFeedbackSubmit={handleFeedbackSubmit}
+					/>
+				{:catch error}
+					<div class="p-8 text-center">
+						<p class="text-red-600">Error loading results: {error.message}</p>
+					</div>
+				{/await}
+			{:else}
+				<LearningSummary
+					session={currentActiveSession || null}
 					topic={topic()}
 					color={currentCategory().color}
 					onFeedbackSubmit={handleFeedbackSubmit}
 				/>
-			{:catch error}
-				<div class="text-center p-8">
-					<p class="text-red-600">Error loading results: {error.message}</p>
+			{/if}
+		{:else if components().length > 0 && currentStep > 0 && currentStep < totalStepsCount() - 1}
+			<!-- Show single component per step -->
+			{@const stepData = totalSteps()[currentStep]}
+			{@const content = stepData.blockIndex >= 0 ? components()[stepData.blockIndex] : null}
+			{@const internalStep = stepData.internalStep}
+			{#if content && content.type === 'text'}
+				<LearnText {content} gotoNextStep={() => gotoNextStep()} />
+			{:else if content && content.type === 'task'}
+				<LearnTask color={currentCategory().color} {content} />
+			{:else if content && content.type === 'heading'}
+				<LearnHeading {content} />
+			{:else if content && content.type === 'image'}
+				<LearnImage {content} />
+			{:else if content && content.type === 'audio'}
+				<LearnAudio
+					color={currentCategory().color}
+					{content}
+					session={activeSession()}
+					onResponse={(response) => handleResponse('audio', response, content)}
+					gotoNextStep={() => gotoNextStep()}
+				/>
+			{:else if content && content.type === 'timer'}
+				<LearnTimer
+					duration={content.duration}
+					color={currentCategory().color}
+					session={activeSession()}
+					onResponse={(response) => handleResponse('timer', response, content)}
+				/>
+			{:else if content && content.type === 'breathe'}
+				<LearnBreathe
+					{content}
+					pageIndex={currentStep}
+					blockIndex={stepData.blockIndex}
+					{isPreview}
+					gotoNextStep={() => gotoNextStep()}
+				/>
+			{:else if content && content.type === 'bodymap'}
+				<LearnBodyMap
+					{content}
+					color={currentCategory().color}
+					session={activeSession()}
+					contentBlock={content}
+					topicVersionId={topic().id}
+					onResponse={(response) => handleResponse('bodymap', response, content)}
+					gotoNextStep={() => gotoNextStep()}
+				/>
+
+				<LearnCompletionNotes
+					{content}
+					color={currentCategory().color}
+					session={activeSession()}
+					onResponse={(response) => handleResponse('taskCompletion', response, content)}
+				/>
+			{:else if content && content.type === 'list'}
+				<LearnList
+					{content}
+					currentCategory={currentCategory()}
+					gotoNextStep={() => gotoNextStep()}
+				/>
+			{:else if content && content.type === 'sortable'}
+				<LearnSortableWithFeedback
+					{content}
+					color={currentCategory().color}
+					currentCategory={currentCategory()}
+					session={activeSession()}
+					topicVersionId={topic().id}
+					onResponse={(response) => handleResponse('sortable', response, content)}
+				/>
+			{:else if content && content.type === 'multipleChoice'}
+				<LearnMultipleChoice
+					{content}
+					color={currentCategory().color}
+					session={activeSession()}
+					contentBlock={content}
+					topicVersionId={topic().id}
+					onResponse={(response) => handleResponse('multipleChoice', response, content)}
+				/>
+			{:else if content && content.type === 'aiQuestion'}
+				<LearnAIQuestion
+					{content}
+					color={currentCategory().color}
+					session={activeSession()}
+					contentBlock={content}
+					{currentStep}
+					totalSteps={totalSteps()}
+					topicVersionId={topic().id}
+					onResponse={(response) => handleResponse('aiQuestion', response, content)}
+					gotoNextStep={() => gotoNextStep()}
+				/>
+			{:else if content && content.type === 'feelingsDetective'}
+				<LearnFeelingsDetective
+					{content}
+					color={currentCategory().color}
+					session={activeSession()}
+					contentBlock={content}
+					{currentStep}
+					totalSteps={totalSteps()}
+					topicVersionId={topic().id}
+					onResponse={(response) => handleResponse('feelingsDetective', response, content)}
+					gotoNextStep={() => gotoNextStep()}
+					gotoPrevStep={() => gotoPrevStep()}
+				/>
+			{:else if content && content.type === 'nextPage'}
+				<LearnNextPage {content} />
+			{:else if content && content.type === 'pageNavigation'}
+				<LearnPageNavigation {content} />
+			{:else}
+				<div class="rounded-lg bg-gray-100 p-4">
+					<p class="text-gray-600">Unknown content type: {content?.type || 'undefined'}</p>
 				</div>
-			{/await}
-		{:else}
-			<LearningSummary 
-				session={currentActiveSession || null}
-				topic={topic()}
-				color={currentCategory().color}
-				onFeedbackSubmit={handleFeedbackSubmit}
-			/>
-		{/if}
-	{:else if components().length > 0 && currentStep > 0 && currentStep < totalStepsCount() - 1}
-		<!-- Show single component per step -->
-		{@const stepData = totalSteps()[currentStep]}
-		{@const content = stepData.blockIndex >= 0 ? components()[stepData.blockIndex] : null}
-		{@const internalStep = stepData.internalStep}
-		{#if content && content.type === 'text'}
-			<LearnText {content} gotoNextStep={() => gotoNextStep()} />
-		{:else if content && content.type === 'task'}
-			<LearnTask 
-				color={currentCategory().color} 
-				{content} 
-			/>
-		{:else if content && content.type === 'heading'}
-			<LearnHeading {content} />
-		{:else if content && content.type === 'image'}
-			<LearnImage {content} />
-		{:else if content && content.type === 'audio'}
-			<LearnAudio 
-				color={currentCategory().color} 
-				{content} 
-				session={activeSession()}
-				onResponse={(response) => handleResponse('audio', response, content)}
-				gotoNextStep={() => gotoNextStep()} 
-			/>
-		{:else if content && content.type === 'timer'}
-			<LearnTimer 
-				duration={content.duration} 
-				color={currentCategory().color}
-				session={activeSession()}
-				onResponse={(response) => handleResponse('timer', response, content)}
-			/>
-		{:else if content && content.type === 'breathe'}
-			<LearnBreathe 
-				{content} 
-				pageIndex={currentStep}
-				blockIndex={stepData.blockIndex}
-				isPreview={isPreview}
-				gotoNextStep={() => gotoNextStep()}
-			/>
-		{:else if content && content.type === 'bodymap'}
-			<LearnBodyMap 
-				{content} 
-				color={currentCategory().color}
-				session={activeSession()}
-				contentBlock={content}
-				topicVersionId={topic().id}
-				onResponse={(response) => handleResponse('bodymap', response, content)}
-				gotoNextStep={() => gotoNextStep()}
-			/>
-		
-			<LearnCompletionNotes 
-				{content} 
-				color={currentCategory().color}
-				session={activeSession()}
-				onResponse={(response) => handleResponse('taskCompletion', response, content)}
-			/>
-		{:else if content && content.type === 'list'}
-			<LearnList {content} currentCategory={currentCategory()} gotoNextStep={() => gotoNextStep()} />
-		{:else if content && content.type === 'sortable'}
-			<LearnSortableWithFeedback 
-				{content} 
-				color={currentCategory().color}
-				currentCategory={currentCategory()}
-				session={activeSession()}
-				topicVersionId={topic().id}
-				onResponse={(response) => handleResponse('sortable', response, content)}
-			/>
-		{:else if content && content.type === 'multipleChoice'}
-			<LearnMultipleChoice 
-				{content} 
-				color={currentCategory().color}
-				session={activeSession()}
-				contentBlock={content}
-				topicVersionId={topic().id}
-				onResponse={(response) => handleResponse('multipleChoice', response, content)}
-			/>
-		{:else if content && content.type === 'aiQuestion'}
-			<LearnAIQuestion 
-				{content} 
-				color={currentCategory().color}
-				session={activeSession()}
-				contentBlock={content}
-				currentStep={currentStep}
-				totalSteps={totalSteps()}
-				topicVersionId={topic().id}
-				onResponse={(response) => handleResponse('aiQuestion', response, content)}
-				gotoNextStep={() => gotoNextStep()}
-			/>
-		{:else if content && content.type === 'nextPage'}
-			<LearnNextPage {content} />
-		{:else if content && content.type === 'pageNavigation'}
-			<LearnPageNavigation {content} />
-		{:else}
-			<div class="p-4 bg-gray-100 rounded-lg">
-				<p class="text-gray-600">Unknown content type: {content?.type || 'undefined'}</p>
-			</div>
+			{/if}
 		{/if}
 	{/if}
 {/if}
@@ -570,19 +675,17 @@
 <Dialog.Root bind:open={showNewSessionConfirm}>
 	<Dialog.Content class="sm:max-w-md">
 		<Dialog.Header>
-			<Dialog.Title class="text-xl font-bold text-gray-900">
-				Modul neu starten?
-			</Dialog.Title>
+			<Dialog.Title class="text-xl font-bold text-gray-900">Modul neu starten?</Dialog.Title>
 			<Dialog.Description class="text-gray-600">
 				Möchtest du das Modul erneut durchlaufen oder deine bisherigen Ergebnisse ansehen?
 			</Dialog.Description>
 		</Dialog.Header>
-		
+
 		<Dialog.Footer class="flex gap-3 sm:justify-start">
 			<button
 				type="button"
 				onclick={handleStartNewSession}
-				class="flex-1 py-2 px-4 text-white rounded-lg hover:opacity-90 transition-colors"
+				class="flex-1 rounded-lg px-4 py-2 text-white transition-colors hover:opacity-90"
 				style="background-color: {currentCategory().color}"
 			>
 				Neu starten
@@ -590,7 +693,7 @@
 			<button
 				type="button"
 				onclick={handleContinueOldSession}
-				class="flex-1 py-2 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+				class="flex-1 rounded-lg bg-gray-100 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200"
 			>
 				Ergebnisse ansehen
 			</button>

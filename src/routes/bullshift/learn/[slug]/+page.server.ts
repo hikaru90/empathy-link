@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
             sort: '-created'
         });
         const record = await pb.collection('topics').getFirstListItem(`slug = "${slug}"`,{
-            expand: 'currentVersion'
+            expand: 'currentVersion,currentVersion.category'
         });
 
         console.log('record', record);

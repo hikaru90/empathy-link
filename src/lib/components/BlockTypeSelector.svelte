@@ -19,6 +19,7 @@
 		{ type: 'sortable' as const, label: 'Sortable' },
 		{ type: 'multipleChoice' as const, label: 'Multiple Choice' },
 		{ type: 'aiQuestion' as const, label: 'AI Question' },
+		{ type: 'feelingsDetective' as const, label: 'Feelings Detective' },
 		{ type: 'nextPage' as const, label: 'Next Button' },
 		{ type: 'pageNavigation' as const, label: 'Page Navigation' }
 	];

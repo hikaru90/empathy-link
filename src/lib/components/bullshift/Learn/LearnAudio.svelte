@@ -199,6 +199,10 @@
 	});
 </script>
 
+<div class="relative flex h-full flex-col items-center justify-center rounded-lg">
+	a
+</div>
+
 <div class="relative flex h-full flex-col justify-between rounded-lg">
 	<!-- Hidden audio element -->
 	<audio
@@ -217,16 +221,20 @@
 		Your browser does not support the audio element.
 	</audio>
 
-	{#if content.title}
+	<div>
+	</div>
+	<!-- {#if content.title}
 		<div class="relative z-10 mb-8 text-center text-xl font-bold leading-snug">
 			{@html marked(content.title)}
 		</div>
-	{/if}
+	{/if} -->
 
 	<!-- Custom Audio Player -->
 	{#if content.controls !== false}
 		<div class="flex flex-col items-center justify-between gap-4">
-			<!-- Restart Button (only show when playing) -->
+			
+
+
 
 			<!-- Play/Pause Button -->
 			<div class="relative">
@@ -306,3 +314,9 @@
 		</div>
 	</div>
 </div>
+
+<style lang="scss">
+	.splash {
+		animation: splash 1s ease-in-out;
+	}
+</style>
