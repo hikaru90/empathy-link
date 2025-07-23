@@ -235,3 +235,29 @@ export const getQueryParam = (paramName: string): string | null => {
 	const urlParams = new URLSearchParams(window.location.search);
 	return urlParams.get(paramName);
 };
+
+/**
+ * Get the full PocketBase URL for a media file
+ * @param collection - The PocketBase collection name (e.g., 'topicVersions')
+ * @param recordId - The record ID
+ * @param filename - The filename from the media field
+ * @param baseUrl - The PocketBase base URL
+ * @returns The full URL to the media file, or empty string if invalid
+ */
+export const getMediaUrl = (
+	collection: string, 
+	recordId: string, 
+	filename: string, 
+	baseUrl: string
+): string => {
+	if (!collection || !recordId || !filename || !baseUrl) {
+		return '';
+	}
+	
+	// Handle full URLs that are already constructed
+	if (filename.startsWith('http://') || filename.startsWith('https://')) {
+		return filename;
+	}
+	
+	return `${baseUrl}/api/files/${collection}/${recordId}/${filename}`;
+};

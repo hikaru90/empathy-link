@@ -10,6 +10,7 @@
 	import ChevronsDown from 'lucide-svelte/icons/chevron-down';
 	import GripVertical from 'lucide-svelte/icons/grip-vertical';
 	import AudioUpload from '$lib/components/AudioUpload.svelte';
+	import { pb } from '$scripts/pocketbase';
 
 	const { 
 		block, 
@@ -274,7 +275,37 @@
 					{block.type.charAt(0).toUpperCase() + block.type.slice(1)}
 				</span>
 			</div>
-				<span class="whitespace-nowrap text-xs overflow-hidden text-ellipsis">{block.content}</span>
+				<span class="whitespace-nowrap text-xs overflow-hidden text-ellipsis">
+					{#if block.type === 'image'}
+						{block.src || 'No image'}
+					{:else if block.type === 'audio'}
+						{block.src || 'No audio'}
+					{:else if block.type === 'nextPage'}
+						{block.text || 'Next'}
+					{:else if block.type === 'pageNavigation'}
+						Navigation
+					{:else if block.type === 'bodymap'}
+						Body Map
+					{:else if block.type === 'breathe'}
+						Breathing Exercise
+					{:else if block.type === 'timer'}
+						Timer ({Math.floor(block.duration / 60)}m {block.duration % 60}s)
+					{:else if block.type === 'taskCompletion'}
+						Task Completion
+					{:else if block.type === 'feelingsDetective'}
+						Feelings Detective
+					{:else if block.type === 'aiQuestion'}
+						{block.question || 'AI Question'}
+					{:else if block.type === 'multipleChoice'}
+						{block.questions?.[0]?.question || 'Multiple Choice'}
+					{:else if block.type === 'sortable'}
+						{block.bucketA} vs {block.bucketB}
+					{:else if block.type === 'list'}
+						{block.items?.length || 0} items
+					{:else}
+						{block.content || ''}
+					{/if}
+				</span>
 		</div>
 
 		<div class="flex items-center gap-1 flex-shrink-0">
@@ -1019,7 +1050,7 @@
 				<div class="flex flex-col gap-2">
 					<div class="space-y-4">
 						<div>
-							<label for="image-src-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Image URL</label>
+							<label for="image-src-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Image SRC</label>
 							<Input 
 								id="image-src-{pageIndex}-{blockIndex}"
 								value={block.src}
@@ -1097,12 +1128,28 @@
 								onchange={async (e: Event) => {
 									const target = e.target as HTMLInputElement;
 									const file = target.files?.[0];
-									if (file) {
-										// You can implement file upload logic here
-										// For now, we'll create a local URL
-										const localUrl = URL.createObjectURL(file);
-										onUpdate('src', localUrl);
-										onUpdate('alt', file.name.replace(/\.[^/.]+$/, ""));
+									
+									if (file && currentVersion) {
+										try {
+											const formData = new FormData();
+											formData.append('media', file);
+
+											// Upload to PocketBase topicVersion media field
+											const updatedVersion = await pb.collection('topicVersions').update(currentVersion.id, formData);
+
+											// Get the uploaded file name from the media field
+											const mediaFilename = Array.isArray(updatedVersion.media) 
+												? updatedVersion.media[updatedVersion.media.length - 1] 
+												: updatedVersion.media;
+
+											if (mediaFilename) {
+												// Store the full PocketBase URL in the src field
+												const imageUrl = `${pb.baseUrl}/api/files/topicVersions/${currentVersion.id}/${mediaFilename}`;
+												onUpdate('src', imageUrl);
+											}
+										} catch (error) {
+											console.error('Error uploading image:', error);
+										}
 									}
 								}}
 								class="border rounded px-2 py-1 w-full text-sm"

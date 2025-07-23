@@ -579,7 +579,7 @@
 			{:else if content && content.type === 'heading'}
 				<LearnHeading {content} />
 			{:else if content && content.type === 'image'}
-				<LearnImage {content} />
+				<LearnImage {content} currentVersion={topic()} gotoNextStep={() => gotoNextStep()} />
 			{:else if content && content.type === 'audio'}
 				<LearnAudio
 					color={currentCategory().color}
