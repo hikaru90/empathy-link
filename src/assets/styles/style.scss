@@ -34,3 +34,6 @@
 :global(.marked ul) {
 	@apply list-disc ml-4;
 }
+:global(.marked p) {
+	@apply mb-4;
+}

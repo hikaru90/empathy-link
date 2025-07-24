@@ -423,7 +423,7 @@
 </script>
 
 <div
-	class="h-[calc(100vh-140px)] max-w-4xl space-y-5 overflow-y-auto overflow-x-hidden -mx-6 px-6"
+	class="h-[calc(100vh-186px)] max-w-4xl space-y-5 overflow-y-auto overflow-x-hidden -mx-6 px-6"
 	style="touch-action: pan-y;"
 >
 	<!-- Back button -->
@@ -456,21 +456,13 @@
 			<div class="px-6 pb-6 pt-5">
 				<h2 class="text-md mb-4 font-bold">Deine Lernzusammenfasung</h2>
 
-				<div class="flex flex-col gap-4">
-					{#each statCards() as card}
-						<div class="rounded-lg bg-black/5 p-4 text-center">
-							<div class="text-2xl font-bold">
-								{card.value}
-							</div>
-							<div class="text-sm text-black/60">{card.label}</div>
-						</div>
-					{/each}
+				<div class="marked prose prose-sm max-w-none text-gray-700">
+					{@html marked(topic.summary)}
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Detailed Statistics -->
 
 	<!-- User Notes Summary -->
 	{#if getSessionStats()?.completionNotes?.length}
@@ -488,7 +480,7 @@
 	{/if}
 
 	<!-- Module Feedback -->
-	<div class="relative">
+	<div class="relative mb-20">
 		<FeedbackModule
 			feedbackType="learnContent"
 			name={topic.titleDE || 'Learning Module'}
