@@ -17,7 +17,7 @@
 <div class="mb-6 flex h-full flex-col">
 	<div class="flex flex-grow flex-col items-center justify-center gap-2 text-left">
 		<div class="relative max-w-[20em]">
-			<p>
+			<p class="marked">
 				{@html marked(content.content || '')}
 			</p>
 			{#if content.sources}

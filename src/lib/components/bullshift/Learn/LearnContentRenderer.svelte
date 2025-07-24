@@ -375,38 +375,9 @@
 		const session = activeSession();
 		if (!session) return;
 
-		// For multi-step components, find the original page where this component started
-		let targetPageIndex = currentStep;
-		if (blockType === 'feelingsDetective') {
-			// Find the first occurrence of this feelingsDetective block in the session
-			const existingResponse = session.responses?.find(r => 
-				r.blockType === 'feelingsDetective' && 
-				JSON.stringify(r.blockContent) === JSON.stringify(content)
-			);
-			if (existingResponse) {
-				targetPageIndex = existingResponse.pageIndex;
-			}
-		}
-		if (blockType === 'needsDetective') {
-			// Find the first occurrence of this needsDetective block in the session
-			const existingResponse = session.responses?.find(r => 
-				r.blockType === 'needsDetective' && 
-				JSON.stringify(r.blockContent) === JSON.stringify(content)
-			);
-			if (existingResponse) {
-				targetPageIndex = existingResponse.pageIndex;
-			}
-		}
-		if (blockType === 'needsRubiksCube') {
-			// Find the first occurrence of this needsRubiksCube block in the session
-			const existingResponse = session.responses?.find(r => 
-				r.blockType === 'needsRubiksCube' && 
-				JSON.stringify(r.blockContent) === JSON.stringify(content)
-			);
-			if (existingResponse) {
-				targetPageIndex = existingResponse.pageIndex;
-			}
-		}
+		// For multi-step components, we don't need to track pageIndex anymore
+		// since we're using blockType and blockContent for identification
+		const targetPageIndex = currentStep;
 
 		if (isPreview) {
 			// For preview mode, update the mock session in memory

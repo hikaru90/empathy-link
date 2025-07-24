@@ -213,18 +213,15 @@
 		<!-- Step 2: Transformed Needs Display -->
 		{#if hasSubmitted && transformedNeeds.length > 0}
 			<div class="flex flex-col flex-grow items-center justify-center space-y-4 rounded-lg p-6">
-				<div class="text-center">
 					<img src="/diagrams/rubiksCubeSolved.svg" alt="Rubiks Cube" class="w-20" />
-					<h4 class="mb-4 font-medium text-gray-900">
+					<h4 class="mb-4 font-medium text-gray-900 text-center">
 						{content.resultsTitle || 'Diese Bedürfnisse stecken dahinter:'}
 					</h4>
-				</div>
 				
-				<div class="flex flex-wrap justify-center gap-3">
+				<div class="flex flex-wrap justify-center gap-2">
 					{#each transformedNeeds as need}
 						<div
-							class="rounded-full border border-gray-200 bg-gradient-to-b from-white to-gray-50 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm"
-							style="color: {color}; border-color: {color}20; background: linear-gradient(to bottom, white, {color}10);"
+							class="rounded-full border border-white bg-white/80 px-2 py-1 text-sm"
 						>
 							{need}
 						</div>

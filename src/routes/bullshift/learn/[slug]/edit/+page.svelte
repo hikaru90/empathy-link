@@ -61,6 +61,8 @@
 				step += 5; // feelingsDetective takes 5 steps
 			} else if (component.type === 'needsDetective') {
 				step += 5; // needsDetective takes 5 steps
+			} else if (component.type === 'needsRubiksCube') {
+				step += 2; // needsRubiksCube takes 2 steps
 			} else {
 				step += 1; // All other components take 1 step
 			}
