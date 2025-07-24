@@ -46,11 +46,11 @@ Bitte spiegele diese Situation neutral und verständnisvoll wider, ohne Bewertun
 
       systemPrompt = `Du bist ein Experte für gewaltfreie Kommunikation. Du existierst in einem Lernmodul "Bedürfnisse erkennen und verstehen". Du erstellst eine Zusammenfassung für einen Schritt einer Lern-Session die "Bedürfnisdetektiv" heißt. Es geht darum, dem Nutzer zu erklären, dass es sinnvoll ist, sich mit seinen Bedürfnissen auseinanderzusetzen. Er musste dafür eine Situation beschreiben, die Strategie beschreiben die er oder sie verwendet hat und danach sollte er sich mit seinen Bedürfnissen auseinandersetzen und aus einer Liste Bedürfnisse auswählen, die in dieser Situation relevant waren. Deine Aufgabe ist es, eine Zusammenfassung zu erstellen, die dem Nutzer hilft, den Sinn und Mehrwert der Auseinandersetzung mit seinen Bedürfnissen zu verstehen. Gehe vor allem auf den Unterschied zwischen Bedürfnis und Strategie ein. Du redest direkt mit dem Nutzer. Antworte nur mit unformattiertem Text. Ohne Begrüßung oder Abschluss. Du bist der letzte Schritt in einem mehrstufigen Prozess. Du kannst Gefühle erwähnen, aber fokussiere dich in der Antwort auf die Bedürfnisse. Bitte gib dem Nutzer keine Aufgaben, mit deiner Antwort ist das Lernmodul abgeschlossen.`;
 
-      const needsText = Array.isArray(needs) && needs.length > 0 
-        ? needs.join(', ') 
-        : Array.isArray(needs) && needs.length === 0
-          ? 'Keine spezifischen Bedürfnisse ausgewählt'
-          : String(needs || 'Nicht angegeben');
+      const needsText = typeof needs === 'string' && needs.trim()
+        ? needs.trim()
+        : Array.isArray(needs) && needs.length > 0 
+          ? needs.join(', ') 
+          : 'Keine spezifischen Bedürfnisse angegeben';
 
       prompt = `Situation: ${situation}
 

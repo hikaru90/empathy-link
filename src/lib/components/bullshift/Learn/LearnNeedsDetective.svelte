@@ -42,7 +42,6 @@
 	let situationInput = $state('');
 	let thoughtsInput = $state('');
 	let needsInput = $state('');
-	let selectedNeeds = $state<string[]>([]);
 	let aiReflection = $state('');
 	let aiSummary = $state('');
 	let isLoading = $state(false);
@@ -53,6 +52,7 @@
 	let needs = $state<any[]>([]);
 	let needSelectorVisible = $state(false);
 	let textareaRef: HTMLTextAreaElement | undefined = $state();
+	let initialized = $state(false);
 
 	let splashContentClass = $derived(() => {
 		if (splashDone) {
@@ -68,26 +68,85 @@
 	// Check for existing response in session
 	const existingResponse = $derived(() => {
 		if (!session) return null;
-		return session.responses.find(
-			(r) =>
-				r.blockType === 'needsDetective' &&
-				JSON.stringify(r.blockContent) === JSON.stringify(contentBlock)
+		
+		console.log('Looking for existing response with:', {
+			blockType: 'needsDetective',
+			contentBlock: contentBlock,
+			sessionResponses: session.responses
+		});
+		
+		// Try multiple matching strategies
+		const responses = session.responses.filter(r => r.blockType === 'needsDetective');
+		
+		if (responses.length === 0) {
+			console.log('No needsDetective responses found in session');
+			return null;
+		}
+		
+		// Strategy 1: Find the most recent response with actual needsInput content
+		const responsesWithNeeds = responses
+			.filter(r => r.response?.needsInput && r.response.needsInput.trim())
+			.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+		
+		if (responsesWithNeeds.length > 0) {
+			console.log('Found response with needsInput:', responsesWithNeeds[0]);
+			return responsesWithNeeds[0];
+		}
+		
+		// Strategy 2: Exact blockContent match
+		const exactMatch = responses.find(r => 
+			JSON.stringify(r.blockContent) === JSON.stringify(contentBlock)
 		);
+		
+		if (exactMatch) {
+			console.log('Found exact blockContent match');
+			return exactMatch;
+		}
+		
+		// Strategy 3: Use the most recent response
+		const mostRecent = responses.sort(
+			(a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+		)[0];
+		console.log('Using most recent needsDetective response');
+		return mostRecent;
 	});
 
 	// Initialize from existing response if available
 	$effect(() => {
+		// Don't initialize until we have session data
+		if (!session) {
+			console.log('Effect running - waiting for session data');
+			return;
+		}
+		
+		if (initialized) return; // Prevent re-initialization
+		
+		console.log('=== INITIALIZATION EFFECT ===');
+		console.log('Session ID:', session?.id);
+		console.log('Total responses in session:', session?.responses?.length);
+		console.log('All needsDetective responses:', session.responses.filter(r => r.blockType === 'needsDetective'));
+		console.log('existingResponse():', existingResponse());
+		
 		if (existingResponse()) {
 			const response = existingResponse()?.response;
+			console.log('Response data:', response);
 			if (response) {
 				situationInput = response.situationInput || '';
 				thoughtsInput = response.thoughtsInput || '';
-				needsInput = response.needsInput || ''; // New field for textarea input
-				selectedNeeds = response.selectedNeeds || [];
+				// Only set needsInput if it exists and has content, otherwise leave it as is
+				if (response.needsInput !== undefined && response.needsInput !== null) {
+					needsInput = response.needsInput;
+				}
 				aiReflection = response.aiReflection || '';
 				aiSummary = response.aiSummary || '';
+				console.log('After initialization - needsInput:', needsInput);
 			}
+		} else {
+			console.log('No existing response found in session');
 		}
+		
+		// Mark as initialized only after we've processed the session
+		initialized = true;
 	});
 
 	// Initialize needs lookup and load needs
@@ -102,6 +161,9 @@
 			errorMessage = '';
 		}
 	});
+
+
+
 
 	const submitSituation = async () => {
 		if (!situationInput.trim() || isLoading) return;
@@ -137,7 +199,7 @@
 				situationInput: situationInput.trim(),
 				aiReflection: data.response,
 				thoughtsInput,
-				selectedNeeds,
+				needsInput,
 				aiSummary,
 				timestamp: new Date().toISOString(),
 				responseTime: responseTime
@@ -165,7 +227,7 @@
 				situationInput,
 				aiReflection,
 				thoughtsInput: thoughtsInput.trim(),
-				selectedNeeds,
+				needsInput,
 				aiSummary,
 				timestamp: new Date().toISOString(),
 				responseTime: responseTime
@@ -182,6 +244,11 @@
 	};
 
 	const submitNeeds = async () => {
+		console.log('=== submitNeeds called ===');
+		console.log('Current needsInput value:', needsInput);
+		console.log('needsInput length:', needsInput?.length);
+		console.log('needsInput type:', typeof needsInput);
+		
 		if (isLoading) return;
 
 		isLoading = true;
@@ -193,13 +260,19 @@
 				situationInput,
 				aiReflection,
 				thoughtsInput,
-				needsInput: needsInput.trim(),
-				selectedNeeds: [...selectedNeeds],
+				needsInput,
 				aiSummary,
 				timestamp: new Date().toISOString(),
 				responseTime: responseTime
 			};
-			onResponse(responseData);
+			
+			console.log('=== Saving response data ===');
+			console.log('Response data needsInput:', responseData.needsInput);
+			console.log('Full response data:', responseData);
+			
+			console.log('=== Calling onResponse ===');
+			const result = onResponse(responseData);
+			console.log('onResponse result:', result);
 
 			gotoNextStep?.();
 		} catch (error) {
@@ -211,41 +284,35 @@
 	};
 
 	const generateSummary = async () => {
-		console.log('generateSummary called', { 
-			isLoading, 
-			situationInput: situationInput.trim(), 
-			thoughtsInput: thoughtsInput.trim(), 
-			needsInput: needsInput.trim()
-		});
-		
+		try {
 		if (isLoading) return;
 
 		// Validate that we have the required data
 		if (!situationInput.trim()) {
-			errorMessage = 'Bitte vervollständige zuerst die Situationsbeschreibung';
-			return;
+			throw 'Bitte vervollständige zuerst die Situationsbeschreibung';
 		}
 		
 		if (!thoughtsInput.trim()) {
-			errorMessage = 'Bitte vervollständige zuerst die Strategiebeschreibung';
-			return;
+			throw 'Bitte vervollständige zuerst die Strategiebeschreibung';
 		}
 
-		if (!needsInput.trim()) {
-			errorMessage = 'Bitte beschreibe zuerst deine Bedürfnisse';
-			return;
+		// Check if user has provided needs
+		const hasNeeds = needsInput.trim();
+		if (!hasNeeds) {
+			throw 'Bitte beschreibe zuerst deine Bedürfnisse';
 		}
 
 		isLoading = true;
 		errorMessage = '';
 		const startTime = Date.now();
 
-		try {
+			const needsForAPI = needsInput.trim();
+			
 			const requestData = {
 				step: 'summary',
 				situation: situationInput,
 				thoughts: thoughtsInput,
-				needs: needsInput // Use the textarea input directly
+				needs: needsForAPI
 			};
 
 			const response = await fetch('/api/ai/learn/needsDetective', {
@@ -272,7 +339,6 @@
 				aiReflection,
 				thoughtsInput,
 				needsInput,
-				selectedNeeds,
 				aiSummary: data.response,
 				timestamp: new Date().toISOString(),
 				responseTime: responseTime
@@ -335,9 +401,6 @@
 		}, 0);
 	};
 
-	const handleNeedChange = (needs: string[]) => {
-		selectedNeeds = needs;
-	};
 </script>
 
 <LearnSplashScreen 
