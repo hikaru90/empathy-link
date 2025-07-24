@@ -15,6 +15,8 @@ export type ContentBlock =
   | MultipleChoiceBlock
   | AIQuestionBlock
   | FeelingsDetectiveBlock
+  | NeedsDetectiveBlock
+  | NeedsRubiksCubeBlock
   | ImageBlock
   | AudioBlock
   | NextPageBlock
@@ -107,6 +109,19 @@ export interface AIQuestionBlock {
 export interface FeelingsDetectiveBlock {
   type: "feelingsDetective";
   question?: string; // Optional custom question for situation input
+}
+
+export interface NeedsDetectiveBlock {
+  type: "needsDetective";
+  question?: string; // Optional custom question for situation input
+}
+
+export interface NeedsRubiksCubeBlock {
+  type: "needsRubiksCube";
+  title?: string; // Optional custom title for sentence input
+  placeholder?: string; // Optional placeholder for the sentence field
+  instruction?: string; // Optional custom instruction for AI transformation
+  resultsTitle?: string; // Optional title for results display
 }
 
 export interface ImageBlock {
@@ -252,6 +267,19 @@ const feelingsDetectiveBlockSchema = z.object({
   question: z.string().optional()
 });
 
+const needsDetectiveBlockSchema = z.object({
+  type: z.literal("needsDetective"),
+  question: z.string().optional()
+});
+
+const needsRubiksCubeBlockSchema = z.object({
+  type: z.literal("needsRubiksCube"),
+  title: z.string().optional(),
+  placeholder: z.string().optional(),
+  instruction: z.string().optional(),
+  resultsTitle: z.string().optional()
+});
+
 const imageBlockSchema = z.object({
   type: z.literal("image"),
   src: z.string(),
@@ -304,6 +332,8 @@ const contentBlockSchema = z.discriminatedUnion("type", [
   multipleChoiceBlockSchema,
   aiQuestionBlockSchema,
   feelingsDetectiveBlockSchema,
+  needsDetectiveBlockSchema,
+  needsRubiksCubeBlockSchema,
   imageBlockSchema,
   audioBlockSchema,
   nextPageBlockSchema,
@@ -412,6 +442,30 @@ export interface FeelingsDetectiveResponse extends SessionResponse {
     thoughtsInput: string;
     selectedFeelings: string[]; // feeling IDs
     aiSummary: string;
+    timestamp: string;
+    responseTime?: number;
+  };
+}
+
+export interface NeedsDetectiveResponse extends SessionResponse {
+  blockType: 'needsDetective';
+  response: {
+    situationInput: string;
+    aiReflection: string;
+    thoughtsInput: string;
+    needsInput: string; // Free text input with needs
+    selectedNeeds: string[]; // need IDs (for backward compatibility)
+    aiSummary: string;
+    timestamp: string;
+    responseTime?: number;
+  };
+}
+
+export interface NeedsRubiksCubeResponse extends SessionResponse {
+  blockType: 'needsRubiksCube';
+  response: {
+    userSentence: string;
+    transformedNeeds: string[];
     timestamp: string;
     responseTime?: number;
   };

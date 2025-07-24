@@ -294,6 +294,10 @@
 						Task Completion
 					{:else if block.type === 'feelingsDetective'}
 						Feelings Detective
+					{:else if block.type === 'needsDetective'}
+						Needs Detective
+					{:else if block.type === 'needsRubiksCube'}
+						{block.title || 'Needs Rubiks Cube'}
 					{:else if block.type === 'aiQuestion'}
 						{block.question || 'AI Question'}
 					{:else if block.type === 'multipleChoice'}
@@ -1042,6 +1046,102 @@
 								<li>User shares spontaneous thoughts and self-judgments</li>
 								<li>User selects feelings using the feelings selector</li>
 								<li>AI generates a compassionate summary</li>
+							</ol>
+						</div>
+					</div>
+				</div>
+			{:else if block.type === 'needsDetective'}
+				<div class="flex flex-col gap-2">
+					<div class="space-y-4">
+						<div>
+							<label for="needs-detective-question-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Situation Question (optional)</label>
+							<Textarea 
+								id="needs-detective-question-{pageIndex}-{blockIndex}"
+								value={block.question || ''}
+								oninput={(e: Event) => {
+									const target = e.target as HTMLTextAreaElement;
+									onUpdate('question', target.value || undefined);
+								}}
+								rows={2}
+								placeholder="Beschreibe eine Situation, die du erlebt hast:"
+							/>
+							<div class="text-xs text-gray-500 mt-1">
+								Default question will be used if left empty
+							</div>
+						</div>
+						<div class="text-sm text-gray-600 bg-green-50 p-3 rounded">
+							<strong>Needs Detective Process:</strong>
+							<ol class="list-decimal list-inside mt-2 space-y-1">
+								<li>User describes a situation</li>
+								<li>AI provides non-judgmental reflection</li>
+								<li>User shares spontaneous thoughts and self-judgments</li>
+								<li>User selects unfulfilled needs using the needs selector</li>
+								<li>AI generates a compassionate summary focusing on needs</li>
+							</ol>
+						</div>
+					</div>
+				</div>
+			{:else if block.type === 'needsRubiksCube'}
+				<div class="flex flex-col gap-2">
+					<div class="space-y-4">
+						<div>
+							<label for="needs-rubiks-title-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Title (optional)</label>
+							<Input 
+								id="needs-rubiks-title-{pageIndex}-{blockIndex}"
+								value={block.title || ''}
+								oninput={(e: Event) => {
+									const target = e.target as HTMLInputElement;
+									onUpdate('title', target.value || undefined);
+								}}
+								placeholder="Gib einen schwierigen Satz ein, den du gehört hast"
+							/>
+							<div class="text-xs text-gray-500 mt-1">
+								Default title will be used if left empty
+							</div>
+						</div>
+						<div>
+							<label for="needs-rubiks-placeholder-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Input Placeholder (optional)</label>
+							<Input 
+								id="needs-rubiks-placeholder-{pageIndex}-{blockIndex}"
+								value={block.placeholder || ''}
+								oninput={(e: Event) => {
+									const target = e.target as HTMLInputElement;
+									onUpdate('placeholder', target.value || undefined);
+								}}
+								placeholder="Schreibe hier den schwierigen Satz, den du gehört hast..."
+							/>
+						</div>
+						<div>
+							<label for="needs-rubiks-instruction-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">AI Instruction (optional)</label>
+							<Textarea 
+								id="needs-rubiks-instruction-{pageIndex}-{blockIndex}"
+								value={block.instruction || ''}
+								oninput={(e: Event) => {
+									const target = e.target as HTMLTextAreaElement;
+									onUpdate('instruction', target.value || undefined);
+								}}
+								rows={2}
+								placeholder="Transform this sentence into underlying needs"
+							/>
+						</div>
+						<div>
+							<label for="needs-rubiks-results-title-{pageIndex}-{blockIndex}" class="block text-sm font-medium mb-1">Results Title (optional)</label>
+							<Input 
+								id="needs-rubiks-results-title-{pageIndex}-{blockIndex}"
+								value={block.resultsTitle || ''}
+								oninput={(e: Event) => {
+									const target = e.target as HTMLInputElement;
+									onUpdate('resultsTitle', target.value || undefined);
+								}}
+								placeholder="Diese Bedürfnisse stecken dahinter:"
+							/>
+						</div>
+						<div class="text-sm text-gray-600 bg-purple-50 p-3 rounded">
+							<strong>Needs Rubiks Cube Process:</strong>
+							<ol class="list-decimal list-inside mt-2 space-y-1">
+								<li>User inputs a difficult sentence they heard</li>
+								<li>AI transforms the sentence into underlying needs using the PocketBase needs collection</li>
+								<li>Results are displayed as styled need badges</li>
 							</ol>
 						</div>
 					</div>

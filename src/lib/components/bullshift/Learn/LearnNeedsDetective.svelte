@@ -6,10 +6,11 @@
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 	import IconPaperPlane from '$assets/icons/icon-paper-plane.svg?raw';
 	import LearnGotoNextButton from '$lib/components/bullshift/Learn/LearnGotoNextButton.svelte';
-	import FeelingSelector from '$lib/components/FeelingSelector.svelte';
+	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import LearnSplashScreen from '$lib/components/bullshift/Learn/LearnSplashScreen.svelte';
 	import { pb } from '$scripts/pocketbase';
 	import { serializeNonPOJOs } from '$scripts/helpers';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		content: any;
@@ -40,14 +41,18 @@
 	// Component state
 	let situationInput = $state('');
 	let thoughtsInput = $state('');
-	let selectedFeelings = $state<string[]>([]);
+	let needsInput = $state('');
+	let selectedNeeds = $state<string[]>([]);
 	let aiReflection = $state('');
 	let aiSummary = $state('');
 	let isLoading = $state(false);
 	let errorMessage = $state('');
 	let responseTime = $state<number | null>(null);
 	let splashDone = $state(false);
-	let feelingsLookup = $state<Map<string, string>>(new Map());
+	let needsLookup = $state<Map<string, string>>(new Map());
+	let needs = $state<any[]>([]);
+	let needSelectorVisible = $state(false);
+	let textareaRef: HTMLTextAreaElement | undefined = $state();
 
 	let splashContentClass = $derived(() => {
 		if (splashDone) {
@@ -55,7 +60,6 @@
 		}
 		return 'opacity-0 scale-0';
 	});
-
 
 	const internalStep = $derived(() => {
 		return totalSteps[currentStep].internalStep;
@@ -66,7 +70,7 @@
 		if (!session) return null;
 		return session.responses.find(
 			(r) =>
-				r.blockType === 'feelingsDetective' &&
+				r.blockType === 'needsDetective' &&
 				JSON.stringify(r.blockContent) === JSON.stringify(contentBlock)
 		);
 	});
@@ -78,16 +82,18 @@
 			if (response) {
 				situationInput = response.situationInput || '';
 				thoughtsInput = response.thoughtsInput || '';
-				selectedFeelings = response.selectedFeelings || [];
+				needsInput = response.needsInput || ''; // New field for textarea input
+				selectedNeeds = response.selectedNeeds || [];
 				aiReflection = response.aiReflection || '';
 				aiSummary = response.aiSummary || '';
 			}
 		}
 	});
 
-	// Initialize feelings lookup
+	// Initialize needs lookup and load needs
 	$effect(() => {
-		initFeelingsLookup();
+		initNeedsLookup();
+		getNeeds();
 	});
 
 	// Clear error message when user starts typing
@@ -105,7 +111,7 @@
 		const startTime = Date.now();
 
 		try {
-			const response = await fetch('/api/ai/learn/feelingsDetective', {
+			const response = await fetch('/api/ai/learn/needsDetective', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -131,7 +137,7 @@
 				situationInput: situationInput.trim(),
 				aiReflection: data.response,
 				thoughtsInput,
-				selectedFeelings,
+				selectedNeeds,
 				aiSummary,
 				timestamp: new Date().toISOString(),
 				responseTime: responseTime
@@ -159,7 +165,7 @@
 				situationInput,
 				aiReflection,
 				thoughtsInput: thoughtsInput.trim(),
-				selectedFeelings,
+				selectedNeeds,
 				aiSummary,
 				timestamp: new Date().toISOString(),
 				responseTime: responseTime
@@ -175,19 +181,20 @@
 		}
 	};
 
-	const submitFeelings = async () => {
-		if (selectedFeelings.length === 0 || isLoading) return;
+	const submitNeeds = async () => {
+		if (isLoading) return;
 
 		isLoading = true;
 		errorMessage = '';
 
 		try {
-			// Update response data with feelings
+			// Update response data with needs textarea input
 			const responseData = {
 				situationInput,
 				aiReflection,
 				thoughtsInput,
-				selectedFeelings: [...selectedFeelings],
+				needsInput: needsInput.trim(),
+				selectedNeeds: [...selectedNeeds],
 				aiSummary,
 				timestamp: new Date().toISOString(),
 				responseTime: responseTime
@@ -196,8 +203,8 @@
 
 			gotoNextStep?.();
 		} catch (error) {
-			console.error('Error saving feelings:', error);
-			errorMessage = "Sorry, I couldn't save your feelings right now. Please try again.";
+			console.error('Error saving needs:', error);
+			errorMessage = "Entschuldigung, ich konnte deine Bedürfnisse gerade nicht speichern. Bitte versuche es erneut.";
 		} finally {
 			isLoading = false;
 		}
@@ -208,19 +215,24 @@
 			isLoading, 
 			situationInput: situationInput.trim(), 
 			thoughtsInput: thoughtsInput.trim(), 
-			selectedFeelings 
+			needsInput: needsInput.trim()
 		});
 		
 		if (isLoading) return;
 
 		// Validate that we have the required data
 		if (!situationInput.trim()) {
-			errorMessage = 'Please complete the situation input first';
+			errorMessage = 'Bitte vervollständige zuerst die Situationsbeschreibung';
 			return;
 		}
 		
 		if (!thoughtsInput.trim()) {
-			errorMessage = 'Please complete the thoughts input first';
+			errorMessage = 'Bitte vervollständige zuerst die Strategiebeschreibung';
+			return;
+		}
+
+		if (!needsInput.trim()) {
+			errorMessage = 'Bitte beschreibe zuerst deine Bedürfnisse';
 			return;
 		}
 
@@ -229,18 +241,14 @@
 		const startTime = Date.now();
 
 		try {
-			// Convert feeling IDs to feeling names
-			const feelingNames = selectedFeelings.map(id => feelingsLookup.get(id) || id);
-			
 			const requestData = {
 				step: 'summary',
 				situation: situationInput,
 				thoughts: thoughtsInput,
-				feelings: feelingNames
+				needs: needsInput // Use the textarea input directly
 			};
-			
 
-			const response = await fetch('/api/ai/learn/feelingsDetective', {
+			const response = await fetch('/api/ai/learn/needsDetective', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -263,7 +271,8 @@
 				situationInput,
 				aiReflection,
 				thoughtsInput,
-				selectedFeelings,
+				needsInput,
+				selectedNeeds,
 				aiSummary: data.response,
 				timestamp: new Date().toISOString(),
 				responseTime: responseTime
@@ -272,36 +281,62 @@
 			// Don't call gotoNextStep here - the summary should be displayed in the same step
 		} catch (error) {
 			console.error('Error generating summary:', error);
-			errorMessage = "Sorry, I couldn't generate the summary right now. Please try again.";
+			errorMessage = "Entschuldigung, ich konnte die Zusammenfassung gerade nicht erstellen. Bitte versuche es erneut.";
 		} finally {
 			isLoading = false;
 		}
 	};
 
-	const initFeelingsLookup = async () => {
+	const initNeedsLookup = async () => {
 		try {
-			const records = await pb.collection('feelings').getFullList({
+			const records = await pb.collection('needs').getFullList({
 				sort: 'category,sort',
-				requestKey: 'feelingsDetective'
+				requestKey: 'needsDetective'
 			});
 			const data = serializeNonPOJOs(records) as any[];
 			const lookup = new Map<string, string>();
 			if (data && Array.isArray(data)) {
-				data.forEach(feeling => {
-					if (feeling && feeling.id && feeling.nameDE) {
-						lookup.set(feeling.id, feeling.nameDE);
+				data.forEach(need => {
+					if (need && need.id && need.nameDE) {
+						lookup.set(need.id, need.nameDE);
 					}
 				});
 			}
-			feelingsLookup = lookup;
+			needsLookup = lookup;
 		} catch (error) {
-			console.error('Error initializing feelings lookup:', error);
-			feelingsLookup = new Map();
+			console.error('Error initializing needs lookup:', error);
+			needsLookup = new Map();
 		}
 	};
 
-	const handleFeelingChange = (feelings: string[]) => {
-		selectedFeelings = feelings;
+	const getNeeds = async () => {
+		needs = await pb.collection('needs').getFullList({
+			sort: 'category,sort'
+		});
+	};
+
+	const addText = (text: string) => {
+		// Simple approach: just add text to the end with proper spacing
+		let textToAdd = text;
+		
+		// Add space before if needed
+		if (needsInput && needsInput[needsInput.length - 1] !== ' ') {
+			textToAdd = ' ' + textToAdd;
+		}
+		
+		// Add the text
+		needsInput += textToAdd;
+		
+		// Try to focus the textarea if available
+		setTimeout(() => {
+			if (textareaRef && typeof textareaRef.focus === 'function') {
+				textareaRef.focus();
+			}
+		}, 0);
+	};
+
+	const handleNeedChange = (needs: string[]) => {
+		selectedNeeds = needs;
 	};
 </script>
 
@@ -328,7 +363,7 @@
 			>
 				<AutoTextarea
 					bind:value={situationInput}
-					placeholder="Mein Chef meinte ich würde seine Erwartungen enttäuschen..."
+					placeholder="Ich war bei dem letzten Familienbesuch etwas geladen..."
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none max-w-xs"
 				/>
 
@@ -379,17 +414,8 @@
 		<div class="flex flex-grow items-center justify-center space-y-2 rounded-lg p-6">
 			<div class="max-w-xs">
 				<div class="prose prose-sm overflow-y-auto text-gray-700">
-					{@html marked(aiReflection)}
+					{@html marked(aiReflection)} Stimmt diese Aussage?
 				</div>
-
-				<button
-					onclick={() => {
-						gotoPrevStep?.();
-					}}
-					class="w-full rounded-full text-start underline mt-2"
-				>
-					Nein, das ist nicht richtig
-				</button>
 			</div>
 		</div>
 
@@ -409,7 +435,7 @@
 		<!-- Step 3: Thoughts and Judgments Input -->
 		<div class="flex flex-grow items-center justify-center space-y-2">
 			<h3 class="font-medium text-gray-900 max-w-xs">
-				Welche Urteile und Bewertungen hattest Du spontan im Kopf?
+				Welche Strategie hast du verwendet, um die Situation zu bewältigen?
 			</h3>
 		</div>
 
@@ -419,7 +445,7 @@
 			>
 				<AutoTextarea
 					bind:value={thoughtsInput}
-					placeholder="Ich habe gedacht ich sei nicht gut genug..."
+					placeholder="Ich habe mit niemandem so richtig geredet..."
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
 				/>
 
@@ -449,38 +475,87 @@
 			{/if}
 		</div>
 	{:else if internalStep() === 3}
-		<!-- Step 4: Feelings Selection -->
-		<div class="flex flex-grow flex-col justify-center space-y-4">
-			<div class="text-center font-medium text-gray-900 flex-grow flex items-center justify-center">
-				<h3 class="max-w-xs">
-					Welche Gefühle löst diese Situation in Dir aus?
-				</h3>
-			</div>
-
-			<div class="overflow-y-auto overflow-x-hidden max-h-64">
-				<FeelingSelector
-					{selectedFeelings}
-					onFeelingChange={handleFeelingChange}
-					pointId="feelingsDetective"
-					show={true}
-				/>
-			</div>
+		<!-- Step 4: Needs Input with integrated selector -->
+		<div class="flex flex-grow items-center justify-center space-y-2">
+			<h3 class="font-medium text-gray-900 max-w-xs">
+				Welche Bedürfnisse hast Du Dir dadurch erfüllt?
+			</h3>
 		</div>
 
-		{#if isLoading}
-			<div class="flex items-center justify-center">
-				<Loader2 class="size-6 animate-spin" />
-				<span class="ml-2">Speichere...</span>
+		<div class="space-y-2">
+			<div
+				class="flex flex-col gap-2 rounded-2xl border border-white bg-gradient-to-b from-white to-offwhite p-2 shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
+			>
+				<!-- Needs selector dropdown -->
+				<div
+					class="{needSelectorVisible
+						? 'flex'
+						: 'hidden'} max-h-40 flex-wrap gap-1 overflow-y-auto overscroll-contain"
+				>
+					{#each needs as need}
+						<button
+							type="button"
+							onclick={() => addText(need.nameDE)}
+							class="rounded-full border border-black/5 bg-white px-2 py-0.5 text-xs text-black active:bg-black/5"
+						>
+							{need.nameDE}
+						</button>
+					{/each}
+				</div>
+
+				<AutoTextarea
+					bind:this={textareaRef}
+					bind:value={needsInput}
+					placeholder="Sicherheit, Verständnis, Autonomie..."
+					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
+				/>
+
+				<div class="flex items-end justify-between">
+					<div class="flex items-center gap-2">
+						<button
+							type="button"
+							onclick={() => {
+								needSelectorVisible = !needSelectorVisible;
+							}}
+							style="{needSelectorVisible
+								? ''
+								: 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}"
+							class="flex items-center gap-1 rounded-full pl-1 pr-2 py-1 text-xs {needSelectorVisible
+								? 'text-black shadow-inner bg-black/10'
+								: 'text-black/60 bg-white'}"
+						>
+							<div class="w-[1.2em] rounded-full p-[0.1em] {needSelectorVisible
+								? 'bg-black fill-white/80'
+								: 'bg-black/10 fill-black/60'}">
+								{@html IconSwirl}
+							</div>
+							Bedürfnisse
+						</button>
+					</div>
+					<button
+						onclick={submitNeeds}
+						disabled={isLoading}
+						type="submit"
+						style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
+						class="flex size-10 items-center justify-center rounded-full bg-black text-white disabled:opacity-50"
+					>
+						{#if isLoading}
+							<Loader2 class="size-4 animate-spin" />
+						{:else}
+							<div class="w-[1.2em] fill-white">
+								{@html IconPaperPlane}
+							</div>
+						{/if}
+					</button>
+				</div>
 			</div>
-		{:else if selectedFeelings.length === 0}
-			<div class="text-center text-gray-500">
-				Bitte wähle mindestens ein Gefühl aus
-			</div>
-		{:else}
-			<LearnGotoNextButton onClick={submitFeelings}>
-				Weiter
-			</LearnGotoNextButton>
-		{/if}
+
+			{#if errorMessage}
+				<div class="mt-3 rounded-lg border border-red-200 bg-red-50 p-3">
+					<p class="text-sm text-red-800">{errorMessage}</p>
+				</div>
+			{/if}
+		</div>
 	{:else if internalStep() === 4 && !aiSummary}
 		<!-- Step 5: Generate Summary -->
 		<div class="flex flex-grow items-center justify-center space-y-2">
@@ -488,6 +563,7 @@
 				Lass uns eine Zusammenfassung deiner Erkenntnisse erstellen.
 			</h3>
 		</div>
+
 
 		{#if isLoading}
 			<div class="flex items-center justify-center">

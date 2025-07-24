@@ -10,10 +10,12 @@
 	import LearnTask from '$lib/components/bullshift/Learn/LearnTask.svelte';
 	import LearnCompletionNotes from '$lib/components/bullshift/Learn/LearnCompletionNotes.svelte';
 	import LearnBodyMap from '$lib/components/LearnBodyMap.svelte';
-	import LearnSortableWithFeedback from '$lib/components/bullshift/Learn/LearnSortableWithFeedback.svelte';
+	import LearnSortable from '$lib/components/bullshift/Learn/LearnSortable.svelte';
 	import LearnMultipleChoice from '$lib/components/bullshift/Learn/LearnMultipleChoice.svelte';
 	import LearnAIQuestion from '$lib/components/bullshift/Learn/LearnAIQuestion.svelte';
 	import LearnFeelingsDetective from '$lib/components/bullshift/Learn/LearnFeelingsDetective.svelte';
+	import LearnNeedsDetective from '$lib/components/bullshift/Learn/LearnNeedsDetective.svelte';
+	import LearnNeedsRubiksCube from '$lib/components/bullshift/Learn/LearnNeedsRubiksCube.svelte';
 	import LearningSummary from '$lib/components/bullshift/Learn/LearningSummary.svelte';
 	import LearnNextPage from '$lib/components/bullshift/Learn/LearnNextPage.svelte';
 	import LearnPageNavigation from '$lib/components/bullshift/Learn/LearnPageNavigation.svelte';
@@ -170,6 +172,12 @@
 		}
 		if (component.type === 'feelingsDetective') {
 			return 5;
+		}
+		if (component.type === 'needsDetective') {
+			return 5;
+		}
+		if (component.type === 'needsRubiksCube') {
+			return 2;
 		}
 		return 1;
 	};
@@ -363,7 +371,7 @@
 	});
 
 	// Helper function to handle response saving
-	const handleResponse = async (blockType: string, response: any, content: any) => {
+	const handleResponse = async (blockType: string, response: any, content: any, currentBlockIndex?: number) => {
 		const session = activeSession();
 		if (!session) return;
 
@@ -373,6 +381,26 @@
 			// Find the first occurrence of this feelingsDetective block in the session
 			const existingResponse = session.responses?.find(r => 
 				r.blockType === 'feelingsDetective' && 
+				JSON.stringify(r.blockContent) === JSON.stringify(content)
+			);
+			if (existingResponse) {
+				targetPageIndex = existingResponse.pageIndex;
+			}
+		}
+		if (blockType === 'needsDetective') {
+			// Find the first occurrence of this needsDetective block in the session
+			const existingResponse = session.responses?.find(r => 
+				r.blockType === 'needsDetective' && 
+				JSON.stringify(r.blockContent) === JSON.stringify(content)
+			);
+			if (existingResponse) {
+				targetPageIndex = existingResponse.pageIndex;
+			}
+		}
+		if (blockType === 'needsRubiksCube') {
+			// Find the first occurrence of this needsRubiksCube block in the session
+			const existingResponse = session.responses?.find(r => 
+				r.blockType === 'needsRubiksCube' && 
 				JSON.stringify(r.blockContent) === JSON.stringify(content)
 			);
 			if (existingResponse) {
@@ -395,6 +423,8 @@
 				| 'multipleChoice'
 				| 'aiQuestion'
 				| 'feelingsDetective'
+				| 'needsDetective'
+				| 'needsRubiksCube'
 				| 'image'
 				| 'audio'
 				| 'nextPage'
@@ -402,7 +432,7 @@
 
 			const newResponse = {
 				pageIndex: targetPageIndex,
-				blockIndex: 0,
+				blockIndex: currentBlockIndex || 0,
 				blockType: validBlockType,
 				response,
 				timestamp: new Date().toISOString(),
@@ -413,9 +443,9 @@
 			// Ensure responses array exists
 			const existingResponses = session.responses || [];
 
-			// Remove any existing response for this block type and content
+			// Remove any existing response for this page and block type  
 			const updatedResponses = existingResponses.filter(
-				(r) => !(r.blockType === blockType && JSON.stringify(r.blockContent) === JSON.stringify(content))
+				(r) => !(r.pageIndex === targetPageIndex && r.blockType === blockType)
 			);
 			updatedResponses.push(newResponse);
 
@@ -444,6 +474,8 @@
 					| 'multipleChoice'
 					| 'aiQuestion'
 					| 'feelingsDetective'
+					| 'needsDetective'
+					| 'needsRubiksCube'
 					| 'image'
 					| 'audio'
 					| 'nextPage'
@@ -451,7 +483,7 @@
 				await learningSession.saveResponseImmediate(
 					session.id,
 					targetPageIndex,
-					0,
+					currentBlockIndex || 0,
 					validBlockType,
 					response,
 					topic().id,
@@ -627,13 +659,20 @@
 					gotoNextStep={() => gotoNextStep()}
 				/>
 			{:else if content && content.type === 'sortable'}
-				<LearnSortableWithFeedback
+				{@const sortableResponses = activeSession()?.responses?.filter(r => 
+					r.pageIndex === currentStep && 
+					r.blockType === 'sortable'
+				) || []}
+				{@const savedResponse = sortableResponses.length > 0 
+					? sortableResponses.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]
+					: null}
+				<LearnSortable
 					{content}
 					color={currentCategory().color}
 					currentCategory={currentCategory()}
-					session={activeSession()}
-					topicVersionId={topic().id}
-					onResponse={(response) => handleResponse('sortable', response, content)}
+					initialUserSorting={savedResponse?.response?.userSorting || {}}
+					onResponse={(response) => handleResponse('sortable', response, content, stepData.blockIndex)}
+					gotoNextStep={() => gotoNextStep()}
 				/>
 			{:else if content && content.type === 'multipleChoice'}
 				<LearnMultipleChoice
@@ -668,6 +707,32 @@
 					onResponse={(response) => handleResponse('feelingsDetective', response, content)}
 					gotoNextStep={() => gotoNextStep()}
 					gotoPrevStep={() => gotoPrevStep()}
+				/>
+			{:else if content && content.type === 'needsDetective'}
+				<LearnNeedsDetective
+					{content}
+					color={currentCategory().color}
+					session={activeSession()}
+					contentBlock={content}
+					{currentStep}
+					totalSteps={totalSteps()}
+					topicVersionId={topic().id}
+					onResponse={(response) => handleResponse('needsDetective', response, content)}
+					gotoNextStep={() => gotoNextStep()}
+					gotoPrevStep={() => gotoPrevStep()}
+				/>
+			{:else if content && content.type === 'needsRubiksCube'}
+				<LearnNeedsRubiksCube
+					{content}
+					color={currentCategory().color}
+					session={activeSession()}
+					contentBlock={content}
+					{currentStep}
+					totalSteps={totalSteps()}
+					topicVersionId={topic().id}
+					onResponse={(response) => handleResponse('needsRubiksCube', response, content)}
+					gotoNextStep={() => gotoNextStep()}
+					{isPreview}
 				/>
 			{:else if content && content.type === 'nextPage'}
 				<LearnNextPage {content} />

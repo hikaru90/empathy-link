@@ -20,6 +20,8 @@
 		{ type: 'multipleChoice' as const, label: 'Multiple Choice' },
 		{ type: 'aiQuestion' as const, label: 'AI Question' },
 		{ type: 'feelingsDetective' as const, label: 'Feelings Detective' },
+		{ type: 'needsDetective' as const, label: 'Needs Detective' },
+		{ type: 'needsRubiksCube' as const, label: 'Needs Rubiks Cube' },
 		{ type: 'nextPage' as const, label: 'Next Button' },
 		{ type: 'pageNavigation' as const, label: 'Page Navigation' }
 	];

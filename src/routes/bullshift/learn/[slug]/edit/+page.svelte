@@ -57,6 +57,10 @@
 			const component = content[i];
 			if (component.type === 'aiQuestion') {
 				step += 2; // aiQuestion takes 2 steps
+			} else if (component.type === 'feelingsDetective') {
+				step += 5; // feelingsDetective takes 5 steps
+			} else if (component.type === 'needsDetective') {
+				step += 5; // needsDetective takes 5 steps
 			} else {
 				step += 1; // All other components take 1 step
 			}

@@ -98,6 +98,21 @@
 					question: 'Beschreibe eine Situation, die du erlebt hast:'
 				};
 				break;
+			case 'needsDetective':
+				newBlock = {
+					type: 'needsDetective',
+					question: 'Beschreibe eine Situation, die du erlebt hast:'
+				};
+				break;
+			case 'needsRubiksCube':
+				newBlock = {
+					type: 'needsRubiksCube',
+					title: 'Gib einen schwierigen Satz ein, den du gehört hast',
+					placeholder: 'Schreibe hier den schwierigen Satz, den du gehört hast...',
+					instruction: 'Transform this sentence into underlying needs',
+					resultsTitle: 'Diese Bedürfnisse stecken dahinter:'
+				};
+				break;
 			case 'image':
 				newBlock = { type: 'image', src: '', alt: 'Image description' };
 				break;
