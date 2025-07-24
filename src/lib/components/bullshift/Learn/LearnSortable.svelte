@@ -92,18 +92,23 @@
 
 	// Touch event handlers for mobile
 	const handleTouchStart = (event: TouchEvent, itemText: string) => {
+		// Prevent pull-to-refresh and other default touch behaviors
+		event.preventDefault();
+		
 		draggedItem = itemText;
 		const touch = event.touches[0];
 		touchStartPos = { x: touch.clientX, y: touch.clientY };
 		dragPreview = { x: touch.clientX, y: touch.clientY, text: itemText };
 
 		// Add global touch move and end listeners
-		document.addEventListener('touchmove', handleGlobalTouchMove);
+		document.addEventListener('touchmove', handleGlobalTouchMove, { passive: false });
 		document.addEventListener('touchend', handleGlobalTouchEnd);
 	};
 
 	const handleGlobalTouchMove = (event: TouchEvent) => {
 		if (draggedItem && touchStartPos) {
+			// Prevent pull-to-refresh while dragging
+			event.preventDefault();
 			const touch = event.touches[0];
 			dragPreview = { x: touch.clientX, y: touch.clientY, text: draggedItem };
 		}
@@ -134,7 +139,7 @@
 		dragPreview = null;
 
 		// Remove global listeners
-		document.removeEventListener('touchmove', handleGlobalTouchMove);
+		document.removeEventListener('touchmove', handleGlobalTouchMove, { passive: false } as any);
 		document.removeEventListener('touchend', handleGlobalTouchEnd);
 	};
 
@@ -201,7 +206,7 @@
 
 	// Cleanup function to remove any remaining touch listeners
 	const cleanup = () => {
-		document.removeEventListener('touchmove', handleGlobalTouchMove);
+		document.removeEventListener('touchmove', handleGlobalTouchMove, { passive: false } as any);
 		document.removeEventListener('touchend', handleGlobalTouchEnd);
 	};
 
@@ -209,7 +214,7 @@
 	onDestroy(cleanup);
 </script>
 
-<div class="flex h-full flex-col justify-between flex-grow-0">
+<div class="flex h-full flex-col justify-between flex-grow-0" style="overscroll-behavior: contain; touch-action: pan-x pan-y;">
 	<div class="flex flex-col flex-grow gap-3">
 		<!-- Unsorted Items -->
 		{#if getUnsortedItems().length > 0}
@@ -223,7 +228,7 @@
 							ontouchstart={(e) => handleTouchStart(e, item.text)}
 							role="button"
 							tabindex="0"
-							style="background-color: {color}; touch-action: manipulation;"
+							style="background-color: {color}; touch-action: none;"
 							class="cursor-move select-none rounded-xl px-2 py-0.5 text-sm transition-colors hover:bg-blue-200"
 							class:opacity-50={draggedItem === item.text}
 						>
@@ -267,7 +272,7 @@
 									ontouchstart={(e) => handleTouchStart(e, item.text)}
 									role="button"
 									tabindex="0"
-									style="background-color: {showValidation && validationResults().incorrectItems.includes(item.text) ? '#ef4444' : color}; touch-action: manipulation;"
+									style="background-color: {showValidation && validationResults().incorrectItems.includes(item.text) ? '#ef4444' : color}; touch-action: none;"
 									class="cursor-move select-none rounded-xl px-2 py-0.5 text-sm transition-colors hover:bg-blue-200 {showValidation && validationResults().incorrectItems.includes(item.text) ? 'text-white' : ''}"
 									class:opacity-50={draggedItem === item.text}
 								>
