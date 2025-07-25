@@ -94,6 +94,26 @@
 					locale: locale
 				})
 			});
+			
+			// Handle authentication errors specifically
+			if (response.status === 401) {
+				const data = await response.json();
+				console.log('Authentication failed, redirecting to login:', data);
+				
+				// Save current message for retry after login
+				localStorage.setItem('pendingMessage', userMessage);
+				localStorage.setItem('pendingChatId', chatId);
+				
+				// Redirect to login with return path
+				const currentPath = window.location.pathname + window.location.search;
+				window.location.href = `/app/auth/login?redirect=${encodeURIComponent(currentPath)}`;
+				return;
+			}
+			
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			
 			const data = await response.json();
 			console.log('data from /send', data);
 			if (data.error) throw new Error(data.error);
@@ -105,6 +125,12 @@
 			userMessage = '';
 		} catch (error) {
 			console.error('Failed to send message:', error);
+			
+			// Show user-friendly error message
+			if (error instanceof Error) {
+				// You could add a toast notification here or show an error in the UI
+				console.log('Error details:', error.message);
+			}
 		} finally {
 			isLoading = false;
 			setTimeout(() => {
@@ -310,6 +336,17 @@
 
 		getFeelings();
 		getNeeds();
+		
+		// Check for pending message after login redirect
+		const pendingMessage = localStorage.getItem('pendingMessage');
+		const pendingChatId = localStorage.getItem('pendingChatId');
+		
+		if (pendingMessage && pendingChatId === chatId) {
+			userMessage = pendingMessage;
+			localStorage.removeItem('pendingMessage');
+			localStorage.removeItem('pendingChatId');
+			console.log('Restored pending message after login:', pendingMessage);
+		}
 	});
 
 	$effect(() => {

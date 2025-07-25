@@ -109,6 +109,10 @@ const first: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname.startsWith('/api')) {
 		if (!event.locals.pb.authStore.isValid) {
 			console.log(`Blocking unauthorized API access: ${event.url.pathname}`);
+			console.log(`Auth token present: ${!!event.locals.pb.authStore.token}`);
+			console.log(`Auth model present: ${!!event.locals.pb.authStore.model}`);
+			console.log(`User agent: ${event.request.headers.get('user-agent')}`);
+			console.log(`Referer: ${event.request.headers.get('referer')}`);
 
 			// Return JSON error for API routes
 			if (event.request.headers.get('accept')?.includes('application/json')) {
@@ -116,7 +120,13 @@ const first: Handle = async ({ event, resolve }) => {
 					JSON.stringify({
 						error: 'Authentication required',
 						code: 'UNAUTHORIZED',
-						redirectTo: '/app/auth/login'
+						redirectTo: '/app/auth/login',
+						debug: {
+							path: event.url.pathname,
+							hasToken: !!event.locals.pb.authStore.token,
+							hasModel: !!event.locals.pb.authStore.model,
+							timestamp: new Date().toISOString()
+						}
 					}),
 					{
 						status: 401,
