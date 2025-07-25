@@ -479,7 +479,4 @@
 		}
 	}
 
-	.animate-gentle-pulse {
-		animation: gentle-pulse 2s ease-in-out infinite;
-	}
 </style>

@@ -251,8 +251,8 @@
 <div class="relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200">
 	<!-- Collapsible Header -->
 	<div class="w-full bg-alsmostwhite flex cursor-pointer items-center justify-between border-b p-1 hover:bg-gray-100">
-		<div 
-			class="flex items-center gap-2 flex-shrink overflow-hidden flex-1"
+		<button 
+			class="flex items-center gap-2 flex-shrink overflow-hidden flex-1 border-none bg-transparent p-0 text-left"
 			onclick={(e) => {
 				// If it's a right click or middle click, don't trigger step jump
 				if (e.button === 2 || e.button === 1) return;
@@ -329,7 +329,7 @@
 						{block.content || ''}
 					{/if}
 				</span>
-		</div>
+		</button>
 
 		<div class="flex items-center gap-1 flex-shrink-0">
 			<!-- Action Buttons -->

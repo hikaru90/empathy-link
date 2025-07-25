@@ -34,8 +34,8 @@
 	let currentStep = $state(data.currentStep || 0);
 	let selectedVersionData = $state<any>(null);
 	
-	// Create mock session for preview mode - exists only in memory
-	let mockSession = $state<LearningSession>({
+	// Create mock session for preview mode - use derived for reactive currentPage
+	let mockSession = $derived<LearningSession>({
 		id: 'preview-session',
 		user: data.user?.id || 'preview-user',
 		topic: data.topicId || 'preview-topic',
@@ -307,12 +307,3 @@
 
 
 
-<style>
-  .scrollableArea {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  .scrollableArea::-webkit-scrollbar {
-    display: none;
-  }
-</style>
