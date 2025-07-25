@@ -104,6 +104,8 @@ export interface AIQuestionBlock {
   question: string;
   systemPrompt: string;
   placeholder?: string; // Optional placeholder for the answer field
+  showFeelingsButton?: boolean; // Whether to show feelings selector button
+  showNeedsButton?: boolean; // Whether to show needs selector button
 }
 
 export interface FeelingsDetectiveBlock {
@@ -259,7 +261,9 @@ const aiQuestionBlockSchema = z.object({
   type: z.literal("aiQuestion"),
   question: z.string(),
   systemPrompt: z.string(),
-  placeholder: z.string().optional()
+  placeholder: z.string().optional(),
+  showFeelingsButton: z.boolean().optional(),
+  showNeedsButton: z.boolean().optional()
 });
 
 const feelingsDetectiveBlockSchema = z.object({

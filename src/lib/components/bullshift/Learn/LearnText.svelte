@@ -12,6 +12,8 @@
 	let { content, gotoNextStep }: Props = $props();
 
 	let sourcesVisible = $state(false);
+
+
 </script>
 
 <div class="mb-6 flex h-full flex-col">

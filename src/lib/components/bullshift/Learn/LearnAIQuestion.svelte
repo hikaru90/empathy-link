@@ -5,7 +5,28 @@
 	import Loader2 from 'lucide-svelte/icons/loader-2';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 	import IconPaperPlane from '$assets/icons/icon-paper-plane.svg?raw';
+	import IconHeart from '$assets/icons/icon-heart.svg?raw';
+	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import LearnGotoNextButton from '$lib/components/bullshift/Learn/LearnGotoNextButton.svelte';
+	import { pb } from '$scripts/pocketbase';
+	import { onMount } from 'svelte';
+
+	interface Feeling {
+		id: string;
+		nameDE: string;
+		nameEN: string;
+		category: string;
+		positive: boolean;
+		sort: number;
+	}
+
+	interface Need {
+		id: string;
+		nameDE: string;
+		nameEN: string;
+		category: string;
+		sort: number;
+	}
 
 	interface Props {
 		content: any;
@@ -17,6 +38,7 @@
 		topicVersionId: string;
 		onResponse: (response: any) => void;
 		gotoNextStep?: () => void;
+		isPreview?: boolean;
 	}
 
 	let {
@@ -28,7 +50,8 @@
 		totalSteps,
 		topicVersionId,
 		onResponse,
-		gotoNextStep
+		gotoNextStep,
+		isPreview = false
 	}: Props = $props();
 
 	let userAnswer = $state('');
@@ -37,6 +60,11 @@
 	let hasSubmitted = $state(false);
 	let responseTime = $state<number | null>(null);
 	let errorMessage = $state('');
+	let textareaRef: HTMLTextAreaElement | undefined = $state();
+	let feelings = $state<Feeling[]>([]);
+	let needs = $state<Need[]>([]);
+	let feelingSelectorVisible = $state(false);
+	let needSelectorVisible = $state(false);
 
 	const internalStep = $derived(() => {
 		return totalSteps[currentStep].internalStep;
@@ -120,6 +148,79 @@
 			isLoading = false;
 		}
 	};
+
+	// Functions for feelings and needs
+	const getFeelings = async () => {
+		try {
+			feelings = await pb.collection('feelings').getFullList({
+				sort: '-positive,category,sort'
+			});
+		} catch (error) {
+			console.error('Error fetching feelings:', error);
+		}
+	};
+
+	const getNeeds = async () => {
+		try {
+			needs = await pb.collection('needs').getFullList({
+				sort: 'category,sort'
+			});
+		} catch (error) {
+			console.error('Error fetching needs:', error);
+		}
+	};
+
+	const addText = (text: string) => {
+		if (!textareaRef) {
+			// Fallback to old behavior if no textarea ref
+			let textToAdd = '';
+			if (userAnswer && userAnswer[userAnswer.length - 1] !== ' ') {
+				textToAdd = ' ' + text;
+			} else {
+				textToAdd = text;
+			}
+			userAnswer += textToAdd;
+			return;
+		}
+
+		// Get the current selection/cursor position
+		const start = textareaRef.selectionStart;
+		const end = textareaRef.selectionEnd;
+		const currentText = textareaRef.value;
+
+		// Determine what text to insert
+		let textToInsert = text;
+		
+		// Check if we need to add a space before the text
+		if (start > 0 && currentText[start - 1] !== ' ') {
+			textToInsert = ' ' + text;
+		}
+		
+		// Insert the text at the cursor position
+		const newText = currentText.substring(0, start) + textToInsert + currentText.substring(end);
+		userAnswer = newText;
+		
+		// Set the cursor position after the inserted text
+		const newCursorPosition = start + textToInsert.length;
+		
+		// Use requestAnimationFrame to ensure the DOM has updated
+		requestAnimationFrame(() => {
+			if (textareaRef) {
+				textareaRef.focus();
+				textareaRef.setSelectionRange(newCursorPosition, newCursorPosition);
+			}
+		});
+	};
+
+	// Load feelings and needs on mount if buttons are enabled
+	onMount(async () => {
+		if (content.showFeelingsButton) {
+			await getFeelings();
+		}
+		if (content.showNeedsButton) {
+			await getNeeds();
+		}
+	});
 </script>
 
 <div class="flex h-full flex-col justify-between space-y-4 rounded-lg backdrop-blur">
@@ -140,10 +241,41 @@
 					bind:value={userAnswer}
 					placeholder={content.placeholder || 'Schreibe deine Antwort hier...'}
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
+					bind:textarea={textareaRef}
 				/>
 
+				<!-- Feelings selector -->
+				{#if content.showFeelingsButton && feelingSelectorVisible}
+					<div class="flex max-h-40 flex-wrap gap-1 overflow-y-auto overscroll-contain">
+						{#each feelings as feeling}
+							<button
+								type="button"
+								onclick={() => addText(feeling.nameDE)}
+								class="rounded-full border border-black/5 bg-white px-2 py-0.5 text-xs text-black active:bg-black/5"
+							>
+								{feeling.nameDE}
+							</button>
+						{/each}
+					</div>
+				{/if}
+
+				<!-- Needs selector -->
+				{#if content.showNeedsButton && needSelectorVisible}
+					<div class="flex max-h-40 flex-wrap gap-1 overflow-y-auto overscroll-contain">
+						{#each needs as need}
+							<button
+								type="button"
+								onclick={() => addText(need.nameDE)}
+								class="rounded-full border border-black/5 bg-white px-2 py-0.5 text-xs text-black active:bg-black/5"
+							>
+								{need.nameDE}
+							</button>
+						{/each}
+					</div>
+				{/if}
+
 				<div class="flex items-end justify-between">
-					<div>
+					<div class="flex items-center gap-2">
 						{#if existingResponse()}
 							<button
 								type="button"
@@ -159,9 +291,61 @@
 								</div>
 							</button>
 						{/if}
+						
+						<!-- Feelings button -->
+						{#if content.showFeelingsButton && !isPreview}
+							<button
+								type="button"
+								onclick={() => {
+									needSelectorVisible = false;
+									feelingSelectorVisible = !feelingSelectorVisible;
+								}}
+								style={feelingSelectorVisible
+									? ''
+									: 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}
+								class="flex items-center gap-1 rounded-full pl-1 pr-2 py-1 text-xs {feelingSelectorVisible
+								? 'text-black shadow-inner bg-black/10'
+								: 'text-black/60 bg-white'}"
+							>
+								<div class="w-[1.2em] rounded-full p-[0.1em] {feelingSelectorVisible
+								? 'bg-black fill-white/80'
+								: 'bg-black/10 fill-black/60'}">
+									{@html IconHeart}
+								</div>
+								Gefühle
+							</button>
+						{/if}
+						
+						<!-- Needs button -->
+						{#if content.showNeedsButton && !isPreview}
+							<button
+								type="button"
+								onclick={() => {
+									feelingSelectorVisible = false;
+									needSelectorVisible = !needSelectorVisible;
+								}}
+								style={needSelectorVisible
+									? ''
+									: 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}
+								class="flex items-center gap-1 rounded-full pl-1 pr-2 py-1 text-xs {needSelectorVisible
+									? 'text-black shadow-inner bg-black/10'
+									: 'text-black/60 bg-white'}"
+							>
+								<div class="w-[1.2em] rounded-full p-[0.1em] {needSelectorVisible
+									? 'bg-black fill-white/80'
+									: 'bg-black/10 fill-black/60'}">
+									{@html IconSwirl}
+								</div>
+								Bedürfnisse
+							</button>
+						{/if}
 					</div>
 					<button
-						onclick={submitAnswer}
+						onclick={() => {
+							feelingSelectorVisible = false;
+							needSelectorVisible = false;
+							submitAnswer();
+						}}
 						disabled={!userAnswer.trim() || isLoading}
 						type="submit"
 						style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"

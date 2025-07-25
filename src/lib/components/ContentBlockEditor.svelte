@@ -45,6 +45,19 @@
 	} = $props();
 
 	let isCollapsed = $state(true);
+	let currentSources = $state<any[]>([]);
+
+	// Initialize currentSources from block.sources on mount
+	$effect(() => {
+		if (block.type === 'text' && block.sources) {
+			currentSources = [...block.sources];
+		} else {
+			currentSources = [];
+		}
+	});
+
+
+
 
 	const updateListItem = (itemIndex: number, field: 'title' | 'text', value: string) => {
 		if (block.type === 'list') {
@@ -180,52 +193,57 @@
 
 	// Sources for text block
 	const updateSource = (sourceIndex: number, field: 'title' | 'url' | 'author', value: string) => {
-		if (block.type === 'text' && block.sources) {
-			const newSources = [...block.sources];
+		if (block.type === 'text') {
+			const newSources = [...currentSources];
 			newSources[sourceIndex] = { ...newSources[sourceIndex], [field]: value };
-			onUpdate('sources', newSources);
+			currentSources = newSources;
+			onUpdate('sources', currentSources);
 		}
 	};
 
 	const addSource = () => {
 		if (block.type === 'text') {
-			const currentSources = block.sources || [];
-			onUpdate('sources', [...currentSources, { title: '', url: '', author: '', sort: currentSources.length }]);
+			const newSource = { title: '', url: '', author: '', sort: currentSources.length };
+			currentSources = [...currentSources, newSource];
+			onUpdate('sources', currentSources);
 		}
 	};
 
 	const removeSource = (sourceIndex: number) => {
-		if (block.type === 'text' && block.sources) {
-			const newSources = block.sources.filter((_: any, index: number) => index !== sourceIndex);
+		if (block.type === 'text') {
+			const newSources = currentSources.filter((_: any, index: number) => index !== sourceIndex);
 			// Re-sort remaining sources
 			newSources.forEach((source, index) => {
 				source.sort = index;
 			});
-			onUpdate('sources', newSources);
+			currentSources = newSources;
+			onUpdate('sources', currentSources);
 		}
 	};
 
 	const moveSourceUp = (sourceIndex: number) => {
-		if (block.type === 'text' && block.sources && sourceIndex > 0) {
-			const newSources = [...block.sources];
+		if (block.type === 'text' && sourceIndex > 0) {
+			const newSources = [...currentSources];
 			[newSources[sourceIndex - 1], newSources[sourceIndex]] = [newSources[sourceIndex], newSources[sourceIndex - 1]];
 			// Re-sort remaining sources
 			newSources.forEach((source, index) => {
 				source.sort = index;
 			});
-			onUpdate('sources', newSources);
+			currentSources = newSources;
+			onUpdate('sources', currentSources);
 		}
 	};
 
 	const moveSourceDown = (sourceIndex: number) => {
-		if (block.type === 'text' && block.sources && sourceIndex < block.sources.length - 1) {
-			const newSources = [...block.sources];
+		if (block.type === 'text' && sourceIndex < currentSources.length - 1) {
+			const newSources = [...currentSources];
 			[newSources[sourceIndex], newSources[sourceIndex + 1]] = [newSources[sourceIndex + 1], newSources[sourceIndex]];
 			// Re-sort remaining sources
 			newSources.forEach((source, index) => {
 				source.sort = index;
 			});
-			onUpdate('sources', newSources);
+			currentSources = newSources;
+			onUpdate('sources', currentSources);
 		}
 	};
 </script>
@@ -409,9 +427,9 @@
 					</div>
 					<div>
 						<div class="block text-sm font-medium mb-2">Sources (optional)</div>
-						{#if block.sources && block.sources.length > 0}
+						{#if currentSources.length > 0}
 							<div class="space-y-2 mb-3">
-								{#each block.sources.sort((a, b) => a.sort - b.sort) as source, sourceIndex}
+								{#each currentSources as source, sourceIndex}
 									<div class="flex items-center gap-2 p-2 border rounded bg-gray-50">
 										<div class="flex items-center gap-1">
 											<button
@@ -425,7 +443,7 @@
 											<button
 												type="button"
 												onclick={() => moveSourceDown(sourceIndex)}
-												disabled={sourceIndex === block.sources.length - 1}
+												disabled={sourceIndex === currentSources.length - 1}
 												class="rounded bg-gray-200 px-1 py-1 text-xs hover:bg-gray-300 disabled:opacity-50"
 											>
 												↓
@@ -937,6 +955,37 @@
 								}}
 								placeholder="Custom placeholder for answer field..."
 							/>
+						</div>
+						<div class="space-y-3">
+							<div class="flex items-center space-x-2">
+								<input
+									type="checkbox"
+									id="show-feelings-button-{pageIndex}-{blockIndex}"
+									checked={block.showFeelingsButton || false}
+									onchange={(e: Event) => {
+										const target = e.target as HTMLInputElement;
+										onUpdate('showFeelingsButton', target.checked);
+									}}
+									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+								/>
+								<label for="show-feelings-button-{pageIndex}-{blockIndex}" class="text-sm font-medium">Show Feelings Button</label>
+							</div>
+							<div class="flex items-center space-x-2">
+								<input
+									type="checkbox"
+									id="show-needs-button-{pageIndex}-{blockIndex}"
+									checked={block.showNeedsButton || false}
+									onchange={(e: Event) => {
+										const target = e.target as HTMLInputElement;
+										onUpdate('showNeedsButton', target.checked);
+									}}
+									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+								/>
+								<label for="show-needs-button-{pageIndex}-{blockIndex}" class="text-sm font-medium">Show Needs Button</label>
+							</div>
+							<div class="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+								Enable these to show feelings and needs selection buttons in the answer input area
+							</div>
 						</div>
 					</div>
 				</div>

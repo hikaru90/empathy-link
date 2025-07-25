@@ -89,7 +89,9 @@
 					question: 'Your question here?',
 					systemPrompt:
 						"You are a helpful learning assistant. Provide constructive feedback on the user's answer.",
-					placeholder: 'Write your answer here...'
+					placeholder: 'Write your answer here...',
+					showFeelingsButton: false,
+					showNeedsButton: false
 				};
 				break;
 			case 'feelingsDetective':

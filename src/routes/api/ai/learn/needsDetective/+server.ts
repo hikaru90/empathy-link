@@ -22,13 +22,14 @@ export const POST: RequestHandler = async ({ request }) => {
       }
 
       systemPrompt = `Du bist ein einfühlsamer Begleiter, der Menschen hilft, ihre Situationen ohne Bewertung zu reflektieren. 
-      Deine Aufgabe ist es, die geschilderte Situation neutral und verständnisvoll wiederzugeben, ohne Urteile zu fällen oder Ratschläge zu geben.
-      Konzentriere dich darauf, die Situation objektiv zu spiegeln und zu validieren, was die Person erlebt hat.
-      Verwende eine warme, verständnisvolle Sprache und bleibe bei den Fakten der geschilderten Situation.`;
+      Deine Aufgabe ist es, die geschilderte Situation und die verwendete Bewältigungsstrategie neutral und verständnisvoll wiederzugeben, ohne Urteile zu fällen oder Ratschläge zu geben.
+      Konzentriere dich darauf, sowohl die Situation als auch die Strategie objektiv zu spiegeln und zu validieren, was die Person erlebt und wie sie reagiert hat.
+      Verwende eine warme, verständnisvolle Sprache und bleibe bei den Fakten der geschilderten Situation und Strategie.`;
 
-      prompt = `Situation: ${situation}
+      const thoughtsText = thoughts ? `\n\nStrategie: ${thoughts}` : '';
+      prompt = `Situation: ${situation}${thoughtsText}
 
-Bitte spiegele diese Situation neutral und verständnisvoll wider, ohne Bewertungen oder Ratschläge.`;
+Bitte spiegele diese Situation und die verwendete Strategie neutral und verständnisvoll wider, ohne Bewertungen oder Ratschläge.`;
 
     } else if (step === 'summary') {
       if (!situation || !thoughts || needs === undefined || needs === null) {

@@ -165,8 +165,8 @@
 
 
 
-	const submitSituation = async () => {
-		if (!situationInput.trim() || isLoading) return;
+	const submitCombinedInput = async () => {
+		if (!situationInput.trim() || !thoughtsInput.trim() || isLoading) return;
 
 		isLoading = true;
 		errorMessage = '';
@@ -180,7 +180,8 @@
 				},
 				body: JSON.stringify({
 					step: 'reflection',
-					situation: situationInput.trim()
+					situation: situationInput.trim(),
+					thoughts: thoughtsInput.trim()
 				})
 			});
 
@@ -198,7 +199,7 @@
 			const responseData = {
 				situationInput: situationInput.trim(),
 				aiReflection: data.response,
-				thoughtsInput,
+				thoughtsInput: thoughtsInput.trim(),
 				needsInput,
 				aiSummary,
 				timestamp: new Date().toISOString(),
@@ -413,21 +414,40 @@
 
 <div class="flex h-full flex-col justify-between space-y-4 rounded-lg backdrop-blur transition-all transform duration-1000 {splashContentClass()}">
 	{#if internalStep() === 0}
-		<!-- Step 1: Situation Input -->
-		<div class="flex flex-grow items-center justify-center space-y-2">
-			<h3 class="max-w-xs font-medium text-gray-900">
-				{content.question || 'Beschreibe eine Situation, die du erlebt hast:'}
-			</h3>
+		<!-- Step 1: Combined Situation and Thoughts Input -->
+		<div class="flex flex-grow items-center justify-center space-y-4">
+			<div class="max-w-sm space-y-4">
+				<h3 class="font-medium text-gray-900 text-center">
+					{content.question || 'Beschreibe eine Situation, die du erlebt hast:'}
+				</h3>
+				<p class="text-sm text-gray-600 text-center">
+					Und welche Strategie hast du verwendet, um die Situation zu bewältigen?
+				</p>
+			</div>
 		</div>
 
-		<div class="space-y-2">
+		<div class="space-y-3">
+			<!-- Situation Input -->
 			<div
 				class="flex flex-col gap-2 rounded-2xl border border-white bg-gradient-to-b from-white to-offwhite p-2 shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
 			>
+				<label class="text-xs font-medium text-gray-700 px-2">Situation</label>
 				<AutoTextarea
 					bind:value={situationInput}
 					placeholder="Ich war bei dem letzten Familienbesuch etwas geladen..."
-					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none max-w-xs"
+					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
+				/>
+			</div>
+
+			<!-- Thoughts/Strategy Input -->
+			<div
+				class="flex flex-col gap-2 rounded-2xl border border-white bg-gradient-to-b from-white to-offwhite p-2 shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
+			>
+				<label class="text-xs font-medium text-gray-700 px-2">Deine Strategie</label>
+				<AutoTextarea
+					bind:value={thoughtsInput}
+					placeholder="Welche Strategie hast du verwendet..."
+					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
 				/>
 
 				<div class="flex items-end justify-between">
@@ -449,8 +469,8 @@
 						{/if}
 					</div>
 					<button
-						onclick={submitSituation}
-						disabled={!situationInput.trim() || isLoading}
+						onclick={submitCombinedInput}
+						disabled={!situationInput.trim() || !thoughtsInput.trim() || isLoading}
 						type="submit"
 						style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
 						class="flex size-10 items-center justify-center rounded-full bg-black text-white disabled:opacity-50"
@@ -495,50 +515,7 @@
 			Genau
 		</LearnGotoNextButton>
 	{:else if internalStep() === 2}
-		<!-- Step 3: Thoughts and Judgments Input -->
-		<div class="flex flex-grow items-center justify-center space-y-2">
-			<h3 class="font-medium text-gray-900 max-w-xs">
-				Welche Strategie hast du verwendet, um die Situation zu bewältigen?
-			</h3>
-		</div>
-
-		<div class="space-y-2">
-			<div
-				class="flex flex-col gap-2 rounded-2xl border border-white bg-gradient-to-b from-white to-offwhite p-2 shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
-			>
-				<AutoTextarea
-					bind:value={thoughtsInput}
-					placeholder="Ich habe mit niemandem so richtig geredet..."
-					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
-				/>
-
-				<div class="flex items-end justify-end">
-					<button
-						onclick={submitThoughts}
-						disabled={!thoughtsInput.trim() || isLoading}
-						type="submit"
-						style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
-						class="flex size-10 items-center justify-center rounded-full bg-black text-white disabled:opacity-50"
-					>
-						{#if isLoading}
-							<Loader2 class="size-4 animate-spin" />
-						{:else}
-							<div class="w-[1.2em] fill-white">
-								{@html IconPaperPlane}
-							</div>
-						{/if}
-					</button>
-				</div>
-			</div>
-
-			{#if errorMessage}
-				<div class="mt-3 rounded-lg border border-red-200 bg-red-50 p-3">
-					<p class="text-sm text-red-800">{errorMessage}</p>
-				</div>
-			{/if}
-		</div>
-	{:else if internalStep() === 3}
-		<!-- Step 4: Needs Input with integrated selector -->
+		<!-- Step 3: Needs Input with integrated selector -->
 		<div class="flex flex-grow items-center justify-center space-y-2">
 			<h3 class="font-medium text-gray-900 max-w-xs">
 				Welche Bedürfnisse hast Du Dir dadurch erfüllt?
@@ -619,8 +596,8 @@
 				</div>
 			{/if}
 		</div>
-	{:else if internalStep() === 4 && !aiSummary}
-		<!-- Step 5: Generate Summary -->
+	{:else if internalStep() === 3 && !aiSummary}
+		<!-- Step 4: Generate Summary -->
 		<div class="flex flex-grow items-center justify-center space-y-2">
 			<h3 class="font-medium text-gray-900">
 				Lass uns eine Zusammenfassung deiner Erkenntnisse erstellen.
@@ -638,8 +615,8 @@
 				Zusammenfassung erstellen
 			</LearnGotoNextButton>
 		{/if}
-	{:else if internalStep() === 4 && aiSummary}
-		<!-- Step 5: Display Summary -->
+	{:else if internalStep() === 3 && aiSummary}
+		<!-- Step 4: Display Summary -->
 		<div class="flex flex-grow items-center justify-center space-y-2 rounded-lg p-6">
 			<div class="prose prose-sm max-w-sm overflow-y-auto text-gray-700 max-h-80">
 				{@html marked(aiSummary)}

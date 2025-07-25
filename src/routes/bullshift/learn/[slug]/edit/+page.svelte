@@ -60,7 +60,7 @@
 			} else if (component.type === 'feelingsDetective') {
 				step += 5; // feelingsDetective takes 5 steps
 			} else if (component.type === 'needsDetective') {
-				step += 5; // needsDetective takes 5 steps
+				step += 4; // needsDetective takes 4 steps (combined situation+thoughts, reflection, needs, summary)
 			} else if (component.type === 'needsRubiksCube') {
 				step += 2; // needsRubiksCube takes 2 steps
 			} else {
@@ -76,11 +76,20 @@
 		currentStep = step;
 		// Update mock session page as well
 		mockSession.currentPage = step;
-		const url = new URL(window.location.href);
-		url.searchParams.set('step', currentStep.toString());
-		replaceState(url, {
-			step: currentStep
-		});
+		
+		// Only update URL if we're in the browser and router is ready
+		if (browser && typeof window !== 'undefined') {
+			try {
+				const url = new URL(window.location.href);
+				url.searchParams.set('step', currentStep.toString());
+				replaceState(url, {
+					step: currentStep
+				});
+			} catch (error) {
+				// Router not ready yet, just update the step without URL change
+				console.log('Router not ready, skipping URL update');
+			}
+		}
 	};
 
 	// Handle block clicks from the editor - calculate correct step
