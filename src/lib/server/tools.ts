@@ -314,19 +314,41 @@ export const saveTrace = async (
 		const inputTokenCount = result?.usageMetadata?.promptTokenCount;
 		const outputTokenCount = result?.usageMetadata?.candidatesTokenCount;
 
+		// Validate required fields
+		if (!functionName || !message || !module || !chatId || !userId) {
+			console.warn('saveTrace: Missing required fields', {
+				functionName: !!functionName,
+				message: !!message,
+				module: !!module,
+				chatId: !!chatId,
+				userId: !!userId
+			});
+			return;
+		}
+
 		const trace = await pb.collection('traces').create({
 			functionName,
-			message,
-			response,
+			message: message.substring(0, 5000), // Limit message length to prevent DB issues
+			response: response?.substring(0, 10000), // Limit response length
 			module: module,
 			chat: chatId,
 			user: userId,
-			inputTokens: inputTokenCount,
-			outputTokens: outputTokenCount,
-			systemInstruction
+			inputTokens: inputTokenCount || 0,
+			outputTokens: outputTokenCount || 0,
+			systemInstruction: systemInstruction?.substring(0, 10000) // Limit system instruction length
 		});
 	} catch (error) {
-		console.error('Error saving trace:', error);
+		// Silent failure to prevent cascading errors that could cause logouts
+		// Only log to console if we're on server side (avoid triggering client error logging)
+		if (typeof window === 'undefined') {
+			console.warn('Failed to save trace (non-critical):', {
+				functionName,
+				module,
+				chatId,
+				userId,
+				error: error instanceof Error ? error.message : String(error)
+			});
+		}
 	}
 };
 export const tools = {};
