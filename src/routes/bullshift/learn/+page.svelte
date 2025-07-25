@@ -86,7 +86,8 @@
 		}
 
 		const total = data.topics.length;
-		const completed = Object.keys(data.completionStatus).length;
+		// Count only topics that exist in the topics collection AND are marked as completed
+		const completed = data.topics.filter((topic) => isTopicCompleted(topic.id)).length;
 		const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
 
 		return { completed, total, percentage };

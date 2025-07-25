@@ -250,23 +250,22 @@
 
 <div class="relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200">
 	<!-- Collapsible Header -->
-	<button
-		type="button"
-		class="w-full text-left bg-alsmostwhite flex cursor-pointer items-center justify-between border-b p-1 hover:bg-gray-100"
-		onclick={(e) => {
-			// If it's a right click or middle click, don't trigger step jump
-			if (e.button === 2 || e.button === 1) return;
-			
-			// Toggle collapse
-			isCollapsed = !isCollapsed;
-			
-			// Jump to step in preview
-			if (onBlockClick) {
-				onBlockClick();
-			}
-		}}
-	>
-		<div class="flex items-center gap-2 flex-shrink overflow-hidden">
+	<div class="w-full bg-alsmostwhite flex cursor-pointer items-center justify-between border-b p-1 hover:bg-gray-100">
+		<div 
+			class="flex items-center gap-2 flex-shrink overflow-hidden flex-1"
+			onclick={(e) => {
+				// If it's a right click or middle click, don't trigger step jump
+				if (e.button === 2 || e.button === 1) return;
+				
+				// Toggle collapse
+				isCollapsed = !isCollapsed;
+				
+				// Jump to step in preview
+				if (onBlockClick) {
+					onBlockClick();
+				}
+			}}
+		>
 			<!-- Drag Handle -->
 			{#if onDragStart}
 				<div
@@ -274,6 +273,8 @@
 					draggable="true"
 					ondragstart={onDragStart}
 					ondragend={onDragEnd}
+					role="button"
+					tabindex="0"
 				>
 					<GripVertical class="size-4" />
 				</div>
@@ -392,7 +393,7 @@
 				</button>
 			{/if}
 		</div>
-	</button>
+	</div>
 
 	<!-- Collapsible Content -->
 	{#if !isCollapsed}

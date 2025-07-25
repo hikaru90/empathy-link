@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { serializeNonPOJOs } from '$scripts/helpers';
 import { pb } from '$scripts/pocketbase'
 import { PUBLIC_POSTHOG_KEY } from '$env/static/public';
-import { redirect, type Handle } from '@sveltejs/kit';
+import { redirect, type Handle, type HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { paraglideMiddleware } from '$src/paraglide/server';
 
@@ -160,3 +160,83 @@ const paraglideHandle: Handle = ({ event, resolve }) =>
 
 
 export const handle = sequence(first, paraglideHandle);
+
+export const handleError: HandleServerError = async ({ error, event }) => {
+	console.error('Server error:', error);
+	
+	try {
+		// Create detailed error information for server errors
+		const errorData = {
+			// Basic error information
+			message: (error as Error).message || 'Unknown server error',
+			name: (error as Error).name || 'Error',
+			stack: (error as Error).stack || 'No stack trace available',
+			
+			// Request context information
+			url: event.url.href,
+			pathname: event.url.pathname,
+			searchParams: event.url.search,
+			hash: event.url.hash,
+			method: event.request.method,
+			
+			// Headers (excluding sensitive information)
+			userAgent: event.request.headers.get('user-agent') || 'Unknown',
+			accept: event.request.headers.get('accept') || 'Unknown',
+			acceptLanguage: event.request.headers.get('accept-language') || 'Unknown',
+			acceptEncoding: event.request.headers.get('accept-encoding') || 'Unknown',
+			referer: event.request.headers.get('referer') || 'Unknown',
+			
+			// Client information
+			clientAddress: event.getClientAddress() || 'Unknown',
+			
+			// User and session information
+			user: event.locals?.user?.id || null,
+			sessionToken: event.locals?.sessionToken || null,
+			posthogId: event.locals?.posthogId || null,
+			
+			// Server environment
+			nodeVersion: process.version,
+			platform: process.platform,
+			arch: process.arch,
+			
+			// Timing information
+			timestamp: new Date().toISOString(),
+			
+			// Error categorization
+			source: 'server',
+			type: 'server_error',
+			severity: 'error',
+			
+			// Additional technical details
+			errorString: String(error),
+			errorConstructor: (error as Error).constructor?.name || 'Unknown',
+			
+			// Route information
+			routeId: event.route?.id || 'Unknown'
+		};
+
+		// Log to PocketBase (use a dedicated admin connection if needed)
+		await pb.collection('errors').create(errorData);
+	} catch (logError) {
+		console.error('Failed to log server error to database:', logError);
+		// Fallback logging with minimal data
+		try {
+			await pb.collection('errors').create({
+				message: `Server error logging failed: ${(error as Error).message}`,
+				originalError: String(error),
+				loggingError: String(logError),
+				source: 'server',
+				type: 'logging_error',
+				timestamp: new Date().toISOString(),
+				url: event.url.href,
+				method: event.request.method
+			});
+		} catch (secondaryError) {
+			console.error('Failed to log server error logging failure:', secondaryError);
+		}
+	}
+
+	return {
+		message: 'An unexpected server error occurred'
+	};
+};

@@ -131,8 +131,9 @@
 			const response = existingResponse()?.response;
 			console.log('Response data:', response);
 			if (response) {
-				situationInput = response.situationInput || '';
-				thoughtsInput = response.thoughtsInput || '';
+				// Use situationInput as the primary field, fall back to thoughtsInput if situationInput is empty
+				situationInput = response.situationInput || response.thoughtsInput || '';
+				thoughtsInput = response.thoughtsInput || response.situationInput || '';
 				// Only set needsInput if it exists and has content, otherwise leave it as is
 				if (response.needsInput !== undefined && response.needsInput !== null) {
 					needsInput = response.needsInput;
@@ -166,7 +167,7 @@
 
 
 	const submitCombinedInput = async () => {
-		if (!situationInput.trim() || !thoughtsInput.trim() || isLoading) return;
+		if (!situationInput.trim() || isLoading) return;
 
 		isLoading = true;
 		errorMessage = '';
@@ -181,7 +182,7 @@
 				body: JSON.stringify({
 					step: 'reflection',
 					situation: situationInput.trim(),
-					thoughts: thoughtsInput.trim()
+					thoughts: situationInput.trim() // Use the same input for both since they're combined
 				})
 			});
 
@@ -199,7 +200,7 @@
 			const responseData = {
 				situationInput: situationInput.trim(),
 				aiReflection: data.response,
-				thoughtsInput: thoughtsInput.trim(),
+				thoughtsInput: situationInput.trim(), // Store the combined input in both fields for compatibility
 				needsInput,
 				aiSummary,
 				timestamp: new Date().toISOString(),
@@ -415,38 +416,19 @@
 <div class="flex h-full flex-col justify-between space-y-4 rounded-lg backdrop-blur transition-all transform duration-1000 {splashContentClass()}">
 	{#if internalStep() === 0}
 		<!-- Step 1: Combined Situation and Thoughts Input -->
-		<div class="flex flex-grow items-center justify-center space-y-4">
-			<div class="max-w-sm space-y-4">
-				<h3 class="font-medium text-gray-900 text-center">
-					{content.question || 'Beschreibe eine Situation, die du erlebt hast:'}
-				</h3>
-				<p class="text-sm text-gray-600 text-center">
-					Und welche Strategie hast du verwendet, um die Situation zu bewältigen?
-				</p>
-			</div>
+		<div class="flex flex-grow items-center justify-center space-y-2">
+			<h3 class="max-w-xs font-medium text-gray-900 text-center">
+				{content.question || 'Beschreibe eine Situation, die du erlebt hast und welche Strategie du verwendet hast, um die Situation zu bewältigen:'}
+			</h3>
 		</div>
 
-		<div class="space-y-3">
-			<!-- Situation Input -->
+		<div class="space-y-2">
 			<div
 				class="flex flex-col gap-2 rounded-2xl border border-white bg-gradient-to-b from-white to-offwhite p-2 shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
 			>
-				<label class="text-xs font-medium text-gray-700 px-2">Situation</label>
 				<AutoTextarea
 					bind:value={situationInput}
-					placeholder="Ich war bei dem letzten Familienbesuch etwas geladen..."
-					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
-				/>
-			</div>
-
-			<!-- Thoughts/Strategy Input -->
-			<div
-				class="flex flex-col gap-2 rounded-2xl border border-white bg-gradient-to-b from-white to-offwhite p-2 shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
-			>
-				<label class="text-xs font-medium text-gray-700 px-2">Deine Strategie</label>
-				<AutoTextarea
-					bind:value={thoughtsInput}
-					placeholder="Welche Strategie hast du verwendet..."
+					placeholder="Ich war bei dem letzten Familienbesuch etwas geladen und habe dann einfach das Thema gewechselt..."
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
 				/>
 
@@ -470,7 +452,7 @@
 					</div>
 					<button
 						onclick={submitCombinedInput}
-						disabled={!situationInput.trim() || !thoughtsInput.trim() || isLoading}
+						disabled={!situationInput.trim() || isLoading}
 						type="submit"
 						style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
 						class="flex size-10 items-center justify-center rounded-full bg-black text-white disabled:opacity-50"
