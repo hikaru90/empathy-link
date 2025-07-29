@@ -174,7 +174,7 @@
 			return 5;
 		}
 		if (component.type === 'needsDetective') {
-			return 5;
+			return 4; // Fixed: should be 4 steps (0,1,2,3), not 5
 		}
 		if (component.type === 'needsRubiksCube') {
 			return 2;
@@ -402,7 +402,7 @@
 				| 'pageNavigation';
 
 			const newResponse = {
-				pageIndex: targetPageIndex,
+				
 				blockIndex: currentBlockIndex || 0,
 				blockType: validBlockType,
 				response,
@@ -416,7 +416,7 @@
 
 			// Remove any existing response for this page and block type  
 			const updatedResponses = existingResponses.filter(
-				(r) => !(r.pageIndex === targetPageIndex && r.blockType === blockType)
+				(r) => !(r.blockType === blockType && JSON.stringify(r.blockContent) === JSON.stringify(content))
 			);
 			updatedResponses.push(newResponse);
 
@@ -453,7 +453,7 @@
 					| 'pageNavigation';
 				await learningSession.saveResponseImmediate(
 					session.id,
-					targetPageIndex,
+					
 					currentBlockIndex || 0,
 					validBlockType,
 					response,
@@ -601,7 +601,7 @@
 			{:else if content && content.type === 'breathe'}
 				<LearnBreathe
 					{content}
-					pageIndex={currentStep}
+					
 					blockIndex={stepData.blockIndex}
 					{isPreview}
 					gotoNextStep={() => gotoNextStep()}
@@ -631,8 +631,9 @@
 				/>
 			{:else if content && content.type === 'sortable'}
 				{@const sortableResponses = activeSession()?.responses?.filter(r => 
-					r.pageIndex === currentStep && 
-					r.blockType === 'sortable'
+					r.blockIndex === stepData.blockIndex && 
+					r.blockType === 'sortable' &&
+					JSON.stringify(r.blockContent) === JSON.stringify(content)
 				) || []}
 				{@const savedResponse = sortableResponses.length > 0 
 					? sortableResponses.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]

@@ -145,7 +145,7 @@
 		<!-- Step 1: Sentence Input -->
 		<div class="flex flex-grow flex-col items-center justify-center space-y-2 gap-4">
 			<img src="/diagrams/rubiksCube.svg" alt="Rubiks Cube" class="w-20" />
-			<h3 class="font-medium text-gray-900 text-center max-w-sm">
+			<h3 class="font-medium text-gray-900 max-w-sm">
 				{@html marked(content.title || 'Gib einen schwierigen Satz ein, den du gehört hast')}
 			</h3>
 		</div>

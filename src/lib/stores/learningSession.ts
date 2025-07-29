@@ -137,14 +137,13 @@ export const learningSession = {
   // Force immediate save (useful for important actions like completion)
   async saveResponseImmediate(
     sessionId: string, 
-    pageIndex: number, 
     blockIndex: number, 
     blockType: ContentBlock['type'], 
     response: any,
     topicVersionId: string,
     contentBlock: ContentBlock
   ): Promise<void> {
-    const blockKey = `${sessionId}-${pageIndex}-${blockIndex}`;
+    const blockKey = `${sessionId}-${blockIndex}`;
     
     // Clear any pending debounced save
     if (this._debounceTimers.has(blockKey)) {
@@ -159,7 +158,6 @@ export const learningSession = {
       }) as unknown as LearningSession;
       
       const newResponse: SessionResponse = {
-        pageIndex,
         blockIndex,
         blockType,
         response,
@@ -168,9 +166,9 @@ export const learningSession = {
         blockContent: contentBlock
       };
 
-      // Remove any existing response for this block
+      // Remove any existing response for this block type and content
       const filteredResponses = session.responses.filter(
-        r => !(r.pageIndex === pageIndex && r.blockIndex === blockIndex)
+        r => !(r.blockType === blockType && JSON.stringify(r.blockContent) === JSON.stringify(contentBlock))
       );
 
       const updatedResponses = [...filteredResponses, newResponse];
@@ -179,7 +177,7 @@ export const learningSession = {
       await pb.collection('learnSessions').update(sessionId, {
         responses: updatedResponses
       }, {
-        requestKey: `saveResponseImmediate-${sessionId}-${pageIndex}-${blockIndex}-${Date.now()}`
+        requestKey: `saveResponseImmediate-${sessionId}-${blockIndex}-${Date.now()}`
       });
     } catch (error) {
       console.error('Failed to save response immediately:', error);

@@ -105,6 +105,35 @@
 		document.addEventListener('touchend', handleGlobalTouchEnd);
 	};
 
+	// Setup non-passive touch event listeners
+	const setupTouchListeners = (element: HTMLElement, itemText: string) => {
+		let currentHandler: (event: TouchEvent) => void;
+		
+		const updateHandler = (text: string) => {
+			// Remove old handler if it exists
+			if (currentHandler) {
+				element.removeEventListener('touchstart', currentHandler);
+			}
+			// Add new handler
+			currentHandler = (event: TouchEvent) => handleTouchStart(event, text);
+			element.addEventListener('touchstart', currentHandler, { passive: false });
+		};
+
+		// Initial setup
+		updateHandler(itemText);
+		
+		return {
+			update(newItemText: string) {
+				updateHandler(newItemText);
+			},
+			destroy() {
+				if (currentHandler) {
+					element.removeEventListener('touchstart', currentHandler);
+				}
+			}
+		};
+	};
+
 	const handleGlobalTouchMove = (event: TouchEvent) => {
 		if (draggedItem && touchStartPos) {
 			// Prevent pull-to-refresh while dragging
@@ -220,12 +249,12 @@
 		{#if getUnsortedItems().length > 0}
 				<h4 class="text-sm">Zu sortierende Elemente</h4>
 				<div class="flex flex-wrap gap-1">
-					{#each getUnsortedItems() as item}
+					{#each getUnsortedItems() as item (item.text)}
 						<div
 							draggable="true"
 							ondragstart={(e) => handleDragStart(e, item.text)}
 							ondragend={handleDragEnd}
-							ontouchstart={(e) => handleTouchStart(e, item.text)}
+							use:setupTouchListeners={item.text}
 							role="button"
 							tabindex="0"
 							style="background-color: {color}; touch-action: none;"
@@ -264,16 +293,16 @@
 					</div>
 					<div class="relative flex-grow space-y-2 overflow-y-auto h-32">
 						<div class="flex flex-wrap gap-1 pt-1">
-							{#each getBucketItems(bucket.id) as item}
+							{#each getBucketItems(bucket.id) as item (item.text)}
 								<div
 									draggable="true"
 									ondragstart={(e) => handleDragStart(e, item.text)}
 									ondragend={handleDragEnd}
-									ontouchstart={(e) => handleTouchStart(e, item.text)}
+									use:setupTouchListeners={item.text}
 									role="button"
 									tabindex="0"
 									style="background-color: {showValidation && validationResults().incorrectItems.includes(item.text) ? '#ef4444' : color}; touch-action: none;"
-									class="cursor-move select-none rounded-xl px-2 py-0.5 text-sm transition-colors hover:bg-blue-200 {showValidation && validationResults().incorrectItems.includes(item.text) ? 'text-white' : ''}"
+									class="cursor-move select-none rounded-xl px-2 py-0.5 text-sm transition-colors {showValidation && validationResults().incorrectItems.includes(item.text) ? 'text-white' : ''}"
 									class:opacity-50={draggedItem === item.text}
 								>
 									{item.text}
@@ -294,22 +323,22 @@
 
 		<!-- Drag Preview for Mobile -->
 		{#if dragPreview}
-			<div
-				class="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2 transform rounded border border-blue-400 bg-blue-200 px-3 py-2 text-sm shadow-lg"
-				style="left: {dragPreview.x}px; top: {dragPreview.y}px;"
+			<div 
+				class="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2 transform rounded-full px-2 py-1 text-sm shadow-lg"
+				style="background-color: {color}; left: {dragPreview.x}px; top: {dragPreview.y}px;"
 			>
 				{dragPreview.text}
 			</div>
 		{/if}
 
 		<!-- Progress indicator -->
-		<div class="text-center">
-			<div class="text-sm text-gray-600">
+		<div class="text-center text-xs">
+			<div class="text-black/60">
 				{content.items.length - getUnsortedItems().length} von {content.items.length} Elementen sortiert
 			</div>
-			<div class="mt-2 h-2 w-full rounded-full bg-gray-200">
+			<div class="mt-1 h-2 mx-4 rounded-full bg-black/5 shadow-inner p-0.5">
 				<div
-					class="h-2 rounded-full transition-all duration-300"
+					class="h-full rounded-full transition-all duration-300"
 					style="width: {((content.items.length - getUnsortedItems().length) /
 						content.items.length) *
 						100}%; background-color: {currentCategory.color};"
