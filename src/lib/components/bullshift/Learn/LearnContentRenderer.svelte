@@ -371,7 +371,7 @@
 	});
 
 	// Helper function to handle response saving
-	const handleResponse = async (blockType: string, response: any, content: any, currentBlockIndex?: number) => {
+	const handleResponse = async (blockType: string, response: any, content: any, currentBlockIndex?: number): Promise<void> => {
 		const session = activeSession();
 		if (!session) return;
 

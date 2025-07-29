@@ -80,10 +80,11 @@
 		);
 	});
 
-	// Initialize from existing response if available
+	// Initialize from existing response if available - ONLY ONCE on mount
 	$effect(() => {
-		if (existingResponse()) {
-			const response = existingResponse()?.response;
+		const existing = existingResponse();
+		if (existing) {
+			const response = existing.response;
 			if (response) {
 				userAnswer = response.userAnswer || '';
 				aiResponse = response.aiResponse || '';
@@ -132,7 +133,7 @@
 			hasSubmitted = true;
 
 			// Save the response
-			onResponse({
+			await onResponse({
 				userAnswer: userAnswer.trim(),
 				aiResponse: data.response,
 				timestamp: new Date().toISOString(),
@@ -223,17 +224,17 @@
 	});
 </script>
 
-<div class="flex h-full flex-col justify-between space-y-4 rounded-lg backdrop-blur">
+<div class="flex h-full flex-col justify-between rounded-lg backdrop-blur">
 	<!-- Debug: Show internal step -->
 	{#if internalStep() === 0}
 		<!-- Step 1: Question and Answer Input -->
-		<div class="flex flex-grow items-center justify-center space-y-2">
-			<h3 class="font-medium text-gray-900">
+		<div class="flex flex-grow items-center justify-center">
+			<h3 class="marked font-medium text-gray-900">
 				{@html marked(content.question)}
 			</h3>
 		</div>
 
-		<div class="space-y-2">
+		<div class="">
 			<div
 				class="flex flex-col gap-2 rounded-2xl border border-white bg-gradient-to-b from-white to-offwhite p-2 shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
 			>
@@ -372,10 +373,8 @@
 	{:else if internalStep() === 1 && existingResponse()}
 		<!-- AI Response -->
 		{#if hasSubmitted && aiResponse}
-			<div class="flex flex-grow items-center justify-center space-y-2 rounded-lg p-6">
-				<div class="prose prose-sm max-w-none overflow-y-auto text-gray-700">
+			<div class="flex-grow rounded-lg p-4 max-w-sm max-h-86 overflow-y-auto">
 					{@html marked(aiResponse)}
-				</div>
 			</div>
 		{/if}
 
