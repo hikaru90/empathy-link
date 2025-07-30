@@ -15,6 +15,7 @@ const removeTimestamp = (chat: any) => {
   return editedChat
 }
 export const POST: RequestHandler = async ({ request, locals }) => {
+
 	const { message, history, chatId } = await request.json();
 	const user = locals.user;
 

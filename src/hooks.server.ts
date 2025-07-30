@@ -94,8 +94,17 @@ const first: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	// Set the user in the locals object
-	event.locals.user = serializeNonPOJOs(event.locals.pb.authStore.model) as App.User;
+	// Set the user in the locals object - preserve existing user if authStore.model is corrupted
+	const authModel = event.locals.pb.authStore.model;
+	if (authModel) {
+		event.locals.user = serializeNonPOJOs(authModel) as App.User;
+	} else if (event.locals.pb.authStore.isValid) {
+		// If we have a valid auth state but no model, there's a temporary corruption
+		// Keep the user logged in and log the issue for debugging
+		console.warn('Auth state is valid but model is missing - keeping user authenticated');
+		// Don't clear auth or set user to undefined - preserve existing state
+	}
+	// If authModel is null/undefined and auth is invalid, user remains as-is (don't overwrite with undefined)
 
 	// Log authentication state changes
 	const isNowAuthenticated = event.locals.pb.authStore.isValid;
