@@ -82,6 +82,8 @@ test.describe('Bullshift Chat Flow', () => {
     expect(await messageInput.inputValue()).toBe('');
   });
 
+  
+
   test('should analyze chat', async ({ page }) => {
     const messageCountBefore = await page.locator('.messages .message').count();
     const messageInput = page.getByRole('textbox', { name: 'Deine Nachricht...' });
@@ -144,6 +146,36 @@ test.describe('Bullshift Chat Flow', () => {
     // Verify error message is shown
     await page.waitForSelector('text=Dein Chat konnte nicht ausgewertet werden.', { timeout: 5000 });
     expect(await page.locator('text=Dein Chat konnte nicht ausgewertet werden.').isVisible()).toBe(true);
+  });
+
+  test('should handle memory flush and continue working', async ({ page }) => {
+    // Send first message to establish chat in memory
+    const messageInput = page.getByRole('textbox', { name: 'Deine Nachricht...' });
+    await messageInput.click();
+    await messageInput.fill('first message before flush');
+    await page.getByRole('button', { name: 'Send message' }).click();
+    await page.waitForTimeout(2000);
+
+    // Verify first message exchange worked
+    const messageCountAfterFirst = await page.locator('.messages .message').count();
+    expect(messageCountAfterFirst).toBeGreaterThanOrEqual(2); // User + AI response
+
+    // Flush server memory
+    const flushResponse = await page.request.post('http://localhost:3000/api/ai/bullshift/flushMemory');
+    expect(flushResponse.ok()).toBe(true);
+
+    // Send second message after flush
+    await messageInput.click();
+    await messageInput.fill('second message after flush');
+    await page.getByRole('button', { name: 'Send message' }).click();
+    await page.waitForTimeout(2000);
+
+    // Verify second message exchange worked (chat should work without memory)
+    const messageCountAfterSecond = await page.locator('.messages .message').count();
+    expect(messageCountAfterSecond).toBeGreaterThan(messageCountAfterFirst);
+
+    // Verify we have at least 2 more messages (user + AI response)
+    expect(messageCountAfterSecond).toBeGreaterThanOrEqual(messageCountAfterFirst + 2);
   });
 
   

@@ -20,3 +20,14 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ error: 'Failed to flush bullshift memory' }, { status: 500 });
 	}
 };
+
+export const GET: RequestHandler = async () => {
+	try {
+		console.log('flushing bullshiftChats on the serverSide via GET');
+		bullshiftChats.clear();
+		return json({ success: true });
+	} catch (error) {
+		console.error('Error flushing bullshift memory', error);
+		return json({ error: 'Failed to flush bullshift memory' }, { status: 500 });
+	}
+};
