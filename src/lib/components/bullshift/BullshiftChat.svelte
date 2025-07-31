@@ -75,6 +75,7 @@
 	let needs = $state<Need[]>([]);
 	let feelingSelectorVisible = $state(false);
 	let needSelectorVisible = $state(false);
+	let errorMessage = $state('');
 
 	// Get the current locale reactively
 	const locale = $derived(getLocale());
@@ -126,11 +127,33 @@
 		} catch (error) {
 			console.error('Failed to send message:', error);
 			
-			// Show user-friendly error message
+			// Create user-friendly error message
+			let userFriendlyError = 'Ein Fehler ist aufgetreten: ';
+			
 			if (error instanceof Error) {
-				// You could add a toast notification here or show an error in the UI
-				console.log('Error details:', error.message);
+				// Handle specific error types
+				if (error.message.includes('Network') || error.message.includes('fetch')) {
+					userFriendlyError = userFriendlyError + 'Netzwerkfehler. Bitte versuche es erneut.';
+				} else if (error.message.includes('401')) {
+					userFriendlyError = userFriendlyError + 'Sitzung abgelaufen. Bitte melde dich erneut an.';
+				} else if (error.message.includes('500')) {
+					userFriendlyError = userFriendlyError + 'Serverfehler. Bitte versuche es später erneut.';
+				} else if (error.message.includes('429')) {
+					userFriendlyError = userFriendlyError + 'Zu viele Anfragen. Bitte warte einen Moment und versuche es erneut.';
+				} else {
+					userFriendlyError = error.message || userFriendlyError;
+				}
 			}
+			
+			// Add error message to chat history as a red bubble
+			history = [
+				...history,
+				{ role: 'user', parts: [{ text: userMessage }], timestamp: Date.now() },
+				{ role: 'error', parts: [{ text: userFriendlyError }], timestamp: Date.now() }
+			];
+			
+			// Clear the user message since it was already added to history
+			userMessage = '';
 		} finally {
 			isLoading = false;
 			setTimeout(() => {
@@ -412,7 +435,7 @@
 
 {#if chatId}
 	<div class="">
-		<div bind:this={chatContainer} class="rounded-lg pb-52 pt-4">
+		<div bind:this={chatContainer} class="messages rounded-lg pb-52 pt-4">
 			<h1 class="mb-3 text-2xl font-light">
 				Hi <span class="capitalize">{user?.firstName}</span>, ich bin hier, um den ganzen Bullshit
 				in deinem Leben zu durchbrechen.
@@ -423,10 +446,12 @@
 			</h2>
 			{#each history as message}
 				<!-- {JSON.stringify(message)} -->
-				<div class="mb-4 {message.role === 'user' ? 'text-right' : 'text-left'}">
+				<div  aria-label={message.role} class="message {message.role} mb-4 {message.role === 'user' ? 'text-right' : 'text-left'}">
 					<div
 						class="inline-block break-words rounded-xl px-3 py-2 {message.role === 'user'
 							? 'border border-white'
+							: message.role === 'error'
+							? 'bg-red-100 border border-red-300 text-red-800'
 							: 'bg-white'}"
 					>
 						<div class="text-sm">
@@ -556,6 +581,7 @@
 							feelingSelectorVisible = false;
 							needSelectorVisible = false;
 						}}
+						aria-label="Send message"
 						disabled={isLoading}
 						style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
 						class="flex size-10 items-center justify-center rounded-full bg-black text-white disabled:opacity-50"

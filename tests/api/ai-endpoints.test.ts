@@ -73,7 +73,7 @@ test.describe('AI API Endpoints', () => {
     
     test('POST /api/ai/bullshift/initChat - should initialize a new chat', async () => {
       const response = await makeAuthenticatedRequest(authenticatedPage, '/ai/bullshift/initChat', {
-        locale: 'en'
+        locale: 'de'
       });
       
       expect(response.status()).toBe(200);
@@ -81,6 +81,8 @@ test.describe('AI API Endpoints', () => {
       expect(data).toHaveProperty('chatId');
       expect(data).toHaveProperty('chat');
       expect(typeof data.chatId).toBe('string');
+
+      return 'hi'
     });
 
     test('POST /api/ai/bullshift/initChat - should handle unauthenticated requests', async ({ page }) => {

@@ -33,7 +33,7 @@ const config: PlaywrightTestConfig = {
 		viewport: { width: 1280, height: 720 },
 		
 		// Video and screenshot on failure
-		video: 'retain-on-failure',
+		//video: 'retain-on-failure',
 		screenshot: 'only-on-failure',
 		
 		// Trace on failure
@@ -42,6 +42,13 @@ const config: PlaywrightTestConfig = {
 	
 	// Test projects for different scenarios
 	projects: [
+		{
+			name: 'manual',
+			testMatch: '**/manual/**/*.spec.ts',
+			use: {
+				browserName: 'chromium'
+			}
+		},
 		{
 			name: 'api-tests',
 			testMatch: '**/api/**/*.test.ts',
