@@ -56,7 +56,6 @@
 			}
 			feelingsLookup = lookup;
 		} catch (error) {
-			console.error('Error initializing feelings lookup:', error);
 			feelingsLookup = new Map();
 		}
 	};
@@ -95,7 +94,6 @@
 				feelings: point.feelings
 			}))
 		};
-		console.log('LearnBodyMap saveResponse:', responseData);
 		onResponse(responseData);
 	};
 
@@ -108,9 +106,9 @@
 					top: offset,
 					behavior: 'smooth'
 				});
-			} catch (error) {
-				console.error('Error scrolling to feelings:', error);
-			}
+					} catch (error) {
+			// Error scrolling to feelings
+		}
 		}, 100);
 	};
 
@@ -143,6 +141,7 @@
 	};
 
 	const removePoint = (pointId: number) => {
+		console.log('removePoint', pointId);
 		points = points.filter((point) => point.id !== pointId);
 
 		activePointId = null;
@@ -189,7 +188,7 @@
 	};
 
 	const handlePointMouseDown = (event: MouseEvent | TouchEvent, pointId: number) => {
-		event.preventDefault();
+		// event.preventDefault();
 		event.stopPropagation();
 
 		isDragging = true;
@@ -285,10 +284,7 @@
 		const isOutsidePointDot = !target.closest('.point-dot');
 		const isOutsideMap = !target.closest('.bodyscan-map');
 
-		console.log('isOutsideFeelings', isOutsideFeelings);
-		console.log('isOutsidePointControls', isOutsidePointControls);
-		console.log('isOutsidePointDot', isOutsidePointDot);
-		console.log('isOutsideMap', isOutsideMap);
+
 
 		if ((isOutsideFeelings && isOutsidePointControls && isOutsidePointDot) || (isOutsideFeelings && isOutsideMap)) {
 			// Check if active point has no feelings and delete it
@@ -307,28 +303,16 @@
 
 		// Load existing response if available (session is guaranteed to be present)
 		if (contentBlock && session.responses) {
-			console.log('Loading existing bodymap response...');
-			console.log('- session:', session);
-			console.log('- contentBlock:', contentBlock);
-			console.log('- session.responses:', session.responses);
+			
 
 			const existingResponse = session.responses.find((r) => {
-				console.log('Checking response:', r);
-				console.log('- blockType:', r.blockType);
-				console.log(
-					'- blockContent match:',
-					JSON.stringify(r.blockContent) === JSON.stringify(contentBlock)
-				);
 				return (
 					r.blockType === 'bodymap' &&
 					JSON.stringify(r.blockContent) === JSON.stringify(contentBlock)
 				);
 			});
 
-			console.log('Found existing response:', existingResponse);
-
 			if (existingResponse && existingResponse.response && existingResponse.response.points) {
-				console.log('Loading existing bodymap response:', existingResponse.response);
 				points = existingResponse.response.points.map((point: any, index: number) => ({
 					id: index,
 					x: point.x,
@@ -336,16 +320,12 @@
 					feelings: point.feelings || []
 				}));
 				nextPointId = points.length;
-				console.log('Loaded points:', points);
-				console.log('Next point ID set to:', nextPointId);
-			} else {
-				console.log('No existing response found or invalid structure');
 			}
 		}
 
-		document.addEventListener('click', handleClickOutside);
-		document.addEventListener('mousemove', handleMouseMove);
-		document.addEventListener('mouseup', handleMouseUp);
+		document.addEventListener('click', handleClickOutside, { passive: false });
+		document.addEventListener('mousemove', handleMouseMove, { passive: false });
+		document.addEventListener('mouseup', handleMouseUp, { passive: false });
 		document.addEventListener('touchmove', handleMouseMove, { passive: false });
 		document.addEventListener('touchend', handleMouseUp, { passive: false });
 
@@ -381,13 +361,13 @@
 		>
 			{#each points as point}
 				<div
-					class="point-dot absolute z-10 -m-2.5 flex size-8 cursor-pointer items-center justify-center rounded-full bg-white shadow-md"
-					style="left: {point.x}px; top: {point.y}px;"
+					class="point-dot absolute -m-2.5 flex size-8 cursor-pointer items-center justify-center rounded-full bg-white shadow-md"
+					style="left: {point.x}px; top: {point.y}px; touch-action: none; z-index: {point.id === activePointId ? '20' : '10'}; {point.id === activePointId ? 'pointer-events: none;' : ''}"
 					onmousedown={(e) => handlePointMouseDown(e, point.id)}
 					ontouchstart={(e) => handlePointMouseDown(e, point.id)}
 				>
 					<div
-						class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full px-1 py-0.5 text-center text-xs"
+						class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full px-1 py-0.5 text-center text-xs z-10"
 					>
 						{point.feelings.length}
 					</div>
@@ -398,7 +378,7 @@
 							? 'top-full mt-2'
 							: 'bottom-full mb-2'} {point.id === activePointId
 							? 'max-h-96 opacity-100'
-							: 'max-h-0 opacity-0'} pointer-events-auto"
+							: 'max-h-0 opacity-60'} overflow-hidden pointer-events-auto"
 					>
 						<div class="flex flex-col gap-1 px-2 pt-2 {point.id === activePointId ? '' : 'pb-2'}">
 							{#each point.feelings as feeling}
@@ -414,9 +394,16 @@
 								<button
 									aria-label="remove point"
 									onclick={(e) => {
+										console.log('removePoint', point.id);
 										e.preventDefault();
 										e.stopPropagation();
 										removePoint(point.id);
+									}}
+									onmousedown={(e) => {
+										e.stopPropagation();
+									}}
+									ontouchstart={(e) => {
+										e.stopPropagation();
 									}}
 									class="point-control pointer-events-auto flex min-w-24 touch-none items-center justify-between gap-1 rounded-md bg-red-500 px-2 py-0.5 text-white"
 									type="button"
@@ -451,11 +438,9 @@
 						<FeelingSelector
 							selectedFeelings={point.feelings}
 							onFeelingChange={(feelings) => {
-								console.log('LearnBodyMap onFeelingChange:', { pointId: point.id, feelings });
 								point.feelings = feelings;
 								points = [...points];
 								saveResponse();
-								console.log('activePointId', activePointId);
 							}}
 							pointId={point.id}
 							show={true}
