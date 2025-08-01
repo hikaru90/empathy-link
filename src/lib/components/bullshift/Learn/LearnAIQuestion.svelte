@@ -373,9 +373,11 @@
 	{:else if internalStep() === 1 && existingResponse()}
 		<!-- AI Response -->
 		{#if hasSubmitted && aiResponse}
-			<div class="flex-grow rounded-lg p-4 max-w-sm max-h-86 overflow-y-auto">
-					{@html marked(aiResponse)}
+		<div class="flex-grow flex justify-center items-center">
+			<div class=" rounded-lg p-4 max-w-sm max-h-86 overflow-y-auto">
+				{@html marked(aiResponse)}
 			</div>
+		</div>
 		{/if}
 
 		<!-- Navigation for next step -->

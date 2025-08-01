@@ -423,7 +423,7 @@
 </script>
 
 <div
-	class="h-[calc(100vh-186px)] max-w-4xl space-y-5 overflow-y-auto overflow-x-hidden -mx-6 px-6"
+	class="h-svh max-w-4xl space-y-5 overflow-y-auto overflow-x-hidden -mx-6 px-6 pb-60"
 	style="touch-action: pan-y;"
 >
 	<!-- Back button -->

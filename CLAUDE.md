@@ -146,6 +146,15 @@ Key collections:
 - **Form Components**: Multi-step workflows for empathy processes
 
 ### Development Guidelines
+- Always try to solve the problems you encounter with the most basic design principles. THIS IS REALLY IMPORTANT!!!!
+- If there is a browser native solution, use it
+- If there is a svelte 5 feature handling this type of problem, use it
+- If a problem can be solved by simple props, onMount and functions, use them
+- Avoid overcomplex reactivity at all costs!
+- When working with db data in a component, follow this pattern: if possible, make sure the db data is passed as a prop from the parent and require it before mounting a component. Is you have to load data in the component itself, define an empty state var, load the data in the onMount block, let the baked in reactivity of svelte 5 change the state var, save it to the db again after manipulation is done through distinctive events 
+- If you propose a solution, make no mistakes. Check the logic of the execution logic
+- ALWAYS ask yourself if the thing you are implementing could not have been solved more easily
+
 
 #### Working with AI Features
 - AI system prompts are defined in `src/lib/server/gemini.ts`

@@ -607,15 +607,24 @@
 					gotoNextStep={() => gotoNextStep()}
 				/>
 			{:else if content && content.type === 'bodymap'}
-				<LearnBodyMap
-					{content}
-					color={currentCategory().color}
-					session={activeSession()}
-					contentBlock={content}
-					topicVersionId={topic().id}
-					onResponse={(response) => handleResponse('bodymap', response, content)}
-					gotoNextStep={() => gotoNextStep()}
-				/>
+				{#if activeSession()}
+					<LearnBodyMap
+						{content}
+						color={currentCategory().color}
+						session={activeSession()}
+						contentBlock={content}
+						topicVersionId={topic().id}
+						onResponse={(response) => handleResponse('bodymap', response, content)}
+						gotoNextStep={() => gotoNextStep()}
+					/>
+				{:else}
+					<div class="flex items-center justify-center p-8">
+						<div class="text-center">
+							<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+							<p class="text-gray-600">Session wird geladen...</p>
+						</div>
+					</div>
+				{/if}
 
 				<LearnCompletionNotes
 					{content}
