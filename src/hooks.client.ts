@@ -93,7 +93,7 @@ if (typeof window !== 'undefined') {
     try {
       const response = await originalFetch(...args);
       
-      // If we get a 401 or 403 on API calls, try to refresh the token
+      // If we get a 401 or 403 on API calls, try to refresh the token ONCE
       if ((response.status === 401 || response.status === 403) && args[0]?.toString().startsWith('/api')) {
         console.log('API authentication failed, attempting token refresh...');
         
@@ -109,24 +109,16 @@ if (typeof window !== 'undefined') {
             console.log('API call succeeded after token refresh');
             return retryResponse;
           } else {
-            console.log('API call still failed after token refresh');
+            console.log('API call still failed after token refresh - letting component handle it');
           }
           
           return retryResponse;
         } catch (refreshError) {
-          console.log('Token refresh failed:', refreshError);
+          console.log('Token refresh failed - letting component handle the 401:', refreshError);
           
-          // Clear the auth state
-          pb.authStore.clear();
-          
-          // Save current location for redirect after login
-          const currentPath = window.location.pathname + window.location.search;
-          document.cookie = `loginRedirectTarget=${encodeURIComponent(currentPath)}; path=/; max-age=600`; // 10 minutes
-          
-          // Redirect to login if not already there
-          if (!window.location.pathname.includes('/auth/login')) {
-            goto('/app/auth/login');
-          }
+          // DON'T auto-logout! Let components handle 401s gracefully
+          // The user should only be logged out via explicit /logout route
+          // Components can show error messages, disable features, etc.
         }
       }
       
