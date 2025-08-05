@@ -1,10 +1,14 @@
 <script lang="ts">
+	import { cn } from '$lib/utils';
 	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
+
+	
 	interface Props {
     totalSteps: {
       component: string;
       stepCount: number;
     }[];
+		class?: string;
     totalStepsCount: number;
 		topic: any;
 		currentStep: number;
@@ -14,11 +18,11 @@
 		onNextStep?: () => void;
 	}
 
-	let { totalSteps, totalStepsCount, topic, currentStep, currentCategory, aiQuestionStep, onPrevStep, onNextStep }: Props = $props();
+	let { class: className = undefined, totalSteps, totalStepsCount, topic, currentStep, currentCategory, aiQuestionStep, onPrevStep, onNextStep }: Props = $props();
 
 </script>
 
-<div class="mb-4 flex items-center justify-center">
+<div class={cn('mb-4 flex items-center justify-center', className)}>
 	<div
 		class="flex items-center justify-center gap-0.5 rounded-full bg-neutral-500/5 p-1 shadow-inner w-3/4"
 	>

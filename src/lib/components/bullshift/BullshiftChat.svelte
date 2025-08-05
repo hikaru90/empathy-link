@@ -72,6 +72,7 @@
 	let feelingSelectorVisible = $state(false);
 	let needSelectorVisible = $state(false);
 	let errorMessage = $state('');
+	let startAnimation = $state(false);
 	let text1Done = $state(false);
 
 	// Get the current locale reactively
@@ -362,6 +363,7 @@
 	};
 
 	onMount(async () => {
+		startAnimation = true;
 		text1Done = false;
 		scrollDown();
 

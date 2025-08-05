@@ -13,6 +13,8 @@
 		backButtonText?: string | undefined;
 		onPrev?: undefined | (() => void);
 		disabled?: boolean;
+		displaySkipButton?: boolean | undefined;
+		onSkip?: undefined | (() => void);
 	}
 
 	let {
@@ -24,7 +26,9 @@
 		displayBackButton = false,
 		backButtonText = '',
 		onPrev,
-		disabled = false
+		disabled = false,
+		displaySkipButton = false,
+		onSkip
 	}: Props = $props();
 </script>
 
@@ -51,6 +55,17 @@
 	</a>
 {:else}
 	<div class="flex flex-row gap-2 w-full">
+		{#if displaySkipButton}
+		<Button
+		onclick={onPrev}
+		class="flex h-10 items-center justify-between gap-2 rounded-full bg-white py-3 pl-4 pr-2 font-medium text-white"
+	>
+	<span class="text-black">Überspringen</span>
+	<div class="flex size-6 items-center justify-center rounded-full bg-black/10">
+		<ArrowRight class="size-4" />
+	</div>
+	</Button>
+		{/if}
 		{#if displayBackButton}
 			<Button
 				onclick={onPrev}

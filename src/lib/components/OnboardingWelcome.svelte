@@ -2,6 +2,9 @@
 	import { Button } from '$lib/components/ui/button-op1';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import { goto } from '$app/navigation';
+	import LearnStepIndicator from '$lib/components/bullshift/Learn/LearnStepIndicator.svelte';
+	import LearnGotoNextButton from '$lib/components/bullshift/Learn/LearnGotoNextButton.svelte';
+	import { marked } from 'marked';
 
 	interface Props {
 		onComplete?: () => void;
@@ -10,10 +13,10 @@
 	let { onComplete }: Props = $props();
 
 	let currentStep = $state(0);
-	
+
 	const steps = [
 		{
-			title: 'Willkommen bei Empathie-Link',
+			title: 'Willkommen bei Empathy Link',
 			content: `Schön, dass du hier bist! Empathie-Link hilft dir dabei, dich mit dir selbst und anderen Menschen zu verbinden - auch in schwierigen Momenten.`,
 			icon: '👋'
 		},
@@ -25,48 +28,28 @@
 		{
 			title: 'Die 4 Schritte der GFK',
 			content: `
-				<div class="space-y-4">
-					<div class="flex items-start gap-3">
-						<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold text-sm">1</div>
-						<div>
-							<h4 class="font-semibold text-gray-900">Beobachten</h4>
-							<p class="text-gray-600 text-sm">Beschreibe objektiv, was du wahrnimmst, ohne zu bewerten oder zu urteilen.</p>
-						</div>
-					</div>
-					<div class="flex items-start gap-3">
-						<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold text-sm">2</div>
-						<div>
-							<h4 class="font-semibold text-gray-900">Fühlen</h4>
-							<p class="text-gray-600 text-sm">Teile mit, welche Emotionen durch die Beobachtung ausgelöst wurden.</p>
-						</div>
-					</div>
-					<div class="flex items-start gap-3">
-						<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold text-sm">3</div>
-						<div>
-							<h4 class="font-semibold text-gray-900">Bedürfnisse erkennen</h4>
-							<p class="text-gray-600 text-sm">Identifiziere die dahinterliegenden Bedürfnisse, die deine Gefühle verursachen.</p>
-						</div>
-					</div>
-					<div class="flex items-start gap-3">
-						<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold text-sm">4</div>
-						<div>
-							<h4 class="font-semibold text-gray-900">Bitten</h4>
-							<p class="text-gray-600 text-sm">Formuliere eine konkrete, erfüllbare Bitte, die zur Erfüllung deiner Bedürfnisse beiträgt.</p>
-						</div>
-					</div>
-				</div>
+- **Beobachten**
+Beschreibe objektiv, was du wahrnimmst, ohne zu bewerten oder zu urteilen.
+
+- **Fühlen**
+Teile mit, welche Emotionen durch die Beobachtung ausgelöst wurden.
+
+- **Bedürfnisse erkennen**
+Identifiziere die dahinterliegenden Bedürfnisse, die deine Gefühle verursachen.
+
+- **Bitten**
+Formuliere eine konkrete, erfüllbare Bitte, die zur Erfüllung deiner Bedürfnisse beiträgt.
 			`,
 			icon: '🪜'
 		},
 		{
 			title: 'Deine Empathie-Reise beginnt',
 			content: `Mit Empathie-Link kannst du:
-				<ul class="list-disc list-inside space-y-2 mt-4 text-gray-700">
-					<li><strong>Selbstempathie</strong> praktizieren und dich besser verstehen</li>
-					<li><strong>Konflikte</strong> empathisch und konstruktiv lösen</li>
-					<li><strong>Lernen</strong> und deine GFK-Fähigkeiten vertiefen</li>
-					<li><strong>Verbindungen</strong> zu anderen Menschen stärken</li>
-				</ul>`,
+
+- **Selbstempathie** praktizieren und dich besser verstehen
+- **Konflikte** empathisch und konstruktiv lösen
+- **Lernen** und deine GFK-Fähigkeiten vertiefen
+- **Verbindungen** zu anderen Menschen stärken`,
 			icon: '🌱'
 		},
 		{
@@ -75,7 +58,12 @@
 			icon: '🚀'
 		}
 	];
-
+	const formattedSteps = steps.map((step, index) => {
+		return {
+			component: 'onboarding',
+			stepCount: 1
+		};
+	});
 	function nextStep() {
 		if (currentStep < steps.length - 1) {
 			currentStep++;
@@ -83,13 +71,11 @@
 			completeOnboarding();
 		}
 	}
-
 	function prevStep() {
 		if (currentStep > 0) {
 			currentStep--;
 		}
 	}
-
 	function completeOnboarding() {
 		if (onComplete) {
 			onComplete();
@@ -97,65 +83,44 @@
 			goto('/app/dashboard');
 		}
 	}
-
 	function skipOnboarding() {
 		completeOnboarding();
 	}
 </script>
 
-<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-	<Card class="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-		<CardHeader class="text-center">
-			<div class="text-4xl mb-2">{steps[currentStep].icon}</div>
-			<CardTitle class="text-xl font-semibold text-gray-900">
-				{steps[currentStep].title}
-			</CardTitle>
-		</CardHeader>
-		
-		<CardContent class="space-y-6">
-			<div class="text-gray-700 leading-relaxed">
-				{@html steps[currentStep].content}
-			</div>
+<div class="fixed inset-0 z-[1000] flex flex-col justify-between bg-offwhite p-6">
+	<div class="flex justify-center">
+		<LearnStepIndicator
+			topic="onboarding"
+			totalSteps={formattedSteps}
+			totalStepsCount={steps.length}
+			{currentStep}
+			currentCategory={() => 'onboarding'}
+			onPrevStep={() => prevStep()}
+			onNextStep={() => nextStep()}
+			class="w-32"
+		/>
+	</div>
 
-			<!-- Progress indicator -->
-			<div class="flex justify-center space-x-2">
-				{#each steps as _, index}
-					<div 
-						class="w-2 h-2 rounded-full transition-colors {index === currentStep ? 'bg-blue-600' : index < currentStep ? 'bg-blue-300' : 'bg-gray-300'}"
-					></div>
-				{/each}
-			</div>
+	<div class="flex max-w-sm flex-col gap-4">
+		<h3 class="font-bold">
+			{steps[currentStep].title}
+		</h3>
 
-			<!-- Navigation buttons -->
-			<div class="flex justify-between items-center pt-4">
-				<div>
-					{#if currentStep > 0}
-						<Button variant="outline" onclick={prevStep}>
-							Zurück
-						</Button>
-					{:else}
-						<Button variant="ghost" onclick={skipOnboarding} class="text-gray-500">
-							Überspringen
-						</Button>
-					{/if}
-				</div>
+		<div class="marked flex flex-col gap-2">
+			{@html marked(steps[currentStep].content)}
+		</div>
+	</div>
 
-				<div class="text-sm text-gray-500">
-					{currentStep + 1} von {steps.length}
-				</div>
-
-				<div>
-					{#if currentStep < steps.length - 1}
-						<Button onclick={nextStep}>
-							Weiter
-						</Button>
-					{:else}
-						<Button onclick={completeOnboarding} class="bg-blue-600 hover:bg-blue-700">
-							Los geht's!
-						</Button>
-					{/if}
-				</div>
-			</div>
-		</CardContent>
-	</Card>
+	<LearnGotoNextButton
+		onClick={() => {
+			nextStep?.();
+		}}
+		displaySkipButton={true}
+		onSkip={() => {
+			skipOnboarding();
+		}}
+	>
+		Weiter
+	</LearnGotoNextButton>
 </div>
