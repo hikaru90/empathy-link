@@ -258,6 +258,7 @@ export const extractMemories = async (userId: string, locale: string = 'en') => 
 						confidence: aspect.confidence
 					});
 				} catch (error) {
+					// Log error but continue - memory extraction failures should not crash the app
 					console.error('Error creating aspect record:', error);
 				}
 			}
@@ -314,15 +315,8 @@ export const saveTrace = async (
 		const inputTokenCount = result?.usageMetadata?.promptTokenCount;
 		const outputTokenCount = result?.usageMetadata?.candidatesTokenCount;
 
-		// Validate required fields
-		if (!functionName || !message || !module || !chatId || !userId) {
-			console.warn('saveTrace: Missing required fields', {
-				functionName: !!functionName,
-				message: !!message,
-				module: !!module,
-				chatId: !!chatId,
-				userId: !!userId
-			});
+		// Only skip if essential fields are completely missing
+		if (!functionName || !message || !module) {
 			return;
 		}
 
@@ -331,15 +325,14 @@ export const saveTrace = async (
 			message: message.substring(0, 5000), // Limit message length to prevent DB issues
 			response: response?.substring(0, 10000), // Limit response length
 			module: module,
-			chat: chatId,
-			user: userId,
+			chat: chatId || null, // Allow null if chatId is invalid
+			user: userId || null, // Allow null if userId is invalid
 			inputTokens: inputTokenCount || 0,
 			outputTokens: outputTokenCount || 0,
 			systemInstruction: systemInstruction?.substring(0, 10000) // Limit system instruction length
 		});
 	} catch (error) {
-		// Silent failure to prevent cascading errors that could cause logouts
-		// Only log to console if we're on server side (avoid triggering client error logging)
+		// Log error but don't let it propagate - trace failures should never affect core functionality
 		if (typeof window === 'undefined') {
 			console.warn('Failed to save trace (non-critical):', {
 				functionName,

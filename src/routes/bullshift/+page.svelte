@@ -2,8 +2,9 @@
 	import Header from '$lib/components/bullshift/Header.svelte';
 	import Footer from '$lib/components/bullshift/Footer.svelte';
 	import BullshiftChat from '$lib/components/bullshift/BullshiftChat.svelte';
+	import OnboardingWelcome from '$lib/components/OnboardingWelcome.svelte';
 	import type { PageData } from './$types';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	interface Props {
@@ -11,6 +12,23 @@
 	}
 
 	let { data }: Props = $props();
+	let showOnboarding = $state(false);
+
+	const completeOnboarding = () => {
+		showOnboarding = false;
+		if (browser) {
+			localStorage.setItem('bullshiftOnboardingCompleted', 'true');
+		}
+	};
+
+	onMount(() => {
+		if (browser) {
+			const hasCompletedOnboarding = localStorage.getItem('bullshiftOnboardingCompleted');
+			if (!hasCompletedOnboarding) {
+				showOnboarding = true;
+			}
+		}
+	});
 
 	// Cleanup function
 	onDestroy(async () => {
@@ -57,4 +75,8 @@
 		</div>
 	</div>
 	<Footer />
+
+	{#if showOnboarding}
+		<OnboardingWelcome onComplete={completeOnboarding} />
+	{/if}
 </div>

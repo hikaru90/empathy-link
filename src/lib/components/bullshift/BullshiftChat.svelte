@@ -21,6 +21,7 @@
 	import { pb } from '$scripts/pocketbase';
 	import { getLocale } from '$src/paraglide/runtime';
 	import { scroll } from '$store/page';
+	import TypewriterText from '$lib/components/TypewriterText.svelte';
 
 	interface Feeling {
 		id: string;
@@ -59,23 +60,19 @@
 	let isLoading = $state(false);
 	let chatContainer: HTMLDivElement | undefined = $state();
 	let textareaRef: HTMLTextAreaElement | undefined = $state();
-
 	let chatTerminationModalVisible = $state(false);
-
 	let analyzerIsRunning = $state(false);
 	let analyzerFailed = $state(false);
-
 	let memorizerIsRunning = $state(false);
 	let memorizerFailed = $state(false);
-
 	let chatAnalysisModalVisible = $state(false);
-
 	let chatAnalysisId = $state('');
 	let feelings = $state<Feeling[]>([]);
 	let needs = $state<Need[]>([]);
 	let feelingSelectorVisible = $state(false);
 	let needSelectorVisible = $state(false);
 	let errorMessage = $state('');
+	let text1Done = $state(false);
 
 	// Get the current locale reactively
 	const locale = $derived(getLocale());
@@ -96,18 +93,14 @@
 				})
 			});
 			
-			// Handle authentication errors specifically
+			// Handle authentication errors gracefully - do NOT redirect to login
 			if (response.status === 401) {
-				const data = await response.json();
-				console.log('Authentication failed, redirecting to login:', data);
+				const data = await response.json().catch(() => ({ error: 'Authentication failed' }));
+				console.log('API authentication failed, but keeping user logged in:', data);
 				
-				// Save current message for retry after login
-				localStorage.setItem('pendingMessage', userMessage);
-				localStorage.setItem('pendingChatId', chatId);
-				
-				// Redirect to login with return path
-				const currentPath = window.location.pathname + window.location.search;
-				window.location.href = `/app/auth/login?redirect=${encodeURIComponent(currentPath)}`;
+				// Set error message for user instead of redirecting
+				errorMessage = 'Deine Nachricht konnte nicht gesendet werden. Bitte versuche es erneut.';
+				isLoading = false;
 				return;
 			}
 			
@@ -266,6 +259,13 @@
 			body: JSON.stringify({ locale: locale, chatId })
 		});
 
+		// Handle authentication errors gracefully - do NOT redirect to login
+		if (response.status === 401) {
+			const data = await response.json().catch(() => ({ error: 'Authentication failed' }));
+			console.log('AnalyzeChat authentication failed, but keeping user logged in:', data);
+			throw new Error('Chat-Analyse fehlgeschlagen: Authentifizierung nicht möglich. Bitte versuche es erneut.');
+		}
+
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
@@ -292,6 +292,13 @@
 			},
 			body: JSON.stringify({ userId: user.id })
 		});
+
+		// Handle authentication errors gracefully - do NOT redirect to login
+		if (response.status === 401) {
+			const data = await response.json().catch(() => ({ error: 'Authentication failed' }));
+			console.log('ExtractMemories authentication failed, but keeping user logged in:', data);
+			throw new Error('Erinnerungen konnten nicht extrahiert werden: Authentifizierung fehlgeschlagen.');
+		}
 
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
@@ -355,6 +362,7 @@
 	};
 
 	onMount(async () => {
+		text1Done = false;
 		scrollDown();
 
 		getFeelings();
@@ -437,12 +445,15 @@
 	<div class="">
 		<div bind:this={chatContainer} class="messages rounded-lg pb-52 pt-4">
 			<h1 class="mb-3 text-2xl font-light">
-				Hi <span class="capitalize">{user?.firstName}</span>, ich bin hier, um den ganzen Bullshit
-				in deinem Leben zu durchbrechen.
-			</h1>
+				<TypewriterText text="Hi {String(user?.firstName).charAt(0).toUpperCase() + String(user?.firstName).slice(1)}, ich bin hier, um den ganzen Bullshit in deinem Leben zu durchbrechen." onComplete={() => {
+					text1Done = true;
+				}} />
+				</h1>
 			<h2 class="mb-6 text-2xl font-light text-black/40">
-				Beschreib mir eine Situation, und ich helfe dir, sie zu verarbeiten. Vertrau mir – wir
-				schaffen das gemeinsam!
+				{#if text1Done}
+					<TypewriterText text="Beschreib mir eine Situation, und ich helfe dir, sie zu verarbeiten. Vertrau mir – wir
+					schaffen das gemeinsam!" />
+				{/if}
 			</h2>
 			{#each history as message}
 				<!-- {JSON.stringify(message)} -->

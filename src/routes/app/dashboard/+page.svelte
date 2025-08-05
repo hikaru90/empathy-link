@@ -5,9 +5,11 @@
 	import FightOverview from '$lib/components/FightOverview.svelte';
 	import FeelingsOverview from '$lib/components/FeelingsOverview.svelte';
 	import NeedsOverview from '$lib/components/NeedsOverview.svelte';
+	import OnboardingWelcome from '$lib/components/OnboardingWelcome.svelte';
 	import { startDate, endDate } from '$store/dashboard';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 
 	interface Props {
 		data: App.Locals;
@@ -15,6 +17,7 @@
 
 	let { data }: Props = $props();
 	let popoverOpen = $state(false);
+	let showOnboarding = $state(false);
 
 	const updateStore = (payload) => {
 		// console.log('updateStore',payload.detail);
@@ -22,7 +25,20 @@
 		endDate.set(payload.detail.end);
 	};
 
+	const completeOnboarding = () => {
+		showOnboarding = false;
+		if (browser) {
+			localStorage.setItem('onboardingCompleted', 'true');
+		}
+	};
+
 	onMount(() => {
+		if (browser) {
+			const hasCompletedOnboarding = localStorage.getItem('onboardingCompleted');
+			if (!hasCompletedOnboarding) {
+				showOnboarding = true;
+			}
+		}
 	});
 </script>
 
@@ -67,4 +83,8 @@
 				</div>
 			</AppBottomMenu>
 		</div>
+
+		{#if showOnboarding}
+			<OnboardingWelcome onComplete={completeOnboarding} />
+		{/if}
 	</div>

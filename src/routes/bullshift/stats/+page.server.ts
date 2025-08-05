@@ -5,6 +5,16 @@ import { pb } from '$scripts/pocketbase';
 export const load: PageServerLoad = async ({ locals, params }) => {
     const user = locals.user;
 
+    // Check if user is authenticated before accessing user.id
+    if (!user?.id) {
+        console.error('User not authenticated in stats page load');
+        return {
+            error: 'User not authenticated',
+            analyses: [],
+            memories: []
+        };
+    }
+
     try {
         const memories = await pb.collection('memories').getFullList({
             filter: `user = "${user.id}"`,

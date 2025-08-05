@@ -84,13 +84,15 @@ const first: Handle = async ({ event, resolve }) => {
 		const error = err as { status?: number; message?: string };
 		console.log('Token refresh failed:', error.message || 'Unknown error');
 
-		// Only clear auth store if the error indicates invalid/expired token
-		if (error.status === 401 || error.status === 403) {
-			console.log('Clearing auth store due to invalid token');
+		// Only clear auth store if the error clearly indicates invalid/expired token
+		// Be more conservative - don't clear on network errors or server issues
+		if (error.status === 401 && error.message?.includes('invalid') || error.message?.includes('expired')) {
+			console.log('Clearing auth store due to invalid/expired token');
 			event.locals.pb.authStore.clear();
 		} else {
-			// For other errors (network issues, etc.), keep the auth state
-			console.log('Keeping auth state despite refresh error (non-auth error)');
+			// For network errors, server issues, or unclear auth errors, keep the auth state
+			// This prevents users from being logged out due to temporary server issues
+			console.log('Keeping auth state despite refresh error (likely network/server issue)');
 		}
 	}
 
@@ -131,7 +133,7 @@ const first: Handle = async ({ event, resolve }) => {
 	// Update the cookie with current auth state
 	try {
 		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie({
-			secure: false // Set to true in production
+			secure: process.env.NODE_ENV === 'production' // Set to true in production
 		}));
 	} catch (cookieError) {
 		console.error('Failed to set auth cookie:', cookieError);
