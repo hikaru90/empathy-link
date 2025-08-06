@@ -33,6 +33,7 @@ test.describe('Bullshift Chat Flow', () => {
   test.beforeEach(async ({ page }) => {
     await authenticateUser(page);
     await page.waitForSelector('.messages', { timeout: 10000 });
+    await page.getByRole('button', { name: 'Überspringen' }).click();
   });
 
   test('should send and receive messages', async ({ page }) => {
