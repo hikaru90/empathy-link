@@ -10,6 +10,7 @@ import { paraglideMiddleware } from '$src/paraglide/server';
 const client = 'empathy_link'
 
 const first: Handle = async ({ event, resolve }) => {
+	console.log('::hooks.server handle ', event.url.pathname);
 	if (
 		event.url.pathname.startsWith('/.well-known/appspecific/com.chrome.devtools')
 	) {
@@ -29,6 +30,7 @@ const first: Handle = async ({ event, resolve }) => {
 			maxAge: 60 * 60 * 24 * 7 // 1 week
 		});
 	}
+	console.log('sessionToken',sessionToken);
 	if (!posthogUserId) {
 		posthogUserId = uuidv4();
 		event.cookies.set(`${client}_user_id`, posthogUserId, {
@@ -48,11 +50,8 @@ const first: Handle = async ({ event, resolve }) => {
 	event.locals.sessionToken = sessionToken;
 	event.locals.userId = posthogUserId;
 
-	console.log('hooks server handle');
 	const localeCookie = event.cookies.get('locale');
 	const langHeaders = event.request.headers.get('accept-language')?.split(',')[0].split('-')[0];
-
-	console.log('hooks:localeCookie', localeCookie);
 
 	if (localeCookie) {
 		event.locals.locale = localeCookie
@@ -70,24 +69,26 @@ const first: Handle = async ({ event, resolve }) => {
 	// Load authentication state from cookies
 	const cookieHeader = event.request.headers.get('cookie') || '';
 	event.locals.pb.authStore.loadFromCookie(cookieHeader);
+	console.log('↪ cookieHeader',cookieHeader);
 
 	// Track authentication state before refresh attempt
 	const wasAuthenticated = event.locals.pb.authStore.isValid;
+	console.log('↪ wasAuthenticated',wasAuthenticated);
 
 	try {
 		// Attempt to refresh token if we have a valid auth state
 		if (event.locals.pb.authStore.isValid) {
 			await event.locals.pb.collection('users').authRefresh();
-			console.log('Token refresh successful');
+			console.log('↪- Token refresh successful');
 		}
 	} catch (err) {
 		const error = err as { status?: number; message?: string };
-		console.log('Token refresh failed:', error.message || 'Unknown error');
+		console.log('↪-Token refresh failed:', error.message || 'Unknown error');
 
 		// NEVER clear auth store automatically - only explicit logout should do this
 		// Token refresh failures are temporary issues and should not log users out
 		// The auth state will be preserved and user remains logged in
-		console.log('Token refresh failed, but keeping user logged in (will retry next request)');
+		console.log('↪- Token refresh failed, but keeping user logged in (will retry next request)');
 	}
 
 	// Set the user in the locals object - preserve existing user if authStore.model is corrupted
@@ -105,9 +106,9 @@ const first: Handle = async ({ event, resolve }) => {
 	// Log authentication state changes
 	const isNowAuthenticated = event.locals.pb.authStore.isValid;
 	if (wasAuthenticated && !isNowAuthenticated) {
-		console.log('User was logged out during token refresh');
+		console.log('↪- User was logged out during token refresh');
 	} else if (!wasAuthenticated && isNowAuthenticated) {
-		console.log('User authentication state restored');
+		console.log('↪- User authentication state restored');
 	}
 
 	// Note: API route protection is handled at the individual endpoint level
@@ -116,7 +117,7 @@ const first: Handle = async ({ event, resolve }) => {
 	// Protect learning routes - require authentication
 	if (event.url.pathname.startsWith('/bullshift/learn')) {
 		if (!event.locals.pb.authStore.isValid) {
-			console.log(`Blocking unauthorized learning route access: ${event.url.pathname}`);
+			console.log(`↪- Blocking unauthorized learning route access: ${event.url.pathname}`);
 			throw redirect(303, '/app/auth/login');
 		}
 	}
@@ -130,7 +131,7 @@ const first: Handle = async ({ event, resolve }) => {
 			secure: process.env.NODE_ENV === 'production' // Set to true in production
 		}));
 	} catch (cookieError) {
-		console.error('Failed to set auth cookie:', cookieError);
+		console.error('↪- Failed to set auth cookie:', cookieError);
 	}
 
 	return response;
