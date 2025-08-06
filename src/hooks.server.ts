@@ -114,8 +114,10 @@ const first: Handle = async ({ event, resolve }) => {
 	// Note: API route protection is handled at the individual endpoint level
 	// We don't block API routes here to allow token refresh to work properly
 
+
+
 	// Protect learning routes - require authentication
-	if (event.url.pathname.startsWith('/bullshift/learn')) {
+	if (event.url.pathname.startsWith('/bullshift')) {
 		if (!event.locals.pb.authStore.isValid) {
 			console.log(`↪- Blocking unauthorized learning route access: ${event.url.pathname}`);
 			throw redirect(303, '/app/auth/login');
