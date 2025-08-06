@@ -158,10 +158,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		const { user, history, systemInstruction } = await request.json();
 
-		if (!user?.id) {
-			return json({ error: 'User not authenticated' }, { status: 401 });
-		}
-
 		try {
 			let chatInDb;
 

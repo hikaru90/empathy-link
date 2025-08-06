@@ -19,10 +19,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { message, history, chatId } = await request.json();
 	const user = locals.user;
 
-	if (!user?.id) {
-		return json({ error: 'User not authenticated' }, { status: 401 });
-	}
-
 	try {
 		let chat = selfempathyChats.get(chatId);
     chat = removeTimestamp(chat)

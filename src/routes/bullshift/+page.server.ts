@@ -8,15 +8,6 @@ export const load: PageServerLoad = async ({ locals }) => {
     const user = locals.user;
     const locale = locals.locale;
 
-    if (!user?.id) {
-
-        throw redirect(303, '/app/auth/login');
-
-        return {
-            error: 'User not authenticated'
-        };
-    }
-
     try {
         console.log('initChat from pageServerLoad');
         let chatRecord = undefined;

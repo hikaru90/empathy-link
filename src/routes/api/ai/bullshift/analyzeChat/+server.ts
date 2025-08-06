@@ -110,11 +110,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			authStoreValid: locals.pb?.authStore?.isValid
 		});
 
-		if (!user?.id) {
-			console.log('analyzeChat: User not authenticated - user:', user);
-			return json({ error: 'User not authenticated' }, { status: 401 });
-		}
-
 		const analysis = await analyzeChat(chatId, user.id, locale);
 		console.log('analysis', analysis);
 
