@@ -74,6 +74,17 @@ const first: Handle = async ({ event, resolve }) => {
 	// Track authentication state before refresh attempt
 	const wasAuthenticated = event.locals.pb.authStore.isValid;
 	console.log('↪ wasAuthenticated',wasAuthenticated);
+	
+	// Enhanced debugging for auth issues
+	if (!wasAuthenticated) {
+		console.log('↪ AUTH DEBUG: No valid auth state found');
+		console.log('↪ AUTH DEBUG: Auth token exists:', !!event.locals.pb.authStore.token);
+		console.log('↪ AUTH DEBUG: Auth model exists:', !!event.locals.pb.authStore.model);
+		console.log('↪ AUTH DEBUG: Cookie contains pb_auth:', cookieHeader.includes('pb_auth'));
+		console.log('↪ AUTH DEBUG: Full cookie header length:', cookieHeader.length);
+	} else {
+		console.log('↪ AUTH DEBUG: Valid auth state found, user ID:', event.locals.pb.authStore.model?.id);
+	}
 
 	try {
 		// Attempt to refresh token if we have a valid auth state
@@ -129,9 +140,13 @@ const first: Handle = async ({ event, resolve }) => {
 
 	// Update the cookie with current auth state
 	try {
-		response.headers.append('set-cookie', event.locals.pb.authStore.exportToCookie({
-			secure: process.env.NODE_ENV === 'production' // Set to true in production
-		}));
+		const cookieValue = event.locals.pb.authStore.exportToCookie({
+			secure: false // Temporarily disabled for debugging auth issues
+		});
+		console.log('↪ COOKIE DEBUG: Exporting cookie, auth valid:', event.locals.pb.authStore.isValid);
+		console.log('↪ COOKIE DEBUG: Cookie secure setting: false (temporarily disabled)');
+		console.log('↪ COOKIE DEBUG: Cookie value length:', cookieValue.length);
+		response.headers.append('set-cookie', cookieValue);
 	} catch (cookieError) {
 		console.error('↪- Failed to set auth cookie:', cookieError);
 	}
