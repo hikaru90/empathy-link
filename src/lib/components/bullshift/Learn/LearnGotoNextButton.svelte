@@ -57,7 +57,7 @@
 	<div class="flex flex-row gap-2 w-full">
 		{#if displaySkipButton}
 		<Button
-		onclick={onPrev}
+		onclick={onSkip}
 		class="flex h-10 items-center justify-between gap-2 rounded-full bg-white py-3 pl-4 pr-2 font-medium text-white"
 	>
 	<span class="text-black">Überspringen</span>

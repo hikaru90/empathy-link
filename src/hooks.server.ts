@@ -84,16 +84,10 @@ const first: Handle = async ({ event, resolve }) => {
 		const error = err as { status?: number; message?: string };
 		console.log('Token refresh failed:', error.message || 'Unknown error');
 
-		// Only clear auth store if the error clearly indicates invalid/expired token
-		// Be more conservative - don't clear on network errors or server issues
-		if (error.status === 401 && error.message?.includes('invalid') || error.message?.includes('expired')) {
-			console.log('Clearing auth store due to invalid/expired token');
-			event.locals.pb.authStore.clear();
-		} else {
-			// For network errors, server issues, or unclear auth errors, keep the auth state
-			// This prevents users from being logged out due to temporary server issues
-			console.log('Keeping auth state despite refresh error (likely network/server issue)');
-		}
+		// NEVER clear auth store automatically - only explicit logout should do this
+		// Token refresh failures are temporary issues and should not log users out
+		// The auth state will be preserved and user remains logged in
+		console.log('Token refresh failed, but keeping user logged in (will retry next request)');
 	}
 
 	// Set the user in the locals object - preserve existing user if authStore.model is corrupted

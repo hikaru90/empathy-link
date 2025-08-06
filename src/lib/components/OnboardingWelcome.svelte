@@ -18,7 +18,8 @@
 		{
 			title: 'Willkommen bei Empathy Link',
 			content: `Schön, dass du hier bist! Empathie-Link hilft dir dabei, dich mit dir selbst und anderen Menschen zu verbinden - auch in schwierigen Momenten.`,
-			icon: '👋'
+			icon: '👋',
+			image: 'welcomeColor.svg'
 		},
 		{
 			title: 'Was ist Gewaltfreie Kommunikation?',
@@ -80,10 +81,11 @@ Formuliere eine konkrete, erfüllbare Bitte, die zur Erfüllung deiner Bedürfni
 		if (onComplete) {
 			onComplete();
 		} else {
-			goto('/app/dashboard');
+			goto('/bullshift');
 		}
 	}
 	function skipOnboarding() {
+		console.log('skipOnboarding');
 		completeOnboarding();
 	}
 </script>
@@ -103,6 +105,7 @@ Formuliere eine konkrete, erfüllbare Bitte, die zur Erfüllung deiner Bedürfni
 	</div>
 
 	<div class="flex max-w-sm flex-col gap-4">
+		<img src={`/diagrams/${steps[currentStep].image}`} alt={steps[currentStep].title} class="h-40" />
 		<h3 class="font-bold">
 			{steps[currentStep].title}
 		</h3>

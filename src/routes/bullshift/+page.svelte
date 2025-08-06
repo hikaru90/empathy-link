@@ -23,7 +23,7 @@
 
 	onMount(() => {
 		if (browser) {
-			const hasCompletedOnboarding = localStorage.getItem('bullshiftOnboardingCompleted');
+			const hasCompletedOnboarding = (localStorage.getItem('bullshiftOnboardingCompleted') === 'true');
 			if (!hasCompletedOnboarding) {
 				showOnboarding = true;
 			}
@@ -53,13 +53,11 @@
 
 <div class="">
 	<Header user={data.user} />
-	<div class="max-container py-16 ">
+	<div class="max-container py-16">
 		<div class="flex h-full w-full flex-col">
 			{#if data.error}
 				<p class="text-red-500">{data.error}</p>
-			
-				{:else if data.chatId && data.systemPrompt}
-			 
+			{:else if data.chatId && data.systemPrompt}
 				<BullshiftChat
 					class="relative"
 					chatId={data.chatId}
@@ -67,7 +65,7 @@
 					systemInstruction={data.systemPrompt}
 					user={data.user}
 				/>
-				{:else}
+			{:else}
 				<div>
 					Something went wrong. chatId: {!!data.chatId}, systemPrompt: {!!data.systemPrompt}
 				</div>
@@ -75,7 +73,6 @@
 		</div>
 	</div>
 	<Footer />
-
 	{#if showOnboarding}
 		<OnboardingWelcome onComplete={completeOnboarding} />
 	{/if}
