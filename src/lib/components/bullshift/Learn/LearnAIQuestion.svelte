@@ -374,7 +374,7 @@
 		<!-- AI Response -->
 		{#if hasSubmitted && aiResponse}
 		<div class="flex-grow flex justify-center items-center">
-			<div class=" rounded-lg p-4 max-w-sm max-h-86 overflow-y-auto">
+			<div class=" rounded-lg p-4 max-w-sm max-h-80 overflow-y-auto">
 				{@html marked(aiResponse)}
 			</div>
 		</div>
