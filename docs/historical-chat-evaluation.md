@@ -52,13 +52,13 @@ You'll need to create a `chat_evaluations` collection in PocketBase with these f
 
 ### Accessing the Evaluation Backend
 
-1. **Via Navigation Menu:**
+1. **Via Direct URL (Admin Only):**
    - Navigate to `/bullshift/backend/evals` in your browser
-   - Or use the "Evaluations" tab in the Bullshift footer navigation
+   - This is an admin-only function, not available in regular user navigation
 
-2. **Via User Menu:**
-   - Click the user icon in the top-right corner of any Bullshift page
-   - Select "Chat Evaluations" from the dropdown menu
+2. **Via Admin Backend:**
+   - Access the main backend at `/bullshift/backend`
+   - Navigate to the evaluations section
 
 ### Running Historical Evaluations
 

@@ -123,7 +123,7 @@
 	});
 
 	// Colors for the donut chart (green for completed, light gray for remaining)
-	const donutColors = ['#22c55e', '#e5e7eb'];
+	const donutColors = ['#0f766e', '#e5e7eb'];
 </script>
 
 <style>
@@ -149,7 +149,7 @@
 
 		<!-- Progress Summary -->
 		{#if hasCompletions()}
-			<div class="mb-8 rounded-xl bg-white px-4 py-5 shadow-lg shadow-green-800/10">
+			<div class="mb-8 rounded-xl bg-white/80 border border-white/20 px-4 py-5 shadow-lg shadow-green-800/5">
 				<div class="flex items-center justify-between">
 					<div class="flex items-center gap-3">
 						<PercentageDonut
@@ -193,8 +193,8 @@
 									<div class="flex items-center gap-2 text-xs">
 										{#if categoryCompletion.completed === categoryCompletion.total}
 											<div class="flex items-center gap-1 rounded-full bg-green-100 px-3 py-1">
-												<BadgeCheck class="-ml-2 size-4 text-green-600" />
-												<span class="font-medium text-green-700">Abgeschlossen</span>
+												<BadgeCheck class="-ml-2 size-4 text-teal-600" />
+												<span class="font-medium text-teal-700">Abgeschlossen</span>
 											</div>
 										{:else}
 											<div class="flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1">
@@ -225,7 +225,7 @@
 										<!-- Completion Badge -->
 										{#if isTopicCompleted(topic.id)}
 											<div
-												class="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white px-2 py-1 text-xs text-green-600 z-20"
+												class="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white px-2 py-1 text-xs text-teal-600 z-20"
 											>
 												<BadgeCheck class="size-3" />
 												<span> fertig </span>
@@ -233,8 +233,8 @@
 											<!-- Completion Ribbon -->
 										{/if}
 
-										<h4 class="transition duration-500 delay-200 relative z-10 text-xl font-light {focusedElements[categoryIndex] === topicIndex ? 'text-black' : 'text-black/50'}">
-											<span>{topic.expand?.currentVersion?.titleDE.split('||')[0]}</span>
+										<h4 class="transition duration-500 delay-200 relative z-10 text-xl font-light {focusedElements[categoryIndex] === topicIndex ? '' : ''}">
+											<span class="font-bold">{topic.expand?.currentVersion?.titleDE.split('||')[0]}</span>
 											<span>{topic.expand?.currentVersion?.titleDE.split('||')[1]}</span>
 										</h4>
 										<img

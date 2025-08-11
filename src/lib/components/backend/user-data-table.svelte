@@ -14,6 +14,9 @@
 		analysisCount: number;
 		traceCount: number;
 		errorCount: number;
+		learnSessionCount: number;
+		completedSessionCount: number;
+		startedSessionCount: number;
 		totalTokens: number;
 		avgSentimentPolarity: number;
 		avgEmpathyRate: number;
@@ -70,6 +73,8 @@
 					<Table.Head class="font-medium text-right">Analyses</Table.Head>
 					<Table.Head class="font-medium text-right">Traces</Table.Head>
 					<Table.Head class="font-medium text-right">Errors</Table.Head>
+					<Table.Head class="font-medium text-right">Sessions</Table.Head>
+					<Table.Head class="font-medium text-right">Completed</Table.Head>
 					<Table.Head class="font-medium text-right">Total Tokens</Table.Head>
 					<Table.Head class="font-medium text-right">Avg Sentiment</Table.Head>
 					<Table.Head class="font-medium text-right">Avg Empathy</Table.Head>
@@ -102,6 +107,12 @@
 								<span class="text-red-600">{user.errorCount}</span>
 							</Table.Cell>
 							<Table.Cell class="text-right">
+								<span class="text-indigo-600">{user.learnSessionCount}</span>
+							</Table.Cell>
+							<Table.Cell class="text-right">
+								<span class="text-green-600">{user.completedSessionCount}</span>
+							</Table.Cell>
+							<Table.Cell class="text-right">
 								{#if user.totalTokens > 0}
 									<span class="text-purple-600">{user.totalTokens.toLocaleString()}</span>
 								{:else}
@@ -129,7 +140,7 @@
 					{/each}
 				{:else}
 					<Table.Row>
-						<Table.Cell colspan="10" class="text-center text-muted-foreground py-8">
+						<Table.Cell colspan="12" class="text-center text-muted-foreground py-8">
 							{#if !data || data.length === 0}
 								No users found
 							{:else}

@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         };
 
         // Fetch data with pagination and limits to avoid auto-cancellation
-        const [users, chats, analyses, errors, traces] = await Promise.all([
+        const [users, chats, analyses, errors, traces, learnSessions] = await Promise.all([
             retryRequest(() => pb.collection('users').getList(1, 500, {
                 sort: '-created'
             })),
@@ -45,6 +45,10 @@ export const load: PageServerLoad = async ({ locals }) => {
             retryRequest(() => pb.collection('traces').getList(1, 1000, {
                 sort: '-created',
                 fields: 'id,user,chat,functionName,module,inputTokens,outputTokens,created'
+            })),
+            retryRequest(() => pb.collection('learnSessions').getList(1, 1000, {
+                sort: '-created',
+                fields: 'id,user,topic,topicVersion,currentPage,completed,completedAt,created,updated'
             }))
         ]);
 
@@ -54,6 +58,9 @@ export const load: PageServerLoad = async ({ locals }) => {
         const totalAnalyses = analyses.totalItems;
         const totalErrors = errors.totalItems;
         const totalTraces = traces.totalItems;
+        const totalLearnSessions = learnSessions.totalItems;
+        const completedLearnSessions = learnSessions.items.filter(session => session.completed).length;
+        const startedLearnSessions = learnSessions.items.filter(session => !session.completed).length;
 
         // Module usage statistics
         const moduleStats = chats.items.reduce((acc, chat) => {
@@ -80,6 +87,9 @@ export const load: PageServerLoad = async ({ locals }) => {
             const userAnalyses = analyses.items.filter(analysis => analysis.user === user.id);
             const userErrors = errors.items.filter(error => error.user === user.id);
             const userTraces = traces.items.filter(trace => trace.user === user.id);
+            const userLearnSessions = learnSessions.items.filter(session => session.user === user.id);
+            const userCompletedSessions = userLearnSessions.filter(session => session.completed);
+            const userStartedSessions = userLearnSessions.filter(session => !session.completed);
 
             // Module breakdown for this user
             const userModuleStats = userChats.reduce((acc, chat) => {
@@ -114,6 +124,9 @@ export const load: PageServerLoad = async ({ locals }) => {
                 analysisCount: userAnalyses.length,
                 errorCount: userErrors.length,
                 traceCount: userTraces.length,
+                learnSessionCount: userLearnSessions.length,
+                completedSessionCount: userCompletedSessions.length,
+                startedSessionCount: userStartedSessions.length,
                 moduleStats: userModuleStats,
                 avgSentimentPolarity: Math.round(avgSentimentPolarity * 100) / 100,
                 avgEmpathyRate: Math.round(avgEmpathyRate * 100) / 100,
@@ -135,6 +148,8 @@ export const load: PageServerLoad = async ({ locals }) => {
         const recentAnalyses = analyses.items.filter(analysis => new Date(analysis.created) > thirtyDaysAgo).length;
         const recentErrors = errors.items.filter(error => new Date(error.created) > thirtyDaysAgo).length;
         const recentTraces = traces.items.filter(trace => new Date(trace.created) > thirtyDaysAgo).length;
+        const recentLearnSessions = learnSessions.items.filter(session => new Date(session.created) > thirtyDaysAgo).length;
+        const recentCompletedSessions = learnSessions.items.filter(session => session.completed && new Date(session.completedAt || session.created) > thirtyDaysAgo).length;
 
         return {
             stats: {
@@ -143,6 +158,9 @@ export const load: PageServerLoad = async ({ locals }) => {
                 totalAnalyses,
                 totalErrors,
                 totalTraces,
+                totalLearnSessions,
+                completedLearnSessions,
+                startedLearnSessions,
                 moduleStats,
                 functionStats,
                 tokenUsage: {
@@ -154,7 +172,9 @@ export const load: PageServerLoad = async ({ locals }) => {
                     chats: recentChats,
                     analyses: recentAnalyses,
                     errors: recentErrors,
-                    traces: recentTraces
+                    traces: recentTraces,
+                    learnSessions: recentLearnSessions,
+                    completedSessions: recentCompletedSessions
                 }
             },
             userStats

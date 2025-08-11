@@ -31,8 +31,9 @@
 	let showDashboard = $state(false);
 
 	async function runEvaluations() {
+		console.log('runEvaluations - testing single chat');
 		if (data.unevaluatedChats.length === 0) {
-			alert('No chats to evaluate!');
+			alert('No chats with conversation history available for evaluation! Make sure you have some completed chat conversations first.');
 			return;
 		}
 
@@ -42,67 +43,53 @@
 		evaluationErrors = [];
 
 		try {
-			const batchSize = 3; // Smaller batch size for backend processing
-			const totalChats = data.unevaluatedChats.length;
+			// Get just the first chat for testing
+			const testChat = data.unevaluatedChats[0];
+			console.log('Testing evaluation with chat:', testChat.id);
 
-			for (let i = 0; i < totalChats; i += batchSize) {
-				const batch = data.unevaluatedChats.slice(i, i + batchSize);
+			evaluationProgress = 50; // Show some progress
 
-				// Update progress
-				evaluationProgress = Math.round((i / totalChats) * 100);
+			const response = await fetch('/api/ai/evaluate-historical-chats', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					chatIds: [testChat.id],
+					batchSize: 1
+				})
+			});
 
-				// Process batch
-				await Promise.all(
-					batch.map(async (chat) => {
-						try {
-							const response = await fetch('/api/ai/evaluate-historical-chats', {
-								method: 'POST',
-								headers: {
-									'Content-Type': 'application/json'
-								},
-								body: JSON.stringify({
-									chatIds: [chat.id],
-									batchSize: 1
-								})
-							});
+			if (!response.ok) {
+				const errorText = await response.text();
+				throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+			}
 
-							if (!response.ok) {
-								throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-							}
+			const result = await response.json();
+			console.log('API response for test chat', testChat.id, ':', result);
 
-							const result = await response.json();
-
-							if (result.success && result.results.length > 0) {
-								evaluationResults.push({
-									chatId: chat.id,
-									evaluation: result.results[0].evaluation
-								});
-							} else {
-								throw new Error('API returned unsuccessful result');
-							}
-						} catch (error: any) {
-							console.error(`Error evaluating chat ${chat.id}:`, error);
-							evaluationErrors.push({
-								chatId: chat.id,
-								error: error.message
-							});
-						}
-					})
-				);
-
-				// Add delay between batches
-				if (i + batchSize < totalChats) {
-					await new Promise((resolve) => setTimeout(resolve, 2000));
-				}
+			if (result.success && result.results && result.results.length > 0) {
+				evaluationResults.push({
+					chatId: testChat.id,
+					evaluation: result.results[0].evaluation
+				});
+				console.log('Successfully evaluated test chat!');
+			} else {
+				console.error('API response details:', result);
+				throw new Error(`API returned unsuccessful result: ${JSON.stringify(result)}`);
 			}
 
 			evaluationProgress = 100;
+			
+			// Don't reload the page automatically for testing
+			console.log('Test evaluation completed successfully!');
 
-			// Refresh the page data
-			window.location.reload();
 		} catch (error: any) {
-			console.error('Evaluation failed:', error);
-			alert('Evaluation failed: ' + error.message);
+			console.error('Test evaluation failed:', error);
+			evaluationErrors.push({
+				chatId: data.unevaluatedChats[0]?.id || 'unknown',
+				error: error.message
+			});
 		} finally {
 			isEvaluating = false;
 		}
@@ -190,25 +177,25 @@
 			</CardHeader>
 			<CardContent class="space-y-4">
 				<div class="flex items-center justify-between">
-					<div>
-						<p class="text-sm font-medium">Chats to evaluate: {data.stats.unevaluated}</p>
+					<div class="">
+						<p class="text-sm font-medium">Test Mode: Will evaluate 1 chat</p>
 						<p class="text-xs text-muted-foreground">
-							Estimated time: {Math.ceil(data.stats.unevaluated / 3) * 2} seconds
+							Testing evaluation on first available chat with conversation history ({data.unevaluatedChats.length} evaluable chats available)
 						</p>
 					</div>
-					<Button
-						onclick={runEvaluations}
-						disabled={isEvaluating || data.stats.unevaluated === 0 || !data.collectionExists}
-						class="min-w-[120px]"
+					<button
+						onclick={() => runEvaluations()}
+						disabled={isEvaluating || data.unevaluatedChats.length === 0}
+						class="flex items-center justify-center rounded-full border border-white/20 bg-offwhite px-3 py-1 shadow-md shadow-black/5 min-w-[120px] hover:bg-white/50 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{#if isEvaluating}
 							<RefreshCw class="mr-2 h-4 w-4 animate-spin" />
-							Evaluating...
+							Testing...
 						{:else}
 							<Play class="mr-2 h-4 w-4" />
-							Start Evaluation
+							Test Evaluation
 						{/if}
-					</Button>
+					</button>
 				</div>
 
 				{#if !data.collectionExists}
@@ -277,7 +264,7 @@
 
 		<!-- Dashboard Toggle -->
 		<div class="mb-6">
-			<Button onclick={toggleDashboard} variant="outline" class="w-full md:w-auto">
+			<Button onclick={() => toggleDashboard()} variant="outline" class="w-full md:w-auto">
 				{showDashboard ? 'Hide Dashboard' : 'Show Evaluation Dashboard'}
 			</Button>
 		</div>

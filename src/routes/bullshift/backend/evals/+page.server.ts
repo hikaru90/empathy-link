@@ -21,12 +21,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 		let evaluations: any[] = [];
 		try {
 			evaluatedChats = await pb.collection('chatEvals').getFullList({
-				filter: `userId="${user.id}"`,
 				fields: 'chatId'
 			});
+			console.log('evaluatedChats', evaluatedChats);
 			
 			evaluations = await pb.collection('chatEvals').getFullList({
-				filter: `userId="${user.id}"`,
 				sort: '-created',
 				expand: 'chatId'
 			});
@@ -37,8 +36,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 		const evaluatedChatIds = new Set(evaluatedChats.map(e => e.chatId));
 
-		// Filter out already evaluated chats
-		const unevaluatedChats = chats.filter(chat => !evaluatedChatIds.has(chat.id));
+		// Filter out already evaluated chats and chats without history
+		const unevaluatedChats = chats.filter(chat => 
+			!evaluatedChatIds.has(chat.id) && 
+			chat.history && 
+			Array.isArray(chat.history) && 
+			chat.history.length > 0
+		);
 
 		return {
 			chats: chats,

@@ -44,7 +44,7 @@
 				</div>
 
 				<!-- Overview Statistics -->
-				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
 					<Card class="bg-offwhite border-white/20 shadow-md shadow-black/5">
 						<CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
 							<CardTitle class="text-sm font-medium">Total Users</CardTitle>
@@ -126,6 +126,40 @@
 							<div class="text-2xl font-bold">{data.stats.totalErrors}</div>
 							<p class="text-xs text-muted-foreground">
 								+{data.stats.recentActivity.errors} this month
+							</p>
+						</CardContent>
+					</Card>
+
+					<Card class="bg-offwhite border-white/20 shadow-md shadow-black/5">
+						<CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+							<CardTitle class="text-sm font-medium">Learn Sessions</CardTitle>
+							<div class="h-4 w-4 text-muted-foreground">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+								</svg>
+							</div>
+						</CardHeader>
+						<CardContent>
+							<div class="text-2xl font-bold">{data.stats.totalLearnSessions}</div>
+							<p class="text-xs text-muted-foreground">
+								+{data.stats.recentActivity.learnSessions} this month
+							</p>
+						</CardContent>
+					</Card>
+
+					<Card class="bg-offwhite border-white/20 shadow-md shadow-black/5">
+						<CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+							<CardTitle class="text-sm font-medium">Completed</CardTitle>
+							<div class="h-4 w-4 text-muted-foreground">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+								</svg>
+							</div>
+						</CardHeader>
+						<CardContent>
+							<div class="text-2xl font-bold text-green-600">{data.stats.completedLearnSessions}</div>
+							<p class="text-xs text-muted-foreground">
+								+{data.stats.recentActivity.completedSessions} this month
 							</p>
 						</CardContent>
 					</Card>

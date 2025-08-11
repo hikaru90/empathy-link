@@ -151,6 +151,18 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 		const response = result.text;
 		const responseJson = JSON.parse(response || '{}');
 
+		// Save trace for token usage tracking
+		saveTrace(
+			'analyzeChat',
+			message,
+			'bullshift',
+			chatId,
+			userId,
+			response,
+			result,
+			systemInstruction
+		);
+
 		return responseJson;
 	} catch (error) {
 		console.error('Error analyzing chat:', error);

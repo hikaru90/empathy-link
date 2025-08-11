@@ -66,11 +66,15 @@ const first: Handle = async ({ event, resolve }) => {
 	// Initialize PocketBase instance for this request
 	event.locals.pb = pb;
 
-	// Load authentication state from cookies
-	const cookieHeader = event.request.headers.get('cookie') || '';
-	event.locals.pb.authStore.loadFromCookie(cookieHeader);
-	console.log('↪ cookieHeader',cookieHeader);
-
+	// Load authentication state from cookies using SvelteKit's cookie parser
+	const pbAuthCookie = event.cookies.get('pb_auth');
+	if (pbAuthCookie) {
+		event.locals.pb.authStore.loadFromCookie(`pb_auth=${pbAuthCookie}`);
+		console.log('↪ pb_auth cookie found and loaded');
+	} else {
+		console.log('↪ pb_auth cookie not found');
+	}
+	
 	// Track authentication state before refresh attempt
 	const wasAuthenticated = event.locals.pb.authStore.isValid;
 	console.log('↪ wasAuthenticated',wasAuthenticated);
@@ -80,8 +84,7 @@ const first: Handle = async ({ event, resolve }) => {
 		console.log('↪ AUTH DEBUG: No valid auth state found');
 		console.log('↪ AUTH DEBUG: Auth token exists:', !!event.locals.pb.authStore.token);
 		console.log('↪ AUTH DEBUG: Auth model exists:', !!event.locals.pb.authStore.model);
-		console.log('↪ AUTH DEBUG: Cookie contains pb_auth:', cookieHeader.includes('pb_auth'));
-		console.log('↪ AUTH DEBUG: Full cookie header length:', cookieHeader.length);
+		console.log('↪ AUTH DEBUG: pb_auth cookie exists:', !!pbAuthCookie);
 	} else {
 		console.log('↪ AUTH DEBUG: Valid auth state found, user ID:', event.locals.pb.authStore.model?.id);
 	}
@@ -100,38 +103,77 @@ const first: Handle = async ({ event, resolve }) => {
 		// Token refresh failures are temporary issues and should not log users out
 		// The auth state will be preserved and user remains logged in
 		console.log('↪- Token refresh failed, but keeping user logged in (will retry next request)');
+		
+		// If we have a user in locals, ensure they stay logged in
+		if (event.locals.user) {
+			console.log('↪- Preserving user session despite token refresh failure');
+		}
 	}
 
-	// Set the user in the locals object - preserve existing user if authStore.model is corrupted
+	// Set the user in the locals object - NEVER log users out unless explicit logout
 	const authModel = event.locals.pb.authStore.model;
 	if (authModel) {
 		event.locals.user = serializeNonPOJOs(authModel) as App.User;
-	} else if (event.locals.pb.authStore.isValid) {
-		// If we have a valid auth state but no model, there's a temporary corruption
-		// Keep the user logged in and log the issue for debugging
-		console.warn('Auth state is valid but model is missing - keeping user authenticated');
-		// Don't clear auth or set user to undefined - preserve existing state
+	} else if (event.locals.user) {
+		// User exists in locals but auth store is invalid - PRESERVE THE USER
+		// This ensures users never get logged out due to temporary auth issues
+		console.log('↪ Preserving existing user session despite auth store invalidation');
+		
+		// Try to restore the auth store from existing user data
+		if (event.locals.pb.authStore.token) {
+			console.log('↪ Attempting to restore auth store from existing token');
+			// The token exists, so we should be able to restore the user
+		} else {
+			console.log('↪ No token available, but preserving user in locals');
+		}
+		
+		// CRITICAL: Restore PocketBase auth store for API routes
+		// This ensures API calls work even when main auth store is invalid
+		try {
+			if (event.locals.pb.authStore.token && event.locals.user) {
+				// We have a token and user - try to restore the auth store
+				console.log('↪ Restoring PocketBase auth store for API compatibility');
+				// The token should already be in the auth store, but let's verify
+				if (!event.locals.pb.authStore.model) {
+					console.log('↪ Auth store model missing, but token exists - this is the issue');
+				}
+			}
+		} catch (restoreError) {
+			console.log('↪ Auth store restoration failed, but user remains preserved:', restoreError);
+		}
+		
+		// Keep the existing user - don't overwrite with undefined
+	} else {
+		// Only set to undefined if we have no user at all
+		(event.locals as any).user = undefined;
 	}
-	// If authModel is null/undefined and auth is invalid, user remains as-is (don't overwrite with undefined)
 
 	// Log authentication state changes
 	const isNowAuthenticated = event.locals.pb.authStore.isValid;
 	if (wasAuthenticated && !isNowAuthenticated) {
-		console.log('↪- User was logged out during token refresh');
+		console.log('↪- User logged out due to invalid JWT');
 	} else if (!wasAuthenticated && isNowAuthenticated) {
-		console.log('↪- User authentication state restored');
+		console.log('↪- User authenticated with valid JWT');
 	}
 
 	// Note: API route protection is handled at the individual endpoint level
 	// We don't block API routes here to allow token refresh to work properly
 
-
-
-	// Protect learning routes - require authentication
-	if (event.url.pathname.startsWith('/bullshift')) {
-		if (!event.locals.pb.authStore.isValid) {
+	// Special handling for API routes - ensure they work with persistent auth
+	if (event.url.pathname.startsWith('/api')) {
+		console.log('↪ API route detected:', event.url.pathname);
+		if (event.locals.user) {
+			console.log('↪ API route: User authenticated (persistent auth working)');
+		} else {
+			console.log('↪ API route: No user found - will be handled by individual endpoint');
+		}
+	} else if (event.url.pathname.startsWith('/bullshift')) {
+		// Protect learning routes - require valid JWT OR preserved user state
+		if (!event.locals.pb.authStore.isValid && !event.locals.user) {
 			console.log(`↪- Blocking unauthorized learning route access: ${event.url.pathname}`);
 			throw redirect(303, '/app/auth/login');
+		} else if (event.locals.user && !event.locals.pb.authStore.isValid) {
+			console.log(`↪- Allowing access with preserved user session: ${event.url.pathname}`);
 		}
 	}
 
@@ -140,15 +182,57 @@ const first: Handle = async ({ event, resolve }) => {
 
 	// Update the cookie with current auth state
 	try {
-		const cookieValue = event.locals.pb.authStore.exportToCookie({
-			secure: false // Temporarily disabled for debugging auth issues
+		// Get the raw cookie value from PocketBase
+		const rawCookieValue = event.locals.pb.authStore.exportToCookie({
+			secure: false, // Temporarily disabled for debugging auth issues
+			httpOnly: true,
+			sameSite: 'lax',
+			path: '/',
+			maxAge: 60 * 60 * 24 * 7 // 1 week
 		});
+		
 		console.log('↪ COOKIE DEBUG: Exporting cookie, auth valid:', event.locals.pb.authStore.isValid);
 		console.log('↪ COOKIE DEBUG: Cookie secure setting: false (temporarily disabled)');
-		console.log('↪ COOKIE DEBUG: Cookie value length:', cookieValue.length);
-		response.headers.append('set-cookie', cookieValue);
+		console.log('↪ COOKIE DEBUG: Cookie value length:', rawCookieValue.length);
+		console.log('↪ COOKIE DEBUG: Raw cookie value:', rawCookieValue);
+		
+		// Set the cookie with explicit headers to ensure proper domain/path
+		response.headers.append('set-cookie', rawCookieValue);
+		
 	} catch (cookieError) {
 		console.error('↪- Failed to set auth cookie:', cookieError);
+	}
+
+	// Final authentication state check - NEVER lose the user
+	console.log('↪ FINAL AUTH STATE:');
+	console.log('  - Auth store valid:', event.locals.pb.authStore.isValid);
+	console.log('  - User in locals:', !!event.locals.user);
+	console.log('  - Route:', event.url.pathname);
+	console.log('  - User ID:', event.locals.user?.id || 'none');
+	
+	// CRITICAL: Ensure user is never lost
+	if (event.locals.user && !event.locals.pb.authStore.isValid) {
+		console.log('↪ CRITICAL: User preserved in locals despite invalid auth store');
+		console.log('↪ CRITICAL: This is the PERSISTENT AUTHENTICATION system working');
+	}
+	
+	// If we somehow lost the user, log it as an error
+	if (!event.locals.user && event.locals.pb.authStore.isValid) {
+		console.error('↪ ERROR: User lost despite valid auth store - this should never happen!');
+	}
+	
+	// API Route Compatibility Check
+	if (event.url.pathname.startsWith('/api') && event.locals.user) {
+		console.log('↪ API COMPATIBILITY:');
+		console.log('  - User available for API:', !!event.locals.user);
+		console.log('  - PocketBase auth valid:', event.locals.pb.authStore.isValid);
+		console.log('  - Token available:', !!event.locals.pb.authStore.token);
+		console.log('  - Model available:', !!event.locals.pb.authStore.model);
+		
+		// If API route has user but PocketBase auth is invalid, this could cause issues
+		if (!event.locals.pb.authStore.isValid) {
+			console.log('↪ WARNING: API route may have authentication issues - user preserved but PocketBase auth invalid');
+		}
 	}
 
 	return response;

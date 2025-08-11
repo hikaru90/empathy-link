@@ -98,7 +98,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({
 			success: true,
 			evaluated: results.length,
-			errors: errors.length,
+			errorCount: errors.length,
 			results,
 			errors
 		});
@@ -221,7 +221,7 @@ async function getAIEvaluation(prompt: string): Promise<ChatEvaluation> {
 		}
 	});
 
-	const result = await chat.sendMessage(prompt);
+	const result = await chat.sendMessage({ message: prompt });
 	const response = result.text;
 	
 	if (!response) {
@@ -247,18 +247,24 @@ async function saveEvaluation(chatId: string, userId: string, evaluation: ChatEv
 			evaluation: evaluation,
 			updated: new Date().toISOString()
 		});
-	} catch (error) {
+	} catch (error: any) {
 		if (error.status === 404) {
 			// Create new evaluation
-			await pb.collection('chatEvals').create({
-				chatId: chatId,
-				userId: userId,
-				evaluation: evaluation,
-				created: new Date().toISOString(),
-				updated: new Date().toISOString()
-			});
+			try {
+				await pb.collection('chatEvals').create({
+					chatId: chatId,
+					userId: userId,
+					evaluation: evaluation,
+					created: new Date().toISOString(),
+					updated: new Date().toISOString()
+				});
+			} catch (createError: any) {
+				console.error('Error creating evaluation:', createError);
+				throw new Error(`Failed to create evaluation: ${createError.message}`);
+			}
 		} else {
-			throw error;
+			console.error('Error checking existing evaluation:', error);
+			throw new Error(`Database error: ${error.message}`);
 		}
 	}
 }
