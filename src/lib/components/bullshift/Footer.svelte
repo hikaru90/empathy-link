@@ -46,6 +46,13 @@
 			available: true
 		},
 		{
+			slug: 'evals',
+			heading: 'Evaluations',
+			path: '/bullshift/backend/evals',
+			icon: ChartColumnDecreasing,
+			available: true
+		},
+		{
 			slug: 'community',
 			heading: 'Community',
 			path: '/bullshift/community',

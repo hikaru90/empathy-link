@@ -10,6 +10,7 @@
 	import LogOut from 'lucide-svelte/icons/log-out';
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { cn } from '$lib/utils';
+	import ChartColumnDecreasing from 'lucide-svelte/icons/chart-column-decreasing';
 	interface Props {
 		absolute?: boolean;
 		class?: string;
@@ -31,34 +32,42 @@
 
 	function restartOnboarding() {
 		console.log('Restarting onboarding...');
-		
+
 		try {
 			// Set localStorage to false to restart onboarding
 			localStorage.setItem('bullshiftOnboardingCompleted', 'false');
-			
+
 			// Debug: check if localStorage was set
-			console.log('localStorage set, current value:', localStorage.getItem('bullshiftOnboardingCompleted'));
-			
+			console.log(
+				'localStorage set, current value:',
+				localStorage.getItem('bullshiftOnboardingCompleted')
+			);
 		} catch (error) {
 			console.error('Error setting localStorage:', error);
 		}
-		
+
 		// Close the user menu
 		userMenuIsOpen = false;
-		
+
 		// Reload the page to restart onboarding
 		window.location.reload();
 	}
 </script>
 
-<nav class={cn(absolute ? 'absolute' : 'absolute', 'left-0 top-0 flex w-full items-center justify-between p-4', className)}>
+<nav
+	class={cn(
+		absolute ? 'absolute' : 'absolute',
+		'left-0 top-0 flex w-full items-center justify-between p-4',
+		className
+	)}
+>
 	<button
 		class="flex size-8 items-center justify-center rounded-full bg-black"
 		onclick={() => (userMenuIsOpen = true)}
 	>
 		<UserRoundCog class="size-3 text-white" />
 	</button>
-	<SparklePill class="w-8 h-4 shadow-md" />
+	<SparklePill class="h-4 w-8 shadow-md" />
 	<!-- <img src="/bullshift/bullshift-logo.svg" alt="Bullshift Logo" class="h-5" /> -->
 	<button
 		class="relative flex size-8 items-center justify-center rounded-full bg-black"
@@ -82,18 +91,30 @@
 					<div class="text-sm text-muted-foreground">{user.email}</div>
 				{/if}
 			</Drawer.Header>
-			<div class="p-4 pb-24 flex flex-col gap-2">
-				<button 
-					class="px-3 py-1.5 bg-offwhite border border-white/30 rounded-full text-sm flex items-center justify-between shadow-md shadow-black/5"
+			<div class="flex flex-col gap-2 p-4 pb-24">
+				<button
+					class="flex items-center justify-between rounded-full border border-white/30 bg-offwhite px-3 py-1.5 text-sm shadow-md shadow-black/5"
 					onclick={restartOnboarding}
-				> 
+				>
 					Onboarding erneut starten
 					<RotateCcwSquare class="size-4" />
-					</button>
+				</button>
+				{#if user.role === 'admin'}
+					<a
+						href="/bullshift/backend"
+						class="flex items-center justify-between rounded-full border border-white/30 bg-offwhite px-3 py-1.5 text-left text-sm shadow-md shadow-black/5"
+					>
+						Backend
+						<ChartColumnDecreasing class="size-4" />
+					</a>
+				{/if}
 				<form action="/app/auth/logout" method="POST" class="w-full">
-					<button type="submit" class="w-full px-3 py-1.5 bg-black text-white rounded-full text-sm flex items-center justify-between shadow-md shadow-black/5">
-							{m.menu_profile_logout()}
-							<LogOut class="size-4 text-red-600" />
+					<button
+						type="submit"
+						class="flex w-full items-center justify-between rounded-full bg-black px-3 py-1.5 text-sm text-white shadow-md shadow-black/5"
+					>
+						{m.menu_profile_logout()}
+						<LogOut class="size-4 text-red-600" />
 					</button>
 				</form>
 			</div>
