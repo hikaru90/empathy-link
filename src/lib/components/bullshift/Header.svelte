@@ -1,5 +1,6 @@
 <script lang="ts">
 	import UserRoundCog from 'lucide-svelte/icons/user-round-cog';
+	import RotateCcwSquare from 'lucide-svelte/icons/rotate-ccw-square';
 	import Bell from 'lucide-svelte/icons/bell';
 	import Minus from 'lucide-svelte/icons/minus';
 	import Plus from 'lucide-svelte/icons/plus';
@@ -27,6 +28,27 @@
 
 	let isOpen = $state(false);
 	let userMenuIsOpen = $state(false);
+
+	function restartOnboarding() {
+		console.log('Restarting onboarding...');
+		
+		try {
+			// Set localStorage to false to restart onboarding
+			localStorage.setItem('bullshiftOnboardingCompleted', 'false');
+			
+			// Debug: check if localStorage was set
+			console.log('localStorage set, current value:', localStorage.getItem('bullshiftOnboardingCompleted'));
+			
+		} catch (error) {
+			console.error('Error setting localStorage:', error);
+		}
+		
+		// Close the user menu
+		userMenuIsOpen = false;
+		
+		// Reload the page to restart onboarding
+		window.location.reload();
+	}
 </script>
 
 <nav class={cn(absolute ? 'absolute' : 'absolute', 'left-0 top-0 flex w-full items-center justify-between p-4', className)}>
@@ -60,16 +82,18 @@
 					<div class="text-sm text-muted-foreground">{user.email}</div>
 				{/if}
 			</Drawer.Header>
-			<div class="p-4 pb-24">
+			<div class="p-4 pb-24 flex flex-col gap-2">
+				<button 
+					class="px-3 py-1.5 bg-offwhite border border-white/30 rounded-full text-sm flex items-center justify-between shadow-md shadow-black/5"
+					onclick={restartOnboarding}
+				> 
+					Onboarding erneut starten
+					<RotateCcwSquare class="size-4" />
+					</button>
 				<form action="/app/auth/logout" method="POST" class="w-full">
-					<button type="submit" class="w-full">
-						<Button
-							wrapperClass="w-full"
-							class="flex !h-10 w-full items-center justify-between gap-3 border-offwhite bg-red-500 text-red-100 data-[highlighted]:bg-red-200 data-[highlighted]:text-red-500"
-						>
+					<button type="submit" class="w-full px-3 py-1.5 bg-black text-white rounded-full text-sm flex items-center justify-between shadow-md shadow-black/5">
 							{m.menu_profile_logout()}
-							<LogOut class="size-3" /></Button
-						>
+							<LogOut class="size-4 text-red-600" />
 					</button>
 				</form>
 			</div>
