@@ -93,22 +93,22 @@
 					locale: locale
 				})
 			});
-			
+
 			// Handle authentication errors gracefully - do NOT redirect to login
 			if (response.status === 401) {
 				const data = await response.json().catch(() => ({ error: 'Authentication failed' }));
 				console.log('API authentication failed, but keeping user logged in:', data);
-				
+
 				// Set error message for user instead of redirecting
 				errorMessage = 'Deine Nachricht konnte nicht gesendet werden. Bitte versuche es erneut.';
 				isLoading = false;
 				return;
 			}
-			
+
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
-			
+
 			const data = await response.json();
 			console.log('data from /send', data);
 			if (data.error) throw new Error(data.error);
@@ -120,10 +120,10 @@
 			userMessage = '';
 		} catch (error) {
 			console.error('Failed to send message:', error);
-			
+
 			// Create user-friendly error message
 			let userFriendlyError = 'Ein Fehler ist aufgetreten: ';
-			
+
 			if (error instanceof Error) {
 				// Handle specific error types
 				if (error.message.includes('Network') || error.message.includes('fetch')) {
@@ -133,19 +133,21 @@
 				} else if (error.message.includes('500')) {
 					userFriendlyError = userFriendlyError + 'Serverfehler. Bitte versuche es später erneut.';
 				} else if (error.message.includes('429')) {
-					userFriendlyError = userFriendlyError + 'Zu viele Anfragen. Bitte warte einen Moment und versuche es erneut.';
+					userFriendlyError =
+						userFriendlyError +
+						'Zu viele Anfragen. Bitte warte einen Moment und versuche es erneut.';
 				} else {
 					userFriendlyError = error.message || userFriendlyError;
 				}
 			}
-			
+
 			// Add error message to chat history as a red bubble
 			history = [
 				...history,
 				{ role: 'user', parts: [{ text: userMessage }], timestamp: Date.now() },
 				{ role: 'error', parts: [{ text: userFriendlyError }], timestamp: Date.now() }
 			];
-			
+
 			// Clear the user message since it was already added to history
 			userMessage = '';
 		} finally {
@@ -219,9 +221,9 @@
 		try {
 			const [analysisResponse] = await Promise.all([
 				analyzeChat(),
-				new Promise(resolve => setTimeout(resolve, 2000))
+				new Promise((resolve) => setTimeout(resolve, 2000))
 			]);
-			
+
 			chatAnalysisId = analysisResponse;
 			console.log('chatAnalysisId', chatAnalysisId);
 		} catch (error) {
@@ -236,7 +238,7 @@
 		try {
 			const [memorizationResponse] = await Promise.all([
 				extractMemories(),
-				new Promise(resolve => setTimeout(resolve, 2000))
+				new Promise((resolve) => setTimeout(resolve, 2000))
 			]);
 		} catch (error) {
 			memorizerFailed = true;
@@ -264,7 +266,9 @@
 		if (response.status === 401) {
 			const data = await response.json().catch(() => ({ error: 'Authentication failed' }));
 			console.log('AnalyzeChat authentication failed, but keeping user logged in:', data);
-			throw new Error('Chat-Analyse fehlgeschlagen: Authentifizierung nicht möglich. Bitte versuche es erneut.');
+			throw new Error(
+				'Chat-Analyse fehlgeschlagen: Authentifizierung nicht möglich. Bitte versuche es erneut.'
+			);
 		}
 
 		if (!response.ok) {
@@ -298,7 +302,9 @@
 		if (response.status === 401) {
 			const data = await response.json().catch(() => ({ error: 'Authentication failed' }));
 			console.log('ExtractMemories authentication failed, but keeping user logged in:', data);
-			throw new Error('Erinnerungen konnten nicht extrahiert werden: Authentifizierung fehlgeschlagen.');
+			throw new Error(
+				'Erinnerungen konnten nicht extrahiert werden: Authentifizierung fehlgeschlagen.'
+			);
 		}
 
 		if (!response.ok) {
@@ -334,12 +340,12 @@
 
 		// Determine what text to add
 		let textToAdd = text;
-		
+
 		// Add space before if needed (cursor is not at start and previous char is not a space)
 		if (start > 0 && currentValue[start - 1] !== ' ') {
 			textToAdd = ' ' + text;
 		}
-		
+
 		// Add space after if needed (cursor is not at end and next char is not a space)
 		if (end < currentValue.length && currentValue[end] !== ' ') {
 			textToAdd = textToAdd + ' ';
@@ -369,11 +375,11 @@
 
 		getFeelings();
 		getNeeds();
-		
+
 		// Check for pending message after login redirect
 		const pendingMessage = localStorage.getItem('pendingMessage');
 		const pendingChatId = localStorage.getItem('pendingChatId');
-		
+
 		if (pendingMessage && pendingChatId === chatId) {
 			userMessage = pendingMessage;
 			localStorage.removeItem('pendingMessage');
@@ -384,7 +390,14 @@
 
 	$effect(() => {
 		// Auto-hide modal when analysis is complete and successful
-		if (!analyzerIsRunning && !memorizerIsRunning && !analyzerFailed && !memorizerFailed && chatAnalysisId && chatTerminationModalVisible) {
+		if (
+			!analyzerIsRunning &&
+			!memorizerIsRunning &&
+			!analyzerFailed &&
+			!memorizerFailed &&
+			chatAnalysisId &&
+			chatTerminationModalVisible
+		) {
 			setTimeout(() => {
 				chatTerminationModalVisible = false;
 			}, 1500); // Show success state for 1.5 seconds before auto-hiding
@@ -447,25 +460,36 @@
 	<div class="">
 		<div bind:this={chatContainer} class="messages rounded-lg pb-52 pt-4">
 			<h1 class="mb-3 text-2xl font-light">
-				<TypewriterText text="Hi {String(user?.firstName).charAt(0).toUpperCase() + String(user?.firstName).slice(1)}, ich bin hier, um den ganzen Bullshit in deinem Leben zu durchbrechen." onComplete={() => {
-					text1Done = true;
-				}} />
-				</h1>
+				<TypewriterText
+					text="Hi {String(user?.firstName).charAt(0).toUpperCase() +
+						String(user?.firstName).slice(
+							1
+						)}, ich bin hier, um den ganzen Bullshit in deinem Leben zu durchbrechen."
+					onComplete={() => {
+						text1Done = true;
+					}}
+				/>
+			</h1>
 			<h2 class="mb-6 text-2xl font-light text-black/40">
 				{#if text1Done}
-					<TypewriterText text="Beschreib mir eine Situation, und ich helfe dir, sie zu verarbeiten. Vertrau mir – wir
-					schaffen das gemeinsam!" />
+					<TypewriterText
+						text="Beschreib mir eine Situation, und ich helfe dir, sie zu verarbeiten. Vertrau mir – wir
+					schaffen das gemeinsam!"
+					/>
 				{/if}
 			</h2>
 			{#each history as message}
 				<!-- {JSON.stringify(message)} -->
-				<div  aria-label={message.role} class="message {message.role} mb-4 {message.role === 'user' ? 'text-right' : 'text-left'}">
+				<div
+					aria-label={message.role}
+					class="message {message.role} mb-4 {message.role === 'user' ? 'text-right' : 'text-left'}"
+				>
 					<div
 						class="inline-block break-words rounded-xl px-3 py-2 {message.role === 'user'
 							? 'border border-white'
 							: message.role === 'error'
-							? 'bg-red-100 border border-red-300 text-red-800'
-							: 'bg-white'}"
+								? 'border border-red-300 bg-red-100 text-red-800'
+								: 'bg-white'}"
 					>
 						<div class="text-sm">
 							{#if 'text' in message.parts[0]}
@@ -495,19 +519,21 @@
 		</div>
 
 		<div class="fixed bottom-[62px] left-0 right-0 px-4 pb-6 pt-4">
-				<button
-					class="{ history.length > 0 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none' } fixed top-4 left-1/2 flex -translate-x-1/2 transform items-center gap-2 rounded-full bg-bullshift px-3 py-1 text-sm shadow-xl transition"
-					onclick={() => {
-						chatTerminationModalVisible = true;
-						startAnalysis();
-					}}
-				>
-					Chat abschließen
-					<SquareCheck class="size-4" />
-				</button>
+			<button
+				class="{history.length > 0
+					? 'pointer-events-auto opacity-100'
+					: 'pointer-events-none opacity-0'} fixed left-1/2 top-4 flex -translate-x-1/2 transform items-center gap-2 rounded-full bg-bullshift px-3 py-1 text-sm shadow-xl transition"
+				onclick={() => {
+					chatTerminationModalVisible = true;
+					startAnalysis();
+				}}
+			>
+				Chat abschließen
+				<SquareCheck class="size-4" />
+			</button>
 			<form
 				onsubmit={preventDefault(handleSendMessage)}
-				class="flex flex-col gap-2 rounded-2xl bg-gradient-to-b from-white to-offwhite p-2 border border-white shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
+				class="flex flex-col gap-2 rounded-2xl border border-white bg-gradient-to-b from-white to-offwhite p-2 shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
 			>
 				<AutoTextarea
 					bind:value={userMessage}
@@ -525,7 +551,7 @@
 						<button
 							type="button"
 							onclick={() => addText(feeling.nameDE)}
-							class="rounded-full border border-black/5 bg-white px-2 py-0.5 text-xs text-black active:bg-black/5"
+							class="rounded-full border border-black/5 bg-white px-2 py-0.5 text-xs text-black active:bg-black/5 {feeling.positive ? 'border-bullshift' : 'border-black/40'}"
 							>{feeling.nameDE}</button
 						>
 					{/each}
@@ -556,13 +582,15 @@
 							style={feelingSelectorVisible
 								? ''
 								: 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}
-							class="flex items-center gap-1 rounded-full pl-1 pr-2 py-1 text-xs {feelingSelectorVisible
-							? 'text-black shadow-inner bg-black/10'
-							: 'text-black/60 bg-white'}"
+							class="flex items-center gap-1 rounded-full py-1 pl-1 pr-2 text-xs {feelingSelectorVisible
+								? 'bg-black/10 text-black shadow-inner'
+								: 'bg-white text-black/60'}"
 						>
-						<div class="w-[1.2em] rounded-full p-[0.1em] {feelingSelectorVisible
-						? 'bg-black fill-white/80'
-						: 'bg-black/10 fill-black/60'}">
+							<div
+								class="w-[1.2em] rounded-full p-[0.1em] {feelingSelectorVisible
+									? 'bg-black fill-white/80'
+									: 'bg-black/10 fill-black/60'}"
+							>
 								{@html IconHeart}
 							</div>
 							Gefühle
@@ -576,13 +604,15 @@
 							style="{needSelectorVisible
 								? ''
 								: 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}	"
-							class="flex items-center gap-1 rounded-full pl-1 pr-2 py-1 text-xs {needSelectorVisible
-								? 'text-black shadow-inner bg-black/10'
-								: 'text-black/60 bg-white'}"
+							class="flex items-center gap-1 rounded-full py-1 pl-1 pr-2 text-xs {needSelectorVisible
+								? 'bg-black/10 text-black shadow-inner'
+								: 'bg-white text-black/60'}"
 						>
-							<div class="w-[1.2em] rounded-full p-[0.1em] {needSelectorVisible
-								? 'bg-black fill-white/80'
-								: 'bg-black/10 fill-black/60'}">
+							<div
+								class="w-[1.2em] rounded-full p-[0.1em] {needSelectorVisible
+									? 'bg-black fill-white/80'
+									: 'bg-black/10 fill-black/60'}"
+							>
 								{@html IconSwirl}
 							</div>
 							Bedürfnisse
@@ -615,7 +645,7 @@
 		<div class="mx-4 max-w-md rounded-lg bg-white p-6 shadow-xl">
 			<div class="text-center">
 				<h3 class="mb-4 text-lg font-semibold">Chat wird ausgewertet</h3>
-				
+
 				{#if analyzerIsRunning || memorizerIsRunning}
 					<!-- Loading state with sparkle pill -->
 					<div class="mb-4 flex flex-col items-center gap-3">

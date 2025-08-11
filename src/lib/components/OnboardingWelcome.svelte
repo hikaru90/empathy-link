@@ -91,7 +91,7 @@ Formuliere eine konkrete, erfüllbare Bitte, die zur Erfüllung deiner Bedürfni
 	}
 </script>
 
-<div class="fixed left-0 top-0 z-[1000] flex h-screen w-full flex-col bg-offwhite p-6">
+<div class="fixed left-0 top-0 z-[1000] flex h-svh w-full flex-col bg-offwhite p-6">
 	<!-- Scrollable content area -->
 	<div class="flex flex-1 flex-col gap-6 overflow-hidden">
 		<div class="flex justify-center">
@@ -123,7 +123,7 @@ Formuliere eine konkrete, erfüllbare Bitte, die zur Erfüllung deiner Bedürfni
 	</div>
 
 	<!-- Fixed buttons at bottom -->
-	<div class="flex flex-col gap-4 pt-4">
+	<div class="flex flex-col gap-4 pt-4 mb-16">
 		<LearnGotoNextButton
 			onClick={() => {
 				nextStep?.();
