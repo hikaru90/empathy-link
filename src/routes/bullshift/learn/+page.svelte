@@ -138,7 +138,7 @@
 </style>
 
 <div class="pt-16">
-	<Header />
+	<Header user={data.user} />
 	<div class="max-container">
 		<h1 class="mb-3 mt-4 max-w-[15em] text-2xl font-light">
 			Stärke deine Empathiefähigkeit, Schritt für Schritt.
@@ -192,7 +192,7 @@
 								{#if categoryCompletion.total > 0}
 									<div class="flex items-center gap-2 text-xs">
 										{#if categoryCompletion.completed === categoryCompletion.total}
-											<div class="flex items-center gap-1 rounded-full bg-green-100 px-3 py-1">
+											<div class="flex items-center gap-1 rounded-full bg-teal-500/30 px-3 py-1">
 												<BadgeCheck class="-ml-2 size-4 text-teal-600" />
 												<span class="font-medium text-teal-700">Abgeschlossen</span>
 											</div>

@@ -107,8 +107,8 @@ Formuliere eine konkrete, erfüllbare Bitte, die zur Erfüllung deiner Bedürfni
 			/>
 		</div>
 
-		<div class="flex w-full items-center justify-center">
-			<Gradient class="size-40" shape={steps[currentStep].image} blur={true} />
+		<div class="flex w-full items-center justify-center -my-4">
+			<Gradient class="size-48" shape={steps[currentStep].image} blur={true} />
 		</div>
 		
 		<!-- Scrollable text content -->

@@ -30,7 +30,7 @@
 </script>
 
 <div class="pt-16">
-	<Header />
+	<Header user={data.user} />
 	<div class="flex h-full w-full flex-col">
 		{#if data.error}
 			<p class="text-red-500">{data.error}</p>

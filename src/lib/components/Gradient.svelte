@@ -24,7 +24,7 @@
 <div class="relative">
 	{#each Array(3) as _}
 	<div
-		style="backdrop-filter: blur(10px); mask: linear-gradient(to left, #00000000 0%, #000000ff 100%);"
+		style="backdrop-filter: blur(8px); mask: linear-gradient(to left, #00000000 0%, #000000ff 100%);"
 		class="absolute inset-0 z-10 bg-white/0"
 	></div>
   {/each}

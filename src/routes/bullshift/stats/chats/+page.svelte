@@ -50,7 +50,7 @@
 </script>
 
 <div class="mt-1px pt-16">
-	<Header />
+	<Header user={data.user} />
 	<div class="flex h-full w-full flex-col overflow-hidden">
 		{#if data.error}
 			<p class="text-red-500">{data.error}</p>

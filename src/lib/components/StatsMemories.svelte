@@ -79,9 +79,14 @@
 						<div class="flex gap-[1px]">
 							<div class="h-3 w-2 rounded-md border-r border-black/5 bg-blue-300"></div>
 							<div class="h-3 w-2 rounded-md bg-blue-300"></div>
+							<div class="h-3 w-2 rounded-md bg-neutral-100"></div>
 						</div>
-					{:else}
-						<div class="h-3 w-2 rounded-md bg-orange-500"></div>
+						{:else}
+						<div class="flex gap-[1px]">
+							<div class="h-3 w-2 rounded-md bg-orange-500"></div>
+							<div class="h-3 w-2 rounded-md bg-neutral-100"></div>
+							<div class="h-3 w-2 rounded-md bg-neutral-100"></div>
+						</div>
 					{/if}
 				</div>
 				<div class="max-w-[8em] mb-4 text-neutral-700 text-sm">
