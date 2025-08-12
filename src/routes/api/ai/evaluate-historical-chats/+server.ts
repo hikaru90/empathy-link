@@ -212,7 +212,7 @@ async function getAIEvaluation(prompt: string): Promise<ChatEvaluation> {
 	};
 
 	const chat = ai.chats.create({
-		model: 'gemini-2.0-flash',
+		model: 'gemini-2.5-flash',
 		config: {
 			systemInstruction: 'You are an expert evaluator of AI responses in Nonviolent Communication contexts. Provide accurate, objective evaluations.',
 			temperature: 0.1,

@@ -123,7 +123,7 @@ Formuliere eine konkrete, erfüllbare Bitte, die zur Erfüllung deiner Bedürfni
 	</div>
 
 	<!-- Fixed buttons at bottom -->
-	<div class="flex flex-col gap-4 pt-4 mb-16">
+	<div class="flex flex-col gap-4 pt-4">
 		<LearnGotoNextButton
 			onClick={() => {
 				nextStep?.();

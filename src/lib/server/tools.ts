@@ -323,7 +323,9 @@ export const saveTrace = async (
 	result?: GenerateContentResponse,
 	systemInstruction?: string
 ) => {
+	let traceData: any;
 	try {
+		console.log(':::saveTrace');
 		const inputTokenCount = result?.usageMetadata?.promptTokenCount;
 		const outputTokenCount = result?.usageMetadata?.candidatesTokenCount;
 
@@ -332,7 +334,7 @@ export const saveTrace = async (
 			return;
 		}
 
-		const trace = await pb.collection('traces').create({
+		traceData = {
 			functionName,
 			message: message.substring(0, 5000), // Limit message length to prevent DB issues
 			response: response?.substring(0, 10000), // Limit response length
@@ -341,8 +343,14 @@ export const saveTrace = async (
 			user: userId || null, // Allow null if userId is invalid
 			inputTokens: inputTokenCount || 0,
 			outputTokens: outputTokenCount || 0,
-			systemInstruction: systemInstruction?.substring(0, 10000) // Limit system instruction length
-		});
+			// Only include systemInstruction if it's short enough
+			...(systemInstruction && systemInstruction.length <= 1000 && { systemInstruction })
+		};
+		
+		console.log(':::saveTrace data:', traceData);
+		
+		const trace = await pb.collection('traces').create(traceData);
+		console.log(':::saveTrace done: ', trace);
 	} catch (error) {
 		// Log error but don't let it propagate - trace failures should never affect core functionality
 		if (typeof window === 'undefined') {
@@ -351,7 +359,9 @@ export const saveTrace = async (
 				module,
 				chatId,
 				userId,
-				error: error instanceof Error ? error.message : String(error)
+				error: error instanceof Error ? error.message : String(error),
+				errorDetails: error instanceof Error ? error.stack : String(error),
+				data: traceData
 			});
 		}
 	}
