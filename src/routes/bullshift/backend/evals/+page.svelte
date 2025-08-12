@@ -29,9 +29,11 @@
 	let evaluationResults = $state<any[]>([]);
 	let evaluationErrors = $state<any[]>([]);
 	let showDashboard = $state(false);
+	let currentChatIndex = $state(0);
+	let totalChats = $state(0);
 
 	async function runEvaluations() {
-		console.log('runEvaluations - testing single chat');
+		console.log('runEvaluations - evaluating all chats');
 		if (data.unevaluatedChats.length === 0) {
 			alert('No chats with conversation history available for evaluation! Make sure you have some completed chat conversations first.');
 			return;
@@ -41,13 +43,13 @@
 		evaluationProgress = 0;
 		evaluationResults = [];
 		evaluationErrors = [];
+		currentChatIndex = 0;
+		totalChats = data.unevaluatedChats.length;
 
 		try {
-			// Get just the first chat for testing
-			const testChat = data.unevaluatedChats[0];
-			console.log('Testing evaluation with chat:', testChat.id);
-
-			evaluationProgress = 50; // Show some progress
+			// Get all unevaluated chat IDs
+			const chatIds = data.unevaluatedChats.map(chat => chat.id);
+			console.log(`Evaluating ${chatIds.length} chats`);
 
 			const response = await fetch('/api/ai/evaluate-historical-chats', {
 				method: 'POST',
@@ -55,8 +57,8 @@
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					chatIds: [testChat.id],
-					batchSize: 1
+					chatIds: chatIds,
+					batchSize: 5 // Process 5 chats at a time to be respectful to the AI API
 				})
 			});
 
@@ -66,14 +68,28 @@
 			}
 
 			const result = await response.json();
-			console.log('API response for test chat', testChat.id, ':', result);
+			console.log('API response:', result);
 
 			if (result.success && result.results && result.results.length > 0) {
-				evaluationResults.push({
-					chatId: testChat.id,
-					evaluation: result.results[0].evaluation
+				// Add all successful evaluations
+				result.results.forEach((item: any) => {
+					evaluationResults.push({
+						chatId: item.chatId,
+						evaluation: item.evaluation
+					});
 				});
-				console.log('Successfully evaluated test chat!');
+				
+				// Add any errors that occurred
+				if (result.errors && result.errors.length > 0) {
+					result.errors.forEach((error: any) => {
+						evaluationErrors.push({
+							chatId: error.chatId,
+							error: error.error
+						});
+					});
+				}
+				
+				console.log(`Successfully evaluated ${result.results.length} chats!`);
 			} else {
 				console.error('API response details:', result);
 				throw new Error(`API returned unsuccessful result: ${JSON.stringify(result)}`);
@@ -81,13 +97,15 @@
 
 			evaluationProgress = 100;
 			
-			// Don't reload the page automatically for testing
-			console.log('Test evaluation completed successfully!');
+			// Reload the page to show updated stats
+			setTimeout(() => {
+				window.location.reload();
+			}, 2000);
 
 		} catch (error: any) {
-			console.error('Test evaluation failed:', error);
+			console.error('Evaluation failed:', error);
 			evaluationErrors.push({
-				chatId: data.unevaluatedChats[0]?.id || 'unknown',
+				chatId: 'multiple',
 				error: error.message
 			});
 		} finally {
@@ -178,9 +196,9 @@
 			<CardContent class="space-y-4">
 				<div class="flex items-center justify-between">
 					<div class="">
-						<p class="text-sm font-medium">Test Mode: Will evaluate 1 chat</p>
+						<p class="text-sm font-medium">Full Evaluation: Will evaluate all chats</p>
 						<p class="text-xs text-muted-foreground">
-							Testing evaluation on first available chat with conversation history ({data.unevaluatedChats.length} evaluable chats available)
+							Evaluating all {data.unevaluatedChats.length} chats with conversation history (processed in batches of 5)
 						</p>
 					</div>
 					<button
@@ -190,10 +208,10 @@
 					>
 						{#if isEvaluating}
 							<RefreshCw class="mr-2 h-4 w-4 animate-spin" />
-							Testing...
+							Evaluating...
 						{:else}
 							<Play class="mr-2 h-4 w-4" />
-							Test Evaluation
+							Run Full Evaluation
 						{/if}
 					</button>
 				</div>
@@ -229,6 +247,9 @@
 								class="h-2 rounded-full bg-blue-600 transition-all duration-300"
 								style="width: {evaluationProgress}%"
 							></div>
+						</div>
+						<div class="text-xs text-muted-foreground text-center">
+							Evaluating chat {currentChatIndex + 1} of {totalChats}
 						</div>
 					</div>
 				{/if}

@@ -62,18 +62,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	try {
-		const { chatIds, batchSize = 10 } = await request.json();
+		const { chatIds, batchSize = 5 } = await request.json();
 		
 		if (!chatIds || !Array.isArray(chatIds)) {
 			return json({ error: 'Invalid chatIds parameter' }, { status: 400 });
 		}
 
-		const results = [];
-		const errors = [];
+		const results: Array<{ chatId: string; evaluation: ChatEvaluation }> = [];
+		const errors: Array<{ chatId: string; error: string }> = [];
 
 		// Process chats in batches to avoid overwhelming the AI
 		for (let i = 0; i < chatIds.length; i += batchSize) {
 			const batch = chatIds.slice(i, i + batchSize);
+			console.log(`Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(chatIds.length / batchSize)}: ${batch.length} chats`);
 			
 			await Promise.all(batch.map(async (chatId: string) => {
 				try {
@@ -83,17 +84,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					// Save evaluation to database
 					await saveEvaluation(chatId, user.id, evaluation);
 					
-				} catch (error) {
-					console.error(`Error evaluating chat ${chatId}:`, error);
-					errors.push({ chatId, error: error.message });
+					console.log(`✅ Successfully evaluated chat ${chatId}`);
+					
+				} catch (error: any) {
+					console.error(`❌ Error evaluating chat ${chatId}:`, error);
+					errors.push({ chatId, error: error.message || 'Unknown error' });
 				}
 			}));
 
 			// Add delay between batches to be respectful to the AI API
 			if (i + batchSize < chatIds.length) {
+				console.log(`⏳ Waiting 1 second before next batch...`);
 				await new Promise(resolve => setTimeout(resolve, 1000));
 			}
 		}
+
+		console.log(`🎉 Evaluation complete: ${results.length} successful, ${errors.length} failed`);
 
 		return json({
 			success: true,
@@ -103,7 +109,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			errors
 		});
 
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Error in historical chat evaluation:', error);
 		return json({ error: 'Failed to evaluate historical chats' }, { status: 500 });
 	}
@@ -264,7 +270,7 @@ async function saveEvaluation(chatId: string, userId: string, evaluation: ChatEv
 			}
 		} else {
 			console.error('Error checking existing evaluation:', error);
-			throw new Error(`Database error: ${error.message}`);
+			throw new Error(`Database error: ${error.message || 'Unknown error'}`);
 		}
 	}
 }
