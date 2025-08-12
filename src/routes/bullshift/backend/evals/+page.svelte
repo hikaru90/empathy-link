@@ -28,7 +28,6 @@
 	let evaluationProgress = $state(0);
 	let evaluationResults = $state<any[]>([]);
 	let evaluationErrors = $state<any[]>([]);
-	let showDashboard = $state(false);
 	let currentChatIndex = $state(0);
 	let totalChats = $state(0);
 
@@ -113,9 +112,6 @@
 		}
 	}
 
-	function toggleDashboard() {
-		showDashboard = !showDashboard;
-	}
 </script>
 
 <div class="pb-24 pt-16">
@@ -131,7 +127,7 @@
 
 		<!-- Stats Overview -->
 		<div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
-			<Card>
+			<Card class="bg-offwhite border border-white/20 shadow-md shadow-black/5">
 				<CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
 					<CardTitle class="text-sm font-medium">Total Chats</CardTitle>
 					<Clock class="h-4 w-4 text-muted-foreground" />
@@ -142,7 +138,7 @@
 				</CardContent>
 			</Card>
 
-			<Card>
+			<Card class="bg-offwhite border border-white/20 shadow-md shadow-black/5">
 				<CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
 					<CardTitle class="text-sm font-medium">Evaluated</CardTitle>
 					<CheckCircle class="h-4 w-4 text-green-600" />
@@ -153,7 +149,7 @@
 				</CardContent>
 			</Card>
 
-			<Card>
+			<Card class="bg-offwhite border border-white/20 shadow-md shadow-black/5">
 				<CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
 					<CardTitle class="text-sm font-medium">Pending</CardTitle>
 					<AlertTriangle class="h-4 w-4 text-yellow-600" />
@@ -164,7 +160,7 @@
 				</CardContent>
 			</Card>
 
-			<Card>
+			<Card class="bg-offwhite border border-white/20 shadow-md shadow-black/5">
 				<CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
 					<CardTitle class="text-sm font-medium">Progress</CardTitle>
 					<RefreshCw class="h-4 w-4 text-muted-foreground" />
@@ -181,7 +177,7 @@
 		</div>
 
 		<!-- Evaluation Controls -->
-		<Card class="mb-8">
+		<Card class="mb-8 bg-offwhite border border-white/20 shadow-md shadow-black/5">
 			<CardHeader>
 				<CardTitle>Run Evaluations</CardTitle>
 				<CardDescription>
@@ -283,20 +279,11 @@
 			</CardContent>
 		</Card>
 
-		<!-- Dashboard Toggle -->
-		<div class="mb-6">
-			<Button onclick={() => toggleDashboard()} variant="outline" class="w-full md:w-auto">
-				{showDashboard ? 'Hide Dashboard' : 'Show Evaluation Dashboard'}
-			</Button>
-		</div>
-
 		<!-- Evaluation Dashboard -->
-		{#if showDashboard}
-			<EvaluationDashboard />
-		{/if}
+		<EvaluationDashboard evaluations={data.evaluations} />
 
 		<!-- Recent Chats -->
-		<Card>
+		<Card class="bg-offwhite border border-white/20 shadow-md shadow-black/5">
 			<CardHeader>
 				<CardTitle>Recent Chats</CardTitle>
 				<CardDescription>Your most recent chat conversations</CardDescription>

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { pb } from '$scripts/pocketbase';
-	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import RefreshCw from 'lucide-svelte/icons/refresh-cw';
@@ -52,39 +50,34 @@
 		updated: string;
 	}
 
-	let evaluations: EvaluationRecord[] = [];
-	let loading = $state(true);
+	interface Props {
+		evaluations?: any[];
+	}
+
+	let { evaluations: rawEvaluations = [] }: Props = $props();
+	
+	let evaluations: EvaluationRecord[] = $state([]);
+	let loading = $state(false);
 	let error = $state<string | null>(null);
+	let refreshTrigger = $state(0);
 
-	onMount(() => {
-		loadEvaluations();
-	});
-
-	async function loadEvaluations() {
-		try {
-			loading = true;
-			error = null;
-			
-			const records = await pb.collection('chat_evaluations').getFullList({
-				sort: '-created',
-				expand: 'chatId'
-			});
-			
-			// Transform PocketBase records to our interface
-			evaluations = records.map(record => ({
+	// Process evaluations from props
+	$effect(() => {
+		if (rawEvaluations && rawEvaluations.length > 0) {
+			evaluations = rawEvaluations.map(record => ({
 				id: record.id,
 				chatId: record.chatId,
 				userId: record.userId,
-				evaluation: record.evaluation,
+				evaluation: typeof record.evaluation === 'string' ? JSON.parse(record.evaluation) : record.evaluation,
 				created: record.created,
 				updated: record.updated
 			}));
-		} catch (err) {
-			console.error('Error loading evaluations:', err);
-			error = 'Failed to load evaluations';
-		} finally {
-			loading = false;
 		}
+	});
+
+	async function refreshEvaluations() {
+		// Trigger page reload to refresh data
+		window.location.reload();
 	}
 
 	function getAverageScore(evaluations: EvaluationRecord[], path: string): number {
@@ -93,13 +86,17 @@
 		const sum = evaluations.reduce((acc, record) => {
 			const keys = path.split('.');
 			let value: any = record.evaluation;
+			
 			for (const key of keys) {
 				value = value?.[key];
 			}
-			return acc + (typeof value === 'number' ? value : 0);
+			
+			const finalValue = typeof value === 'number' ? value : 0;
+			return acc + finalValue;
 		}, 0);
 		
-		return Math.round((sum / evaluations.length) * 10) / 10;
+		const average = Math.round((sum / evaluations.length) * 10) / 10;
+		return average;
 	}
 
 	function getSafetyColor(riskLevel: string): string {
@@ -117,6 +114,7 @@
 		return 'text-red-600';
 	}
 
+	// Use derived state for reactive calculations
 	const totalEvaluations = $derived(evaluations.length);
 	const averageNVCScore = $derived(getAverageScore(evaluations, 'nvcConformance.overall'));
 	const averageSafetyScore = $derived(getAverageScore(evaluations, 'safety.safetyScore'));
@@ -124,15 +122,34 @@
 	const averageFrustrationLevel = $derived(getAverageScore(evaluations, 'userExperience.frustrationLevel'));
 	const highRiskChats = $derived(evaluations.filter(e => e.evaluation.safety.riskLevel === 'high').length);
 	const harmfulSuggestions = $derived(evaluations.filter(e => e.evaluation.safety.harmfulSuggestions).length);
+
+	function testCalculations() {
+		console.log('=== TESTING CALCULATIONS ===');
+		console.log('Evaluations array length:', evaluations.length);
+		console.log('First evaluation:', evaluations[0]);
+		
+		if (evaluations.length > 0) {
+			console.log('Average NVC Score:', averageNVCScore);
+			console.log('Average Safety Score:', averageSafetyScore);
+			console.log('Average Helpfulness Score:', averageHelpfulnessScore);
+			console.log('High Risk Chats:', highRiskChats);
+			console.log('Harmful Suggestions:', harmfulSuggestions);
+		}
+	}
 </script>
 
-<div class="p-6 space-y-6">
+<div class="space-y-6">
 	<div class="flex items-center justify-between">
 		<h1 class="text-3xl font-bold">Chat Evaluation Dashboard</h1>
-		<Button onclick={loadEvaluations} disabled={loading}>
-			<RefreshCw class="w-4 h-4 mr-2" />
-			{loading ? 'Loading...' : 'Refresh'}
-		</Button>
+		<div class="flex gap-2">
+			<Button onclick={testCalculations} disabled={loading}>
+				Test Calculations
+			</Button>
+			<Button onclick={refreshEvaluations} disabled={loading}>
+				<RefreshCw class="w-4 h-4 mr-2" />
+				{loading ? 'Loading...' : 'Refresh'}
+			</Button>
+		</div>
 	</div>
 
 	{#if error}
@@ -143,7 +160,7 @@
 
 	<!-- Summary Cards -->
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-		<Card>
+		<Card class="bg-offwhite border border-white/20 shadow-md shadow-black/5">
 			<CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
 				<CardTitle class="text-sm font-medium">Total Evaluations</CardTitle>
 				<Users class="h-4 w-4 text-muted-foreground" />
@@ -154,7 +171,7 @@
 			</CardContent>
 		</Card>
 
-		<Card>
+		<Card class="bg-offwhite border border-white/20 shadow-md shadow-black/5">
 			<CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
 				<CardTitle class="text-sm font-medium">Average NVC Score</CardTitle>
 				<Heart class="h-4 w-4 text-muted-foreground" />
@@ -165,7 +182,7 @@
 			</CardContent>
 		</Card>
 
-		<Card>
+		<Card class="bg-offwhite border border-white/20 shadow-md shadow-black/5">
 			<CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
 				<CardTitle class="text-sm font-medium">Safety Score</CardTitle>
 				<AlertTriangle class="h-4 w-4 text-muted-foreground" />
@@ -176,7 +193,7 @@
 			</CardContent>
 		</Card>
 
-		<Card>
+		<Card class="bg-offwhite border border-white/20 shadow-md shadow-black/5">
 			<CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
 				<CardTitle class="text-sm font-medium">User Satisfaction</CardTitle>
 				<TrendingUp class="h-4 w-4 text-muted-foreground" />
@@ -190,7 +207,7 @@
 
 	<!-- Detailed Metrics -->
 	<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-		<Card>
+		<Card class="bg-offwhite border border-white/20 shadow-md shadow-black/5">
 			<CardHeader>
 				<CardTitle>NVC Conformance Breakdown</CardTitle>
 				<CardDescription>Detailed scores for each NVC component</CardDescription>
@@ -223,7 +240,7 @@
 			</CardContent>
 		</Card>
 
-		<Card>
+		<Card class="bg-offwhite border border-white/20 shadow-md shadow-black/5">
 			<CardHeader>
 				<CardTitle>Safety & Risk Analysis</CardTitle>
 				<CardDescription>Safety metrics and flagged content</CardDescription>
@@ -239,8 +256,8 @@
 				</div>
 				<div class="flex items-center justify-between">
 					<span class="text-sm">Average Frustration</span>
-					<span class="font-medium {getScoreColor(10 - averageFrustrationLevel)}">
-						{Math.round((10 - averageFrustrationLevel) * 10) / 10}/10
+									<span class="font-medium {getScoreColor(10 - averageFrustrationLevel)}">
+					{Math.round((10 - averageFrustrationLevel) * 10) / 10}/10
 					</span>
 				</div>
 			</CardContent>
@@ -248,7 +265,7 @@
 	</div>
 
 	<!-- Recent Evaluations -->
-	<Card>
+	<Card class="bg-offwhite border border-white/20 shadow-md shadow-black/5">
 		<CardHeader>
 			<CardTitle>Recent Evaluations</CardTitle>
 			<CardDescription>Latest chat evaluation results</CardDescription>

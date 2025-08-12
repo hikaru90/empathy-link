@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { serializeNonPOJOs } from '$scripts/helpers';
-import { pb } from '$scripts/pocketbase'
-import { PUBLIC_POSTHOG_KEY } from '$env/static/public';
+import PocketBase from 'pocketbase';
+import { PUBLIC_POSTHOG_KEY, PUBLIC_BACKEND_URL } from '$env/static/public';
 import { redirect, type Handle, type HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { paraglideMiddleware } from '$src/paraglide/server';
@@ -63,8 +63,9 @@ const first: Handle = async ({ event, resolve }) => {
 	}
 	//end posthog integration
 
-	// Initialize PocketBase instance for this request
-	event.locals.pb = pb;
+	// CRITICAL: Create fresh PocketBase instance per request to ensure complete isolation
+	// This prevents any shared state including internal auth store state
+	event.locals.pb = new PocketBase(`https://${PUBLIC_BACKEND_URL}`);
 
 	// Load authentication state from cookies using SvelteKit's cookie parser
 	const pbAuthCookie = event.cookies.get('pb_auth');
@@ -301,13 +302,15 @@ export const handleError: HandleServerError = async ({ error, event }) => {
 			routeId: event.route?.id || 'Unknown'
 		};
 
-		// Log to PocketBase (use a dedicated admin connection if needed)
-		await pb.collection('errors').create(errorData);
+		// Log to PocketBase (create dedicated instance for error logging)
+		const errorPb = new PocketBase(`https://${PUBLIC_BACKEND_URL}`);
+		await errorPb.collection('errors').create(errorData);
 	} catch (logError) {
 		console.error('Failed to log server error to database:', logError);
 		// Fallback logging with minimal data
 		try {
-			await pb.collection('errors').create({
+			const fallbackPb = new PocketBase(`https://${PUBLIC_BACKEND_URL}`);
+			await fallbackPb.collection('errors').create({
 				message: `Server error logging failed: ${(error as Error).message}`,
 				originalError: String(error),
 				loggingError: String(logError),

@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
 import { GoogleGenAI, Type } from '@google/genai';
 import { pb } from '$scripts/pocketbase';
+import { saveTrace } from '$lib/server/tools';
 
 const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 
@@ -61,53 +62,53 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	try {
-		const { chatIds, batchSize = 5 } = await request.json();
-		
-		if (!chatIds || !Array.isArray(chatIds)) {
-			return json({ error: 'Invalid chatIds parameter' }, { status: 400 });
-		}
-
-		const results: Array<{ chatId: string; evaluation: ChatEvaluation }> = [];
-		const errors: Array<{ chatId: string; error: string }> = [];
-
-		// Process chats in batches to avoid overwhelming the AI
-		for (let i = 0; i < chatIds.length; i += batchSize) {
-			const batch = chatIds.slice(i, i + batchSize);
-			console.log(`Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(chatIds.length / batchSize)}: ${batch.length} chats`);
+			try {
+			const { chatIds, batchSize = 5 } = await request.json();
 			
-			await Promise.all(batch.map(async (chatId: string) => {
-				try {
-					const evaluation = await evaluateSingleChat(chatId, user.id);
-					results.push({ chatId, evaluation });
-					
-					// Save evaluation to database
-					await saveEvaluation(chatId, user.id, evaluation);
-					
-					console.log(`✅ Successfully evaluated chat ${chatId}`);
-					
-				} catch (error: any) {
-					console.error(`❌ Error evaluating chat ${chatId}:`, error);
-					errors.push({ chatId, error: error.message || 'Unknown error' });
-				}
-			}));
-
-			// Add delay between batches to be respectful to the AI API
-			if (i + batchSize < chatIds.length) {
-				console.log(`⏳ Waiting 1 second before next batch...`);
-				await new Promise(resolve => setTimeout(resolve, 1000));
+			if (!chatIds || !Array.isArray(chatIds)) {
+				return json({ error: 'Invalid chatIds parameter' }, { status: 400 });
 			}
-		}
 
-		console.log(`🎉 Evaluation complete: ${results.length} successful, ${errors.length} failed`);
+			const results: Array<{ chatId: string; evaluation: ChatEvaluation }> = [];
+			const errors: Array<{ chatId: string; error: string }> = [];
 
-		return json({
-			success: true,
-			evaluated: results.length,
-			errorCount: errors.length,
-			results,
-			errors
-		});
+			// Process chats in batches to avoid overwhelming the AI
+			for (let i = 0; i < chatIds.length; i += batchSize) {
+				const batch = chatIds.slice(i, i + batchSize);
+				console.log(`Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(chatIds.length / batchSize)}: ${batch.length} chats`);
+				
+				await Promise.all(batch.map(async (chatId: string) => {
+					try {
+						const evaluation = await evaluateSingleChat(chatId, user.id);
+						results.push({ chatId, evaluation });
+						
+						// Save evaluation to database
+						await saveEvaluation(chatId, user.id, evaluation);
+						
+						console.log(`✅ Successfully evaluated chat ${chatId}`);
+						
+					} catch (error: any) {
+						console.error(`❌ Error evaluating chat ${chatId}:`, error);
+						errors.push({ chatId, error: error.message || 'Unknown error' });
+					}
+				}));
+
+				// Add delay between batches to be respectful to the AI API
+				if (i + batchSize < chatIds.length) {
+					console.log(`⏳ Waiting 1 second before next batch...`);
+					await new Promise(resolve => setTimeout(resolve, 1000));
+				}
+			}
+
+			console.log(`🎉 Evaluation complete: ${results.length} successful, ${errors.length} failed`);
+
+			return json({
+				success: true,
+				evaluated: results.length,
+				errorCount: errors.length,
+				results,
+				errors
+			});
 
 	} catch (error: any) {
 		console.error('Error in historical chat evaluation:', error);
@@ -133,8 +134,20 @@ async function evaluateSingleChat(chatId: string, userId: string): Promise<ChatE
 	// Create evaluation prompt
 	const evaluationPrompt = createEvaluationPrompt(chatRecord.history, userMessages, aiMessages);
 	
-	// Get evaluation from AI
-	const evaluation = await getAIEvaluation(evaluationPrompt);
+	// Get evaluation from AI with the response object for token tracking
+	const { evaluation, aiResponse } = await getAIEvaluationWithResponse(evaluationPrompt);
+	
+	// Save trace for the evaluation with token counts
+	await saveTrace(
+		'evaluateSingleChat',
+		`Evaluated chat ${chatId} for NVC conformance, safety, and helpfulness`,
+		'backend',
+		chatId,
+		userId,
+		`Evaluation completed for chat with ${aiMessages.length} AI responses`,
+		aiResponse, // Pass the AI response to get token counts
+		`Evaluating individual chat for NVC conformance, safety, and helpfulness`
+	);
 	
 	return evaluation;
 }
@@ -158,7 +171,7 @@ Evaluate each AI response for:
 Provide a comprehensive evaluation following the exact schema requirements.`;
 }
 
-async function getAIEvaluation(prompt: string): Promise<ChatEvaluation> {
+async function getAIEvaluationWithResponse(prompt: string): Promise<{ evaluation: ChatEvaluation; aiResponse: any }> {
 	const evaluationSchema = {
 		type: Type.OBJECT,
 		properties: {
@@ -237,8 +250,8 @@ async function getAIEvaluation(prompt: string): Promise<ChatEvaluation> {
 	try {
 		const evaluation = JSON.parse(response);
 		evaluation.metadata.timestamp = new Date().toISOString();
-		return evaluation;
-	} catch (error) {
+		return { evaluation, aiResponse: result };
+	} catch (error: any) {
 		throw new Error(`Failed to parse AI evaluation: ${error.message}`);
 	}
 }
