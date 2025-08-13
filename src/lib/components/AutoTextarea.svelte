@@ -6,11 +6,12 @@
 		value: string;
     class?: string;
 		textarea?: HTMLTextAreaElement;
+		onEnter?: () => void;
 	}
 
   let textarea: HTMLTextAreaElement;
 
-	let { placeholder = '', value = $bindable(''), class: className = undefined, textarea: textareaBinding = $bindable() }: Props = $props();
+	let { placeholder = '', value = $bindable(''), class: className = undefined, textarea: textareaBinding = $bindable(), onEnter }: Props = $props();
 
   let previousValue = $state(value);
   let shouldSetCursorToEnd = $state(false);
@@ -19,6 +20,13 @@
         const length = textarea.value.length;
         textarea.focus();
         textarea.setSelectionRange(length, length);
+  };
+
+  const handleKeydown = (event: KeyboardEvent) => {
+    if (event.key === 'Enter' && !event.shiftKey && onEnter) {
+      event.preventDefault();
+      onEnter();
+    }
   };
 
   $effect(() => {
@@ -52,4 +60,5 @@
   bind:this={textarea}
   rows=1
 	class={cn('overflow-y-auto max-h-[6.6em] overscroll-contain', className)}
+	onkeydown={handleKeydown}
 ></textarea>

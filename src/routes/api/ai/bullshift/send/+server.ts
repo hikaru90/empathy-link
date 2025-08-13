@@ -41,11 +41,16 @@ const initialState: State = {
 	request: ''
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
-		const { chatId, message, userId, systemInstruction, locale } = await request.json();
+		const user = locals.user;
+		if (!user) {
+			return json({ error: 'Unauthorized' }, { status: 401 });
+		}
+
+		const { chatId, message, systemInstruction, locale } = await request.json();
 		
-		console.log('Send request received:', { chatId, message, userId, locale });
+		console.log('Send request received:', { chatId, message, userId: user.id, locale });
 		console.log('Available chats in memory:', Array.from(bullshiftChats.keys()));
 
 		if (!chatId || !message) {
@@ -60,7 +65,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const chatInDb = await pb.collection('chats').getOne(chatId);
 		let state = chatInDb?.state || initialState;
 
-		await queueMemoryExtraction(userId, 'pending');
+		await queueMemoryExtraction(user.id, 'pending');
 
 		// Send message and get response
 		const response: GenerateContentResponse = await chatInMemory.sendMessage({ message });
@@ -74,7 +79,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			message,
 			'bullshift',
 			chatId,
-			userId,
+			user.id,
 			response.text,
 			response,
 			systemInstruction

@@ -158,6 +158,13 @@
 					bind:value={userSentence}
 					placeholder={content.placeholder || 'Schreibe hier den schwierigen Satz, den du gehört hast...'}
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
+					onEnter={isPreview ? () => {
+						if (userSentence.trim()) {
+							transformedNeeds = mockNeeds;
+							hasSubmitted = true;
+							gotoNextStep?.();
+						}
+					} : submitSentence}
 				/>
 
 				<div class="flex items-end justify-between">

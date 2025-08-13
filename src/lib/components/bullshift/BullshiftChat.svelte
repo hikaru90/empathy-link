@@ -22,6 +22,7 @@
 	import { getLocale } from '$src/paraglide/runtime';
 	import { scroll } from '$store/page';
 	import TypewriterText from '$lib/components/TypewriterText.svelte';
+	import { invalidateAll } from '$app/navigation';
 
 	interface Feeling {
 		id: string;
@@ -88,7 +89,6 @@
 				body: JSON.stringify({
 					chatId,
 					message: userMessage,
-					userId: user!.id,
 					systemInstruction,
 					locale: locale
 				})
@@ -295,7 +295,7 @@
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ userId: user.id })
+			body: JSON.stringify({})
 		});
 
 		// Handle authentication errors gracefully - do NOT redirect to login
@@ -398,8 +398,10 @@
 			chatAnalysisId &&
 			chatTerminationModalVisible
 		) {
-			setTimeout(() => {
+			setTimeout(async () => {
 				chatTerminationModalVisible = false;
+				// Invalidate all data to retrigger the load function and get fresh chat data
+				await invalidateAll();
 			}, 1500); // Show success state for 1.5 seconds before auto-hiding
 		}
 	});
@@ -540,6 +542,7 @@
 					placeholder="Deine Nachricht..."
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
 					bind:textarea={textareaRef}
+					onEnter={handleSendMessage}
 				></AutoTextarea>
 
 				<div

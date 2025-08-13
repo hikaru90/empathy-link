@@ -31,7 +31,7 @@ const getLocalizedPrompt = (promptKey: string, variables: Record<string, any> = 
 	return m[`ai_prompts_${promptKey}` as keyof typeof m](variables);
 };
 
-export const analyzeChat = async (chatId: string, userId: string, locale: string) => {
+export const analyzeChat = async (chatId: string, userId: string, locale: string, pb: any) => {
 	try {
 		console.log('analyzeChat called with locale:', locale);
 		console.log('Current setLocale available:', typeof setLocale);
@@ -160,7 +160,8 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 			userId,
 			response,
 			result,
-			systemInstruction
+			systemInstruction,
+			pb
 		);
 
 		return responseJson;
@@ -248,7 +249,8 @@ export const extractMemories = async (userId: string, locale: string = 'en') => 
 									enum: ['speculative', 'likely', 'certain'],
 									description: 'Confidence of the aspect'
 								}
-							}
+							},
+							required: ['aspectType', 'key', 'value', 'confidence']
 						}
 					}
 				}
@@ -321,7 +323,8 @@ export const saveTrace = async (
 	userId: string,
 	response?: string,
 	result?: GenerateContentResponse,
-	systemInstruction?: string
+	systemInstruction?: string,
+	pbInstance?: any
 ) => {
 	let traceData: any;
 	try {
@@ -349,7 +352,9 @@ export const saveTrace = async (
 		
 		console.log(':::saveTrace data:', traceData);
 		
-		const trace = await pb.collection('traces').create(traceData);
+		// Use passed pb instance or fall back to shared pb for backward compatibility
+		const pbToUse = pbInstance || pb;
+		const trace = await pbToUse.collection('traces').create(traceData);
 		console.log(':::saveTrace done: ', trace);
 	} catch (error) {
 		// Log error but don't let it propagate - trace failures should never affect core functionality

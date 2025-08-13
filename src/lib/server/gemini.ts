@@ -131,10 +131,10 @@ export const getModel = async (user: object, locale: string, history?: HistoryEn
 	return { model, systemInstruction };
 };
 
-export const initChat = async (user: object, locale: string) => {
+export const initChat = async (user: any, locale: string) => {
 	const dbChat = await pb.collection('chats').create({
 		history: [],
-		user: pb.authStore.model?.id,
+		user: user.id,
 		module: 'bullshift'
 	});
 

@@ -16,7 +16,7 @@
 
 	let selectedMemories = $state([]);
 	const communicationInsights = $derived(
-		data.filter((memory: any) => memory.type === 'relationship')
+		data.filter((memory: any) => memory.type === 'relationship' || memory.type === 'identity')
 	);
 
 	const selectChat = (id: string) => {

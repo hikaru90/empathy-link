@@ -330,6 +330,7 @@
 					bind:value={situationInput}
 					placeholder="Mein Chef meinte ich würde seine Erwartungen enttäuschen..."
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none max-w-xs"
+					onEnter={submitSituation}
 				/>
 
 				<div class="flex items-end justify-between">
@@ -421,6 +422,7 @@
 					bind:value={thoughtsInput}
 					placeholder="Ich habe gedacht ich sei nicht gut genug..."
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
+					onEnter={submitThoughts}
 				/>
 
 				<div class="flex items-end justify-end">

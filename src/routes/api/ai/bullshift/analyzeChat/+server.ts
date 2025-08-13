@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { bullshiftChats, initChat } from '$lib/server/gemini';
-import { pb } from '$scripts/pocketbase';
 import type { Content } from '@google/genai';
 import { analyzeChat } from '$lib/server/tools';
 import { z } from 'zod';
@@ -33,7 +32,7 @@ const initHistory = (user: object, history?: HistoryEntry[]) => {
 const saveChatInMemory = (chatId: string, chat: any) => {
 	bullshiftChats.set(chatId, chat);
 };
-const initChatInDb = async (user: any, chat: any) => {
+const initChatInDb = async (user: any, chat: any, pb: any) => {
 	let chatData: Partial<DbChatSession> = {
 		user: user.id,
 		module: 'bullshift',
@@ -44,7 +43,7 @@ const initChatInDb = async (user: any, chat: any) => {
 	console.log('Created new chat record:', record);
 	return record;
 };
-const getChatFromDb = async (chatId: string) => {
+const getChatFromDb = async (chatId: string, pb: any) => {
 	console.log('getChatFromDb chatId', chatId);
 	const record = await pb.collection('chats').getOne(chatId);
 	return record;
@@ -110,7 +109,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			authStoreValid: locals.pb?.authStore?.isValid
 		});
 
-		const analysis = await analyzeChat(chatId, user.id, locale);
+		const analysis = await analyzeChat(chatId, user.id, locale, locals.pb);
 		console.log('analysis', analysis);
 
 		// Define schema with optional fields and defaults for numeric values
@@ -166,7 +165,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		validatedAnalysis.user = user.id;
 		validatedAnalysis.chat = chatId;
 
-		const analysisRecord = await pb.collection('analyses').create(validatedAnalysis);
+		const analysisRecord = await locals.pb.collection('analyses').create(validatedAnalysis);
 		const initiatedChat = await initChat(user, locale);
 
 		const res = {initiatedChat: initiatedChat, analysis: analysisRecord};

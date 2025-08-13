@@ -243,6 +243,7 @@
 					placeholder={content.placeholder || 'Schreibe deine Antwort hier...'}
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
 					bind:textarea={textareaRef}
+					onEnter={submitAnswer}
 				/>
 
 				<!-- Feelings selector -->

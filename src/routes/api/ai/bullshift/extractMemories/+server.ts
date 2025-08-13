@@ -2,17 +2,16 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { extractMemories } from '$lib/server/tools';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
-		const { userId } = await request.json();
+		const user = locals.user;
+		if (!user) {
+			return json({ error: 'Unauthorized' }, { status: 401 });
+		}
 
-		// if (!chatId) {
-		//   return json({ error: 'No chat ID provided' }, { status: 400 });
-		// }
-
-		console.log('extracting Memories on the serverSide');
-		// Remove chat from memory
-		extractMemories(userId);
+		console.log('extracting Memories on the serverSide for user:', user.id);
+		// Use authenticated user's ID instead of accepting it from request body
+		extractMemories(user.id);
 
 		return json({ success: true });
 	} catch (error) {

@@ -184,5 +184,132 @@ async function testAuthIsolation() {
     }
 }
 
-// Run the test
-testAuthIsolation().catch(console.error);
+async function testAnalyzeChatFunctionality() {
+    console.log('🧪 Testing analyzeChat functionality...\n');
+    
+    const browser = await chromium.launch({ 
+        headless: false,
+        devtools: true
+    });
+    
+    try {
+        const context = await browser.newContext();
+        const page = await context.newPage();
+        
+        // Navigate to login page
+        console.log('📝 Navigating to login page...');
+        await page.goto('http://localhost:3001/app/auth/login');
+        await page.waitForTimeout(1000);
+        
+        console.log('🔑 Attempting to login with test credentials...');
+        
+        // Try to find login form elements
+        const emailInput = await page.$('input[type="email"], input[name="email"], input[placeholder*="mail"]');
+        const passwordInput = await page.$('input[type="password"], input[name="password"]');
+        
+        if (!emailInput || !passwordInput) {
+            console.log('❌ Could not find login form elements');
+            console.log('   Current URL:', page.url());
+            console.log('   Page title:', await page.title());
+            return;
+        }
+        
+        // Get credentials from environment (if available)
+        const testEmail = process.env.PRIVATE_USERNAME || 'test@example.com';
+        const testPassword = process.env.PRIVATE_PASSWORD || 'testpass';
+        
+        await emailInput.fill(testEmail);
+        await passwordInput.fill(testPassword);
+        
+        const submitButton = await page.$('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")');
+        if (submitButton) {
+            await submitButton.click();
+            console.log('   Clicked login button, waiting for response...');
+            await page.waitForTimeout(3000);
+        }
+        
+        const currentUrl = page.url();
+        console.log('   After login attempt, URL:', currentUrl);
+        
+        if (currentUrl.includes('/bullshift') || currentUrl.includes('/dashboard')) {
+            console.log('✅ Successfully logged in');
+            
+            // Navigate to bullshift chat
+            console.log('📱 Navigating to bullshift chat...');
+            await page.goto('http://localhost:3001/bullshift');
+            await page.waitForTimeout(2000);
+            
+            // Check if we can access the chat
+            const chatUrl = page.url();
+            console.log('   Chat URL:', chatUrl);
+            
+            if (chatUrl.includes('/bullshift')) {
+                console.log('✅ Successfully accessed bullshift chat');
+                
+                // Look for analyze chat functionality
+                console.log('🔍 Looking for analyze chat functionality...');
+                
+                // Check if there are any analyze buttons or similar
+                const analyzeButtons = await page.$$('button:has-text("Analyze"), button:has-text("Analysis"), [data-testid*="analyze"]');
+                console.log('   Found analyze-related buttons:', analyzeButtons.length);
+                
+                // Check console for any analyzeChat related errors
+                page.on('console', msg => {
+                    if (msg.text().includes('analyzeChat')) {
+                        console.log('   🔍 Browser console (analyzeChat):', msg.text());
+                    }
+                });
+                
+                // Check network requests for analyzeChat calls
+                page.on('request', request => {
+                    if (request.url().includes('analyzeChat')) {
+                        console.log('   📡 Network request to analyzeChat:', request.url(), request.method());
+                    }
+                });
+                
+                page.on('response', response => {
+                    if (response.url().includes('analyzeChat')) {
+                        console.log('   📡 Network response from analyzeChat:', response.url(), response.status());
+                    }
+                });
+                
+                // Try to trigger analyze chat functionality
+                // This might need to be adjusted based on the actual UI
+                console.log('🔧 Attempting to trigger analyze chat functionality...');
+                
+                // Wait for any dynamic content to load
+                await page.waitForTimeout(2000);
+                
+                console.log('   ⏳ Waiting 10 seconds to observe any automatic analyze chat calls...');
+                await page.waitForTimeout(10000);
+                
+            } else {
+                console.log('❌ Could not access bullshift chat, redirected to:', chatUrl);
+            }
+            
+        } else {
+            console.log('❌ Login failed or credentials invalid');
+            console.log('   Please check PRIVATE_USERNAME and PRIVATE_PASSWORD in .env file');
+        }
+        
+    } catch (error) {
+        console.error('❌ Test failed with error:', error.message);
+    } finally {
+        console.log('🔍 Keeping browser open for manual inspection...');
+        console.log('   Check browser console and network tab for analyzeChat activity');
+        console.log('   Press Ctrl+C to close when done inspecting');
+        
+        // Keep browser open indefinitely for manual inspection
+        await new Promise(() => {}); // This will keep the process running
+    }
+}
+
+// Choose which test to run based on command line argument
+const testType = process.argv[2];
+
+if (testType === 'analyze') {
+    testAnalyzeChatFunctionality().catch(console.error);
+} else {
+    // Run the original auth isolation test
+    testAuthIsolation().catch(console.error);
+}

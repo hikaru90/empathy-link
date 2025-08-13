@@ -430,6 +430,7 @@
 					bind:value={situationInput}
 					placeholder="Ich war bei dem letzten Familienbesuch etwas geladen und habe dann einfach das Thema gewechselt..."
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
+					onEnter={submitCombinedInput}
 				/>
 
 				<div class="flex items-end justify-between">
@@ -526,10 +527,11 @@
 				</div>
 
 				<AutoTextarea
-					bind:this={textareaRef}
 					bind:value={needsInput}
 					placeholder="Sicherheit, Verständnis, Autonomie..."
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
+					bind:textarea={textareaRef}
+					onEnter={submitNeeds}
 				/>
 
 				<div class="flex items-end justify-between">
