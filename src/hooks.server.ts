@@ -183,7 +183,6 @@ const first: Handle = async ({ event, resolve }) => {
 
 	// Update the cookie with current auth state
 	try {
-		// Get the raw cookie value from PocketBase
 		const rawCookieValue = event.locals.pb.authStore.exportToCookie({
 			secure: false, // Temporarily disabled for debugging auth issues
 			httpOnly: true,
@@ -192,12 +191,6 @@ const first: Handle = async ({ event, resolve }) => {
 			maxAge: 60 * 60 * 24 * 7 // 1 week
 		});
 		
-		console.log('↪ COOKIE DEBUG: Exporting cookie, auth valid:', event.locals.pb.authStore.isValid);
-		console.log('↪ COOKIE DEBUG: Cookie secure setting: false (temporarily disabled)');
-		console.log('↪ COOKIE DEBUG: Cookie value length:', rawCookieValue.length);
-		console.log('↪ COOKIE DEBUG: Raw cookie value:', rawCookieValue);
-		
-		// Set the cookie with explicit headers to ensure proper domain/path
 		response.headers.append('set-cookie', rawCookieValue);
 		
 	} catch (cookieError) {

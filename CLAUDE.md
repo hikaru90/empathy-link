@@ -42,6 +42,22 @@ npm run sync
 npm run android
 ```
 
+### Testing & Automation
+```bash
+# Run Playwright tests
+npm run test
+
+# Run custom authentication isolation test
+node test-auth-isolation-playwright.js
+```
+
+**Playwright Browser Automation**: 
+- Playwright is available for browser automation and testing
+- Can create scripts to test authentication, user flows, and security isolation
+- Use `import { chromium } from 'playwright'` for browser automation
+- Test credentials are available via environment variables `PRIVATE_USERNAME` and `PRIVATE_PASSWORD` for testing login flows
+- **SECURITY NOTE**: Test credentials must never be committed to git or exposed in code
+
 ## Project Architecture
 
 ### Core Technology Stack
