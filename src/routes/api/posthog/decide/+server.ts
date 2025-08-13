@@ -1,9 +1,13 @@
 import { json, type RequestHandler} from '@sveltejs/kit' 
 import { PUBLIC_POSTHOG_KEY } from '$env/static/public';
 
-export const POST = (async ({ request }) => {
+export const POST = (async ({ request, locals }) => {
   try {
-    const {userId} = await request.json(); 
+    const user = locals.user;
+    if (!user) {
+      return json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -11,7 +15,7 @@ export const POST = (async ({ request }) => {
       },
       body: JSON.stringify({
         api_key: PUBLIC_POSTHOG_KEY,
-        distinct_id: userId
+        distinct_id: user.id
       })
     };
   
