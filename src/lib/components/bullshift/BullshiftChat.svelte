@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Mascot2 from '$lib/components/Mascot2.svelte';
 	import { preventDefault } from 'svelte/legacy';
 	import { marked } from 'marked';
 	import { onMount } from 'svelte';
@@ -79,6 +80,11 @@
 	// Get the current locale reactively
 	const locale = $derived(getLocale());
 
+	const sendMessage = () => {
+		history = [...history, { role: 'user', parts: [{ text: userMessage }], timestamp: Date.now() }];
+		handleSendMessage();
+	};
+
 	const handleSendMessage = async () => {
 		if (!userMessage.trim()) return;
 		isLoading = true;
@@ -114,7 +120,6 @@
 			if (data.error) throw new Error(data.error);
 			history = [
 				...history,
-				{ role: 'user', parts: [{ text: userMessage }], timestamp: Date.now() },
 				{ role: 'model', parts: [{ text: data.response }], timestamp: data.timestamp }
 			];
 			userMessage = '';
@@ -154,7 +159,7 @@
 			isLoading = false;
 			setTimeout(() => {
 				scrollDown();
-			}, 500);
+			}, 200);
 		}
 	};
 	const getFeelings = async () => {
@@ -362,6 +367,24 @@
 			textarea.focus();
 		}, 0);
 	};
+	const chatSuggestion = async () => {
+		const lastMessages = history.slice(-4).map((msg) => msg.parts[0].text);
+		console.log('lastMessages', lastMessages);
+		const response = await fetch('/api/ai/bullshift/chatSuggestion', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				chatId: chatId,
+				locale: locale,
+				lastMessages: lastMessages
+			})
+		});
+		const data = await response.json();
+		console.log('data from /chatSuggestion', data);
+		return data.suggestion;
+	};
 
 	const autoGrow = (element: HTMLTextAreaElement) => {
 		element.style.height = '5px';
@@ -407,124 +430,79 @@
 	});
 </script>
 
-<!-- {#if user?.role === 'admin'}
-	<div class={cn(className, 'flex justify-between')}>
-		<Popover.Root>
-			<Popover.Trigger>
-				<div
-					class="flex items-center gap-2 rounded-full bg-black py-1 pl-2 pr-3 text-xs text-offwhite"
-				>
-					<Bug class="size-4 text-blue-300" /> Debug
-				</div>
-			</Popover.Trigger>
-			<Popover.Content class="m-2 flex w-auto flex-col gap-2 bg-transparent p-0 shadow-none">
-				<a
-					target="_blank"
-					class="flex items-center justify-between gap-2 rounded-full bg-black px-2 py-1 text-xs text-offwhite active:bg-blue-500/50"
-					href={`/bullshift/insights/${chatId}`}
-				>
-					<span class="hidden md:inline">{chatId}: </span>Inspect Chat<span class="text-blue-300"
-						>↗</span
-					>
-				</a>
-				<button
-					onclick={flushMemory}
-					class="flex items-center justify-between gap-2 rounded-full bg-black px-2 py-1 text-xs text-offwhite active:bg-red-500/50"
-				>
-					Flush Memory <span class="text-yellow-300">↡</span>
-				</button>
-				<button
-					onclick={async () => {
-						try {
-							await extractMemories();
-							console.log('Memories extracted successfully');
-						} catch (error) {
-							console.error('Failed to extract memories:', error);
-						}
-					}}
-					class="flex items-center justify-between gap-2 rounded-full bg-black px-2 py-1 text-xs text-offwhite active:bg-red-500/50"
-				>
-					Extract Memory <span class="text-green-300">↳</span>
-				</button>
-			</Popover.Content>
-		</Popover.Root>
-		<button
-			onclick={clearChat}
-			class="flex items-center gap-1 rounded-full bg-black/30 px-2 py-1 text-xs text-black"
-		>
-			Neuer Chat
-			<RotateCcw class="size-3 text-red-500" />
-		</button>
-	</div>
-{/if} -->
-
 {#if chatId}
 	<div class="">
 		<div bind:this={chatContainer} class="messages rounded-lg pb-52 pt-4">
-			<h1 class="mb-3 text-2xl font-light">
-				<TypewriterText
-					text="Hi {String(user?.firstName).charAt(0).toUpperCase() +
-						String(user?.firstName).slice(
-							1
-						)}, ich bin hier, um den ganzen Bullshit in deinem Leben zu durchbrechen."
-					onComplete={() => {
-						text1Done = true;
-					}}
-				/>
-			</h1>
-			<h2 class="mb-6 text-2xl font-light text-black/40">
-				{#if text1Done}
+			{#if history.length === 0}
+				<h1 class="mb-3 text-2xl font-light">
 					<TypewriterText
-						text="Beschreib mir eine Situation, und ich helfe dir, sie zu verarbeiten. Vertrau mir – wir
-					schaffen das gemeinsam!"
+						text="Hi {String(user?.firstName).charAt(0).toUpperCase() +
+							String(user?.firstName).slice(
+								1
+							)}, ich bin hier, um Dir bei Herausforderungen in deinem Leben zu helfen."
+						onComplete={() => {
+							text1Done = true;
+						}}
 					/>
-				{/if}
-			</h2>
+				</h1>
+				<h2 class="mb-6 text-2xl font-light text-black/40">
+					{#if text1Done}
+						<TypewriterText
+							text="Beschreib mir eine Situation, und ich helfe dir, sie zu verarbeiten. Vertrau mir – wir
+					schaffen das gemeinsam!"
+						/>
+					{/if}
+				</h2>
+			{/if}
 			{#each history as message}
 				<!-- {JSON.stringify(message)} -->
 				<div
 					aria-label={message.role}
-					class="message {message.role} mb-4 {message.role === 'user' ? 'text-right' : 'text-left'}"
+					class="message {message.role} mb-4 {message.role === 'user'
+						? 'ml-4 text-right'
+						: 'mr-4 text-left'}"
 				>
 					<div
-						class="inline-block break-words rounded-xl px-3 py-2 {message.role === 'user'
-							? 'border border-white'
+						class="inline-block break-words rounded-b-xl px-3 py-1.5 shadow-lg shadow-black/5 {message.role ===
+						'user'
+							? 'rounded-tl-xl rounded-tr border border-white/40 bg-offwhite '
 							: message.role === 'error'
-								? 'border border-red-300 bg-red-100 text-red-800'
-								: 'bg-white'}"
+								? 'rounded-tl-md rounded-tr-xl border border-red-300 bg-red-100 text-red-800'
+								: 'rounded-tl rounded-tr-xl border border-white bg-white/90'}"
 					>
-						<div class="text-sm">
-							{#if 'text' in message.parts[0]}
-								{@html marked(message.parts[0].text)}
-								<!-- {@html marked(
+						<div class="flex items-start gap-2">
+							<div class="text-sm">
+								{#if 'text' in message.parts[0]}
+									{@html marked(message.parts[0].text)}
+									<!-- {@html marked(
 									message.role === 'user'
 										? message.parts[0].text
 										: safelyParseJSON(message.parts[0].text).response
 								)} -->
-							{:else if 'functionCall' in message.parts[0]}
-								<div class="text-xs">
-									<span class="font-bold">Funktion:</span>
-									{message.parts[0].functionCall.name}
-									<span class="font-bold">Argumente:</span>
-									{JSON.stringify(message.parts[0].functionCall.args)}
-								</div>
-							{/if}
+								{:else if 'functionCall' in message.parts[0]}
+									<div class="text-xs">
+										<span class="font-bold">Funktion:</span>
+										{message.parts[0].functionCall.name}
+										<span class="font-bold">Argumente:</span>
+										{JSON.stringify(message.parts[0].functionCall.args)}
+									</div>
+								{/if}
+							</div>
 						</div>
 					</div>
 				</div>
 			{/each}
-			{#if isLoading}
-				<div class="flex items-center justify-center">
-					<LoaderCircle class="size-6 animate-spin text-bullshift" />
-				</div>
-			{/if}
-		</div>
 
-		<div class="fixed bottom-[62px] left-0 right-0 px-4 pb-6 pt-4">
+			<div class="flex items-center justify-center">
+				{#await chatSuggestion() then suggestion}
+					{suggestion}
+				{/await}
+			</div>
+
 			<button
 				class="{history.length > 0
 					? 'pointer-events-auto opacity-100'
-					: 'pointer-events-none opacity-0'} fixed left-1/2 top-4 flex -translate-x-1/2 transform items-center gap-2 rounded-full bg-bullshift px-3 py-1 text-sm shadow-xl transition"
+					: 'pointer-events-none opacity-0'} flex items-center gap-2 rounded-full bg-bullshift px-3 py-1 text-sm shadow-xl transition"
 				onclick={() => {
 					chatTerminationModalVisible = true;
 					startAnalysis();
@@ -533,8 +511,28 @@
 				Chat abschließen
 				<SquareCheck class="size-4" />
 			</button>
+			{#if isLoading}
+				<div class="flex items-center justify-start">
+					<div
+						class="flex items-center justify-center gap-0.5 rounded-full bg-white p-2 shadow-lg shadow-black/5"
+					>
+						<div class="size-1.5 animate-loadingFade rounded-full bg-black"></div>
+						<div
+							style="animation-delay: 250ms;"
+							class="size-1.5 animate-loadingFade rounded-full bg-black"
+						></div>
+						<div
+							style="animation-delay: 500ms;"
+							class="delay-750 size-1.5 animate-loadingFade rounded-full bg-black"
+						></div>
+					</div>
+				</div>
+			{/if}
+		</div>
+
+		<div class="fixed bottom-[62px] left-0 right-0 px-4 pb-6 pt-4">
 			<form
-				onsubmit={preventDefault(handleSendMessage)}
+				onsubmit={sendMessage}
 				class="flex flex-col gap-2 rounded-2xl border border-white bg-gradient-to-b from-white to-offwhite p-2 shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
 			>
 				<AutoTextarea
@@ -542,7 +540,7 @@
 					placeholder="Deine Nachricht..."
 					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
 					bind:textarea={textareaRef}
-					onEnter={handleSendMessage}
+					onEnter={sendMessage}
 				></AutoTextarea>
 
 				<div
@@ -554,8 +552,9 @@
 						<button
 							type="button"
 							onclick={() => addText(feeling.nameDE)}
-							class="rounded-full border border-black/5 bg-white px-2 py-0.5 text-xs text-black active:bg-black/5 {feeling.positive ? 'border-bullshift' : 'border-black/40'}"
-							>{feeling.nameDE}</button
+							class="rounded-full border border-black/5 bg-white px-2 py-0.5 text-xs text-black active:bg-black/5 {feeling.positive
+								? 'border-bullshift'
+								: 'border-black/40'}">{feeling.nameDE}</button
 						>
 					{/each}
 				</div>

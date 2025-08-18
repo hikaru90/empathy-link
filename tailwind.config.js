@@ -26,7 +26,8 @@ const config = {
 			},
 			animation: {
 				expand: 'expand 1s ease-in-out infinite alternate',
-				splash: 'splash 1s ease-in-out'
+				splash: 'splash 1s ease-in-out',
+				loadingFade: 'loadingFade 2s 200ms infinite'
 			},
 			keyframes: {
 				expand: {
@@ -42,6 +43,12 @@ const config = {
 					'0%': { opacity: 0, transform: 'scale(1.6)' },
 					'60%': { opacity: 0.3 },
 					'100%': { opacity: 1, transform: 'scale(1)' },
+				},
+				loadingFade: {
+					'0%': { opacity: 0.2, transform: 'translateY(0.5px)' },
+					'25%': {opacity: 0.8, transform: 'translateY(-1.5px)' },
+					'50%': {opacity: 0.2, transform: 'translateY(0.5px)' },
+					'100%': {opacity: 0.2, transform: 'translateY(0.5px)' },
 				},
 			},
 			colors: {
