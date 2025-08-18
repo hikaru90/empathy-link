@@ -19,9 +19,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const prompt = `Basierend auf der letzten KI-Nachricht und dem Gesprächskontext, schlage EINE bedeutungsvolle Nutzerantwort vor.
 
-Deine Antwort sollte eine einzelne, authentische Nutzernachricht sein (maximal 30 Wörter), die der Nutzer als seine Antwort senden könnte. Sie sollte natürlich und persönlich klingen, wie etwas, das eine echte Person sagen würde.
-
-Gib nur die vorgeschlagene Nutzerantwort zurück, sonst nichts.
+- Deine Antwort sollte eine einzelne, authentische Nutzernachricht sein (maximal 10 Wörter), die der Nutzer als seine Antwort senden könnte. 
+- Sie sollte natürlich und persönlich klingen, wie etwas, das eine echte Person sagen würde. 
+- Gib nur eine Antwort zurück wenn es für den Nutzer schwierig sein könnte, eine Antwort zu finden. Also alles was eine tiefere Reflexion erfordert. Also emotionales erfassen und damit umgehen etc.
+- Wenn du denkst, es wäre laut den eben genannten kriterien sinnvoll, gib nur die vorgeschlagene Nutzerantwort zurück, sonst einen leeren string.
+- Gib so wenig Wörter wie möglich zurück.
+- Gibt die Antwort in Textform ohne Anführungszeichen zurück.
 
 Der Gesprächskontext: ${lastMessages.slice(0, -1).join('\n')}
 Die letzte KI-Nachricht: ${lastMessages.slice(-1)}`

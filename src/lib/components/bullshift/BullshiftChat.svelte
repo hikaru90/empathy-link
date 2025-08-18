@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ArrowDownFromLine from 'lucide-svelte/icons/arrow-down-from-line';
 	import Mascot2 from '$lib/components/Mascot2.svelte';
 	import { preventDefault } from 'svelte/legacy';
 	import { marked } from 'marked';
@@ -325,6 +326,10 @@
 			return '';
 		}
 	};
+	const addAndSendText = (text: string) => {
+		addText(text);
+		sendMessage();
+	};
 	const addText = (text: string) => {
 		if (!textareaRef) {
 			// Fallback to old behavior if no textarea ref
@@ -458,9 +463,9 @@
 				<!-- {JSON.stringify(message)} -->
 				<div
 					aria-label={message.role}
-					class="message {message.role} mb-4 {message.role === 'user'
-						? 'ml-4 text-right'
-						: 'mr-4 text-left'}"
+					class="message {message.role} mb-4 flex {message.role === 'user'
+						? 'ml-4 justify-end'
+						: 'mr-4 justify-start'}"
 				>
 					<div
 						class="inline-block break-words rounded-b-xl px-3 py-1.5 shadow-lg shadow-black/5 {message.role ===
@@ -493,24 +498,6 @@
 				</div>
 			{/each}
 
-			<div class="flex items-center justify-center">
-				{#await chatSuggestion() then suggestion}
-					{suggestion}
-				{/await}
-			</div>
-
-			<button
-				class="{history.length > 0
-					? 'pointer-events-auto opacity-100'
-					: 'pointer-events-none opacity-0'} flex items-center gap-2 rounded-full bg-bullshift px-3 py-1 text-sm shadow-xl transition"
-				onclick={() => {
-					chatTerminationModalVisible = true;
-					startAnalysis();
-				}}
-			>
-				Chat abschließen
-				<SquareCheck class="size-4" />
-			</button>
 			{#if isLoading}
 				<div class="flex items-center justify-start">
 					<div
@@ -528,59 +515,90 @@
 					</div>
 				</div>
 			{/if}
+
+			<div class="flex items-center justify-center">
+				<button
+					class="{history.length > 0
+						? 'pointer-events-auto opacity-100'
+						: 'pointer-events-none opacity-0'} mb-4 flex items-center gap-2 rounded-full border border-black/10 pl-3 pr-2 py-1 text-sm transition"
+					onclick={() => {
+						chatTerminationModalVisible = true;
+						startAnalysis();
+					}}
+				>
+					Chat abschließen
+					<SquareCheck class="size-4" />
+				</button>
+			</div>
+			
 		</div>
 
 		<div class="fixed bottom-[62px] left-0 right-0 px-4 pb-6 pt-4">
-			<form
-				onsubmit={sendMessage}
-				class="flex flex-col gap-2 rounded-2xl border border-white bg-gradient-to-b from-white to-offwhite p-2 shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
-			>
-				<AutoTextarea
-					bind:value={userMessage}
-					placeholder="Deine Nachricht..."
-					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
-					bind:textarea={textareaRef}
-					onEnter={sendMessage}
-				></AutoTextarea>
 
-				<div
-					class="{feelingSelectorVisible
+			<div class="bg-white/40 rounded-[23px] p-2">
+
+				{#if history.length > 0}
+				{#await chatSuggestion() then suggestion}
+				<button onclick={() => addAndSendText(suggestion)} class=" bg-white/40 rounded-2xl p-2 text-sm text-left">
+					{suggestion}
+					<div class="inline-flex items-center gap-1 text-xs bg-pink-200 px-1 py-0.5 rounded-md">
+						Vorschlag übernehmen
+						<ArrowDownFromLine class="size-3" />
+					</div>
+			</button>
+			{/await}
+			{/if}
+			
+			<form
+			onsubmit={sendMessage}
+			class="flex flex-col gap-2 rounded-2xl border border-white bg-gradient-to-b from-white to-offwhite p-2 shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
+			>
+			<AutoTextarea
+			bind:value={userMessage}
+			placeholder="Deine Nachricht..."
+			class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
+			bind:textarea={textareaRef}
+			onEnter={sendMessage}
+			></AutoTextarea>
+			
+			<div
+			class="{feelingSelectorVisible
 						? 'flex'
 						: 'hidden'} max-h-40 flex-wrap gap-1 overflow-y-auto overscroll-contain"
 				>
-					{#each feelings as feeling}
-						<button
-							type="button"
-							onclick={() => addText(feeling.nameDE)}
-							class="rounded-full border border-black/5 bg-white px-2 py-0.5 text-xs text-black active:bg-black/5 {feeling.positive
+				{#each feelings as feeling}
+				<button
+				type="button"
+				onclick={() => addText(feeling.nameDE)}
+				class="rounded-full border border-black/5 bg-white px-2 py-0.5 text-xs text-black active:bg-black/5 {feeling.positive
 								? 'border-bullshift'
 								: 'border-black/40'}">{feeling.nameDE}</button
 						>
-					{/each}
-				</div>
-				<div
+						{/each}
+					</div>
+					<div
 					class="{needSelectorVisible
 						? 'flex'
 						: 'hidden'} max-h-40 flex-wrap gap-1 overflow-y-auto overscroll-contain"
 				>
-					{#each needs as need}
-						<button
-							type="button"
-							onclick={() => addText(need.nameDE)}
-							class="rounded-full border border-black/5 bg-white px-2 py-0.5 text-xs text-black active:bg-black/5"
-							>{need.nameDE}</button
-						>
-					{/each}
-				</div>
-
-				<div class="flex items-end justify-between">
-					<div class="flex items-center gap-2">
-						<button
-							type="button"
-							onclick={() => {
-								needSelectorVisible = false;
-								feelingSelectorVisible = !feelingSelectorVisible;
-							}}
+				{#each needs as need}
+				<button
+				type="button"
+				onclick={() => addText(need.nameDE)}
+				class="rounded-full border border-black/5 bg-white px-2 py-0.5 text-xs text-black active:bg-black/5"
+				>{need.nameDE}</button
+				>
+				{/each}
+			</div>
+			
+			<div class="flex items-end justify-between">
+				<div class="flex items-center gap-2">
+					<button
+					type="button"
+					onclick={() => {
+						needSelectorVisible = false;
+						feelingSelectorVisible = !feelingSelectorVisible;
+					}}
 							style={feelingSelectorVisible
 								? ''
 								: 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}
@@ -588,21 +606,21 @@
 								? 'bg-black/10 text-black shadow-inner'
 								: 'bg-white text-black/60'}"
 						>
-							<div
-								class="w-[1.2em] rounded-full p-[0.1em] {feelingSelectorVisible
+						<div
+						class="w-[1.2em] rounded-full p-[0.1em] {feelingSelectorVisible
 									? 'bg-black fill-white/80'
 									: 'bg-black/10 fill-black/60'}"
 							>
-								{@html IconHeart}
-							</div>
-							Gefühle
-						</button>
-						<button
-							type="button"
-							onclick={() => {
-								feelingSelectorVisible = false;
-								needSelectorVisible = !needSelectorVisible;
-							}}
+							{@html IconHeart}
+						</div>
+						Gefühle
+					</button>
+					<button
+					type="button"
+					onclick={() => {
+						feelingSelectorVisible = false;
+						needSelectorVisible = !needSelectorVisible;
+					}}
 							style="{needSelectorVisible
 								? ''
 								: 'box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);'}	"
@@ -610,27 +628,27 @@
 								? 'bg-black/10 text-black shadow-inner'
 								: 'bg-white text-black/60'}"
 						>
-							<div
-								class="w-[1.2em] rounded-full p-[0.1em] {needSelectorVisible
+						<div
+						class="w-[1.2em] rounded-full p-[0.1em] {needSelectorVisible
 									? 'bg-black fill-white/80'
 									: 'bg-black/10 fill-black/60'}"
 							>
-								{@html IconSwirl}
-							</div>
-							Bedürfnisse
-						</button>
-					</div>
-					<button
-						type="submit"
-						onclick={() => {
-							feelingSelectorVisible = false;
-							needSelectorVisible = false;
-						}}
+							{@html IconSwirl}
+						</div>
+						Bedürfnisse
+					</button>
+				</div>
+				<button
+				type="submit"
+				onclick={() => {
+					feelingSelectorVisible = false;
+					needSelectorVisible = false;
+				}}
 						aria-label="Send message"
 						disabled={isLoading}
 						style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
 						class="flex size-10 items-center justify-center rounded-full bg-black text-white disabled:opacity-50"
-					>
+						>
 						<div class="w-[1.2em] fill-white">
 							{@html IconPaperPlane}
 						</div>
@@ -638,23 +656,24 @@
 				</div>
 			</form>
 		</div>
+		</div>
 	</div>
-{/if}
-
-{#if chatTerminationModalVisible}
+	{/if}
+	
+	{#if chatTerminationModalVisible}
 	<!-- Custom non-interactive modal -->
 	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 		<div class="mx-4 max-w-md rounded-lg bg-white p-6 shadow-xl">
 			<div class="text-center">
 				<h3 class="mb-4 text-lg font-semibold">Chat wird ausgewertet</h3>
-
+				
 				{#if analyzerIsRunning || memorizerIsRunning}
-					<!-- Loading state with sparkle pill -->
-					<div class="mb-4 flex flex-col items-center gap-3">
-						<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
-						{#if analyzerIsRunning}
-							<p class="text-sm text-gray-600">Dein Chat wird ausgewertet</p>
-						{:else if memorizerIsRunning}
+				<!-- Loading state with sparkle pill -->
+				<div class="mb-4 flex flex-col items-center gap-3">
+					<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
+					{#if analyzerIsRunning}
+					<p class="text-sm text-gray-600">Dein Chat wird ausgewertet</p>
+					{:else if memorizerIsRunning}
 							<p class="text-sm text-gray-600">Dein Chat wird abgespeichert</p>
 						{/if}
 					</div>
