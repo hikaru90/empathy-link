@@ -3,6 +3,7 @@
 	import AutoTextarea from '$lib/components/AutoTextarea.svelte';
 	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import Loader2 from 'lucide-svelte/icons/loader-2';
+	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 	import IconPaperPlane from '$assets/icons/icon-paper-plane.svg?raw';
 	import IconHeart from '$assets/icons/icon-heart.svg?raw';
@@ -38,6 +39,7 @@
 		topicVersionId: string;
 		onResponse: (response: any) => void;
 		gotoNextStep?: () => void;
+		gotoPrevStep?: () => void;
 		isPreview?: boolean;
 	}
 
@@ -51,6 +53,7 @@
 		topicVersionId,
 		onResponse,
 		gotoNextStep,
+		gotoPrevStep,
 		isPreview = false
 	}: Props = $props();
 
@@ -278,6 +281,16 @@
 
 				<div class="flex items-end justify-between">
 					<div class="flex items-center gap-2">
+						<button
+							type="button"
+							onclick={() => gotoPrevStep?.()}
+							style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
+							class="flex items-center gap-2 rounded-full bg-white px-1 py-1 text-xs"
+						>
+							<div class="flex size-4 items-center justify-center rounded-full fill-black/60">
+								<ChevronLeft class="size-3" />
+							</div>
+						</button>
 						{#if existingResponse()}
 							<button
 								type="button"
@@ -386,6 +399,10 @@
 			onClick={() => {
 				gotoNextStep?.();
 			}}
+			onPrev={() => {
+				gotoPrevStep?.();
+			}}
+			displayBackButton={true}
 		>
 			Weiter
 		</LearnGotoNextButton>

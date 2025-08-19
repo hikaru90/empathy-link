@@ -17,6 +17,7 @@
 		topicVersionId: string;
 		onResponse: (response: any) => void;
 		gotoNextStep?: () => void;
+		gotoPrevStep?: () => void;
 		isPreview?: boolean;
 	}
 
@@ -30,6 +31,7 @@
 		topicVersionId,
 		onResponse,
 		gotoNextStep,
+		gotoPrevStep,
 		isPreview = false
 	}: Props = $props();
 
@@ -250,6 +252,10 @@
 				gotoNextStep?.();
 			}}
 			disabled={isPreview}
+			onPrev={() => {
+				gotoPrevStep?.();
+			}}
+			displayBackButton={true}
 		>
 			Weiter
 		</LearnGotoNextButton>

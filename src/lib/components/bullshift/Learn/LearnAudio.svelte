@@ -19,9 +19,10 @@
 		session?: any;
 		onResponse?: (response: any) => void;
 		gotoNextStep?: () => void;
+		gotoPrevStep?: () => void;
 	}
 
-	let { content, color, session, onResponse, gotoNextStep }: Props = $props();
+	let { content, color, session, onResponse, gotoNextStep, gotoPrevStep }: Props = $props();
 
 	// Audio player state
 	let audioElement: HTMLAudioElement;
@@ -290,12 +291,15 @@
 
 			<div class="flex justify-center">
 				<LearnGotoNextButton
-					variant="secondary"
 					onClick={() => {
 						markCompleted('skipped');
 						audioElement.pause();
 						gotoNextStep?.();
 					}}
+					onPrev={() => {
+						gotoPrevStep?.();
+					}}
+					displayBackButton={true}
 				>
 					{isCompleted ? 'Weiter' : 'Überspringen'}
 				</LearnGotoNextButton>

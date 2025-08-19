@@ -371,7 +371,12 @@
 	});
 
 	// Helper function to handle response saving
-	const handleResponse = async (blockType: string, response: any, content: any, currentBlockIndex?: number): Promise<void> => {
+	const handleResponse = async (
+		blockType: string,
+		response: any,
+		content: any,
+		currentBlockIndex?: number
+	): Promise<void> => {
 		const session = activeSession();
 		if (!session) return;
 
@@ -402,7 +407,6 @@
 				| 'pageNavigation';
 
 			const newResponse = {
-				
 				blockIndex: currentBlockIndex || 0,
 				blockType: validBlockType,
 				response,
@@ -414,9 +418,10 @@
 			// Ensure responses array exists
 			const existingResponses = session.responses || [];
 
-			// Remove any existing response for this page and block type  
+			// Remove any existing response for this page and block type
 			const updatedResponses = existingResponses.filter(
-				(r) => !(r.blockType === blockType && JSON.stringify(r.blockContent) === JSON.stringify(content))
+				(r) =>
+					!(r.blockType === blockType && JSON.stringify(r.blockContent) === JSON.stringify(content))
 			);
 			updatedResponses.push(newResponse);
 
@@ -453,7 +458,7 @@
 					| 'pageNavigation';
 				await learningSession.saveResponseImmediate(
 					session.id,
-					
+
 					currentBlockIndex || 0,
 					validBlockType,
 					response,
@@ -507,9 +512,7 @@
 	{#if !record || !categories || !record.expand?.currentVersion}
 		<div class="flex h-full w-full items-center justify-center">
 			<div class="text-center">
-				<div
-					class="flex h-svh items-center justify-center"
-				>
+				<div class="flex h-svh items-center justify-center">
 					<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
 				</div>
 			</div>
@@ -576,13 +579,31 @@
 			{@const content = stepData.blockIndex >= 0 ? components()[stepData.blockIndex] : null}
 			{@const internalStep = stepData.internalStep}
 			{#if content && content.type === 'text'}
-				<LearnText {content} gotoNextStep={() => gotoNextStep()} />
+				<LearnText
+					{content}
+					gotoNextStep={() => gotoNextStep()}
+					gotoPrevStep={() => gotoPrevStep()}
+				/>
 			{:else if content && content.type === 'task'}
-				<LearnTask color={currentCategory().color} {content} />
+				<LearnTask
+					color={currentCategory().color}
+					{content}
+					gotoPrevStep={() => gotoPrevStep()}
+					gotoNextStep={() => gotoNextStep()}
+				/>
 			{:else if content && content.type === 'heading'}
-				<LearnHeading {content} />
+				<LearnHeading
+					{content}
+					gotoPrevStep={() => gotoPrevStep()}
+					gotoNextStep={() => gotoNextStep()}
+				/>
 			{:else if content && content.type === 'image'}
-				<LearnImage {content} currentVersion={topic()} gotoNextStep={() => gotoNextStep()} />
+				<LearnImage
+					{content}
+					currentVersion={topic()}
+					gotoNextStep={() => gotoNextStep()}
+					gotoPrevStep={() => gotoPrevStep()}
+				/>
 			{:else if content && content.type === 'audio'}
 				<LearnAudio
 					color={currentCategory().color}
@@ -590,6 +611,7 @@
 					session={activeSession()}
 					onResponse={(response) => handleResponse('audio', response, content)}
 					gotoNextStep={() => gotoNextStep()}
+					gotoPrevStep={() => gotoPrevStep()}
 				/>
 			{:else if content && content.type === 'timer'}
 				<LearnTimer
@@ -597,14 +619,16 @@
 					color={currentCategory().color}
 					session={activeSession()}
 					onResponse={(response) => handleResponse('timer', response, content)}
+					gotoNextStep={() => gotoNextStep()}
+					gotoPrevStep={() => gotoPrevStep()}
 				/>
 			{:else if content && content.type === 'breathe'}
 				<LearnBreathe
 					{content}
-					
 					blockIndex={stepData.blockIndex}
 					{isPreview}
 					gotoNextStep={() => gotoNextStep()}
+					gotoPrevStep={() => gotoPrevStep()}
 				/>
 			{:else if content && content.type === 'bodymap'}
 				{#if activeSession()}
@@ -616,11 +640,14 @@
 						topicVersionId={topic().id}
 						onResponse={(response) => handleResponse('bodymap', response, content)}
 						gotoNextStep={() => gotoNextStep()}
+						gotoPrevStep={() => gotoPrevStep()}
 					/>
 				{:else}
 					<div class="flex items-center justify-center p-8">
 						<div class="text-center">
-							<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+							<div
+								class="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"
+							></div>
 							<p class="text-gray-600">Session wird geladen...</p>
 						</div>
 					</div>
@@ -631,29 +658,39 @@
 					color={currentCategory().color}
 					session={activeSession()}
 					onResponse={(response) => handleResponse('taskCompletion', response, content)}
+					gotoPrevStep={() => gotoPrevStep()}
+					gotoNextStep={() => gotoNextStep()}
 				/>
 			{:else if content && content.type === 'list'}
 				<LearnList
 					{content}
 					currentCategory={currentCategory()}
 					gotoNextStep={() => gotoNextStep()}
+					gotoPrevStep={() => gotoPrevStep()}
 				/>
 			{:else if content && content.type === 'sortable'}
-				{@const sortableResponses = activeSession()?.responses?.filter(r => 
-					r.blockIndex === stepData.blockIndex && 
-					r.blockType === 'sortable' &&
-					JSON.stringify(r.blockContent) === JSON.stringify(content)
-				) || []}
-				{@const savedResponse = sortableResponses.length > 0 
-					? sortableResponses.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]
-					: null}
+				{@const sortableResponses =
+					activeSession()?.responses?.filter(
+						(r) =>
+							r.blockIndex === stepData.blockIndex &&
+							r.blockType === 'sortable' &&
+							JSON.stringify(r.blockContent) === JSON.stringify(content)
+					) || []}
+				{@const savedResponse =
+					sortableResponses.length > 0
+						? sortableResponses.sort(
+								(a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+							)[0]
+						: null}
 				<LearnSortable
 					{content}
 					color={currentCategory().color}
 					currentCategory={currentCategory()}
 					initialUserSorting={savedResponse?.response?.userSorting || {}}
-					onResponse={(response) => handleResponse('sortable', response, content, stepData.blockIndex)}
+					onResponse={(response) =>
+						handleResponse('sortable', response, content, stepData.blockIndex)}
 					gotoNextStep={() => gotoNextStep()}
+					gotoPrevStep={() => gotoPrevStep()}
 				/>
 			{:else if content && content.type === 'multipleChoice'}
 				<LearnMultipleChoice
@@ -663,6 +700,8 @@
 					contentBlock={content}
 					topicVersionId={topic().id}
 					onResponse={(response) => handleResponse('multipleChoice', response, content)}
+					gotoNextStep={() => gotoNextStep()}
+					gotoPrevStep={() => gotoPrevStep()}
 				/>
 			{:else if content && content.type === 'aiQuestion'}
 				<LearnAIQuestion
@@ -675,6 +714,7 @@
 					topicVersionId={topic().id}
 					onResponse={(response) => handleResponse('aiQuestion', response, content)}
 					gotoNextStep={() => gotoNextStep()}
+					gotoPrevStep={() => gotoPrevStep()}
 				/>
 			{:else if content && content.type === 'feelingsDetective'}
 				<LearnFeelingsDetective
@@ -712,13 +752,14 @@
 					totalSteps={totalSteps()}
 					topicVersionId={topic().id}
 					onResponse={(response) => handleResponse('needsRubiksCube', response, content)}
-					gotoNextStep={() => gotoNextStep()}
+					gotoNextStep={() => gotoNextStep()}	
+					gotoPrevStep={() => gotoPrevStep()}
 					{isPreview}
 				/>
 			{:else if content && content.type === 'nextPage'}
-				<LearnNextPage {content} />
+				<LearnNextPage {content} gotoPrevStep={() => gotoPrevStep()} gotoNextStep={() => gotoNextStep()} />
 			{:else if content && content.type === 'pageNavigation'}
-				<LearnPageNavigation {content} />
+				<LearnPageNavigation {content} gotoPrevStep={() => gotoPrevStep()} gotoNextStep={() => gotoNextStep()} />
 			{:else}
 				<div class="rounded-lg bg-gray-100 p-4">
 					<p class="text-gray-600">Unknown content type: {content?.type || 'undefined'}</p>

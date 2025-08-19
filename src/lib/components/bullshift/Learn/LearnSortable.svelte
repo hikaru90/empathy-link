@@ -19,9 +19,10 @@
 		onResponse?: (response: { userSorting: { [itemText: string]: 'A' | 'B' | null } }) => void;
 		initialUserSorting?: { [itemText: string]: 'A' | 'B' | null };
 		gotoNextStep?: () => void;
+		gotoPrevStep?: () => void;
 	}
 
-	let { content, currentCategory, color, onResponse, initialUserSorting, gotoNextStep }: Props =
+	let { content, currentCategory, color, onResponse, initialUserSorting, gotoNextStep, gotoPrevStep }: Props =
 		$props();
 
 	// Initialize userSorting directly from props or with null values
@@ -355,6 +356,10 @@
 					gotoNextStep?.();
 				}
 			}}
+			onPrev={() => {
+				gotoPrevStep?.();
+			}}
+			displayBackButton={true}
 		>
 			Weiter
 		</LearnGotoNextButton>

@@ -7,9 +7,10 @@
 	interface Props {
 		content: any;
 		gotoNextStep?: () => void;
+		gotoPrevStep?: () => void;
 	}
 
-	let { content, gotoNextStep }: Props = $props();
+	let { content, gotoNextStep, gotoPrevStep }: Props = $props();
 
 	let sourcesVisible = $state(false);
 
@@ -65,6 +66,10 @@
 		onClick={() => {
 			gotoNextStep?.();
 		}}
+		onPrev={() => {
+			gotoPrevStep?.();
+		}}
+		displayBackButton={true}
 	>
 		{content.ctaText || 'Weiter'}
 	</LearnGotoNextButton>

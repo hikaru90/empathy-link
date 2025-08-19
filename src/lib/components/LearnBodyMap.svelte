@@ -16,10 +16,19 @@
 		contentBlock?: any;
 		topicVersionId?: string;
 		gotoNextStep: () => void;
+		gotoPrevStep: () => void;
 	}
 
-	let { content, color, session, onResponse, contentBlock, topicVersionId, gotoNextStep }: Props =
-		$props();
+	let {
+		content,
+		color,
+		session,
+		onResponse,
+		contentBlock,
+		topicVersionId,
+		gotoNextStep,
+		gotoPrevStep
+	}: Props = $props();
 
 	let points = $state<{ id: number; x: number; y: number; feelings: string[] }[]>([]);
 	let showFeelings = $state<boolean>(false);
@@ -37,8 +46,6 @@
 	const splashContentClass = $derived(() => {
 		return splashDone ? 'opacity-100 scale-100' : 'opacity-0 scale-0';
 	});
-
-
 
 	const initFeelingsLookup = async () => {
 		try {
@@ -106,9 +113,9 @@
 					top: offset,
 					behavior: 'smooth'
 				});
-					} catch (error) {
-			// Error scrolling to feelings
-		}
+			} catch (error) {
+				// Error scrolling to feelings
+			}
 		}, 100);
 	};
 
@@ -202,8 +209,6 @@
 		}
 	};
 
-
-
 	const handleMouseMove = (event: MouseEvent | TouchEvent) => {
 		if (!isDragging || activePointId === null) return;
 
@@ -284,9 +289,10 @@
 		const isOutsidePointDot = !target.closest('.point-dot');
 		const isOutsideMap = !target.closest('.bodyscan-map');
 
-
-
-		if ((isOutsideFeelings && isOutsidePointControls && isOutsidePointDot) || (isOutsideFeelings && isOutsideMap)) {
+		if (
+			(isOutsideFeelings && isOutsidePointControls && isOutsidePointDot) ||
+			(isOutsideFeelings && isOutsideMap)
+		) {
 			// Check if active point has no feelings and delete it
 			const activePoint = points.find((point) => point.id === activePointId);
 			if (activePoint && activePoint.feelings.length === 0) {
@@ -303,8 +309,6 @@
 
 		// Load existing response if available (session is guaranteed to be present)
 		if (contentBlock && session.responses) {
-			
-
 			const existingResponse = session.responses.find((r) => {
 				return (
 					r.blockType === 'bodymap' &&
@@ -362,12 +366,15 @@
 			{#each points as point}
 				<div
 					class="point-dot absolute -m-2.5 flex size-8 cursor-pointer items-center justify-center rounded-full bg-white shadow-md"
-					style="left: {point.x}px; top: {point.y}px; touch-action: none; z-index: {point.id === activePointId ? '20' : '10'}; {point.id === activePointId ? 'pointer-events: none;' : ''}"
+					style="left: {point.x}px; top: {point.y}px; touch-action: none; z-index: {point.id ===
+					activePointId
+						? '20'
+						: '10'}; {point.id === activePointId ? 'pointer-events: none;' : ''}"
 					onmousedown={(e) => handlePointMouseDown(e, point.id)}
 					ontouchstart={(e) => handlePointMouseDown(e, point.id)}
 				>
 					<div
-						class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full px-1 py-0.5 text-center text-xs z-10"
+						class="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full px-1 py-0.5 text-center text-xs"
 					>
 						{point.feelings.length}
 					</div>
@@ -378,7 +385,7 @@
 							? 'top-full mt-2'
 							: 'bottom-full mb-2'} {point.id === activePointId
 							? 'max-h-96 opacity-100'
-							: 'max-h-0 opacity-60'} overflow-hidden pointer-events-auto"
+							: 'max-h-0 opacity-60'} pointer-events-auto overflow-hidden"
 					>
 						<div class="flex flex-col gap-1 px-2 pt-2 {point.id === activePointId ? '' : 'pb-2'}">
 							{#each point.feelings as feeling}
@@ -453,6 +460,10 @@
 		</div>
 
 		<LearnGotoNextButton
+			onPrev={() => {
+				gotoPrevStep?.();
+			}}
+			displayBackButton={true}
 			onClick={() => {
 				if (gotoNextStep) {
 					gotoNextStep();

@@ -8,9 +8,11 @@
 		color: string;
 		session: LearningSession | null;
 		onResponse: (response: any) => void;
+		gotoNextStep?: () => void;
+		gotoPrevStep?: () => void;
 	}
 
-	let { content, color, session, onResponse }: Props = $props();
+	let { content, color, session, onResponse, gotoNextStep, gotoPrevStep }: Props = $props();
 
 	let completed = $state(false);
 	let notes = $state('');

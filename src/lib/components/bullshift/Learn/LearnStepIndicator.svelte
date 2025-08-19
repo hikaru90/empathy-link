@@ -36,12 +36,3 @@
 		{/each}
 	</div>
 </div>
-
-{#if currentStep > 0}
-	<button
-							onclick={() => onPrevStep?.()}
-		class="absolute z-30 left-14 top-8 transform -translate-y-1/2 size-8 rounded-full flex items-center justify-center"
-	>
-		<ChevronLeft class="size-5" />
-	</button>
-{/if}

@@ -9,9 +9,10 @@
     content: ImageBlock;
     currentVersion?: any;
     gotoNextStep?: () => void;
+    gotoPrevStep?: () => void;
   }
 
-  let { content, currentVersion, gotoNextStep }: Props = $props();
+  let { content, currentVersion, gotoNextStep, gotoPrevStep }: Props = $props();
   
   // Try to get the current version from context if not provided
   const contextVersion = getContext('currentVersion');
@@ -63,6 +64,10 @@
 			onClick={() => {
 				gotoNextStep?.();
 			}}
+			onPrev={() => {
+				gotoPrevStep?.();
+			}}
+			displayBackButton={true}
 		>
 			Weiter
 		</LearnGotoNextButton>

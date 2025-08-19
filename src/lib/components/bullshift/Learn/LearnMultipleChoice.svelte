@@ -13,9 +13,11 @@
 		topicVersionId: string;
 		onResponse: (response: any) => void;
 		onComplete?: () => void;
+		gotoNextStep?: () => void;
+		gotoPrevStep?: () => void;
 	}
 
-	let { content, color, session, contentBlock, topicVersionId, onResponse, onComplete }: Props = $props();
+	let { content, color, session, contentBlock, topicVersionId, onResponse, onComplete, gotoNextStep, gotoPrevStep }: Props = $props();
 
 	let currentQuestionIndex = $state(0);
 	let selectedOptions = $state<number[]>([]);

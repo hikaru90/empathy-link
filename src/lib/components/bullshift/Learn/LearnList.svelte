@@ -12,9 +12,10 @@
 			color: string;
 		};
 		gotoNextStep: () => void;
+		gotoPrevStep?: () => void;
 	}
 
-	let { content, currentCategory, gotoNextStep }: Props = $props();
+	let { content, currentCategory, gotoNextStep, gotoPrevStep }: Props = $props();
 </script>
 
 <div class="flex flex-col justify-between gap-2 mb-6 relative z-0 h-full">
@@ -51,6 +52,10 @@
 				gotoNextStep();
 			}
 		}}
+		onPrev={() => {
+			gotoPrevStep?.();
+		}}
+		displayBackButton={true}
 	>
 		Weiter
 	</LearnGotoNextButton>

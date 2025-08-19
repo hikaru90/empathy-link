@@ -69,12 +69,14 @@
 		{#if displayBackButton}
 			<Button
 				onclick={onPrev}
-				class="flex h-10 items-center justify-between gap-2 rounded-full bg-white py-3 pl-2 pr-6 font-medium text-white"
+				class="flex h-10 items-center justify-between gap-2 rounded-full bg-white py-3 {backButtonText ? 'pl-2 pr-6':'px-2'}  font-medium text-white"
 			>
-				<div class="flex size-6 items-center justify-center rounded-full bg-black/10">
-					<ArrowLeft class="size-4" />
+				<div class="flex size-6 items-center justify-center rounded-full">
+					<ArrowLeft class="size-4 text-black" />
 				</div>
+				{#if backButtonText}
 				<span class="text-black">{backButtonText}</span>
+				{/if}
 			</Button>
 		{/if}
 		<Button

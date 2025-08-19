@@ -10,9 +10,11 @@
 		session: LearningSession | null;
 		onResponse: (response: any) => void;
 		onComplete?: () => void;
+		gotoNextStep?: () => void;
+		gotoPrevStep?: () => void;
 	}
 
-	let { duration, color, session, onResponse, onComplete }: Props = $props();
+	let { duration, color, session, onResponse, onComplete, gotoNextStep, gotoPrevStep }: Props = $props();
 
 	let time = $state(duration);
 	let isRunning = $state(false);

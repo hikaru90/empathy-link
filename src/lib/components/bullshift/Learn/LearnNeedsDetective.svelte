@@ -4,6 +4,7 @@
 	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import Loader2 from 'lucide-svelte/icons/loader-2';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
+	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
 	import IconPaperPlane from '$assets/icons/icon-paper-plane.svg?raw';
 	import LearnGotoNextButton from '$lib/components/bullshift/Learn/LearnGotoNextButton.svelte';
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
@@ -434,7 +435,17 @@
 				/>
 
 				<div class="flex items-end justify-between">
-					<div>
+					<div class="flex items-center gap-2">
+						<button
+							type="button"
+							onclick={() => gotoPrevStep?.()}
+							style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
+							class="flex items-center gap-2 rounded-full bg-white px-1 py-1 text-xs"
+						>
+							<div class="flex size-4 items-center justify-center rounded-full fill-black/60">
+								<ChevronLeft class="size-3" />
+							</div>	
+						</button>
 						{#if existingResponse()}
 							<button
 								type="button"
@@ -538,6 +549,16 @@
 					<div class="flex items-center gap-2">
 						<button
 							type="button"
+							onclick={() => gotoPrevStep?.()}
+							style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
+							class="flex items-center gap-2 rounded-full bg-white px-1 py-1 text-xs"
+						>
+							<div class="flex size-4 items-center justify-center rounded-full fill-black/60">
+								<ChevronLeft class="size-3" />
+							</div>
+						</button>
+						<button
+							type="button"
 							onclick={() => {
 								needSelectorVisible = !needSelectorVisible;
 							}}
@@ -595,7 +616,13 @@
 				<span class="ml-2">Erstelle Zusammenfassung...</span>
 			</div>
 		{:else}
-			<LearnGotoNextButton onClick={generateSummary}>
+			<LearnGotoNextButton
+				onClick={generateSummary}
+				onPrev={() => {
+					gotoPrevStep?.();
+				}}
+				displayBackButton={true}
+			>
 				Zusammenfassung erstellen
 			</LearnGotoNextButton>
 		{/if}
@@ -611,6 +638,10 @@
 			onClick={() => {
 				gotoNextStep?.();
 			}}
+			onPrev={() => {
+				gotoPrevStep?.();
+			}}
+			displayBackButton={true}
 		>
 			Weiter
 		</LearnGotoNextButton>

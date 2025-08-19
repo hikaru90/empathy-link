@@ -4,6 +4,7 @@
 	import type { LearningSession } from '$routes/bullshift/learn/[slug]/edit/schema';
 	import Loader2 from 'lucide-svelte/icons/loader-2';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
+	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
 	import IconPaperPlane from '$assets/icons/icon-paper-plane.svg?raw';
 	import LearnGotoNextButton from '$lib/components/bullshift/Learn/LearnGotoNextButton.svelte';
 	import FeelingSelector from '$lib/components/FeelingSelector.svelte';
@@ -55,7 +56,6 @@
 		}
 		return 'opacity-0 scale-0';
 	});
-
 
 	const internalStep = $derived(() => {
 		return totalSteps[currentStep].internalStep;
@@ -204,13 +204,13 @@
 	};
 
 	const generateSummary = async () => {
-		console.log('generateSummary called', { 
-			isLoading, 
-			situationInput: situationInput.trim(), 
-			thoughtsInput: thoughtsInput.trim(), 
-			selectedFeelings 
+		console.log('generateSummary called', {
+			isLoading,
+			situationInput: situationInput.trim(),
+			thoughtsInput: thoughtsInput.trim(),
+			selectedFeelings
 		});
-		
+
 		if (isLoading) return;
 
 		// Validate that we have the required data
@@ -218,7 +218,7 @@
 			errorMessage = 'Please complete the situation input first';
 			return;
 		}
-		
+
 		if (!thoughtsInput.trim()) {
 			errorMessage = 'Please complete the thoughts input first';
 			return;
@@ -230,15 +230,14 @@
 
 		try {
 			// Convert feeling IDs to feeling names
-			const feelingNames = selectedFeelings.map(id => feelingsLookup.get(id) || id);
-			
+			const feelingNames = selectedFeelings.map((id) => feelingsLookup.get(id) || id);
+
 			const requestData = {
 				step: 'summary',
 				situation: situationInput,
 				thoughts: thoughtsInput,
 				feelings: feelingNames
 			};
-			
 
 			const response = await fetch('/api/ai/learn/feelingsDetective', {
 				method: 'POST',
@@ -287,7 +286,7 @@
 			const data = serializeNonPOJOs(records) as any[];
 			const lookup = new Map<string, string>();
 			if (data && Array.isArray(data)) {
-				data.forEach(feeling => {
+				data.forEach((feeling) => {
 					if (feeling && feeling.id && feeling.nameDE) {
 						lookup.set(feeling.id, feeling.nameDE);
 					}
@@ -305,15 +304,17 @@
 	};
 </script>
 
-<LearnSplashScreen 
-		color={color} 
-		text="Zeit zu Üben"
-		on:splashDone={() => {
-			splashDone = true;
-		}}
-	/>
+<LearnSplashScreen
+	{color}
+	text="Zeit zu Üben"
+	on:splashDone={() => {
+		splashDone = true;
+	}}
+/>
 
-<div class="flex h-full flex-col justify-between space-y-4 rounded-lg backdrop-blur transition-all transform duration-1000 {splashContentClass()}">
+<div
+	class="flex h-full transform flex-col justify-between space-y-4 rounded-lg backdrop-blur transition-all duration-1000 {splashContentClass()}"
+>
 	{#if internalStep() === 0}
 		<!-- Step 1: Situation Input -->
 		<div class="flex flex-grow items-center justify-center space-y-2">
@@ -329,12 +330,22 @@
 				<AutoTextarea
 					bind:value={situationInput}
 					placeholder="Mein Chef meinte ich würde seine Erwartungen enttäuschen..."
-					class="flex-grow rounded-md bg-transparent px-2 py-1 outline-none max-w-xs"
+					class="max-w-xs flex-grow rounded-md bg-transparent px-2 py-1 outline-none"
 					onEnter={submitSituation}
 				/>
 
 				<div class="flex items-end justify-between">
-					<div>
+					<div class="flex items-center gap-2">
+						<button
+							type="button"
+							onclick={() => gotoPrevStep?.()}
+							style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
+							class="flex items-center gap-2 rounded-full bg-white px-1 py-1 text-xs"
+						>
+							<div class="flex size-4 items-center justify-center rounded-full fill-black/60">
+								<ChevronLeft class="size-3" />
+							</div>
+						</button>
 						{#if existingResponse()}
 							<button
 								type="button"
@@ -382,15 +393,6 @@
 				<div class="prose prose-sm overflow-y-auto text-gray-700">
 					{@html marked(aiReflection)}
 				</div>
-
-				<button
-					onclick={() => {
-						gotoPrevStep?.();
-					}}
-					class="w-full rounded-full text-start underline mt-2"
-				>
-					Nein, das ist nicht richtig
-				</button>
 			</div>
 		</div>
 
@@ -409,7 +411,7 @@
 	{:else if internalStep() === 2}
 		<!-- Step 3: Thoughts and Judgments Input -->
 		<div class="flex flex-grow items-center justify-center space-y-2">
-			<h3 class="font-medium text-gray-900 max-w-xs">
+			<h3 class="max-w-xs font-medium text-gray-900">
 				Welche Urteile und Bewertungen hattest Du spontan im Kopf?
 			</h3>
 		</div>
@@ -425,7 +427,17 @@
 					onEnter={submitThoughts}
 				/>
 
-				<div class="flex items-end justify-end">
+				<div class="flex items-end justify-between">
+					<button
+						type="button"
+						onclick={() => gotoPrevStep?.()}
+						style="box-shadow: -2px -2px 5px 0px rgba(255, 255, 255, 0.8), 2px 2px 8px 0px rgba(0, 0, 0, 0.1);"
+						class="flex items-center gap-2 rounded-full bg-white px-1 py-1 text-xs"
+					>
+						<div class="flex size-4 items-center justify-center rounded-full fill-black/60">
+							<ChevronLeft class="size-3" />
+						</div>
+					</button>
 					<button
 						onclick={submitThoughts}
 						disabled={!thoughtsInput.trim() || isLoading}
@@ -453,13 +465,11 @@
 	{:else if internalStep() === 3}
 		<!-- Step 4: Feelings Selection -->
 		<div class="flex flex-grow flex-col justify-center space-y-4">
-			<div class="text-center font-medium text-gray-900 flex-grow flex items-center justify-center">
-				<h3 class="max-w-xs">
-					Welche Gefühle löst diese Situation in Dir aus?
-				</h3>
+			<div class="flex flex-grow items-center justify-center text-center font-medium text-gray-900">
+				<h3 class="max-w-xs">Welche Gefühle löst diese Situation in Dir aus?</h3>
 			</div>
 
-			<div class="overflow-y-auto overflow-x-hidden max-h-64">
+			<div class="max-h-64 overflow-y-auto overflow-x-hidden">
 				<FeelingSelector
 					{selectedFeelings}
 					onFeelingChange={handleFeelingChange}
@@ -469,20 +479,14 @@
 			</div>
 		</div>
 
-		{#if isLoading}
-			<div class="flex items-center justify-center">
-				<Loader2 class="size-6 animate-spin" />
-				<span class="ml-2">Speichere...</span>
-			</div>
-		{:else if selectedFeelings.length === 0}
-			<div class="text-center text-gray-500">
-				Bitte wähle mindestens ein Gefühl aus
-			</div>
-		{:else}
-			<LearnGotoNextButton onClick={submitFeelings}>
-				Weiter
-			</LearnGotoNextButton>
-		{/if}
+		<LearnGotoNextButton
+			onClick={submitFeelings}
+			onPrev={() => {
+				gotoPrevStep?.();
+			}}
+			disabled={selectedFeelings.length === 0}
+			displayBackButton={true}>Weiter</LearnGotoNextButton
+		>
 	{:else if internalStep() === 4 && !aiSummary}
 		<!-- Step 5: Generate Summary -->
 		<div class="flex flex-grow items-center justify-center space-y-2">
@@ -497,14 +501,20 @@
 				<span class="ml-2">Erstelle Zusammenfassung...</span>
 			</div>
 		{:else}
-			<LearnGotoNextButton onClick={generateSummary}>
+			<LearnGotoNextButton
+				onClick={generateSummary}
+				onPrev={() => {
+					gotoPrevStep?.();
+				}}
+				displayBackButton={true}
+			>
 				Zusammenfassung erstellen
 			</LearnGotoNextButton>
 		{/if}
 	{:else if internalStep() === 4 && aiSummary}
 		<!-- Step 5: Display Summary -->
 		<div class="flex flex-grow items-center justify-center space-y-2 rounded-lg p-6">
-			<div class="prose prose-sm max-w-sm overflow-y-auto text-gray-700 max-h-80">
+			<div class="prose prose-sm max-h-80 max-w-sm overflow-y-auto text-gray-700">
 				{@html marked(aiSummary)}
 			</div>
 		</div>
@@ -513,6 +523,10 @@
 			onClick={() => {
 				gotoNextStep?.();
 			}}
+			onPrev={() => {
+				gotoPrevStep?.();
+			}}
+			displayBackButton={true}
 		>
 			Weiter
 		</LearnGotoNextButton>

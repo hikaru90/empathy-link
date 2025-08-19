@@ -60,11 +60,10 @@
 	class="absolute inset-0 z-50 flex h-full flex-col items-center justify-center rounded-lg transition-all transform duration-1000 pointer-events-none {splashClass()}"
 >
 	<div
-		style="background-color: {color}"
-		class="flex size-52 flex-col items-center justify-center rounded-xl shadow-xl"
+		class="flex size-52 flex-col items-center justify-center"
 	>
 		<div
-			class="flex w-full flex-grow items-center justify-center rounded-xl border border-white/30"
+			class="flex w-full flex-grow items-center justify-center rounded-xl"
 		>
 			<div class="text-xl font-bold">{text}</div>
 		</div>

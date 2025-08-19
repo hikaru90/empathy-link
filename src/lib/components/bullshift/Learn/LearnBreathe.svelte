@@ -12,6 +12,7 @@
 		blockIndex: number;
 		isPreview?: boolean;
 		gotoNextStep?: () => void;
+		gotoPrevStep?: () => void;
 		learningContext?: any;
 	}
 
@@ -21,6 +22,7 @@
 		blockIndex,
 		isPreview = false,
 		gotoNextStep,
+		gotoPrevStep,
 		learningContext
 	}: Props = $props();
 
@@ -250,13 +252,13 @@
 
 				phaseTimeout = setTimeout(() => {
 					if (!isBreathing) return;
-					
+
 					// Check again after hold phase
 					if (shouldCompleteAfterExhale) {
 						completeBreathing();
 						return;
 					}
-					
+
 					startPausePhase();
 				}, HOLD_TIME);
 			} else {
@@ -327,7 +329,7 @@
 			if (gotoNextStep) {
 				gotoNextStep();
 			}
-		}, 2000);
+		}, 1000);
 	}
 
 	function resetBreathing() {
@@ -346,7 +348,7 @@
 	const durationOptions = [15, 30, 60, 120];
 </script>
 
-<div class="flex h-full flex-col items-center justify-between p-6">
+<div class="flex h-full flex-col items-center justify-between">
 	<!-- Breathing text -->
 	<div class="text-center">
 		<p class="mb-2 text-xl font-bold text-black">{breathingText}</p>
@@ -360,7 +362,9 @@
 	<!-- Breathing visualization -->
 
 	<div class="relative flex items-center justify-center">
-		<div class="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 bg-black rounded-full size-16 flex items-center justify-center">
+		<div
+			class="absolute left-1/2 top-1/2 z-10 flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black"
+		>
 			{#if isBreathing}
 				<button
 					aria-label="Stop breathing"
@@ -372,28 +376,29 @@
 			{:else}
 				<!-- Control buttons -->
 				<div class="flex flex-col items-center space-y-4">
-						<button
-							type="button"
-							onclick={startBreathing}
-							class="size-10 rounded-full fill-white font-medium"
-						>
-							{@html IconPlay}
-						</button>
+					<button
+						type="button"
+						onclick={startBreathing}
+						class="size-10 rounded-full fill-white font-medium"
+					>
+						{@html IconPlay}
+					</button>
 				</div>
 			{/if}
 		</div>
-		<div 
-			style="animation: rotate 10s linear infinite"
-		>
+		<div style="animation: rotate 10s linear infinite">
 			<!-- Breathing rings -->
-			<div class="bg-gradient-to-br from-white to-transparent relative size-32 rounded-full transition-all duration-1000" style="transform: scale({$dotScale}) rotate({$dotRotation}deg); opacity: {$dotOpacity};"></div>
+			<div
+				class="relative size-32 rounded-full bg-gradient-to-br from-white to-transparent transition-all duration-1000"
+				style="transform: scale({$dotScale}) rotate({$dotRotation}deg); opacity: {$dotOpacity};"
+			></div>
 		</div>
 	</div>
 
-	<div class="flex h-24 flex-col justify-end gap-4">
+	<div class="flex h-24 w-full flex-col justify-end gap-4">
 		<!-- Duration selector -->
 		{#if !isBreathing && !isComplete}
-			<div class="flex items-center gap-2">
+			<div class="flex items-center justify-center gap-2">
 				<Popover.Root>
 					<Popover.Trigger>
 						<button
@@ -453,18 +458,19 @@
 				</Popover.Root>
 			</div>
 		{/if}
-		<div class="flex justify-center">
-			<LearnGotoNextButton
-				variant="secondary"
-				onClick={() => {
-					if (gotoNextStep) {
-						gotoNextStep();
-					}
-				}}
-			>
-				Überspringen
-			</LearnGotoNextButton>
-		</div>
+		<LearnGotoNextButton
+			onClick={() => {
+				if (gotoNextStep) {
+					gotoNextStep();
+				}
+			}}
+			onPrev={() => {
+				gotoPrevStep?.();
+			}}
+			displayBackButton={true}
+		>
+			Überspringen
+		</LearnGotoNextButton>
 	</div>
 </div>
 
@@ -478,5 +484,4 @@
 			transform: scale(1.05);
 		}
 	}
-
 </style>
