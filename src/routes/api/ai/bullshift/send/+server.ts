@@ -1,6 +1,12 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { bullshiftChats } from '$lib/server/gemini';
+import {
+	bullshiftChats,
+	analyzeGfkCompliance,
+	flagViolations,
+	type GfkAnalysis,
+	type Sensitivity
+} from '$lib/server/gemini';
 import { pb } from '$scripts/pocketbase';
 import {
 	saveTrace,
@@ -18,10 +24,10 @@ export interface State {
 
 const sanitizeText = (text: string) => {
 	console.log('text', text);
-	if(text.includes('```json')) {
+	if (text.includes('```json')) {
 		text = text.replace('```json', '').replace('```', '');
 	}
-	if(text.includes('```')) {
+	if (text.includes('```')) {
 		text = text.replace('```', '');
 	}
 	// Replace multiple newlines with single newline
@@ -49,7 +55,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const { chatId, message, systemInstruction, locale } = await request.json();
-		
+
 		console.log('Send request received:', { chatId, message, userId: user.id, locale });
 		console.log('Available chats in memory:', Array.from(bullshiftChats.keys()));
 
@@ -67,12 +73,79 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		await queueMemoryExtraction(user.id, 'pending');
 
-		// Send message and get response
-		const response: GenerateContentResponse = await chatInMemory.sendMessage({ message });
-		if(!response.text) throw new Error('No text in response');
+		// Default sensitivity thresholds (can be made configurable)
+		const defaultSensitivity: Sensitivity = {
+			Beobachtung_vs_Bewertung: 6,
+			Gefühle_vs_Gedanken: 6,
+			Bedürfnisse_vs_Strategien: 6,
+			Bitte_vs_Forderung: 6
+		};
+
+		let nvcAnalysis: GfkAnalysis | null = null;
+		let nvcViolations: Record<string, { score: number; explanation: string }> = {};
 
 
-		await pb.collection('chats').update(chatId, { history: await chatInMemory.getHistory() });
+		console.log('Performing GFK analysis on message:', message);
+		nvcAnalysis = await analyzeGfkCompliance(message, locale || 'de', chatId, user.id);
+		nvcViolations = flagViolations(nvcAnalysis, defaultSensitivity);
+		console.log('GFK Analysis:', nvcAnalysis);
+		console.log('GFK Violations:', nvcViolations);
+
+		// If there are NVC violations, create a temporary chat with context for enhanced response
+		let response: GenerateContentResponse;
+		
+		if (Object.keys(nvcViolations).length > 0) {
+			console.log('NVC violations detected, creating temporary enhanced context');
+			
+			// Get current history without the new message
+			const currentHistory = await chatInMemory.getHistory();
+			
+			// Create enhanced message with context for temporary processing
+			const violationContext = locale === 'de' 
+				? `[SYSTEM KONTEXT: Der Nutzer zeigt GFK-Verbesserungspotential: ${Object.entries(nvcViolations)
+					.map(([key, violation]) => `${key.replace(/_/g, ' ')}: ${violation.explanation} (${violation.score}/10)`)
+					.join('; ')}. Hilf empathisch bei der Verbesserung.]\n\n${message}`
+				: `[SYSTEM CONTEXT: User shows NVC improvement potential: ${Object.entries(nvcViolations)
+					.map(([key, violation]) => `${key.replace(/_/g, ' ')}: ${violation.explanation} (${violation.score}/10)`)
+					.join('; ')}. Help empathetically with improvement.]\n\n${message}`;
+			
+			// Send enhanced message to get better response
+			response = await chatInMemory.sendMessage({ message: violationContext });
+			
+			// Now manually fix the history to only show the original user message
+			const newHistory = await chatInMemory.getHistory();
+			if (newHistory.length >= 2) {
+				// Replace the last user message (which has the context) with the original message
+				newHistory[newHistory.length - 2] = {
+					role: 'user',
+					parts: [{ text: message }]
+				};
+			}
+			
+			// Update the chat with the cleaned history (this is a bit hacky but necessary)
+			// Unfortunately, we can't directly modify Gemini chat history, so we'll clean it in DB
+		} else {
+			// No violations, send message normally
+			response = await chatInMemory.sendMessage({ message });
+		}
+		if (!response.text) throw new Error('No text in response');
+
+		// Clean the history before saving to DB
+		let historyToSave = await chatInMemory.getHistory();
+		
+		// If we had NVC violations, clean the last user message to remove system context
+		if (Object.keys(nvcViolations).length > 0 && historyToSave.length >= 2) {
+			const lastUserMessageIndex = historyToSave.length - 2; // User message is second to last
+			if (historyToSave[lastUserMessageIndex]?.role === 'user') {
+				// Replace the contextual message with the original user message
+				historyToSave[lastUserMessageIndex] = {
+					...historyToSave[lastUserMessageIndex],
+					parts: [{ text: message }]
+				};
+			}
+		}
+		
+		await pb.collection('chats').update(chatId, { history: historyToSave });
 
 		saveTrace(
 			'sendMessage',
@@ -87,7 +160,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return json({
 			response: response.text,
-			timestamp: Date.now()
+			timestamp: Date.now(),
+			gfkAnalysis: nvcAnalysis,
+			gfkViolations: Object.keys(nvcViolations).length > 0 ? nvcViolations : null
 		});
 	} catch (error) {
 		console.error('Error sending message:', error);

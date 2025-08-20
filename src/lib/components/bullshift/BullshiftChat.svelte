@@ -83,13 +83,15 @@
 	const locale = $derived(getLocale());
 
 	const sendMessage = () => {
-		history = [...history, { role: 'user', parts: [{ text: userMessage }], timestamp: Date.now() }];
-		handleSendMessage();
-		suggestResponse()
+		const messageToSend = userMessage.trim();
+		if (!messageToSend) return;
+		
+		history = [...history, { role: 'user', parts: [{ text: messageToSend }], timestamp: Date.now() }];
+		userMessage = ''; // Clear input immediately
+		handleSendMessage(messageToSend);
 	};
 
-	const handleSendMessage = async () => {
-		if (!userMessage.trim()) return;
+	const handleSendMessage = async (messageToSend: string) => {
 		isLoading = true;
 		try {
 			const response = await fetch('/api/ai/bullshift/send', {
@@ -97,7 +99,7 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					chatId,
-					message: userMessage,
+					message: messageToSend,
 					systemInstruction,
 					locale: locale
 				})
@@ -125,7 +127,9 @@
 				...history,
 				{ role: 'model', parts: [{ text: data.response }], timestamp: data.timestamp }
 			];
-			userMessage = '';
+			
+			// Now that we have the AI's response, generate a suggestion for the user's next message
+			await suggestResponse();
 		} catch (error) {
 			console.error('Failed to send message:', error);
 
@@ -152,12 +156,9 @@
 			// Add error message to chat history as a red bubble
 			history = [
 				...history,
-				{ role: 'user', parts: [{ text: userMessage }], timestamp: Date.now() },
+				{ role: 'user', parts: [{ text: messageToSend }], timestamp: Date.now() },
 				{ role: 'error', parts: [{ text: userFriendlyError }], timestamp: Date.now() }
 			];
-
-			// Clear the user message since it was already added to history
-			userMessage = '';
 		} finally {
 			isLoading = false;
 			setTimeout(() => {

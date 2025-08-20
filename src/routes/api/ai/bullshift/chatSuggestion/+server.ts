@@ -17,32 +17,68 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: 'Missing required fields: chatId and lastMessages array' }, { status: 400 });
 		}
 
-		const prompt = `Basierend auf der letzten KI-Nachricht und dem Gesprächskontext, schlage EINE bedeutungsvolle Nutzerantwort vor.
+		const prompt = `Du hilfst Nutzern bei schwierigen emotionalen Fragen mit Beispielantworten.
 
-- Deine Antwort sollte eine einzelne, authentische Nutzernachricht sein (maximal 10 Wörter), die der Nutzer als seine Antwort senden könnte. 
-- Sie sollte natürlich und persönlich klingen, wie etwas, das eine echte Person sagen würde. 
-- Gib nur eine Antwort zurück wenn es für den Nutzer schwierig sein könnte, eine Antwort zu finden. Also alles was eine tiefere Reflexion erfordert. Also emotionales erfassen und damit umgehen etc.
-- Wenn du denkst, es wäre laut den eben genannten kriterien sinnvoll, gib nur die vorgeschlagene Nutzerantwort zurück, sonst einen leeren string.
-- Gib so wenig Wörter wie möglich zurück.
-- Gibt die Antwort in Textform ohne Anführungszeichen zurück.
+AUFGABE: Analysiere die KI-Nachricht. Falls sie eine schwierige emotionale Frage stellt, gib eine authentische Nutzerantwort zurück. Falls nicht, gib einen leeren String zurück.
 
-Der Gesprächskontext: ${lastMessages.slice(0, -1).join('\n')}
-Die letzte KI-Nachricht: ${lastMessages.slice(-1)}`
+SCHWIERIGE EMOTIONALE FRAGEN sind:
+- Fragen nach Gefühlen ("Wie fühlst du dich dabei?", "Was löst das in dir aus?")
+- Fragen nach Bedürfnissen ("Was brauchst du?", "Was ist dir wichtig?") 
+- Fragen nach schwierigen Erfahrungen oder Emotionen
+- Fragen, die Selbstreflexion erfordern
+- Fragen nach Werten oder persönlicher Bedeutung
+
+KEINE schwierigen Fragen sind:
+- Begrüßungen, Small Talk
+- Informationsfragen, Faktenfragen
+- Organisatorische Fragen
+
+WENN es eine schwierige emotionale Frage ist:
+- Gib eine kurze, authentische Nutzerantwort (maximal 15 Wörter)
+- Verwende "Ich"-Aussagen
+- Verwende NUR echte GFK-Gefühle (z.B. traurig, ängstlich, freudig, wütend, hoffnungsvoll)
+- Verwende NUR echte GFK-Bedürfnisse (z.B. Sicherheit, Verbindung, Autonomie, Verständnis, Klarheit)
+- NICHT: "Ich fühle mich verraten/ignoriert/abgelehnt" (das sind Interpretationen)
+- SONDERN: "Ich fühle mich traurig" oder "Ich bin wütend"
+- Verbinde Gefühle mit Bedürfnissen: "Ich fühle mich [Gefühl], weil mir [Bedürfnis] wichtig ist"
+
+BEISPIELE für gute GFK-konforme Antworten:
+- "Ich bin traurig, weil mir Verbindung wichtig ist"
+- "Ich fühle mich ängstlich und brauche Sicherheit"
+- "Ich bin wütend, weil mir Respekt wichtig ist"
+- "Ich fühle mich unsicher und brauche Klarheit"
+- "Ich bin hoffnungsvoll und wünsche mir Verständnis"
+
+WENN es KEINE schwierige emotionale Frage ist:
+- Gib nur zurück: ""
+
+KI-Nachricht: "${lastMessages.slice(-1)[0]}"`
 
 		const model = ai.chats.create({
 			model: 'gemini-2.0-flash',
 			config: {
-				temperature: 0.7,
+				temperature: 0.3, // Lower temperature for more consistent decision-making
 				systemInstruction: prompt
 			}
 		});
 
 		const response = await model.sendMessage({
-			message: 'The user needs to respond directly to the AI\'s last message. Suggest an authentic, helpful user response that directly answers or engages with what the AI just asked or said, while demonstrating good NVC practice. The response should be relevant and appropriate to the specific question or statement from the AI.'
+			message: 'Führe die Aufgabe aus: Gib entweder eine authentische Nutzerantwort oder "" zurück.'
 		});
 
-		const suggestion = response.text?.trim() || 'Ich bin unsicher was ich schreiben soll, kannst du mir einen Vorschlag geben?';
+		const suggestion = response.text?.trim() || '';
 
+		// If suggestion is empty, don't provide any suggestion (not a tough question)
+		if (!suggestion || suggestion === '""' || suggestion === "''" || suggestion.length === 0) {
+			return json({
+				suggestion: null,
+				reason: 'not_tough_question',
+				timestamp: Date.now()
+			});
+		}
+
+		// Save trace for monitoring with request key to avoid auto-cancellation
+		const requestKey = `chatSuggestion_${chatId}_${Date.now()}`;
 		saveTrace(
 			'chatSuggestion',
 			JSON.stringify({ chatId, lastMessagesCount: lastMessages.length }),
@@ -51,7 +87,7 @@ Die letzte KI-Nachricht: ${lastMessages.slice(-1)}`
 			user.id,
 			suggestion,
 			response,
-			prompt,
+			prompt
 		);
 
 		return json({
