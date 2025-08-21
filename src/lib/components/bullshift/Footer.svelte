@@ -74,7 +74,7 @@
 
 </script>
 
-<div class={cn("bottom-0 left-0 z-[1000] w-full bg-offwhite px-4 pb-6 pt-1 text-black", absolute ? 'absolute' : 'fixed', className)}>
+<div class={cn("bottom-0 left-0 z-[1000] w-full bg-offwhite px-4 pb-6 pt-1 text-black shadow-[0_0_30px_0_rgba(0,0,0,0.1)]", absolute ? 'absolute' : 'fixed', className)}>
 	<img
 		src="/inverted-border-white.svg"
 		alt=""

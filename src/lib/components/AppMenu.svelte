@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from '$lib/components/ui/button-op1/index.js';
+	import { Button } from '$lib/components/ui/button-op1/index.js';
 	import { m } from '$lib/translations';
 	import IconFolder from '$assets/icons/icon-folder.svg?raw';
 	import IconSelf from '$assets/icons/icon-self.svg?raw';
@@ -56,14 +56,22 @@
 </script>
 
 <!-- <div class="inverted-border fixed bottom-0 left-0 w-full bg-black text-gray-200 px-4 pb-4 pt-2 z-[1002]"> -->
-<div class="fixed bottom-0 left-0 z-[1002] w-full bg-black px-4 pb-4 pt-2 text-gray-200">
-  {#if !user}
-	<div class="w-full h-full bg-black/60 absolute top-0 left-0 z-10 flex items-center justify-center">
-    <Button onclick={() => goto('/app/auth/register')} decoration="dark-op1" class="border-neutral-700">
-      {m.page_register_text()}
-    </Button>
-  </div>
-{/if}
+<div
+	class="fixed bottom-0 left-0 z-[1002] w-full bg-black px-4 pb-4 pt-2 text-gray-200"
+>
+	{#if !user}
+		<div
+			class="absolute left-0 top-0 z-10 flex h-full w-full items-center justify-center bg-black/60"
+		>
+			<Button
+				onclick={() => goto('/app/auth/register')}
+				decoration="dark-op1"
+				class="border-neutral-700"
+			>
+				{m.page_register_text()}
+			</Button>
+		</div>
+	{/if}
 	<img
 		src="/inverted-border.svg"
 		alt=""

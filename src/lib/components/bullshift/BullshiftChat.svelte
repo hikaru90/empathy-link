@@ -678,21 +678,21 @@
 	</div>
 {/if}
 
-{#if chatTerminationModalVisible}
+
 	<!-- Custom non-interactive modal -->
-	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-		<div class="mx-4 max-w-md rounded-lg bg-white p-6 shadow-xl">
+	<div class="fixed inset-0 z-[1001] flex items-center justify-center bg-background {chatTerminationModalVisible ? 'opacity-100 pointer-events-auto scale-100' : 'opacity-0 pointer-events-none scale-90'} transition duration-300">
+		<div class="mx-4 max-w-md rounded-lg p-6">
 			<div class="text-center">
-				<h3 class="mb-4 text-lg font-semibold">Chat wird ausgewertet</h3>
+				<h3 class="mb-4 text-lg font-semibold">Chat Auswertung</h3>
 
 				{#if analyzerIsRunning || memorizerIsRunning}
 					<!-- Loading state with sparkle pill -->
 					<div class="mb-4 flex flex-col items-center gap-3">
-						<SparklePill fast={true} class="h-6 w-16 shadow-xl dark:shadow-gray-200/30" />
+						<SparklePill fast={true} class="h-4 w-8 shadow-xl dark:shadow-gray-200/30" />
 						{#if analyzerIsRunning}
-							<p class="text-sm text-gray-600">Dein Chat wird ausgewertet</p>
+							<p class="text-sm text-gray-600 animate-pulse">Dein Chat wird ausgewertet</p>
 						{:else if memorizerIsRunning}
-							<p class="text-sm text-gray-600">Dein Chat wird abgespeichert</p>
+							<p class="text-sm text-gray-600 animate-pulse">Dein Chat wird abgespeichert</p>
 						{/if}
 					</div>
 				{:else if analyzerFailed || memorizerFailed}
@@ -723,11 +723,10 @@
 				{:else}
 					<!-- Initial state -->
 					<div class="mb-4 flex flex-col items-center gap-3">
-						<SparklePill class="w-8" />
-						<p class="text-sm text-gray-600">Chat wird vorbereitet...</p>
+						<SparklePill fast={true} class="w-8 h-4" />
+						<p class="text-sm text-gray-600 animate-pulse">Chat wird vorbereitet...</p>
 					</div>
 				{/if}
 			</div>
 		</div>
 	</div>
-{/if}
