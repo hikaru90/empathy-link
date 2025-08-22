@@ -85,9 +85,18 @@
 	const sendMessage = () => {
 		const messageToSend = userMessage.trim();
 		if (!messageToSend) return;
-		
-		history = [...history, { role: 'user', parts: [{ text: messageToSend }], timestamp: Date.now() }];
+
+		history = [
+			...history,
+			{ role: 'user', parts: [{ text: messageToSend }], timestamp: Date.now() }
+		];
 		userMessage = ''; // Clear input immediately
+		
+		// Scroll down after adding user message
+		setTimeout(() => {
+			scrollDown();
+		}, 50);
+		
 		handleSendMessage(messageToSend);
 	};
 
@@ -123,11 +132,30 @@
 			const data = await response.json();
 			console.log('data from /send', data);
 			if (data.error) throw new Error(data.error);
-			history = [
-				...history,
-				{ role: 'model', parts: [{ text: data.response }], timestamp: data.timestamp }
-			];
 			
+			// If path switching occurred, refresh complete history from database
+			if (data.pathSwitched) {
+				console.log('Path was switched, refreshing history from database');
+				// Fetch updated history from database to get path markers
+				const historyResponse = await fetch(`/api/ai/bullshift/getHistory?chatId=${chatId}`);
+				if (historyResponse.ok) {
+					const historyData = await historyResponse.json();
+					history = historyData.history || [];
+				} else {
+					// Fallback: just add AI response to local history
+					history = [
+						...history,
+						{ role: 'model', parts: [{ text: data.response }], timestamp: data.timestamp }
+					];
+				}
+			} else {
+				// No path switch, just add the AI response to local history
+				history = [
+					...history,
+					{ role: 'model', parts: [{ text: data.response }], timestamp: data.timestamp }
+				];
+			}
+
 			// Now that we have the AI's response, generate a suggestion for the user's next message
 			await suggestResponse();
 		} catch (error) {
@@ -419,8 +447,8 @@
 			console.log('Restored pending message after login:', pendingMessage);
 		}
 
-		if(history.length > 0) {
-			suggestResponse()
+		if (history.length > 0) {
+			suggestResponse();
 		}
 	});
 
@@ -467,43 +495,60 @@
 					{/if}
 				</h2>
 			{/if}
-			{#each history as message}
-				<!-- {JSON.stringify(message)} -->
-				<div
-					aria-label={message.role}
-					class="message {message.role} mb-4 flex {message.role === 'user'
-						? 'ml-4 justify-end'
-						: 'mr-4 justify-start'}"
-				>
+			{#each history.filter((msg) => !msg.hidden) as message}
+				<!-- Path marker display -->
+				{#if message.pathMarker}
+					<div class="mb-4 flex justify-center">
+						<div
+							class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
+						>
+							{#if message.pathMarker.type === 'path_start'}
+								🚀 Gestartet: {message.pathMarker.path.replace('_', ' ').replace('idle', 'Gesprächsführung').replace('self empathy', 'Selbst-Empathie').replace('other empathy', 'Fremd-Empathie').replace('action planning', 'Handlungsplanung').replace('conflict resolution', 'Konfliktlösung').replace('feedback', 'Gespräch beenden')}
+							{:else if message.pathMarker.type === 'path_end'}
+								✅ Abgeschlossen: {message.pathMarker.path.replace('_', ' ').replace('idle', 'Gesprächsführung').replace('self empathy', 'Selbst-Empathie').replace('other empathy', 'Fremd-Empathie').replace('action planning', 'Handlungsplanung').replace('conflict resolution', 'Konfliktlösung').replace('feedback', 'Gespräch beenden')}
+							{:else if message.pathMarker.type === 'path_switch'}
+								🔄 Gewechselt zu: {message.pathMarker.path.replace('_', ' ').replace('idle', 'Gesprächsführung').replace('self empathy', 'Selbst-Empathie').replace('other empathy', 'Fremd-Empathie').replace('action planning', 'Handlungsplanung').replace('conflict resolution', 'Konfliktlösung').replace('feedback', 'Gespräch beenden')}
+							{/if}
+						</div>
+					</div>
+				{:else if !message.pathMarker}
+					<!-- Regular message display -->
 					<div
-						class="inline-block break-words rounded-b-xl px-3 py-1.5 shadow-lg shadow-black/5 {message.role ===
-						'user'
-							? 'rounded-tl-xl rounded-tr border border-white/40 bg-offwhite '
-							: message.role === 'error'
-								? 'rounded-tl-md rounded-tr-xl border border-red-300 bg-red-100 text-red-800'
-								: 'rounded-tl rounded-tr-xl border border-white bg-white/90'}"
+						aria-label={message.role}
+						class="message {message.role} mb-4 flex {message.role === 'user'
+							? 'ml-4 justify-end'
+							: 'mr-4 justify-start'}"
 					>
-						<div class="flex items-start gap-2">
-							<div class="text-sm">
-								{#if 'text' in message.parts[0]}
-									{@html marked(message.parts[0].text)}
-									<!-- {@html marked(
+						<div
+							class="inline-block break-words rounded-b-xl px-3 py-1.5 shadow-lg shadow-black/5 {message.role ===
+							'user'
+								? 'rounded-tl-xl rounded-tr border border-white/40 bg-offwhite '
+								: message.role === 'error'
+									? 'rounded-tl-md rounded-tr-xl border border-red-300 bg-red-100 text-red-800'
+									: 'rounded-tl rounded-tr-xl border border-white bg-white/90'}"
+						>
+							<div class="flex items-start gap-2">
+								<div class="text-sm">
+									{#if 'text' in message.parts[0]}
+										{@html marked(message.parts[0].text)}
+										<!-- {@html marked(
 									message.role === 'user'
 										? message.parts[0].text
 										: safelyParseJSON(message.parts[0].text).response
 								)} -->
-								{:else if 'functionCall' in message.parts[0]}
-									<div class="text-xs">
-										<span class="font-bold">Funktion:</span>
-										{message.parts[0].functionCall.name}
-										<span class="font-bold">Argumente:</span>
-										{JSON.stringify(message.parts[0].functionCall.args)}
-									</div>
-								{/if}
+									{:else if 'functionCall' in message.parts[0]}
+										<div class="text-xs">
+											<span class="font-bold">Funktion:</span>
+											{message.parts[0].functionCall.name}
+											<span class="font-bold">Argumente:</span>
+											{JSON.stringify(message.parts[0].functionCall.args)}
+										</div>
+									{/if}
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+				{/if}
 			{/each}
 
 			{#if isLoading}
@@ -544,10 +589,16 @@
 			<div class="rounded-2xl bg-neutral-100 p-2">
 				<div class="flex items-center justify-center">
 					{#if history.length > 0}
-						<div class="mb-2 block w-full transition-all duration-500 max-h-0 {suggestion ? 'max-h-20':''}">
+						<div
+							class="mb-2 block max-h-0 w-full transition-all duration-500 {suggestion
+								? 'max-h-20'
+								: ''}"
+						>
 							<button
 								onclick={() => addAndSendText(suggestion)}
-								class="rounded-xl border-l border-r border-t border-black/5 text-left text-sm text-black/40 w-full transition delay-200 {suggestion ? 'opacity-100':'opacity-0'}"
+								class="w-full rounded-xl border-l border-r border-t border-black/5 text-left text-sm text-black/40 transition delay-200 {suggestion
+									? 'opacity-100'
+									: 'opacity-0'}"
 							>
 								<div class="-mb-3 px-2 pt-1">
 									{suggestion}
@@ -569,7 +620,7 @@
 
 				<form
 					onsubmit={sendMessage}
-					class="flex flex-col gap-2 rounded-xl border border-white bg-gradient-to-b from-white to-offwhite p-2 shadow-[0_5px_20px_0_rgba(0,0,0,0.1)] relative z-10"
+					class="relative z-10 flex flex-col gap-2 rounded-xl border border-white bg-gradient-to-b from-white to-offwhite p-2 shadow-[0_5px_20px_0_rgba(0,0,0,0.1)]"
 				>
 					<AutoTextarea
 						bind:value={userMessage}
@@ -678,55 +729,58 @@
 	</div>
 {/if}
 
+<!-- Custom non-interactive modal -->
+<div
+	class="fixed inset-0 z-[1001] flex items-center justify-center bg-background {chatTerminationModalVisible
+		? 'pointer-events-auto scale-100 opacity-100'
+		: 'pointer-events-none scale-90 opacity-0'} transition duration-300"
+>
+	<div class="mx-4 max-w-md rounded-lg p-6">
+		<div class="text-center">
+			<h3 class="mb-4 text-lg font-semibold">Chat Auswertung</h3>
 
-	<!-- Custom non-interactive modal -->
-	<div class="fixed inset-0 z-[1001] flex items-center justify-center bg-background {chatTerminationModalVisible ? 'opacity-100 pointer-events-auto scale-100' : 'opacity-0 pointer-events-none scale-90'} transition duration-300">
-		<div class="mx-4 max-w-md rounded-lg p-6">
-			<div class="text-center">
-				<h3 class="mb-4 text-lg font-semibold">Chat Auswertung</h3>
-
-				{#if analyzerIsRunning || memorizerIsRunning}
-					<!-- Loading state with sparkle pill -->
-					<div class="mb-4 flex flex-col items-center gap-3">
-						<SparklePill fast={true} class="h-4 w-8 shadow-xl dark:shadow-gray-200/30" />
-						{#if analyzerIsRunning}
-							<p class="text-sm text-gray-600 animate-pulse">Dein Chat wird ausgewertet</p>
-						{:else if memorizerIsRunning}
-							<p class="text-sm text-gray-600 animate-pulse">Dein Chat wird abgespeichert</p>
-						{/if}
+			{#if analyzerIsRunning || memorizerIsRunning}
+				<!-- Loading state with sparkle pill -->
+				<div class="mb-4 flex flex-col items-center gap-3">
+					<SparklePill fast={true} class="h-4 w-8 shadow-xl dark:shadow-gray-200/30" />
+					{#if analyzerIsRunning}
+						<p class="animate-pulse text-sm text-gray-600">Dein Chat wird ausgewertet</p>
+					{:else if memorizerIsRunning}
+						<p class="animate-pulse text-sm text-gray-600">Dein Chat wird abgespeichert</p>
+					{/if}
+				</div>
+			{:else if analyzerFailed || memorizerFailed}
+				<!-- Error state -->
+				<div class="mb-4">
+					{#if analyzerFailed}
+						<p class="mb-4 text-sm text-red-600">Dein Chat konnte nicht ausgewertet werden.</p>
+					{:else if memorizerFailed}
+						<p class="mb-4 text-sm text-red-600">Dein Chat konnte nicht abgespeichert werden.</p>
+					{/if}
+					<Button
+						class="bg-black text-white"
+						onclick={() => {
+							startAnalysis();
+						}}
+					>
+						Erneut versuchen
+					</Button>
+				</div>
+			{:else if chatAnalysisId}
+				<!-- Success state -->
+				<div class="mb-4 flex flex-col items-center gap-3">
+					<div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+						<SquareCheck class="h-6 w-6 text-green-600" />
 					</div>
-				{:else if analyzerFailed || memorizerFailed}
-					<!-- Error state -->
-					<div class="mb-4">
-						{#if analyzerFailed}
-							<p class="mb-4 text-sm text-red-600">Dein Chat konnte nicht ausgewertet werden.</p>
-						{:else if memorizerFailed}
-							<p class="mb-4 text-sm text-red-600">Dein Chat konnte nicht abgespeichert werden.</p>
-						{/if}
-						<Button
-							class="bg-black text-white"
-							onclick={() => {
-								startAnalysis();
-							}}
-						>
-							Erneut versuchen
-						</Button>
-					</div>
-				{:else if chatAnalysisId}
-					<!-- Success state -->
-					<div class="mb-4 flex flex-col items-center gap-3">
-						<div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-							<SquareCheck class="h-6 w-6 text-green-600" />
-						</div>
-						<p class="text-sm text-gray-600">Dein Chat wurde ausgewertet und abgespeichert</p>
-					</div>
-				{:else}
-					<!-- Initial state -->
-					<div class="mb-4 flex flex-col items-center gap-3">
-						<SparklePill fast={true} class="w-8 h-4" />
-						<p class="text-sm text-gray-600 animate-pulse">Chat wird vorbereitet...</p>
-					</div>
-				{/if}
-			</div>
+					<p class="text-sm text-gray-600">Dein Chat wurde ausgewertet und abgespeichert</p>
+				</div>
+			{:else}
+				<!-- Initial state -->
+				<div class="mb-4 flex flex-col items-center gap-3">
+					<SparklePill fast={true} class="h-4 w-8" />
+					<p class="animate-pulse text-sm text-gray-600">Chat wird vorbereitet...</p>
+				</div>
+			{/if}
 		</div>
 	</div>
+</div>

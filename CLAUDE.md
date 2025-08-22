@@ -177,6 +177,37 @@ Key collections:
 - Memory extraction happens automatically after each chat
 - Each AI module has separate context and behavior
 
+##### Critical Gemini Requirements
+**IMPORTANT**: When working with Google Gemini AI chat history:
+
+1. **History must start with user message**: Gemini requires the first message in chat history to have `role: 'user'`
+   - Use hidden user messages like `[System: Chat initialisiert]` with `hidden: true` to satisfy this requirement
+   - Never filter out these hidden user messages when passing history to Gemini
+   - Only filter hidden messages in UI display, not in Gemini initialization
+
+2. **Only user/model roles allowed**: Gemini only accepts `role: 'user'` and `role: 'model'`
+   - Never use `role: 'system'` in chat history
+   - Path markers and system messages should use `role: 'model'`
+
+3. **Path marker implementation pattern**:
+   ```javascript
+   // CORRECT: Start with hidden user message, followed by model path marker
+   history: [
+     {
+       role: 'user',
+       parts: [{ text: '[System: Chat initialisiert]' }],
+       timestamp: Date.now(),
+       hidden: true // Hidden from UI but required by Gemini
+     },
+     {
+       role: 'model',
+       parts: [{ text: `Pfad gestartet: ${pathId}` }],
+       timestamp: Date.now(),
+       pathMarker: createPathMarker('path_start', pathId)
+     }
+   ]
+   ```
+
 #### State Management
 - Use Svelte stores for global state (`/src/store/`)
 - Authentication state is managed in `auth.ts`

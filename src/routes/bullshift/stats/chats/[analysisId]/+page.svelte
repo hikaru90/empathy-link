@@ -124,9 +124,9 @@
 					</div>
 
 					<div
-						class="mt-6 flex flex-col gap-4 rounded-lg bg-neutral-400 p-4 {chatExpanded
+						class="mt-6 flex flex-col gap-4 rounded-lg bg-black/5 p-4 {chatExpanded
 							? 'max-h-auto'
-							: 'max-h-40'} relative overflow-y-hidden"
+							: 'max-h-96'} relative overflow-y-hidden"
 					>
 						<button
 							onclick={() => (chatExpanded = !chatExpanded)}
@@ -144,32 +144,55 @@
 						<div class="flex flex-col gap-2">
 							<h2 class="font-bold">Chat</h2>
 							<div class="flex flex-col gap-2">
-								{#each data.analysis.expand.chat.history as message}
-									<div class="mb-4 {message.role === 'user' ? 'text-right' : 'text-left'}">
-										<div
-											class="inline-block rounded-xl px-3 py-2 {message.role === 'user'
-												? 'border border-white'
-												: 'bg-white'}"
-										>
-											<div class="text-sm">
-												{#if 'text' in message.parts[0]}
-													{@html marked(message.parts[0].text)}
-													<!-- {@html marked(
-													message.role === 'user'
-														? message.parts[0].text
-														: safelyParseJSON(message.parts[0].text).response
-												)} -->
-												{:else if 'functionCall' in message.parts[0]}
-													<div class="text-xs">
-														<span class="font-bold">Funktion:</span>
-														{message.parts[0].functionCall.name}
-														<span class="font-bold">Argumente:</span>
-														{JSON.stringify(message.parts[0].functionCall.args)}
-													</div>
+								{#each data.analysis.expand.chat.history.filter((msg) => !msg.hidden) as message}
+									<!-- Path marker display -->
+									{#if message.pathMarker}
+										<div class="mb-4 flex justify-center">
+											<div
+												class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
+											>
+												{#if message.pathMarker.type === 'path_start'}
+													🚀 Gestartet: {message.pathMarker.path.replace('_', ' ').replace('idle', 'Gesprächsführung').replace('self empathy', 'Selbst-Empathie').replace('other empathy', 'Fremd-Empathie').replace('action planning', 'Handlungsplanung').replace('conflict resolution', 'Konfliktlösung').replace('feedback', 'Gespräch beenden')}
+												{:else if message.pathMarker.type === 'path_end'}
+													✅ Abgeschlossen: {message.pathMarker.path.replace('_', ' ').replace('idle', 'Gesprächsführung').replace('self empathy', 'Selbst-Empathie').replace('other empathy', 'Fremd-Empathie').replace('action planning', 'Handlungsplanung').replace('conflict resolution', 'Konfliktlösung').replace('feedback', 'Gespräch beenden')}
+												{:else if message.pathMarker.type === 'path_switch'}
+													🔄 Gewechselt zu: {message.pathMarker.path.replace('_', ' ').replace('idle', 'Gesprächsführung').replace('self empathy', 'Selbst-Empathie').replace('other empathy', 'Fremd-Empathie').replace('action planning', 'Handlungsplanung').replace('conflict resolution', 'Konfliktlösung').replace('feedback', 'Gespräch beenden')}
 												{/if}
 											</div>
 										</div>
-									</div>
+									{:else if !message.pathMarker}
+										<!-- Regular message display -->
+										<div
+											aria-label={message.role}
+											class="message {message.role} mb-4 flex {message.role === 'user'
+												? 'ml-4 justify-end'
+												: 'mr-4 justify-start'}"
+										>
+											<div
+												class="inline-block break-words rounded-b-xl px-3 py-1.5 shadow-lg shadow-black/5 {message.role ===
+												'user'
+													? 'rounded-tl-xl rounded-tr border border-white/40 bg-offwhite '
+													: message.role === 'error'
+														? 'rounded-tl-md rounded-tr-xl border border-red-300 bg-red-100 text-red-800'
+														: 'rounded-tl rounded-tr-xl border border-white bg-white/90'}"
+											>
+												<div class="flex items-start gap-2">
+													<div class="text-sm">
+														{#if 'text' in message.parts[0]}
+															{@html marked(message.parts[0].text)}
+														{:else if 'functionCall' in message.parts[0]}
+															<div class="text-xs">
+																<span class="font-bold">Funktion:</span>
+																{message.parts[0].functionCall.name}
+																<span class="font-bold">Argumente:</span>
+																{JSON.stringify(message.parts[0].functionCall.args)}
+															</div>
+														{/if}
+													</div>
+												</div>
+											</div>
+										</div>
+									{/if}
 								{/each}
 							</div>
 						</div>

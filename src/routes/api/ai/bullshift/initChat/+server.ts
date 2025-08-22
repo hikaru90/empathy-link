@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { bullshiftChats } from '$lib/server/gemini';
+// Remove bullshiftChats import - using DB as single source of truth
 import { pb } from '$scripts/pocketbase';
 import type { Content, Chat } from '@google/genai';
 import { initChat } from '$lib/server/gemini';
@@ -33,9 +33,7 @@ const initHistory = (user: object, history?: HistoryEntry[]) => {
 	];
 };
 
-const saveChatInMemory = (chatId: string, chat: any) => {
-	bullshiftChats.set(chatId, chat);
-};
+// Remove saveChatInMemory - no longer using persistent Gemini chats
 const initChatInDb = async (user: any, chat: any) => {
 	let chatData: Partial<DbChatSession> = {
 		user: user.id,
@@ -97,15 +95,13 @@ const formatHistoryForGemini = (history?: HistoryEntry[]): Content[] => {
 	});
 };
 
-const chatExistsInMemory = (chatId: string) => {
-	return bullshiftChats.has(chatId);
-};
+// Remove chatExistsInMemory - no longer using persistent Gemini chats
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
-		const { user, locale } = await request.json();
+		const { user, locale, initialPath } = await request.json();
 
-		const result = await initChat(user, locale);
+		const result = await initChat(user, locale, initialPath);
 		return json(result);
 	} catch (error) {
 		console.error('Failed to initialize chat:', error);

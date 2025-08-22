@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
-import { ai, bullshiftChats } from '$lib/server/gemini';
 import { pb } from '$scripts/pocketbase';
-import { getModel, initChat } from '$lib/server/gemini';
+import { getModel, initChat, chatPaths, getCurrentPath } from '$lib/server/gemini';
+import { getSystemPromptForPath } from '$lib/server/paths';
 import { redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -25,17 +25,16 @@ export const load: PageServerLoad = async ({ locals }) => {
             systemPrompt = initResponse.systemInstruction;
         }
 
-        // Initialize Gemini chat if not in memory
-        if (!bullshiftChats.has(chatRecord?.id)) {
-            const {model, systemInstruction} = await getModel(user, locale, chatRecord?.history);
-            systemPrompt = systemInstruction;
-            const chat = ai.chats.create(model);
-
-            bullshiftChats.set(chatRecord.id, chat);
+        // Restore path state in memory if it exists
+        if (chatRecord.pathState?.activePath) {
+            console.log('Loading existing chat with path:', chatRecord.pathState.activePath);
+            systemPrompt = getSystemPromptForPath(chatRecord.pathState.activePath, user);
+            // Restore path state in memory
+            chatPaths.set(chatRecord.id, chatRecord.pathState);
         } else {
-            // Get system instruction for existing chat
-            const {model, systemInstruction} = await getModel(user, locale, chatRecord?.history);
-            systemPrompt = systemInstruction;
+            // Fallback to old system for existing chats without path data
+            const {model, systemInstruction: oldSystemInstruction} = await getModel(user, locale, chatRecord?.history);
+            systemPrompt = oldSystemInstruction;
         }
 
         return {

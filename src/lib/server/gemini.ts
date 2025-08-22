@@ -8,12 +8,39 @@ import type { HistoryEntry } from '$routes/api/ai/selfempathy/initChat/+server';
 import type { Chat, CreateChatParameters } from '@google/genai';
 import { m } from '$lib/translations';
 import { saveTrace } from './tools';
+import {
+	type PathState,
+	type PathMarker,
+	createPathMarker,
+	getSystemPromptForPath,
+	analyzePathCompletion,
+	CONVERSATION_PATHS
+} from './paths';
 
 // Initialize Gemini once
 export const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 
 export const selfempathyChats = new Map<string, Chat>();
-export const bullshiftChats = new Map<string, Chat>();
+// Remove persistent chat storage - we'll create chats on demand
+export const chatPaths = new Map<string, PathState>();
+
+// Utility function to convert DB history to Gemini format
+export const convertHistoryToGemini = (dbHistory: any[]) => {
+	return dbHistory
+		// Filter out path markers and other non-conversational entries
+		.filter(entry => 
+			!entry.pathMarker && 
+			entry.role && 
+			entry.parts && 
+			entry.parts[0]?.text && 
+			entry.parts[0].text.trim() !== ''
+		)
+		// Convert to Gemini format
+		.map(entry => ({
+			role: entry.role,
+			parts: entry.parts
+		}));
+};
 
 export const getIds = (map: Map<string, Chat>) => {
 	return Array.from(map.keys());
@@ -54,7 +81,7 @@ export function flagViolations(analysis: GfkAnalysis, sensitivity: Sensitivity) 
 
 // GFK Analysis Function
 export const analyzeGfkCompliance = async (
-	message: string, 
+	message: string,
 	locale: string = 'de',
 	chatId?: string,
 	userId?: string
@@ -160,6 +187,151 @@ Respond exclusively with a JSON object in this format:
 	}
 };
 
+// Path Switching Analysis Types
+export type PathSwitchAnalysis = {
+	shouldSwitch: boolean;
+	confidence: number;
+	suggestedPath: string | null;
+	reason: string;
+	currentPathComplete: boolean;
+};
+
+// Path Switching Analysis Function
+export const analyzePathSwitchingIntent = async (
+	message: string,
+	currentPath: string,
+	recentHistory: Array<{ role: string; content: string }>,
+	locale: string = 'de',
+	chatId?: string,
+	userId?: string
+): Promise<PathSwitchAnalysis> => {
+	console.log('::analyzePathSwitchingIntent');
+	try {
+		const systemPrompt = locale === 'de'
+			? `Du bist ein Experte für Gesprächsanalyse und Gewaltfreie Kommunikation. Analysiere, ob der Nutzer zu einem anderen Gesprächspfad wechseln möchte oder sollte.
+
+Aktueller Pfad: ${currentPath}
+Verfügbare Pfade:
+- idle: Gesprächsführung (Meta-Ebene, Richtungsvorschläge, Gesprächsorchestrierung)
+- self_empathy: Selbst-Empathie (eigene Gefühle und Bedürfnisse verstehen)
+- other_empathy: Fremd-Empathie (Empathie für andere Personen entwickeln)  
+- action_planning: Handlungsplanung (konkrete Schritte planen)
+- conflict_resolution: Konfliktlösung (Probleme mit anderen lösen)
+- feedback: Gespräch beenden (Feedback sammeln und Gespräch abschließen)
+
+Analysiere folgende Aspekte:
+
+1. **Explizite Wechselabsicht**: Hat der Nutzer explizit einen Wechsel zu einem anderen Themenbereich angedeutet?
+2. **Natürliche Vollendung**: Ist der aktuelle Pfad natürlich abgeschlossen und der Nutzer bereit für den nächsten Schritt?
+3. **Thematischer Wechsel**: Deutet der Inhalt der Nachricht auf ein anderes Thema hin?
+
+Beispiele für explizite Wechselabsichten:
+- "ich würde gerne empathie für jemand anderen aufbringen"
+- "können wir jetzt zur handlungsplanung"
+- "ich möchte einen konflikt lösen"
+- "wie kann ich das problem angehen"
+
+Antworte ausschließlich mit einem JSON-Objekt:
+{
+  "shouldSwitch": boolean,
+  "confidence": 0-100,
+  "suggestedPath": "path_id oder null",
+  "reason": "kurze Erklärung der Analyse",
+  "currentPathComplete": boolean
+}`
+			: `You are an expert in conversation analysis and Nonviolent Communication. Analyze whether the user wants to or should switch to another conversation path.
+
+Current path: ${currentPath}
+Available paths:
+- idle: Conversation Orchestration (meta-level, direction suggestions, conversation flow management)
+- self_empathy: Self-empathy (understanding own feelings and needs)
+- other_empathy: Other-empathy (developing empathy for other people)
+- action_planning: Action planning (planning concrete steps)
+- conflict_resolution: Conflict resolution (solving problems with others)
+- feedback: End Conversation (collect feedback and conclude conversation)
+
+Analyze the following aspects:
+
+1. **Explicit switching intent**: Has the user explicitly indicated a switch to another topic area?
+2. **Natural completion**: Is the current path naturally completed and the user ready for the next step?
+3. **Thematic change**: Does the message content indicate a different topic?
+
+Examples of explicit switching intentions:
+- "I would like to develop empathy for someone else"
+- "can we now move to action planning"
+- "I want to solve a conflict"
+- "how can I approach this problem"
+
+Respond exclusively with a JSON object:
+{
+  "shouldSwitch": boolean,
+  "confidence": 0-100,
+  "suggestedPath": "path_id or null",
+  "reason": "brief explanation of analysis",
+  "currentPathComplete": boolean
+}`;
+
+		const model = ai.chats.create({
+			model: 'gemini-2.0-flash',
+			config: {
+				temperature: 0.1, // Low temperature for consistent analysis
+				systemInstruction: systemPrompt
+			}
+		});
+
+		// Include recent context for better analysis
+		const contextMessage = `Aktuelle Nachricht: "${message}"
+
+Letzter Gesprächsverlauf:
+${recentHistory.slice(-4).map(h => `${h.role}: ${h.content}`).join('\n')}
+
+Analysiere diese Nachricht auf Pfadwechselabsicht.`;
+
+		const result = await model.sendMessage({ message: contextMessage });
+		const responseText = result.text || '{}';
+		console.log('Path switching analysis response:', responseText);
+
+		// Clean the response text (remove markdown code blocks if present)
+		let cleanedResponseText = responseText.trim();
+		if (cleanedResponseText.startsWith('```json')) {
+			cleanedResponseText = cleanedResponseText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+		} else if (cleanedResponseText.startsWith('```')) {
+			cleanedResponseText = cleanedResponseText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+		}
+
+		// Parse the JSON response
+		const analysis = JSON.parse(cleanedResponseText) as PathSwitchAnalysis;
+		console.log('::analyzePathSwitchingIntent - analysis', analysis);
+
+		// Save trace for monitoring if chatId and userId are provided
+		if (chatId && userId) {
+			saveTrace(
+				'analyzePathSwitchingIntent',
+				message,
+				'bullshift',
+				chatId,
+				userId,
+				cleanedResponseText,
+				result,
+				systemPrompt
+			);
+		}
+
+		return analysis;
+
+	} catch (error) {
+		console.error('Error in path switching analysis:', error);
+		// Return neutral analysis in case of error
+		return {
+			shouldSwitch: false,
+			confidence: 0,
+			suggestedPath: null,
+			reason: 'Analysis error',
+			currentPathComplete: false
+		};
+	}
+};
+
 export const sendMessage = async (
 	chatId: string,
 	chat: Chat,
@@ -169,7 +341,7 @@ export const sendMessage = async (
 	try {
 		console.log('message', message);
 		// Send the message directly without modifying chat history
-		const result = await chat.sendMessage({message});
+		const result = await chat.sendMessage({ message });
 		const responseText = result.text || '';
 		const responseJson = JSON.parse(responseText);
 		console.log('responseJson from sendMessage', responseJson);
@@ -275,8 +447,8 @@ export const getModel = async (user: object, locale: string, history?: HistoryEn
 
 // Create NVC-aware system instruction based on analysis
 export const createNvcAwareSystemInstruction = (
-	baseSystemInstruction: string, 
-	nvcAnalysis: GfkAnalysis | null, 
+	baseSystemInstruction: string,
+	nvcAnalysis: GfkAnalysis | null,
 	nvcViolations: Record<string, { score: number; explanation: string }>,
 	locale: string = 'de'
 ): string => {
@@ -284,7 +456,7 @@ export const createNvcAwareSystemInstruction = (
 		return baseSystemInstruction;
 	}
 
-	const violationText = locale === 'de' 
+	const violationText = locale === 'de'
 		? `\n\nWICHTIG: Der Nutzer hat gerade eine Nachricht gesendet, die von den GFK-Prinzipien abweicht. Hier sind die erkannten Probleme:\n\n${Object.entries(nvcViolations)
 			.map(([key, violation]) => `**${key.replace(/_/g, ' ')}** (Bewertung: ${violation.score}/10): ${violation.explanation}`)
 			.join('\n')}\n\nBitte reagiere einfühlsam auf diese Abweichungen und hilf dem Nutzer dabei, seine Kommunikation im Sinne der Gewaltfreien Kommunikation zu verbessern. Gehe auf die spezifischen Probleme ein und biete konstruktive Alternativen an.`
@@ -297,19 +469,19 @@ export const createNvcAwareSystemInstruction = (
 
 // Create a new chat instance with updated system instruction
 export const createChatWithNvcContext = async (
-	user: any, 
-	locale: string, 
+	user: any,
+	locale: string,
 	history: any[] = [],
 	nvcAnalysis: GfkAnalysis | null = null,
 	nvcViolations: Record<string, { score: number; explanation: string }> = {}
 ) => {
 	const { model: baseModel, systemInstruction: baseSystemInstruction } = await getModel(user, locale);
-	
+
 	// Create NVC-aware system instruction
 	const nvcAwareSystemInstruction = createNvcAwareSystemInstruction(
-		baseSystemInstruction, 
-		nvcAnalysis, 
-		nvcViolations, 
+		baseSystemInstruction,
+		nvcAnalysis,
+		nvcViolations,
 		locale
 	);
 
@@ -326,21 +498,190 @@ export const createChatWithNvcContext = async (
 	return ai.chats.create(nvcAwareModel);
 };
 
-export const initChat = async (user: any, locale: string) => {
+export const initChat = async (user: any, locale: string, initialPath?: string) => {
+	const pathId = initialPath || 'idle';
+	console.log('initChat called with pathId:', pathId);
+
+	// Create initial path state
+	const pathState: PathState = {
+		activePath: pathId,
+		pathHistory: [pathId],
+		startedAt: Date.now()
+	};
+
+	// Create initial path marker
+	const pathMarker = createPathMarker('path_start', pathId);
+
+	// Create initial history with path marker
+	let initialHistory = [
+		// Hidden user message to satisfy Gemini's requirement
+		{
+			role: 'user',
+			parts: [{ text: '[System: Chat initialisiert]' }],
+			timestamp: Date.now(),
+			hidden: true // Mark as hidden so it doesn't show in UI
+		},
+		// Path marker as model message (text will not be displayed, only visual indicator)
+		{
+			role: 'model',
+			parts: [{ text: '' }], // Empty text - only pathMarker is used for display
+			timestamp: Date.now(),
+			pathMarker
+		}
+	];
+
+	// If starting with idle path, add proactive welcome message
+	if (pathId === 'idle') {
+		const welcomeMessage = locale === 'de' 
+			? `Hallo! Schön, dass du da bist. Ich bin hier, um dir zu helfen und unser Gespräch zu begleiten.
+
+Ich kann dir in verschiedenen Bereichen zur Seite stehen:
+• **Selbst-Empathie**: Deine eigenen Gefühle und Bedürfnisse besser verstehen
+• **Fremd-Empathie**: Andere Menschen und ihre Perspektiven verstehen
+• **Handlungsplanung**: Konkrete Schritte entwickeln und umsetzen
+• **Konfliktlösung**: Zwischenmenschliche Probleme konstruktiv angehen
+
+Wie geht es dir heute? Womit möchtest du beginnen oder was beschäftigt dich gerade?`
+			: `Hello! Nice to have you here. I'm here to help and guide our conversation.
+
+I can assist you in various areas:
+• **Self-Empathy**: Better understanding your own feelings and needs
+• **Other-Empathy**: Understanding other people and their perspectives
+• **Action Planning**: Developing and implementing concrete steps
+• **Conflict Resolution**: Constructively addressing interpersonal problems
+
+How are you today? What would you like to start with or what's on your mind?`;
+
+		initialHistory.push({
+			role: 'model',
+			parts: [{ text: welcomeMessage }],
+			timestamp: Date.now()
+		});
+	}
+
 	const dbChat = await pb.collection('chats').create({
-		history: [],
+		history: initialHistory,
 		user: user.id,
-		module: 'bullshift'
+		module: 'bullshift',
+		pathState
 	});
 
-	// Initialize the chat in memory with the correct model
-	const { model, systemInstruction } = await getModel(user, locale);
-	const chat = ai.chats.create(model);
-	bullshiftChats.set(dbChat.id, chat);
+	// Get system instruction for the specific path
+	const systemInstruction = getSystemPromptForPath(pathId, user);
+
+	// Store only the path state (no persistent Gemini chat)
+	chatPaths.set(dbChat.id, pathState);
 
 	return {
 		chatId: dbChat.id,
-		chat: chat,
-		systemInstruction
+		systemInstruction,
+		activePath: pathId,
+		pathState
 	};
+};
+
+/**
+ * Switch to a new conversation path
+ */
+export const switchPath = async (
+	chatId: string,
+	newPathId: string,
+	user: any,
+	locale: string
+): Promise<{
+	success: boolean;
+	newSystemInstruction?: string;
+	pathMarkers?: PathMarker[];
+}> => {
+	try {
+		const currentPathState = chatPaths.get(chatId);
+		const chatInDb = await pb.collection('chats').getOne(chatId);
+
+		if (!currentPathState || !chatInDb) {
+			throw new Error('Chat not found');
+		}
+
+		const previousPath = currentPathState.activePath;
+
+		// Create path markers
+		const endMarker = createPathMarker('path_end', previousPath || '');
+		const switchMarker = createPathMarker('path_switch', newPathId, previousPath || undefined);
+		const startMarker = createPathMarker('path_start', newPathId);
+
+		// Update path state
+		const newPathState: PathState = {
+			activePath: newPathId,
+			pathHistory: [...currentPathState.pathHistory, newPathId],
+			startedAt: currentPathState.startedAt,
+			lastSwitch: Date.now()
+		};
+
+		// Get new system instruction
+		const newSystemInstruction = getSystemPromptForPath(newPathId, user);
+
+		// Update database with new path state only (path markers will be added by send endpoint)
+		await pb.collection('chats').update(chatId, {
+			pathState: newPathState
+		});
+
+		// If switching to idle path, we need to add a proactive message
+		// This will be handled by the send endpoint when it detects the switch
+
+		// Update path state in memory
+		chatPaths.set(chatId, newPathState);
+
+		return {
+			success: true,
+			newSystemInstruction,
+			pathMarkers: [endMarker, switchMarker, startMarker]
+		};
+	} catch (error) {
+		console.error('Error switching path:', error);
+		return { success: false };
+	}
+};
+
+/**
+ * Check if current path should end and suggest next paths
+ */
+export const checkPathCompletion = async (
+	chatId: string,
+	messages: Array<{ role: string; content: string }>
+): Promise<{
+	shouldEnd: boolean;
+	confidence: number;
+	reason: string;
+	suggestedPaths?: string[];
+}> => {
+	const currentPathState = chatPaths.get(chatId);
+	if (!currentPathState || !currentPathState.activePath) {
+		return { shouldEnd: false, confidence: 0, reason: 'No active path' };
+	}
+
+	try {
+		const result = await analyzePathCompletion(
+			messages,
+			currentPathState.activePath,
+			ai
+		);
+
+		return result;
+	} catch (error) {
+		console.error('Error checking path completion:', error);
+		return { shouldEnd: false, confidence: 0, reason: 'Analysis error' };
+	}
+};
+
+/**
+ * Get current path state for a chat
+ */
+export const getCurrentPath = (chatId: string): PathState | null => {
+	return chatPaths.get(chatId) || null;
+};
+
+/**
+ * Get available paths for switching
+ */
+export const getAvailablePaths = () => {
+	return Object.values(CONVERSATION_PATHS);
 };

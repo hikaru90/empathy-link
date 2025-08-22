@@ -198,11 +198,11 @@ const first: Handle = async ({ event, resolve }) => {
 	}
 
 	// Final authentication state check - NEVER lose the user
-	console.log('↪ FINAL AUTH STATE:');
-	console.log('  - Auth store valid:', event.locals.pb.authStore.isValid);
-	console.log('  - User in locals:', !!event.locals.user);
-	console.log('  - Route:', event.url.pathname);
-	console.log('  - User ID:', event.locals.user?.id || 'none');
+	// console.log('↪ FINAL AUTH STATE:');
+	// console.log('  - Auth store valid:', event.locals.pb.authStore.isValid);
+	// console.log('  - User in locals:', !!event.locals.user);
+	// console.log('  - Route:', event.url.pathname);
+	// console.log('  - User ID:', event.locals.user?.id || 'none');
 	
 	// CRITICAL: Ensure user is never lost
 	if (event.locals.user && !event.locals.pb.authStore.isValid) {
@@ -217,11 +217,11 @@ const first: Handle = async ({ event, resolve }) => {
 	
 	// API Route Compatibility Check
 	if (event.url.pathname.startsWith('/api') && event.locals.user) {
-		console.log('↪ API COMPATIBILITY:');
-		console.log('  - User available for API:', !!event.locals.user);
-		console.log('  - PocketBase auth valid:', event.locals.pb.authStore.isValid);
-		console.log('  - Token available:', !!event.locals.pb.authStore.token);
-		console.log('  - Model available:', !!event.locals.pb.authStore.model);
+		// console.log('↪ API COMPATIBILITY:');
+		// console.log('  - User available for API:', !!event.locals.user);
+		// console.log('  - PocketBase auth valid:', event.locals.pb.authStore.isValid);
+		// console.log('  - Token available:', !!event.locals.pb.authStore.token);
+		// console.log('  - Model available:', !!event.locals.pb.authStore.model);
 		
 		// If API route has user but PocketBase auth is invalid, this could cause issues
 		if (!event.locals.pb.authStore.isValid) {

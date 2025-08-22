@@ -350,12 +350,12 @@ export const saveTrace = async (
 			...(systemInstruction && systemInstruction.length <= 1000 && { systemInstruction })
 		};
 		
-		console.log(':::saveTrace data:', traceData);
+		// console.log(':::saveTrace data:', traceData);
 		
 		// Use passed pb instance or fall back to shared pb for backward compatibility
 		const pbToUse = pbInstance || pb;
 		const trace = await pbToUse.collection('traces').create(traceData);
-		console.log(':::saveTrace done: ', trace);
+		// console.log(':::saveTrace done: ', trace);
 	} catch (error) {
 		// Log error but don't let it propagate - trace failures should never affect core functionality
 		if (typeof window === 'undefined') {
