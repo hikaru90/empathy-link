@@ -1,7 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { ai, bullshiftChats } from '$lib/server/gemini';
 import { pb } from '$scripts/pocketbase';
-import { getModel, initChat } from '$lib/server/gemini';
 import { CONVERSATION_PATHS, type PathMarker } from '$lib/server/paths';
 import { redirect } from '@sveltejs/kit';
 // Helper function to analyze path transitions from chat history

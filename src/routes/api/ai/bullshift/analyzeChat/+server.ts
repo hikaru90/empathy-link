@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { bullshiftChats, initChat } from '$lib/server/gemini';
+import { initChat } from '$lib/server/gemini';
 import type { Content } from '@google/genai';
 import { analyzeChat } from '$lib/server/tools';
 import { z } from 'zod';
@@ -29,9 +29,7 @@ const initHistory = (user: object, history?: HistoryEntry[]) => {
 	return [
 	];
 };
-const saveChatInMemory = (chatId: string, chat: any) => {
-	bullshiftChats.set(chatId, chat);
-};
+// Removed: saveChatInMemory - using database as single source of truth
 const initChatInDb = async (user: any, chat: any, pb: any) => {
 	let chatData: Partial<DbChatSession> = {
 		user: user.id,
@@ -91,9 +89,7 @@ const formatHistoryForGemini = (history?: HistoryEntry[]): Content[] => {
 		};
 	});
 };
-const chatExistsInMemory = (chatId: string) => {
-	return bullshiftChats.has(chatId);
-};
+// Removed: chatExistsInMemory - using database as single source of truth
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {

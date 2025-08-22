@@ -1,6 +1,5 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { bullshiftChats } from '$lib/server/gemini';
 
 export const POST: RequestHandler = async ({ request }) => {
     try {
@@ -10,11 +9,9 @@ export const POST: RequestHandler = async ({ request }) => {
         return json({ error: 'No chat ID provided' }, { status: 400 });
       }
       
-      console.log('cleaning up chat on the serverSide', chatId);
-      // Remove chat from memory
-      if (bullshiftChats.has(chatId)) {
-            bullshiftChats.delete(chatId);
-        }
+      console.log('cleanup request for chatId:', chatId);
+      // Note: With database-driven architecture, chat cleanup happens automatically
+      // No in-memory cleanup needed since we removed bullshiftChats Map
 
         return json({ success: true });
     } catch (error) {

@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { initChat } from '$lib/server/gemini';
-import { ai, bullshiftChats } from '$lib/server/gemini';
 
 export const POST: RequestHandler = async ({request}) => {
     try {

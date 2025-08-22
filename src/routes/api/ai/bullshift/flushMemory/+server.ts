@@ -1,18 +1,11 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { bullshiftChats } from '$lib/server/gemini';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
-		// const { chatId } = await request.json();
-
-		// if (!chatId) {
-		//   return json({ error: 'No chat ID provided' }, { status: 400 });
-		// }
-
-		console.log('flushing bullshiftChats on the serverSide');
-		// Remove chat from memory
-		bullshiftChats.clear();
+		console.log('flush memory request received');
+		// Note: With database-driven architecture, memory flushing is no longer needed
+		// Chats are stored in database, not in server memory
 
 		return json({ success: true });
 	} catch (error) {
@@ -23,8 +16,10 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const GET: RequestHandler = async () => {
 	try {
-		console.log('flushing bullshiftChats on the serverSide via GET');
-		bullshiftChats.clear();
+		console.log('flush memory GET request received');
+		// Note: With database-driven architecture, memory flushing is no longer needed
+		// Chats are stored in database, not in server memory
+		
 		return json({ success: true });
 	} catch (error) {
 		console.error('Error flushing bullshift memory', error);
