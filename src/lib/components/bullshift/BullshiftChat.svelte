@@ -83,9 +83,54 @@
 	// Get the current locale reactively
 	const locale = $derived(getLocale());
 
-	const sendMessage = () => {
+	const sendMessage = async () => {
 		const messageToSend = userMessage.trim();
 		if (!messageToSend) return;
+
+		// Check token usage before sending message
+		console.log('=== CHECKING TOKEN USAGE ===');
+		try {
+			const tokenCheckResponse = await fetch('/api/ai/checkTokenUsage', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ 
+					message: messageToSend // Let the API estimate tokens from the actual message
+				})
+			});
+
+			console.log('Token check response status:', tokenCheckResponse.status);
+
+			if (tokenCheckResponse.ok) {
+				const tokenData = await tokenCheckResponse.json();
+				console.log('Token check data:', tokenData);
+				
+				if (!tokenData.canSendMessage) {
+					console.log('TOKEN LIMIT REACHED - BLOCKING MESSAGE');
+					// Show error message to user
+					errorMessage = `Du hast dein Token-Limit erreicht (${tokenData.tokenUsage.totalUsed}/${tokenData.tokenUsage.totalLimit} Tokens verwendet). Bitte kontaktiere den Support für eine Erhöhung.`;
+					
+					// Add error message to chat history as a red bubble
+					history = [
+						...history,
+						{ role: 'user', parts: [{ text: messageToSend }], timestamp: Date.now() },
+						{ role: 'error', parts: [{ text: errorMessage }], timestamp: Date.now() }
+					];
+					
+					userMessage = ''; // Clear input
+					setTimeout(() => {
+						scrollDown();
+					}, 50);
+					return;
+				} else {
+					console.log('Token check passed - allowing message');
+				}
+			} else {
+				console.log('Token check failed with status:', tokenCheckResponse.status);
+			}
+		} catch (error) {
+			console.error('Failed to check token usage:', error);
+			// Continue with message sending if token check fails (fail-open approach)
+		}
 
 		history = [
 			...history,
@@ -144,7 +189,7 @@
 					history = historyData.history || [];
 				} else {
 					// Fallback: just add AI response to local history
-					const aiMessage = {
+					const aiMessage: any = {
 						role: 'model',
 						parts: [{ text: data.response }],
 						timestamp: data.timestamp
@@ -156,7 +201,7 @@
 				}
 			} else {
 				// No path switch or feedback saved, just add the AI response to local history
-				const aiMessage = {
+				const aiMessage: any = {
 					role: 'model',
 					parts: [{ text: data.response }],
 					timestamp: data.timestamp
@@ -672,7 +717,7 @@
 								: ''}"
 						>
 							<button
-								onclick={() => addAndSendText(suggestion)}
+								onclick={() => suggestion && addAndSendText(suggestion)}
 								class="w-full rounded-xl border-l border-r border-t border-black/5 text-left text-sm text-black/40 transition delay-200 {suggestion
 									? 'opacity-100'
 									: 'opacity-0'}"
