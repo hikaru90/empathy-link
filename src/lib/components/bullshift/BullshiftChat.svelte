@@ -79,9 +79,81 @@
 	let startAnimation = $state(false);
 	let text1Done = $state(false);
 	let suggestion = $state<string | undefined>(undefined);
+	let isMobile = $state(false);
+	let viewportHeight = $state(window.innerHeight);
 
 	// Get the current locale reactively
 	const locale = $derived(getLocale());
+
+	// Detect mobile and viewport changes
+	$effect(() => {
+		const checkMobile = () => {
+			isMobile = window.innerWidth <= 768;
+			viewportHeight = window.innerHeight;
+		};
+		
+		checkMobile();
+		window.addEventListener('resize', checkMobile);
+		window.addEventListener('orientationchange', checkMobile);
+		
+		// Use ResizeObserver to detect viewport changes (like virtual keyboard)
+		if (typeof ResizeObserver !== 'undefined') {
+			const resizeObserver = new ResizeObserver((entries) => {
+				for (const entry of entries) {
+					if (entry.target === document.documentElement) {
+						// Viewport size changed (likely virtual keyboard)
+						setTimeout(() => {
+							checkMobile();
+							// Re-scroll if we're on mobile and the viewport changed
+							if (isMobile && chatContainer) {
+								chatContainer.scrollTop = chatContainer.scrollHeight;
+							}
+						}, 100);
+					}
+				}
+			});
+			
+			resizeObserver.observe(document.documentElement);
+			
+			return () => {
+				resizeObserver.disconnect();
+				window.removeEventListener('resize', checkMobile);
+				window.removeEventListener('orientationchange', checkMobile);
+			};
+		}
+		
+		return () => {
+			window.removeEventListener('resize', checkMobile);
+			window.removeEventListener('orientationchange', checkMobile);
+		};
+	});
+
+	// Add scroll event listener to ensure chat stays at bottom on mobile
+	$effect(() => {
+		if (chatContainer && isMobile) {
+			const handleScroll = () => {
+				// If user scrolls up, don't auto-scroll down
+				// If user scrolls near bottom, auto-scroll to bottom
+				const isNearBottom = chatContainer!.scrollTop + chatContainer!.clientHeight >= chatContainer!.scrollHeight - 100;
+				if (isNearBottom) {
+					// User is near bottom, ensure we stay at bottom
+					setTimeout(() => {
+						if (chatContainer) {
+							chatContainer.scrollTop = chatContainer.scrollHeight;
+						}
+					}, 50);
+				}
+			};
+			
+			chatContainer.addEventListener('scroll', handleScroll);
+			
+			return () => {
+				if (chatContainer) {
+					chatContainer.removeEventListener('scroll', handleScroll);
+				}
+			};
+		}
+	});
 
 	const sendMessage = async () => {
 		const messageToSend = userMessage.trim();
@@ -139,9 +211,11 @@
 		userMessage = ''; // Clear input immediately
 
 		// Scroll down after adding user message
+		// Use a longer delay on mobile to account for virtual keyboard
+		const scrollDelay = isMobile ? 300 : 50;
 		setTimeout(() => {
 			scrollDown();
-		}, 50);
+		}, scrollDelay);
 
 		handleSendMessage(messageToSend);
 	};
@@ -261,23 +335,56 @@
 		});
 	};
 	const scrollDown = () => {
+		console.log('scrollDown function called');
 		// Use requestAnimationFrame to ensure DOM has updated
 		requestAnimationFrame(() => {
-			// Find the last message element
+			// Find the last message element - try multiple selectors
 			const lastMessage = document.querySelector('.message:last-of-type');
-			if (lastMessage) {
-				// Scroll the last message into view
-				lastMessage.scrollIntoView({ 
+			const allMessages = document.querySelectorAll('.message');
+			const lastMessageAlt = allMessages[allMessages.length - 1];
+			
+			console.log('Scrolling down:', { 
+				isMobile, 
+				hasLastMessage: !!lastMessage, 
+				hasLastMessageAlt: !!lastMessageAlt,
+				allMessagesCount: allMessages.length,
+				hasChatContainer: !!chatContainer,
+				windowWidth: window.innerWidth,
+				viewportHeight,
+				chatContainerScrollHeight: chatContainer?.scrollHeight,
+				chatContainerClientHeight: chatContainer?.clientHeight,
+				historyLength: history.length
+			});
+			
+			// Try to find the last message using either selector
+			const targetMessage = lastMessage || lastMessageAlt;
+			
+			if (targetMessage) {
+				console.log('Found last message, scrolling into view with 100px offset');
+				// Temporarily add scroll margin to create the offset
+				const originalScrollMargin = targetMessage.style.scrollMarginTop;
+				targetMessage.style.scrollMarginTop = '80px';
+				
+				// Use scrollIntoView to scroll the correct scrollable parent
+				targetMessage.scrollIntoView({ 
 					behavior: 'smooth', 
 					block: 'start',
 					inline: 'nearest'
 				});
+				
+				// Remove the scroll margin after scrolling
+				setTimeout(() => {
+					targetMessage.style.scrollMarginTop = originalScrollMargin;
+				}, 500);
+				
+				console.log('Scroll: align last message with 100px offset from top');
 			} else if (chatContainer) {
+				console.log('No messages found, scrolling to bottom of container');
 				// If no messages, scroll to bottom of chat container
-				chatContainer.scrollIntoView({ 
-					behavior: 'smooth', 
-					block: 'end' 
-				});
+				chatContainer.scrollTop = chatContainer.scrollHeight;
+				console.log('No messages: set scrollTop to', chatContainer.scrollHeight);
+			} else {
+				console.log('No chat container found');
 			}
 		});
 	};
@@ -530,7 +637,6 @@
 	onMount(async () => {
 		startAnimation = true;
 		text1Done = false;
-		scrollDown();
 
 		getFeelings();
 		getNeeds();
@@ -568,11 +674,51 @@
 			}, 1500); // Show success state for 1.5 seconds before auto-hiding
 		}
 	});
+
+	// Scroll to bottom when suggestion appears/disappears
+	$effect(() => {
+		if (suggestion !== undefined) {
+			// Suggestion state changed, scroll to bottom after a delay to allow for layout changes
+			setTimeout(() => {
+				scrollDown();
+			}, 100);
+		}
+	});
+
+	// Scroll to bottom when chat container is ready and history is loaded
+	$effect(() => {
+		console.log('Scroll effect triggered:', { 
+			hasChatContainer: !!chatContainer, 
+			historyLength: history.length,
+			chatId: chatId
+		});
+		
+		if (chatContainer && history.length > 0) {
+			console.log('Conditions met, attempting to scroll...');
+			// Use multiple requestAnimationFrame calls to ensure DOM is fully rendered
+			requestAnimationFrame(() => {
+				requestAnimationFrame(() => {
+					console.log('Double requestAnimationFrame callback executing scrollDown');
+					scrollDown();
+				});
+			});
+		}
+	});
 </script>
 
 {#if chatId}
 	<div class="">
-		<div bind:this={chatContainer} class="messages rounded-lg pb-52 pt-4">
+		<div 
+			bind:this={chatContainer} 
+			class="messages rounded-lg pt-4 overflow-y-auto scroll-smooth"
+			class:pb-52={!suggestion}
+			class:pb-80={suggestion}
+			style="
+				-webkit-overflow-scrolling: touch;
+				overscroll-behavior: contain;
+				scroll-behavior: smooth;
+			"
+		>
 			{#if history.length === 0}
 				<h1 class="mb-3 text-2xl font-light">
 					<TypewriterText
