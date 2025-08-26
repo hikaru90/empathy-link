@@ -50,7 +50,14 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 		});
 
 		const chatRecord = await pb.collection('chats').getOne(chatId);
-		const concatenatedHistory = chatRecord.history
+		// Include both user and model messages for context, but exclude path markers and hidden messages
+		const relevantMessages = chatRecord.history
+			.filter((chat: HistoryEntry) => 
+				(chat.role === 'user' || chat.role === 'model') &&
+				!chat.pathMarker && 
+				!chat.hidden
+			);
+		const concatenatedHistory = relevantMessages
 			.map((chat: HistoryEntry) => JSON.stringify(chat))
 			.join('\n');
 
