@@ -533,13 +533,13 @@ export const initChat = async (user: any, locale: string, initialPath?: string) 
 	// If starting with idle path, add proactive welcome message
 	if (pathId === 'idle') {
 		const welcomeMessage = locale === 'de' 
-			? `Hallo! Schön, dass du da bist. Ich bin hier, um dir zu helfen und unser Gespräch zu begleiten.
+			? `Hallo! Schön, dass du da bist. Ich bin hier, um dir zu helfen und unser Gespräch zu begleiten.<br/><br/>
 
 Ich kann dir in verschiedenen Bereichen zur Seite stehen:
-• **Selbst-Empathie**: Deine eigenen Gefühle und Bedürfnisse besser verstehen
-• **Fremd-Empathie**: Andere Menschen und ihre Perspektiven verstehen
-• **Handlungsplanung**: Konkrete Schritte entwickeln und umsetzen
-• **Konfliktlösung**: Zwischenmenschliche Probleme konstruktiv angehen
+- **Selbst-Empathie**: Deine eigenen Gefühle und Bedürfnisse besser verstehen
+- **Fremd-Empathie**: Andere Menschen und ihre Perspektiven verstehen
+- **Handlungsplanung**: Konkrete Schritte entwickeln und umsetzen
+- **Konfliktlösung**: Zwischenmenschliche Probleme konstruktiv angehen<br/><br/>
 
 Wie geht es dir heute? Womit möchtest du beginnen oder was beschäftigt dich gerade?`
 			: `Hello! Nice to have you here. I'm here to help and guide our conversation.

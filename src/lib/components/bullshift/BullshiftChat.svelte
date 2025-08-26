@@ -202,7 +202,7 @@
 			isLoading = false;
 			setTimeout(() => {
 				scrollDown();
-			}, 200);
+			}, 50);
 		}
 	};
 	const getFeelings = async () => {
@@ -216,10 +216,24 @@
 		});
 	};
 	const scrollDown = () => {
-		window.scroll({
-			top: document.body.scrollHeight,
-			left: 0,
-			behavior: 'smooth'
+		// Use requestAnimationFrame to ensure DOM has updated
+		requestAnimationFrame(() => {
+			// Find the last message element
+			const lastMessage = document.querySelector('.message:last-of-type');
+			if (lastMessage) {
+				// Scroll the last message into view
+				lastMessage.scrollIntoView({ 
+					behavior: 'smooth', 
+					block: 'start',
+					inline: 'nearest'
+				});
+			} else if (chatContainer) {
+				// If no messages, scroll to bottom of chat container
+				chatContainer.scrollIntoView({ 
+					behavior: 'smooth', 
+					block: 'end' 
+				});
+			}
 		});
 	};
 	const flushMemory = async () => {
@@ -540,35 +554,35 @@
 				{#if message.pathMarker}
 					<div class="mb-4 flex justify-center">
 						<div
-							class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
+							class="inline-flex items-center gap-2 rounded-full border border-green-900/5 bg-green-900/10 px-3 py-1 text-xs font-medium text-green-900"
 						>
 							{#if message.pathMarker.type === 'path_start'}
-								🚀 Gestartet: {message.pathMarker.path
+								{message.pathMarker.path
 									.replace('_', ' ')
-									.replace('idle', 'Gesprächsführung')
-									.replace('self empathy', 'Selbst-Empathie')
-									.replace('other empathy', 'Fremd-Empathie')
-									.replace('action planning', 'Handlungsplanung')
-									.replace('conflict resolution', 'Konfliktlösung')
-									.replace('feedback', 'Gespräch beenden')}
+									.replace('idle', 'Gesprächsführung gestartet')
+									.replace('self empathy', 'Selbst-Empathie gestartet')
+									.replace('other empathy', 'Fremd-Empathie gestartet')
+									.replace('action planning', 'Handlungsplanung gestartet')
+									.replace('conflict resolution', 'Konfliktlösung gestartet')
+									.replace('feedback', 'Gespräch beenden gestartet')}
 							{:else if message.pathMarker.type === 'path_end'}
-								✅ Abgeschlossen: {message.pathMarker.path
+								{message.pathMarker.path
 									.replace('_', ' ')
-									.replace('idle', 'Gesprächsführung')
-									.replace('self empathy', 'Selbst-Empathie')
-									.replace('other empathy', 'Fremd-Empathie')
-									.replace('action planning', 'Handlungsplanung')
-									.replace('conflict resolution', 'Konfliktlösung')
-									.replace('feedback', 'Gespräch beenden')}
+									.replace('idle', 'Gesprächsführung abgeschlossen')
+									.replace('self empathy', 'Selbst-Empathie abgeschlossen')
+									.replace('other empathy', 'Fremd-Empathie abgeschlossen')
+									.replace('action planning', 'Handlungsplanung abgeschlossen')
+									.replace('conflict resolution', 'Konfliktlösung abgeschlossen')
+									.replace('feedback', 'Gespräch beenden abgeschlossen')}
 							{:else if message.pathMarker.type === 'path_switch'}
-								🔄 Gewechselt zu: {message.pathMarker.path
+								{message.pathMarker.path
 									.replace('_', ' ')
-									.replace('idle', 'Gesprächsführung')
-									.replace('self empathy', 'Selbst-Empathie')
-									.replace('other empathy', 'Fremd-Empathie')
-									.replace('action planning', 'Handlungsplanung')
-									.replace('conflict resolution', 'Konfliktlösung')
-									.replace('feedback', 'Gespräch beenden')}
+									.replace('idle', 'Zu Gesprächsführung gewechselt')
+									.replace('self empathy', 'Zu Selbst-Empathie gewechselt')
+									.replace('other empathy', 'Zu Fremd-Empathie gewechselt')
+									.replace('action planning', 'Zu Handlungsplanung gewechselt')
+									.replace('conflict resolution', 'Zu Konfliktlösung gewechselt')
+									.replace('feedback', 'Zu Gesprächsabschluss gewechselt')}
 							{/if}
 						</div>
 					</div>
@@ -596,7 +610,7 @@
 										: 'rounded-tl rounded-tr-xl border border-white bg-white/90'}"
 						>
 							<div class="flex items-start gap-2">
-								<div class="text-sm">
+								<div class="markdown text-sm">
 									{#if 'text' in message.parts[0]}
 										{@html marked(message.parts[0].text)}
 									{:else if 'functionCall' in message.parts[0]}
