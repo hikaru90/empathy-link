@@ -133,10 +133,10 @@
 			console.log('data from /send', data);
 			if (data.error) throw new Error(data.error);
 			
-			// If path switching occurred, refresh complete history from database
-			if (data.pathSwitched) {
-				console.log('Path was switched, refreshing history from database');
-				// Fetch updated history from database to get path markers
+			// If path switching or feedback was saved, refresh complete history from database
+			if (data.pathSwitched || data.feedbackSaved) {
+				console.log('Path was switched or feedback saved, refreshing history from database');
+				// Fetch updated history from database to get path markers and feedback confirmation
 				const historyResponse = await fetch(`/api/ai/bullshift/getHistory?chatId=${chatId}`);
 				if (historyResponse.ok) {
 					const historyData = await historyResponse.json();
@@ -149,12 +149,13 @@
 					];
 				}
 			} else {
-				// No path switch, just add the AI response to local history
+				// No path switch or feedback saved, just add the AI response to local history
 				history = [
 					...history,
 					{ role: 'model', parts: [{ text: data.response }], timestamp: data.timestamp }
 				];
 			}
+
 
 			// Now that we have the AI's response, generate a suggestion for the user's next message
 			await suggestResponse();
@@ -252,10 +253,39 @@
 			}, 1000);
 		});
 	};
+	
+	const processFeedbackIfNeeded = async () => {
+		console.log('🔍 Checking if feedback needs to be processed...');
+		try {
+			const response = await fetch('/api/ai/bullshift/processFeedback', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ chatId })
+			});
+			
+			if (response.ok) {
+				const data = await response.json();
+				if (data.feedbackSaved) {
+					console.log('✅ Feedback processed successfully');
+					// Refresh history to show feedback confirmation
+					const historyResponse = await fetch(`/api/ai/bullshift/getHistory?chatId=${chatId}`);
+					if (historyResponse.ok) {
+						const historyData = await historyResponse.json();
+						history = historyData.history || [];
+					}
+				}
+			}
+		} catch (error) {
+			console.error('Error processing feedback:', error);
+		}
+	};
 	const startAnalysis = async () => {
 		chatAnalysisId = '';
 		analyzerIsRunning = true;
 		try {
+			// First, process any pending feedback if we're in feedback path
+			await processFeedbackIfNeeded();
+			
 			const [analysisResponse] = await Promise.all([
 				analyzeChat(),
 				new Promise((resolve) => setTimeout(resolve, 2000))
@@ -525,7 +555,9 @@
 								? 'rounded-tl-xl rounded-tr border border-white/40 bg-offwhite '
 								: message.role === 'error'
 									? 'rounded-tl-md rounded-tr-xl border border-red-300 bg-red-100 text-red-800'
-									: 'rounded-tl rounded-tr-xl border border-white bg-white/90'}"
+									: message.feedbackConfirmation
+										? 'rounded-tl rounded-tr-xl border border-green-200 bg-green-50 text-green-800'
+										: 'rounded-tl rounded-tr-xl border border-white bg-white/90'}"
 						>
 							<div class="flex items-start gap-2">
 								<div class="text-sm">
@@ -568,6 +600,7 @@
 					</div>
 				</div>
 			{/if}
+
 
 			<div class="flex items-center justify-center">
 				<button

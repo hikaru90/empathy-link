@@ -46,6 +46,128 @@ const sanitizeText = (text: string) => {
 	return sanitized.trim();
 };
 
+// Helper function to extract feedback from conversation
+const extractFeedbackFromConversation = (history: any[]): any | null => {
+	console.log('🔍 Analyzing conversation for feedback responses...');
+	
+	// Get recent messages in feedback path with both processed and original text
+	const recentHistory = history
+		.slice(-20) // Look at last 20 messages
+		.filter(msg => !msg.pathMarker && !msg.hidden && msg.parts?.[0]?.text);
+
+	if (recentHistory.length < 4) {
+		console.log('🔍 Not enough messages for feedback extraction');
+		return null;
+	}
+
+	console.log('🔍 Feedback messages found:', recentHistory.length);
+
+	const feedback: any = {};
+	let foundAnswers = 0;
+
+	// Look for patterns in user responses
+	for (let i = 0; i < recentHistory.length - 1; i++) {
+		const aiMsg = recentHistory[i];
+		const userMsg = recentHistory[i + 1];
+		
+		if (aiMsg.role !== 'model' || userMsg.role !== 'user') continue;
+		
+		const aiText = aiMsg.parts[0].text.toLowerCase().trim();
+		const userText = userMsg.parts[0].text.toLowerCase().trim();
+		const originalUserText = userMsg.parts[0].text; // Keep original case for text responses
+		
+		// 1. Helpfulness rating (1-10)
+		if (aiText.includes('hilfreich') && aiText.includes('skala') && !feedback.helpfulness) {
+			const match = userText.match(/\b([1-9]|10)\b/);
+			if (match) {
+				feedback.helpfulness = parseInt(match[1]);
+				foundAnswers++;
+				console.log('🔍 Found helpfulness:', feedback.helpfulness);
+			}
+		}
+		
+		// 2. Understanding (ja/nein)
+		else if (aiText.includes('verstanden') && aiText.includes('gefühlt') && feedback.understanding === undefined) {
+			if (userText.includes('ja') || userText.includes('yes') || userText.includes('definitiv') || userText.includes('absolut')) {
+				feedback.understanding = true;
+				foundAnswers++;
+				console.log('🔍 Found understanding: true');
+			} else if (userText.includes('nein') || userText.includes('no') || userText.includes('nicht')) {
+				feedback.understanding = false;
+				foundAnswers++;
+				console.log('🔍 Found understanding: false');
+			}
+		}
+		
+		// 3. New insights (ja/nein)
+		else if (aiText.includes('erkenntnisse') && aiText.includes('gewinnen') && feedback.newInsights === undefined) {
+			if (userText.includes('ja') || userText.includes('yes') || userText.includes('definitiv') || userText.includes('absolut')) {
+				feedback.newInsights = true;
+				foundAnswers++;
+				console.log('🔍 Found newInsights: true');
+			} else if (userText.includes('nein') || userText.includes('no') || userText.includes('nicht')) {
+				feedback.newInsights = false;
+				foundAnswers++;
+				console.log('🔍 Found newInsights: false');
+			}
+		}
+		
+		// 4. Would recommend (ja/nein)
+		else if (aiText.includes('weiterempfehlen') && feedback.wouldRecommend === undefined) {
+			if (userText.includes('ja') || userText.includes('yes') || userText.includes('definitiv') || userText.includes('absolut')) {
+				feedback.wouldRecommend = true;
+				foundAnswers++;
+				console.log('🔍 Found wouldRecommend: true');
+			} else if (userText.includes('nein') || userText.includes('no') || userText.includes('nicht')) {
+				feedback.wouldRecommend = false;
+				foundAnswers++;
+				console.log('🔍 Found wouldRecommend: false');
+			}
+		}
+		
+		// 5. Best aspects (text)
+		else if (aiText.includes('besonders gut') && aiText.includes('gefallen') && !feedback.bestAspects) {
+			if (userText.length > 10) { // Only if substantial response
+				feedback.bestAspects = originalUserText; // Use original case
+				foundAnswers++;
+				console.log('🔍 Found bestAspects');
+			}
+		}
+		
+		// 6. Improvements (text)
+		else if (aiText.includes('besser machen') && !feedback.improvements) {
+			if (userText.length > 10) { // Only if substantial response
+				feedback.improvements = originalUserText; // Use original case
+				foundAnswers++;
+				console.log('🔍 Found improvements');
+			}
+		}
+		
+		// 7. Additional comments (text)
+		else if (aiText.includes('noch etwas') && aiText.includes('mitteilen') && !feedback.additionalComments) {
+			if (userText.length > 10) { // Only if substantial response
+				feedback.additionalComments = originalUserText; // Use original case
+				foundAnswers++;
+				console.log('🔍 Found additionalComments');
+			}
+		}
+	}
+
+	console.log('🔍 Feedback extraction results:', { foundAnswers, feedback });
+	
+	// Check if we have ALL 4 mandatory answers
+	const hasAllMandatoryAnswers = 
+		feedback.helpfulness !== undefined &&
+		feedback.understanding !== undefined &&
+		feedback.newInsights !== undefined &&
+		feedback.wouldRecommend !== undefined;
+	
+	console.log('🔍 Has all mandatory answers:', hasAllMandatoryAnswers);
+	
+	// Only return feedback if we have ALL 4 mandatory answers
+	return hasAllMandatoryAnswers ? feedback : null;
+};
+
 const initialState: State = {
 	currentStep: 'observation',
 	observation: '',
@@ -93,12 +215,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Analyze path switching intent BEFORE generating AI response
 		const preliminaryMessages = chatInDb.history.slice(-6)
-			.filter(h => h.parts && h.parts.length > 0 && !h.pathMarker && !h.hidden)
-			.map(h => ({
+			.filter((h: any) => h.parts && h.parts.length > 0 && !h.pathMarker && !h.hidden)
+			.map((h: any) => ({
 				role: h.role === 'model' ? 'assistant' : h.role as string,
 				content: h.parts[0]?.text || ''
 			}))
-			.filter(m => (m.role === 'user' || m.role === 'assistant') && m.content.trim().length > 0);
+			.filter((m: any) => (m.role === 'user' || m.role === 'assistant') && m.content.trim().length > 0);
 
 		// Add current user message to context
 		preliminaryMessages.push({ role: 'user', content: message });
@@ -108,6 +230,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Get current path state
 		const currentPath = getCurrentPath(chatId);
 		console.log('🔍 Pre-response path analysis - Current path:', currentPath);
+		console.log('🔍 Active path:', currentPath?.activePath);
 
 		let pathSwitchAnalysis: PathSwitchAnalysis | null = null;
 		let pathSwitchedEarly = false;
@@ -115,14 +238,45 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		try {
 			if (currentPath?.activePath) {
-				pathSwitchAnalysis = await analyzePathSwitchingIntent(
-					message,
-					currentPath.activePath,
-					preliminaryMessages,
-					locale || 'de',
-					chatId,
-					user.id
-				);
+				// Special handling for feedback path - only allow explicit switches
+				if (currentPath.activePath === 'feedback') {
+					// In feedback path, only allow switching if user explicitly asks to end or switch
+					const explicitSwitchKeywords = [
+						'beenden', 'ende', 'stop', 'aufhören', 'abbrechen',
+						'selbst-empathie', 'fremd-empathie', 'handlungsplanung', 'konfliktlösung',
+						'anderes thema', 'wechseln zu', 'gehen zu'
+					];
+					
+					const hasExplicitSwitch = explicitSwitchKeywords.some(keyword => 
+						message.toLowerCase().includes(keyword)
+					);
+					
+					if (!hasExplicitSwitch) {
+						console.log('🔒 Feedback path: Preventing automatic path switching, staying in feedback');
+						// Skip path analysis to prevent automatic switching
+					} else {
+						console.log('🔓 Feedback path: Explicit switch detected, allowing path analysis');
+						pathSwitchAnalysis = await analyzePathSwitchingIntent(
+							message,
+							currentPath.activePath,
+							preliminaryMessages,
+							locale || 'de',
+							chatId,
+							user.id
+						);
+					}
+				} else {
+					// Normal path switching analysis for non-feedback paths
+					pathSwitchAnalysis = await analyzePathSwitchingIntent(
+						message,
+						currentPath.activePath,
+						preliminaryMessages,
+						locale || 'de',
+						chatId,
+						user.id
+					);
+				}
+				
 				console.log('🔍 Pre-response path analysis result:', pathSwitchAnalysis);
 
 				// Switch path BEFORE generating response if user wants to switch
@@ -294,24 +448,38 @@ Reagiere empathisch auf ihre Nachricht und schlage dann basierend auf dem Kontex
 			timestamp: Date.now()
 		});
 		
-		await pb.collection('chats').update(chatId, { history: historyToSave });
+		// Store initial history without feedback confirmation
+		let finalHistoryToSave = [...historyToSave];
+		await pb.collection('chats').update(chatId, { history: finalHistoryToSave });
 
 		// Trigger automatic feedback analysis if we switched to feedback path
-		if (pathSwitchedEarly && earlyNewPathId === 'feedback') {
+		// OR for testing: if user message contains "test feedback"
+		const isTestFeedback = message.toLowerCase().includes('test feedback');
+		if ((pathSwitchedEarly && earlyNewPathId === 'feedback') || isTestFeedback) {
 			console.log('🔍 Feedback-Pfad aktiviert - starte automatische Gesprächsanalyse');
+			console.log('🔍 Chat history length for analysis:', historyToSave.length);
 			try {
 				// Führe automatische Analyse durch (ohne User-Feedback)
+				console.log('🔍 Calling analyzeChatFlow...');
 				const analysisResult = await analyzeChatFlow(chatId, historyToSave, locale || 'de');
+				console.log('🔍 Analysis completed:', {
+					flowRating: analysisResult.conversationFlow.flowRating,
+					nvcCompliance: analysisResult.nvcCompliance.overallCompliance,
+					orchestratorEffectiveness: analysisResult.orchestratorEffectiveness.overallEffectiveness
+				});
 				
 				// Speichere Analyse-Ergebnisse (ohne User-Feedback)
+				console.log('🔍 Calling saveChatFeedback...');
 				const feedbackRecordId = await saveChatFeedback(
 					chatId, 
 					analysisResult, 
 					null, // Kein User-Feedback zum jetzigen Zeitpunkt
 					user.id
 				);
+				console.log('🔍 Feedback record created with ID:', feedbackRecordId);
 				
 				// Chat als feedback-bereit markieren (nur feedbackId setzen)
+				console.log('🔍 Updating chat with feedbackId...');
 				await pb.collection('chats').update(chatId, {
 					feedbackId: feedbackRecordId
 				});
@@ -319,9 +487,15 @@ Reagiere empathisch auf ihre Nachricht und schlage dann basierend auf dem Kontex
 				console.log('✅ Automatische Feedback-Analyse abgeschlossen:', feedbackRecordId);
 			} catch (error) {
 				console.error('❌ Fehler bei automatischer Feedback-Analyse:', error);
+				if (error instanceof Error) {
+					console.error('❌ Stack trace:', error.stack);
+				}
 				// Fehler wird nicht an User weitergegeben - Hauptfunktion bleibt intakt
 			}
 		}
+
+		// Feedback will be processed when user clicks "Chat abschließen" button
+		// No need to process feedback here during normal conversation
 
 		saveTrace(
 			'sendMessage',
@@ -336,8 +510,8 @@ Reagiere empathisch auf ihre Nachricht und schlage dann basierend auf dem Kontex
 
 		// Path was already switched before response generation if needed
 
-		// Get updated path state after potential switch
-		const finalPath = getCurrentPath(chatId);
+		// Get updated path state after potential switch (moved up for feedback check)
+		const finalPathForReturn = getCurrentPath(chatId);
 
 		return json({
 			response: response.text,
@@ -347,8 +521,10 @@ Reagiere empathisch auf ihre Nachricht und schlage dann basierend auf dem Kontex
 			pathSwitchAnalysis,
 			pathSwitched: pathSwitchedEarly,
 			newPath: earlyNewPathId,
-			currentPath: finalPath?.activePath,
-			pathState: finalPath
+			currentPath: finalPathForReturn?.activePath,
+			pathState: finalPathForReturn,
+			feedbackSaved,
+			feedbackData
 		});
 	} catch (error) {
 		console.error('Error sending message:', error);

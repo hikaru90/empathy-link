@@ -267,7 +267,17 @@ export const saveChatFeedback = async (
 	userId?: string
 ): Promise<string> => {
 	try {
-		const record = await pb.collection('chatFeedback').create({
+		console.log('💾 Preparing to save feedback record...');
+		console.log('💾 ChatId:', chatId);
+		console.log('💾 UserId:', userId);
+		console.log('💾 Has userFeedback:', !!userFeedback);
+		console.log('💾 Analysis summary:', {
+			conversationQuality: analysis.overallAssessment.conversationQuality,
+			nvcCompliance: analysis.nvcCompliance.overallCompliance,
+			orchestratorEffectiveness: analysis.orchestratorEffectiveness.overallEffectiveness
+		});
+
+		const feedbackData = {
 			chatId,
 			userId: userId || null,
 			submittedAt: new Date().toISOString(),
@@ -289,13 +299,20 @@ export const saveChatFeedback = async (
 			orchestratorEffectiveness: analysis.orchestratorEffectiveness.overallEffectiveness,
 			pathSwitches: analysis.conversationFlow.pathSwitches,
 			totalMessages: analysis.conversationFlow.totalMessages
-		});
+		};
+
+		console.log('💾 Creating record with data keys:', Object.keys(feedbackData));
+		const record = await pb.collection('chatFeedback').create(feedbackData);
 		
 		console.log('💾 Feedback und Gesprächsanalyse gespeichert:', record.id);
 		return record.id;
 		
 	} catch (error) {
 		console.error('❌ Fehler beim Speichern des Feedbacks:', error);
+		if (error instanceof Error) {
+			console.error('❌ Error details:', error.message);
+			console.error('❌ Stack trace:', error.stack);
+		}
 		throw error;
 	}
 };

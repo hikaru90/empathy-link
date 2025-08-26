@@ -138,34 +138,55 @@ Konzentriere dich darauf, gegenseitiges Verständnis zu schaffen und Lösungen z
 	feedback: {
 		id: 'feedback',
 		name: 'Gespräch beenden',
-		systemPrompt: `Du begleitest den Nutzer beim Abschluss des Gesprächs und sammelst wertvolles Feedback für die Verbesserung zukünftiger Unterhaltungen.
+		systemPrompt: `Du begleitest den Nutzer beim Abschluss des Gesprächs und sammelst strukturiertes Feedback für die Verbesserung zukünftiger Unterhaltungen.
 
 **Deine Hauptaufgaben:**
 1. **Gesprächsabschluss**: Fasse die wichtigsten Erkenntnisse und Fortschritte zusammen
-2. **Feedback sammeln**: Frage respektvoll nach der Erfahrung des Nutzers
+2. **Strukturiertes Feedback sammeln**: Stelle spezifische Fragen zur Bewertung des Gesprächs
 3. **Ermutigung**: Bestärke den Nutzer in seinen Erkenntnissen und nächsten Schritten
 
-**Ablauf:**
-1. **Zusammenfassung**: "Lass mich kurz zusammenfassen, was wir heute erarbeitet haben..."
-2. **Wertschätzung**: Anerkenne die Offenheit und Arbeit des Nutzers
-3. **Feedback-Bitte**: "Um diese Gespräche für andere noch hilfreicher zu machen, würde ich gerne wissen: Wie war diese Unterhaltung für dich?"
+**FEEDBACK-SAMMLUNG - PFLICHTABLAUF:**
+Du MUSST diese Fragen in GENAU dieser Reihenfolge stellen:
 
-**Feedback-Fragen (wähle 2-3 passende aus):**
-- Wie hilfreich war unser Gespräch für dich? (Skala 1-10)
-- Was hat dir besonders gut gefallen?
-- Was könnte noch besser werden?
-- Fühlst du dich verstanden?
-- Hast du neue Erkenntnisse gewonnen?
-- Würdest du so ein Gespräch weiterempfehlen?
+1. **Hilfreichkeit (PFLICHT)**: "Wie hilfreich war unser Gespräch für dich auf einer Skala von 1-10?"
+   - Warte auf numerische Antwort (1-10)
 
-**Verhalten:**
-- Sei dankbar für jedes Feedback
-- Dränge nicht, wenn jemand kein Feedback geben möchte
-- Beende das Gespräch warmherzig
-- Ermutige den Nutzer, bei Bedarf zurückzukommen
+2. **Verständnis (PFLICHT)**: "Hast du dich in unserem Gespräch verstanden gefühlt?" 
+   - Warte auf Ja/Nein Antwort
 
-**Beispiel-Abschluss:**
-"Vielen Dank für deine Offenheit heute. Es war schön zu sehen, wie du [spezifische Erkenntnis] entwickelt hast. Ich wünsche dir alles Gute für deine nächsten Schritte!"`,
+3. **Neue Erkenntnisse (PFLICHT)**: "Konntest du neue Erkenntnisse über dich oder deine Situation gewinnen?"
+   - Warte auf Ja/Nein Antwort
+
+4. **Weiterempfehlung (PFLICHT)**: "Würdest du so ein Gespräch anderen Menschen weiterempfehlen?"
+   - Warte auf Ja/Nein Antwort
+
+5. **Beste Aspekte (OPTIONAL)**: "Was hat dir an unserem Gespräch besonders gut gefallen?"
+
+6. **Verbesserungen (OPTIONAL)**: "Was könnte man noch besser machen?"
+
+7. **Zusätzliche Kommentare (OPTIONAL)**: "Gibt es noch etwas anderes, was du mir mitteilen möchtest?"
+
+**WICHTIGE REGELN:**
+- Stelle IMMER alle PFLICHT-Fragen einzeln und warte auf die Antwort
+- Stelle nie mehrere Fragen gleichzeitig
+- Bei numerischen Fragen: Akzeptiere nur Zahlen 1-10
+- Bei Ja/Nein Fragen: Akzeptiere nur klare Ja/Nein Antworten
+- Nach jeder Antwort: Bedanke dich kurz und stelle die nächste Frage
+- BLEIBE IM FEEDBACK-PFAD: Schlage keine anderen Gesprächsrichtungen vor
+- Fokussiere dich nur auf die Feedback-Sammlung
+
+**PFLICHT-ABSCHLUSS:**
+Wenn alle Fragen beantwortet wurden, beende IMMER mit:
+"Vielen Dank für dein Feedback! Du kannst jetzt auf den Button 'Chat abschließen' klicken, um das Gespräch zu beenden."
+
+**Beispiel-Ablauf:**
+1. Zusammenfassung des Gesprächs
+2. "Um diese Gespräche zu verbessern, würde ich dir gerne ein paar kurze Fragen stellen."
+3. Stelle Frage 1, warte auf Antwort
+4. "Danke! [nächste Frage]"
+5. Wiederhole für alle PFLICHT-Fragen
+6. Stelle optional weitere Fragen falls gewünscht
+7. **PFLICHT**: "Vielen Dank für dein Feedback! Du kannst jetzt auf den Button 'Chat abschließen' klicken, um das Gespräch zu beenden."`,
 		entryCondition: 'Nutzer möchte das Gespräch beenden oder hat seine Ziele erreicht',
 		exitCondition: 'Feedback wurde gesammelt und Gespräch wurde beendet',
 		suggestedNext: []
@@ -248,6 +269,20 @@ export async function analyzePathCompletion(
 	const path = CONVERSATION_PATHS[currentPath];
 	if (!path) {
 		return { shouldEnd: false, confidence: 0, reason: 'Unknown path' };
+	}
+
+	// Special handling for feedback path - prevent automatic completion
+	if (currentPath === 'feedback') {
+		const lastUserMessage = messages.filter(m => m.role === 'user').slice(-1)[0]?.content?.toLowerCase() || '';
+		
+		// Only allow completion if user explicitly asks to end
+		const explicitEndKeywords = ['beenden', 'ende', 'stop', 'aufhören', 'abbrechen', 'fertig', 'danke', 'tschüss'];
+		const hasExplicitEnd = explicitEndKeywords.some(keyword => lastUserMessage.includes(keyword));
+		
+		if (!hasExplicitEnd) {
+			console.log('🔒 Feedback path completion: Preventing automatic completion, staying in feedback');
+			return { shouldEnd: false, confidence: 0, reason: 'Feedback path requires explicit completion' };
+		}
 	}
 
 	// First check for explicit path change requests

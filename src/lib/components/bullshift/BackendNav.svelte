@@ -10,6 +10,10 @@
 		{
 			label: 'Evals',
 			href: '/bullshift/backend/evals'
+		},
+		{
+			label: 'Feedback',
+			href: '/bullshift/backend/feedback'
 		}
 	]);
 </script>

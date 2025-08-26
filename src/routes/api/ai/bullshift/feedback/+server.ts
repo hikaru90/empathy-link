@@ -27,6 +27,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		console.log('📝 Feedback erhalten für Chat:', chatId);
+		console.log('📝 Received feedback data:', feedback);
+		console.log('📝 User ID:', user.id);
+		console.log('📝 Locale:', locale);
 
 		// Chat aus Datenbank laden
 		const chat = await pb.collection('chats').getOne(chatId);
