@@ -25,6 +25,7 @@
 	import { scroll } from '$store/page';
 	import TypewriterText from '$lib/components/TypewriterText.svelte';
 	import { invalidateAll } from '$app/navigation';
+	import RecommendationCard from '$lib/components/RecommendationCard.svelte';
 
 	interface Feeling {
 		id: string;
@@ -91,12 +92,12 @@
 			{ role: 'user', parts: [{ text: messageToSend }], timestamp: Date.now() }
 		];
 		userMessage = ''; // Clear input immediately
-		
+
 		// Scroll down after adding user message
 		setTimeout(() => {
 			scrollDown();
 		}, 50);
-		
+
 		handleSendMessage(messageToSend);
 	};
 
@@ -132,7 +133,7 @@
 			const data = await response.json();
 			console.log('data from /send', data);
 			if (data.error) throw new Error(data.error);
-			
+
 			// If path switching or feedback was saved, refresh complete history from database
 			if (data.pathSwitched || data.feedbackSaved) {
 				console.log('Path was switched or feedback saved, refreshing history from database');
@@ -143,19 +144,28 @@
 					history = historyData.history || [];
 				} else {
 					// Fallback: just add AI response to local history
-					history = [
-						...history,
-						{ role: 'model', parts: [{ text: data.response }], timestamp: data.timestamp }
-					];
+					const aiMessage = {
+						role: 'model',
+						parts: [{ text: data.response }],
+						timestamp: data.timestamp
+					};
+					if (data.recommendations && data.recommendations.length > 0) {
+						aiMessage.recommendations = data.recommendations;
+					}
+					history = [...history, aiMessage];
 				}
 			} else {
 				// No path switch or feedback saved, just add the AI response to local history
-				history = [
-					...history,
-					{ role: 'model', parts: [{ text: data.response }], timestamp: data.timestamp }
-				];
+				const aiMessage = {
+					role: 'model',
+					parts: [{ text: data.response }],
+					timestamp: data.timestamp
+				};
+				if (data.recommendations && data.recommendations.length > 0) {
+					aiMessage.recommendations = data.recommendations;
+				}
+				history = [...history, aiMessage];
 			}
-
 
 			// Now that we have the AI's response, generate a suggestion for the user's next message
 			await suggestResponse();
@@ -253,7 +263,7 @@
 			}, 1000);
 		});
 	};
-	
+
 	const processFeedbackIfNeeded = async () => {
 		console.log('🔍 Checking if feedback needs to be processed...');
 		try {
@@ -262,7 +272,7 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ chatId })
 			});
-			
+
 			if (response.ok) {
 				const data = await response.json();
 				if (data.feedbackSaved) {
@@ -285,7 +295,7 @@
 		try {
 			// First, process any pending feedback if we're in feedback path
 			await processFeedbackIfNeeded();
-			
+
 			const [analysisResponse] = await Promise.all([
 				analyzeChat(),
 				new Promise((resolve) => setTimeout(resolve, 2000))
@@ -533,15 +543,41 @@
 							class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
 						>
 							{#if message.pathMarker.type === 'path_start'}
-								🚀 Gestartet: {message.pathMarker.path.replace('_', ' ').replace('idle', 'Gesprächsführung').replace('self empathy', 'Selbst-Empathie').replace('other empathy', 'Fremd-Empathie').replace('action planning', 'Handlungsplanung').replace('conflict resolution', 'Konfliktlösung').replace('feedback', 'Gespräch beenden')}
+								🚀 Gestartet: {message.pathMarker.path
+									.replace('_', ' ')
+									.replace('idle', 'Gesprächsführung')
+									.replace('self empathy', 'Selbst-Empathie')
+									.replace('other empathy', 'Fremd-Empathie')
+									.replace('action planning', 'Handlungsplanung')
+									.replace('conflict resolution', 'Konfliktlösung')
+									.replace('feedback', 'Gespräch beenden')}
 							{:else if message.pathMarker.type === 'path_end'}
-								✅ Abgeschlossen: {message.pathMarker.path.replace('_', ' ').replace('idle', 'Gesprächsführung').replace('self empathy', 'Selbst-Empathie').replace('other empathy', 'Fremd-Empathie').replace('action planning', 'Handlungsplanung').replace('conflict resolution', 'Konfliktlösung').replace('feedback', 'Gespräch beenden')}
+								✅ Abgeschlossen: {message.pathMarker.path
+									.replace('_', ' ')
+									.replace('idle', 'Gesprächsführung')
+									.replace('self empathy', 'Selbst-Empathie')
+									.replace('other empathy', 'Fremd-Empathie')
+									.replace('action planning', 'Handlungsplanung')
+									.replace('conflict resolution', 'Konfliktlösung')
+									.replace('feedback', 'Gespräch beenden')}
 							{:else if message.pathMarker.type === 'path_switch'}
-								🔄 Gewechselt zu: {message.pathMarker.path.replace('_', ' ').replace('idle', 'Gesprächsführung').replace('self empathy', 'Selbst-Empathie').replace('other empathy', 'Fremd-Empathie').replace('action planning', 'Handlungsplanung').replace('conflict resolution', 'Konfliktlösung').replace('feedback', 'Gespräch beenden')}
+								🔄 Gewechselt zu: {message.pathMarker.path
+									.replace('_', ' ')
+									.replace('idle', 'Gesprächsführung')
+									.replace('self empathy', 'Selbst-Empathie')
+									.replace('other empathy', 'Fremd-Empathie')
+									.replace('action planning', 'Handlungsplanung')
+									.replace('conflict resolution', 'Konfliktlösung')
+									.replace('feedback', 'Gespräch beenden')}
 							{/if}
 						</div>
 					</div>
 				{:else if !message.pathMarker}
+					<!-- Show recommendations if available -->
+					{#if message.role === 'model' && message.recommendations && message.recommendations.length > 0}
+						<RecommendationCard recommendations={message.recommendations} />
+					{/if}
+
 					<!-- Regular message display -->
 					<div
 						aria-label={message.role}
@@ -563,11 +599,6 @@
 								<div class="text-sm">
 									{#if 'text' in message.parts[0]}
 										{@html marked(message.parts[0].text)}
-										<!-- {@html marked(
-									message.role === 'user'
-										? message.parts[0].text
-										: safelyParseJSON(message.parts[0].text).response
-								)} -->
 									{:else if 'functionCall' in message.parts[0]}
 										<div class="text-xs">
 											<span class="font-bold">Funktion:</span>
@@ -600,7 +631,6 @@
 					</div>
 				</div>
 			{/if}
-
 
 			<div class="flex items-center justify-center">
 				<button

@@ -20,6 +20,7 @@ import {
 	queueMemoryExtraction,
 } from '$lib/server/tools';
 import type { GenerateContentResponse } from '@google/genai';
+import { recommendationService, type RecommendationMatch } from '$lib/server/recommendations';
 
 export interface State {
 	currentStep: string;
@@ -235,6 +236,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		let pathSwitchAnalysis: PathSwitchAnalysis | null = null;
 		let pathSwitchedEarly = false;
 		let earlyNewPathId = null;
+		let feedbackSaved = false;
+		let feedbackData = null;
 
 		try {
 			if (currentPath?.activePath) {
@@ -398,6 +401,29 @@ Reagiere empathisch auf ihre Nachricht und schlage dann basierend auf dem Kontex
 		// }
 		if (!response.text) throw new Error('No text in response');
 
+		// Generate recommendations after AI response
+		let recommendations: RecommendationMatch[] = [];
+		try {
+			const currentPathForRec = getCurrentPath(chatId);
+			if (recommendationService.shouldGenerateRecommendations(currentPathForRec, message, response.text)) {
+				console.log('📚 Generating content recommendations...');
+				const conversationContext = recommendationService.extractConversationContext(chatInDb.history);
+				recommendations = await recommendationService.generateRecommendations(
+					message,
+					response.text,
+					conversationContext,
+					ai
+				);
+				
+				if (recommendations.length > 0) {
+					console.log('📚 Generated recommendations:', recommendations.length);
+				}
+			}
+		} catch (error) {
+			console.error('❌ Error generating recommendations:', error);
+			// Continue without recommendations if there's an error
+		}
+
 		// Manually manage history - DB is single source of truth
 		let historyToSave = [...chatInDb.history];
 		
@@ -442,11 +468,18 @@ Reagiere empathisch auf ihre Nachricht und schlage dann basierend auf dem Kontex
 		}
 		
 		// Add the AI response last
-		historyToSave.push({
+		const aiMessage: any = {
 			role: 'model',
 			parts: [{ text: response.text }],
 			timestamp: Date.now()
-		});
+		};
+		
+		// Add recommendations to the AI message if any were generated
+		if (recommendations.length > 0) {
+			aiMessage.recommendations = recommendations;
+		}
+		
+		historyToSave.push(aiMessage);
 		
 		// Store initial history without feedback confirmation
 		let finalHistoryToSave = [...historyToSave];
@@ -485,6 +518,8 @@ Reagiere empathisch auf ihre Nachricht und schlage dann basierend auf dem Kontex
 				});
 				
 				console.log('✅ Automatische Feedback-Analyse abgeschlossen:', feedbackRecordId);
+				feedbackSaved = true;
+				feedbackData = { feedbackId: feedbackRecordId };
 			} catch (error) {
 				console.error('❌ Fehler bei automatischer Feedback-Analyse:', error);
 				if (error instanceof Error) {
@@ -524,7 +559,8 @@ Reagiere empathisch auf ihre Nachricht und schlage dann basierend auf dem Kontex
 			currentPath: finalPathForReturn?.activePath,
 			pathState: finalPathForReturn,
 			feedbackSaved,
-			feedbackData
+			feedbackData,
+			recommendations
 		});
 	} catch (error) {
 		console.error('Error sending message:', error);
