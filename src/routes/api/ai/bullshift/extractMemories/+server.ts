@@ -11,7 +11,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		console.log('extracting Memories on the serverSide for user:', user.id);
 		// Use authenticated user's ID instead of accepting it from request body
-		extractMemories(user.id);
+		await extractMemories(user.id);
 
 		return json({ success: true });
 	} catch (error) {

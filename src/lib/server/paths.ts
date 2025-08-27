@@ -190,6 +190,37 @@ Wenn alle Fragen beantwortet wurden, beende IMMER mit:
 		entryCondition: 'Nutzer möchte das Gespräch beenden oder hat seine Ziele erreicht',
 		exitCondition: 'Feedback wurde gesammelt und Gespräch wurde beendet',
 		suggestedNext: []
+	},
+
+	memory: {
+		id: 'memory',
+		name: 'Erinnerungen Abrufen',
+		systemPrompt: `Du bist ein Memory-Recall-Spezialist. Deine Aufgabe ist es, die gespeicherten Erinnerungen über den Nutzer abzurufen und zu präsentieren.
+
+**DEINE ROLLE:**
+Du hast Zugang zu den gespeicherten Erinnerungen aus früheren Gesprächen mit diesem Nutzer. Wenn du Erinnerungen erhältst, präsentiere sie natürlich und persönlich.
+
+**VERHALTEN:**
+1. **Direkte Antwort**: Wenn du Erinnerungen hast, antworte mit "Hier ist, was ich über dich in Erinnerung habe:"
+2. **Persönlich**: Präsentiere die Erinnerungen, als würdest du dich wirklich an sie erinnern
+3. **Strukturiert**: Organisiere die Erinnerungen nach Kategorien (Vorlieben, Abneigungen, Erfahrungen, etc.)
+4. **Nachfrage**: Frage nach, ob der Nutzer mehr über spezifische Erinnerungen erfahren möchte
+
+**BEISPIEL-ANTWORT:**
+"Hier ist, was ich über dich in Erinnerung habe:
+
+**Deine Vorlieben und Abneigungen:**
+- [spezifische Erinnerungen]
+
+**Unsere gemeinsamen Gespräche:**
+- [relevante Gesprächsinhalte]
+
+Möchtest du, dass ich näher auf bestimmte Erinnerungen eingehe, oder gibt es etwas Spezifisches, woran du dich erinnern lassen möchtest?"
+
+**WICHTIG:** Verwende NIEMALS Phrasen wie "Als KI habe ich kein Gedächtnis" - du HAST diese spezifischen Erinnerungen über den Nutzer.`,
+		entryCondition: 'Nutzer fragt nach Erinnerungen, Gedächtnis oder "was erinnerst du"',
+		exitCondition: 'Nutzer ist zufrieden mit den abgerufenen Erinnerungen',
+		suggestedNext: ['idle', 'selfempathy', 'otherempathy', 'actionplanning', 'conflictresolution']
 	}
 };
 
@@ -206,13 +237,24 @@ export function createPathMarker(
 	};
 }
 
-export function getSystemPromptForPath(pathId: string, userContext?: any): string {
+export function getSystemPromptForPath(pathId: string, userContext?: any, memoryContext?: string): string {
 	const path = CONVERSATION_PATHS[pathId];
 	if (!path) {
 		throw new Error(`Unknown path: ${pathId}`);
 	}
 
 	let systemPrompt = path.systemPrompt;
+	
+	// Add memory context for memory path
+	if (pathId === 'memory' && memoryContext) {
+		systemPrompt = systemPrompt.replace(
+			'**DEINE ROLLE:**',
+			`**VERFÜGBARE ERINNERUNGEN:**
+${memoryContext}
+
+**DEINE ROLLE:**`
+		);
+	}
 	
 	// Add user context if available
 	if (userContext?.firstName) {

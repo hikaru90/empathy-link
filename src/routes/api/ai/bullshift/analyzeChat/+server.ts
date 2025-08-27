@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { initChat } from '$lib/server/gemini';
 import type { Content } from '@google/genai';
-import { analyzeChat } from '$lib/server/tools';
+import { analyzeChat, extractMemories } from '$lib/server/tools';
 import { z } from 'zod';
 
 export interface HistoryEntry {
@@ -163,6 +163,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const analysisRecord = await locals.pb.collection('analyses').create(validatedAnalysis);
 		const initiatedChat = await initChat(user, locale);
+
+		console.log('🧠 Triggering memory extraction after chat analysis...');
+		console.log('📋 Chat ID being analyzed:', chatId);
+		try {
+			await extractMemories(user.id, locale, chatId);
+			console.log('✅ Memory extraction completed');
+		} catch (error) {
+			console.error('❌ Memory extraction failed:', error);
+		}
 
 		const res = {initiatedChat: initiatedChat, analysis: analysisRecord};
 		console.log('res from analyzeChat',res);

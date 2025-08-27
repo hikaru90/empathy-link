@@ -17,8 +17,9 @@ import { analyzeChatFlow, saveChatFeedback } from '$lib/server/chatAnalysis';
 import { pb } from '$scripts/pocketbase';
 import {
 	saveTrace,
-	queueMemoryExtraction,
+	extractMemories,
 } from '$lib/server/tools';
+import { searchSimilarMemories } from '$lib/server/memory';
 import type { GenerateContentResponse } from '@google/genai';
 import { recommendationService, type RecommendationMatch } from '$lib/server/recommendations';
 
@@ -200,7 +201,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 		let state = chatInDb?.state || initialState;
 
-		await queueMemoryExtraction(user.id, 'pending');
 
 		// Default sensitivity thresholds (can be made configurable)
 		const defaultSensitivity: Sensitivity = {
@@ -318,7 +318,30 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Create Gemini chat on-demand with current system instruction and history
 		const pathStateForAI = getCurrentPath(chatId);
-		const currentSystemInstruction = getSystemPromptForPath(pathStateForAI?.activePath || 'idle', user);
+		let currentSystemInstruction;
+		let memoryContext = '';
+
+		// Handle memory path specially
+		if (pathStateForAI?.activePath === 'memory') {
+			console.log('🧠 Memory path detected - searching for all user memories...');
+			const relevantMemories = await searchSimilarMemories(message, user.id, 10);
+			console.log(`📝 Found ${relevantMemories.length} memories for memory path`);
+			
+			if (relevantMemories.length > 0) {
+				memoryContext = relevantMemories
+					.map(m => `- ${m.key || 'Erinnerung'}: ${m.value}`)
+					.join('\n');
+				console.log('🧠 Memory context for memory path:', memoryContext);
+			} else {
+				memoryContext = '- Keine gespeicherten Erinnerungen gefunden';
+				console.log('❌ No memories found for memory path');
+			}
+			
+			currentSystemInstruction = getSystemPromptForPath('memory', user, memoryContext);
+		} else {
+			// For non-memory paths, use standard approach
+			currentSystemInstruction = getSystemPromptForPath(pathStateForAI?.activePath || 'idle', user);
+		}
 		
 		// Convert DB history to Gemini format (excludes path markers, hidden messages)
 		const geminiHistory = convertHistoryToGemini(chatInDb.history);

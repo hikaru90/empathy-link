@@ -195,131 +195,122 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 };
 
 // Memory Extraction
-export const extractMemories = async (userId: string, locale: string = 'en') => {
-	console.log(`status = "pending" && user = "${userId}"`);
+export const extractMemories = async (userId: string, locale: string = 'en', specificChatId?: string) => {
+	console.log(`Extracting memories for user: ${userId}${specificChatId ? ` from chat: ${specificChatId}` : ''}`);
 	try {
-		const memories = await pb.collection('memoryExtractionQueue').getFullList({
-			filter: `status = "pending" && user = "${userId}"`,
-			sort: '-created'
-		});
-		console.log('memories length', memories.length);
-		for (const memory of memories) {
-			const userChats = await pb.collection('chats').getFullList({
+		// Get specific chat or unprocessed chats for this user
+		const userChats = specificChatId 
+			? await pb.collection('chats').getFullList({
+				filter: `user = "${userId}" && id = "${specificChatId}"`,
+				sort: '-created'
+			})
+			: await pb.collection('chats').getFullList({
 				filter: `user = "${userId}" && memoryProcessed = false`,
 				sort: '-created'
 			});
-			console.log('userChats', userChats);
-			const concatenatedHistory = userChats.map((chat) => JSON.stringify(chat.history)).join('\n');
+		console.log('userChats found:', userChats.length);
+		console.log('Chat IDs being processed:', userChats.map(chat => chat.id));
+		
+		if (userChats.length === 0) {
+			console.log('No unprocessed chats found');
+			return;
+		}
 
-			if (!concatenatedHistory) {
-				await pb.collection('memoryExtractionQueue').update(memory.id, {
-					status: 'done'
-				});
-				throw 'concatenatedHistory is empty, skipping memory extraction';
-			}
+		const concatenatedHistory = userChats.map((chat) => JSON.stringify(chat.history)).join('\n');
 
-			const message = `
+		if (!concatenatedHistory) {
+			console.log('concatenatedHistory is empty, skipping memory extraction');
+			return;
+		}
+
+		const message = `
       The chat history is:
       ${concatenatedHistory}
       `;
 
-			console.log('message', message);
+		console.log('Extracting memories from chat history');
+		console.log('FULL CHAT HISTORY BEING ANALYZED:');
+		console.log(concatenatedHistory);
 
-			const systemInstruction = getLocalizedPrompt('extractMemories');
+		const systemInstruction = getLocalizedPrompt('extractMemories');
 
-			const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
-			const model = {
-				model: 'gemini-1.5-flash',
-				config: {
-					systemInstruction,
-					responseMimeType: 'application/json',
-					responseSchema: {
-						type: Type.ARRAY,
-						items: {
-							type: Type.OBJECT,
-							properties: {
-								aspectType: {
-									type: Type.STRING,
-									enum: ['identity', 'emotion', 'relationship', 'value'],
-									description: 'Type of the aspect'
-								},
-								key: {
-									type: Type.STRING,
-									description: 'The heading you would give to the information you want to remember'
-								},
-								value: {
-									type: Type.STRING,
-									description: 'The content of the aspect you want to remember'
-								},
-								confidence: {
-									type: Type.STRING,
-									enum: ['speculative', 'likely', 'certain'],
-									description: 'Confidence of the aspect'
-								}
+		const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
+		const model = {
+			model: 'gemini-1.5-flash',
+			config: {
+				systemInstruction,
+				responseMimeType: 'application/json',
+				responseSchema: {
+					type: Type.ARRAY,
+					items: {
+						type: Type.OBJECT,
+						properties: {
+							aspectType: {
+								type: Type.STRING,
+								enum: ['identity', 'emotion', 'relationship', 'value'],
+								description: 'Type of the aspect'
 							},
-							required: ['aspectType', 'key', 'value', 'confidence']
-						}
+							key: {
+								type: Type.STRING,
+								description: 'The heading you would give to the information you want to remember'
+							},
+							value: {
+								type: Type.STRING,
+								description: 'The content of the aspect you want to remember'
+							},
+							confidence: {
+								type: Type.STRING,
+								enum: ['speculative', 'likely', 'certain'],
+								description: 'Confidence of the aspect'
+							}
+						},
+						required: ['aspectType', 'key', 'value', 'confidence']
 					}
 				}
-			};
-			const chat = ai.chats.create(model);
-			const result = await chat.sendMessage({ message });
-			const response = result.text;
-			const responseJson = JSON.parse(response || '{}');
-
-			console.log('responseJson', responseJson);
-
-			for (const aspect of responseJson) {
-				try {
-					const aspectRecord = await pb.collection('memories').create({
-						user: userId,
-						type: aspect.aspectType,
-						key: aspect.key,
-						value: aspect.value,
-						confidence: aspect.confidence
-					});
-				} catch (error) {
-					// Log error but continue - memory extraction failures should not crash the app
-					console.error('Error creating aspect record:', error);
-				}
 			}
+		};
+		const chat = ai.chats.create(model);
+		const result = await chat.sendMessage({ message });
+		const response = result.text;
+		const responseJson = JSON.parse(response || '{}');
 
-			for (const chat of userChats) {
-				try {
-					await pb.collection('chats').update(chat.id, {
-						memoryProcessed: true
-					});
-				} catch (error) {
-					console.error('Error updating chat record:', error);
-				}
+		console.log('Extracted memories:', responseJson.length);
+
+		// Create memories using the new vector system
+		const { createHybridMemory } = await import('./hybridMemory.js');
+		
+		for (const aspect of responseJson) {
+			try {
+				await createHybridMemory(
+					userId,
+					aspect.value,
+					aspect.aspectType,
+					aspect.key,
+					aspect.confidence,
+					userChats[0]?.id // Use the most recent chat ID
+				);
+				console.log(`Created memory: [${aspect.aspectType}] ${aspect.value}`);
+			} catch (error) {
+				console.error('Error creating memory:', error);
 			}
-
-			const updatedMemory = await pb.collection('memoryExtractionQueue').update(memory.id, {
-				status: 'done'
-			});
-
-			console.log('updatedMemory', updatedMemory);
 		}
+
+		// Mark all processed chats as memoryProcessed
+		for (const chatRecord of userChats) {
+			try {
+				await pb.collection('chats').update(chatRecord.id, {
+					memoryProcessed: true
+				});
+			} catch (error) {
+				console.error('Error updating chat record:', error);
+			}
+		}
+		
+		console.log('Memory extraction completed successfully');
 		return true;
 	} catch (error) {
 		console.error('Error extracting memories:', error);
-	}
-};
-export const queueMemoryExtraction = async (userId: string, status: string) => {
-	try {
-		const userMemoryExtractions = await pb.collection('memoryExtractionQueue').getFullList({
-			filter: `user = "${userId}" && status = "pending"`
-		});
-
-		if (userMemoryExtractions.length > 0) {
-			return;
-		}
-		const queueMemoryExtraction = await pb
-			.collection('memoryExtractionQueue')
-			.create({ user: userId, status: status });
-		return queueMemoryExtraction;
-	} catch (error) {
-		console.error('Error queueing memory extraction:', error);
+		return false;
 	}
 };
 export const saveTrace = async (

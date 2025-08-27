@@ -755,6 +755,7 @@
 									.replace('other empathy', 'Fremd-Empathie gestartet')
 									.replace('action planning', 'Handlungsplanung gestartet')
 									.replace('conflict resolution', 'Konfliktlösung gestartet')
+									.replace('memory', 'Erinnerungen abrufen gestartet')
 									.replace('feedback', 'Gespräch beenden gestartet')}
 							{:else if message.pathMarker.type === 'path_end'}
 								{message.pathMarker.path
@@ -764,6 +765,7 @@
 									.replace('other empathy', 'Fremd-Empathie abgeschlossen')
 									.replace('action planning', 'Handlungsplanung abgeschlossen')
 									.replace('conflict resolution', 'Konfliktlösung abgeschlossen')
+									.replace('memory', 'Erinnerungen abrufen abgeschlossen')
 									.replace('feedback', 'Gespräch beenden abgeschlossen')}
 							{:else if message.pathMarker.type === 'path_switch'}
 								{message.pathMarker.path
@@ -773,6 +775,7 @@
 									.replace('other empathy', 'Zu Fremd-Empathie gewechselt')
 									.replace('action planning', 'Zu Handlungsplanung gewechselt')
 									.replace('conflict resolution', 'Zu Konfliktlösung gewechselt')
+									.replace('memory', 'Zu Erinnerungen abrufen gewechselt')
 									.replace('feedback', 'Zu Gesprächsabschluss gewechselt')}
 							{/if}
 						</div>

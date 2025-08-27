@@ -217,6 +217,7 @@ Verfügbare Pfade:
 - other_empathy: Fremd-Empathie (Empathie für andere Personen entwickeln)  
 - action_planning: Handlungsplanung (konkrete Schritte planen)
 - conflict_resolution: Konfliktlösung (Probleme mit anderen lösen)
+- memory: Erinnerungen abrufen (gespeicherte Informationen über den Nutzer)
 - feedback: Gespräch beenden (Feedback sammeln und Gespräch abschließen)
 
 Analysiere folgende Aspekte:
@@ -230,6 +231,10 @@ Beispiele für explizite Wechselabsichten:
 - "können wir jetzt zur handlungsplanung"
 - "ich möchte einen konflikt lösen"
 - "wie kann ich das problem angehen"
+- "was erinnerst du dich über mich"
+- "was weißt du noch von mir"
+- "erinnerst du dich an unsere früheren gespräche"
+- "was haben wir früher besprochen"
 
 Antworte ausschließlich mit einem JSON-Objekt:
 {
@@ -248,6 +253,7 @@ Available paths:
 - other_empathy: Other-empathy (developing empathy for other people)
 - action_planning: Action planning (planning concrete steps)
 - conflict_resolution: Conflict resolution (solving problems with others)
+- memory: Memory recall (retrieve stored information about the user)
 - feedback: End Conversation (collect feedback and conclude conversation)
 
 Analyze the following aspects:
@@ -261,6 +267,10 @@ Examples of explicit switching intentions:
 - "can we now move to action planning"
 - "I want to solve a conflict"
 - "how can I approach this problem"
+- "what do you remember about me"
+- "do you recall our previous conversations"
+- "what did we discuss before"
+- "what do you know about me"
 
 Respond exclusively with a JSON object:
 {
@@ -360,8 +370,17 @@ export const sendMessage = async (
 };
 
 // Add this helper function to fetch and format user memories
-const getUserMemories = async (userId: string): Promise<string> => {
+const getUserMemories = async (userId: string, userMessage?: string): Promise<string> => {
 	try {
+		// Import hybrid memory system dynamically to avoid circular dependencies
+		const { getRelevantMemories } = await import('./hybridMemory.js');
+		
+		// If we have a user message, use vector-based retrieval for context-aware memories
+		if (userMessage) {
+			return await getRelevantMemories(userId, userMessage, 5);
+		}
+		
+		// Fallback to PocketBase for backward compatibility
 		const memories = await pb.collection('memories').getFullList({
 			filter: `user = "${userId}"`,
 			sort: '-created'
