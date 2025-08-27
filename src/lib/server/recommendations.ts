@@ -98,7 +98,7 @@ class RecommendationService {
 				`ID: ${c.id} | Title: ${c.title} | Category: ${c.categoryName} | Description: ${c.description}`
 			).join('\n');
 
-			const prompt = `Analysiere das folgende Gespräch und empfehle passende Lerninhalte aus unserer Datenbank.
+			const prompt = `Analysiere das folgende Gespräch und empfehle NUR dann passende Lerninhalte, wenn der Nutzer ein EXPLIZITES Problem oder Lernbedürfnis äußert.
 
 GESPRÄCH:
 User: ${userMessage}
@@ -110,9 +110,24 @@ ${conversationContext}
 VERFÜGBARE LERNINHALTE:
 ${contentSummary}
 
-AUFGABE:
-Analysiere das Gespräch und identifiziere, ob der User von spezifischen Lerninhalten profitieren könnte. 
-Empfehle nur Inhalte, die direkt relevant sind für das besprochene Problem oder Thema.
+WICHTIGE REGEL - EMPFEHLE NUR BEI EXPLIZITEN PROBLEMEN:
+- Empfehle NUR wenn der Nutzer ausdrücklich sagt, dass er etwas nicht weiß, lernen möchte oder Hilfe braucht
+- Empfehle NICHT bei normalen Gefühlsäußerungen wie "Ich bin traurig" oder "Ich fühle mich gut"
+- Empfehle NICHT bei allgemeinen Gesprächen oder wenn jemand nur Gefühle beschreibt
+- Empfehle NICHT nur weil Wörter wie "Gefühl", "Bedürfnis" oder ähnliches erwähnt werden
+
+EMPFEHLE NUR BEI BEISPIELEN WIE:
+- "Ich weiß nicht, was ich fühle"
+- "Ich verstehe meine Bedürfnisse nicht"
+- "Ich brauche Hilfe dabei, meine Gefühle zu verstehen"
+- "Kannst du mir beibringen, wie ich..."
+- "Ich möchte lernen, wie..."
+
+EMPFEHLE NICHT BEI:
+- "Ich bin traurig" 
+- "Ich fühle mich schlecht"
+- "Das macht mich wütend"
+- Normalen Gefühlsbeschreibungen oder Situationsschilderungen
 
 Antworte in folgendem JSON-Format:
 {
@@ -125,12 +140,12 @@ Antworte in folgendem JSON-Format:
   ]
 }
 
-REGELN:
+STRENGE REGELN:
 - Empfehle maximal 2 Inhalte
-- Confidence sollte zwischen 0.6 und 1.0 liegen
-- Nur empfehlen wenn wirklich relevant (nicht bei allgemeinen Gesprächen)
+- Confidence sollte zwischen 0.7 und 1.0 liegen (höhere Schwelle als vorher)
+- NUR empfehlen wenn der Nutzer EXPLIZIT um Hilfe bittet oder Unwissen äußert
 - Reason sollte auf Deutsch und prägnant sein
-- Falls keine passenden Inhalte gefunden werden, gib leeres recommendations Array zurück`;
+- Falls KEINE explizite Lernabsicht erkennbar ist, gib IMMER ein leeres recommendations Array zurück`;
 
 			const model = {
 				model: 'gemini-1.5-flash',
@@ -171,7 +186,7 @@ REGELN:
 			// Map AI recommendations to full content data
 			for (const rec of aiAnalysis.recommendations || []) {
 				const contentItem = content.find(c => c.id === rec.id);
-				if (contentItem && rec.confidence >= 0.6) {
+				if (contentItem && rec.confidence >= 0.7) {
 					recommendations.push({
 						id: contentItem.id,
 						slug: contentItem.slug,
