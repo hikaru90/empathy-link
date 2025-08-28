@@ -39,14 +39,15 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 		const feelingsRecords = await pb.collection('feelings').getFullList({
 			sort: 'category,sort'
 		})
+		// Always use German feelings and needs
 		const feelings = feelingsRecords.map((feeling) => {
-			return feeling[`name${locale.toUpperCase()}`]
+			return feeling.nameDE
 		});
 		const needsRecords = await pb.collection('needs').getFullList({
 			sort: 'category,sort'
 		})
 		const needs = needsRecords.map((need) => {
-			return need[`name${locale.toUpperCase()}`]
+			return need.nameDE
 		});
 
 		const chatRecord = await pb.collection('chats').getOne(chatId);
@@ -70,12 +71,17 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 		console.log('About to call getLocalizedPrompt with feelings:', feelings.slice(0, 3));
 		console.log('About to call getLocalizedPrompt with needs:', needs.slice(0, 3));
 		
+		// Always use German locale for consistency
+		setLocale('de');
 		const systemInstruction = getLocalizedPrompt('analyzeChat', {
 			feelings: feelings.join(', '),
 			needs: needs.join(', ')
 		});
 		
 		console.log('Generated systemInstruction preview:', systemInstruction.substring(0, 200) + '...');
+
+		// Always use German enum values
+		const clarityEnumValues = ['Unspezifisch', 'Vage', 'Spezifisch & Umsetzbar'];
 
 		const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 		const model = {
@@ -86,13 +92,38 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 				responseSchema: {
 					type: Type.OBJECT,
 					properties: {
+						emotionalShift: {
+							type: Type.STRING,
+							description: 'Description of emotional journey from beginning to end'
+						},
+						iStatementMuscle: {
+							type: Type.NUMBER,
+							description: 'Percentage (0-100) of I-statements vs You-statements usage'
+						},
+						clarityOfAsk: {
+							type: Type.STRING,
+							enum: clarityEnumValues,
+							description: 'Clarity level of the final request'
+						},
+						empathyAttempt: {
+							type: Type.BOOLEAN,
+							description: 'Whether user tried to understand other person perspective'
+						},
+						feelingVocabulary: {
+							type: Type.NUMBER,
+							description: 'Number of distinct feeling words used'
+						},
+						dailyWin: {
+							type: Type.STRING,
+							description: 'Encouraging statement about biggest success in session'
+						},
 						title: {
 							type: Type.STRING,
-							description: 'The title of the chat'
+							description: 'A short title for the session'
 						},
 						observation: {
 							type: Type.STRING,
-							description: 'The observation of the chat'
+							description: 'The factual observation as per NVC'
 						},
 						feelings: {
 							type: Type.ARRAY,
@@ -110,43 +141,7 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 						},
 						request: {
 							type: Type.STRING,
-							description: 'The request of the chat'
-						},
-						sentimentPolarity: {
-							type: Type.NUMBER,
-							description: 'The sentiment polarity of the chat'
-						},
-						intensityRatio: {
-							type: Type.NUMBER,
-							description: 'The intensity ratio of the chat'
-						},
-						emotionalBalance: {
-							type: Type.NUMBER,
-							description: 'The emotional balance of the chat'
-						},
-						triggerCount: {
-							type: Type.NUMBER,
-							description: 'The trigger count of the chat'
-						},
-						resolutionCount: {
-							type: Type.NUMBER,
-							description: 'The resolution count of the chat'
-						},
-						escalationRate: {
-							type: Type.NUMBER,
-							description: 'The escalation rate of the chat'
-						},
-						empathyRate: {
-							type: Type.NUMBER,
-							description: 'The empathy rate of the chat'
-						},
-						messageLength: {
-							type: Type.NUMBER,
-							description: 'The message length of the chat'
-						},
-						readabilityScore: {
-							type: Type.NUMBER,
-							description: 'The readability score of the chat'
+							description: 'The clearest actionable request made by user'
 						}
 					}
 				}
@@ -176,20 +171,17 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 		console.error('Error analyzing chat:', error);
 		// Return a safe fallback object to prevent the endpoint from crashing
 		return {
+			emotionalShift: '',
+			iStatementMuscle: 0,
+			clarityOfAsk: 'Unspezifisch',
+			empathyAttempt: false,
+			feelingVocabulary: 0,
+			dailyWin: '',
 			title: '',
 			observation: '',
 			feelings: [],
 			needs: [],
-			request: '',
-			sentimentPolarity: 0,
-			intensityRatio: 0,
-			emotionalBalance: 0,
-			triggerCount: 0,
-			resolutionCount: 0,
-			escalationRate: 0,
-			empathyRate: 0,
-			messageLength: 0,
-			readabilityScore: 0
+			request: ''
 		};
 	}
 };

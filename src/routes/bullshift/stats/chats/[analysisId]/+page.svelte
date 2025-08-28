@@ -6,8 +6,6 @@
 	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 	import { marked } from 'marked';
-	import Dial from '$lib/components/Dial.svelte';
-	import Counter from '$lib/components/Counter.svelte';
 	interface Props {
 		data: PageData;
 	}
@@ -17,18 +15,6 @@
 	const goBack = () => {
 		window.history.back();
 	};
-
-	const dials = [
-		{ slug: 'sentimentPolarity', label: 'Stimmung', min: -1, max: 1, type: 'dial' },
-		{ slug: 'intensityRatio', label: 'Intensität', min: 0, max: 1, type: 'dial' },
-		{ slug: 'emotionalBalance', label: 'Balance', min: 0, max: 1, type: 'dial' },
-		{ slug: 'triggerCount', label: 'Anzahl Trigger', min: 0, max: 999, type: 'number' },
-		{ slug: 'resolutionCount', label: 'Anzahl Lösungen', min: 0, max: 100, type: 'number' },
-		{ slug: 'escalationRate', label: 'Eskalation', min: 0, max: 1, type: 'dial' },
-		{ slug: 'empathyRate', label: 'Empathie', min: 0, max: 1, type: 'dial' },
-		{ slug: 'messageLength', label: 'Nachrichtenlänge', min: 0, max: 100, type: 'number' },
-		{ slug: 'readabilityScore', label: 'Lesbarkeit', min: 0, max: 100, type: 'number' }
-	];
 </script>
 
 <div class="mt-1px pt-16">
@@ -56,34 +42,85 @@
 						}).format(new Date(data.analysis.created))}
 					</p>
 
-					<div class="mb-6">
-						<div class="-mx-2 flex flex-wrap">
-							{#each dials as dial}
-								{#if dial.type === 'dial'}
-									<Dial
-										value={data.analysis[dial.slug]}
-										min={dial.min}
-										max={dial.max}
-										label={dial.label}
-										class="w-1/3 md:w-1/4"
-									/>
-								{:else if dial.type === 'number'}
-									<Counter
-										value={data.analysis[dial.slug]}
-										min={dial.min}
-										max={dial.max}
-										label={dial.label}
-										class="w-1/3 md:w-1/4"
-									/>
-								{/if}
-							{/each}
+					{#if data.analysis.dailyWin}
+						<div class="mt-6 rounded-lg border border-white bg-white/80 p-4 mb-6">
+							<div class="mb-2 font-semibold">Erkenntnis</div>
+							<div class="">{data.analysis.dailyWin}</div>
+						</div>
+					{/if}
+
+					<!-- Session Insight -->
+					<div
+						class="mb-6 rounded-lg border border-white bg-white/80 p-4"
+					>
+						<h2 class="mb-4 font-bold">Deine Session Auswertung</h2>
+
+						<div class="space-y-4">
+							{#if data.analysis.emotionalShift}
+								<div class="flex items-center gap-3">
+									<span class="text-2xl">🌡️</span>
+									<div>
+										<span class="font-semibold">Emotionale Entwicklung:</span>
+										<span class="ml-2">{data.analysis.emotionalShift}.</span>
+									</div>
+								</div>
+							{/if}
+
+							{#if data.analysis.iStatementMuscle !== undefined}
+								<div class="flex items-center gap-3">
+									<span class="text-2xl">💪</span>
+									<div>
+										<span class="font-semibold">Ich-Aussagen Muskel:</span>
+										<span class="ml-2"
+											>{data.analysis.iStatementMuscle}% deiner Sprache fokussierte sich auf deine
+											eigene Erfahrung.</span
+										>
+									</div>
+								</div>
+							{/if}
+
+							{#if data.analysis.clarityOfAsk}
+								<div class="flex items-center gap-3">
+									<span class="text-2xl">🎯</span>
+									<div>
+										<span class="font-semibold">Klarheit der Bitte:</span>
+										<span class="ml-2">Deine finale Bitte war {data.analysis.clarityOfAsk}.</span>
+									</div>
+								</div>
+							{/if}
+
+							{#if data.analysis.empathyAttempt !== undefined}
+								<div class="flex items-center gap-3">
+									<span class="text-2xl">❤️</span>
+									<div>
+										<span class="font-semibold">Empathie Versuch:</span>
+										<span class="ml-2"
+											>{data.analysis.empathyAttempt
+												? 'Du hast versucht, die Perspektive der anderen Person zu verstehen.'
+												: 'Du hast dich hauptsächlich auf deine eigene Perspektive konzentriert.'}</span
+										>
+									</div>
+								</div>
+							{/if}
+
+							{#if data.analysis.feelingVocabulary !== undefined}
+								<div class="flex items-center gap-3">
+									<span class="text-2xl">🧠</span>
+									<div>
+										<span class="font-semibold">Gefühls-Wortschatz:</span>
+										<span class="ml-2"
+											>Du hast {data.analysis.feelingVocabulary} unterschiedliche Gefühlswörter verwendet.</span
+										>
+									</div>
+								</div>
+							{/if}
 						</div>
 					</div>
 
 					<div class="flex flex-col gap-4">
 						<div class="flex flex-col gap-4 rounded-lg bg-offwhite p-4">
 							<div class="flex flex-col gap-2">
-								<h2 class="font-bold mb-4">Beobachtung</h2>
+								<h2 class="mb-4 font-bold">Beobachtung</h2>
 								<p class="text-sm text-gray-800">
 									{data.analysis.observation}
 								</p>
@@ -91,7 +128,7 @@
 						</div>
 						<div class="flex flex-col gap-4 rounded-lg bg-offwhite p-4">
 							<div class="flex flex-col gap-2">
-								<h2 class="font-bold mb-4">Gefühle</h2>
+								<h2 class="mb-4 font-bold">Gefühle</h2>
 								<div class="flex flex-wrap gap-y-1 text-sm text-gray-800">
 									{#each data.analysis.feelings as feeling}
 										<div class="rounded-full bg-white px-2 py-1 text-xs">
@@ -103,7 +140,7 @@
 						</div>
 						<div class="flex flex-col gap-4 rounded-lg bg-offwhite p-4">
 							<div class="flex flex-col gap-2">
-								<h2 class="font-bold mb-4">Bedürfnisse</h2>
+								<h2 class="mb-4 font-bold">Bedürfnisse</h2>
 								<div class="flex flex-wrap gap-y-1 text-sm text-gray-800">
 									{#each data.analysis.needs as need}
 										<div class="rounded-full bg-white px-2 py-1 text-xs">
@@ -115,7 +152,7 @@
 						</div>
 						<div class="flex flex-col gap-4 rounded-lg bg-offwhite p-4">
 							<div class="flex flex-col gap-2">
-								<h2 class="font-bold mb-4">Bitte</h2>
+								<h2 class="mb-4 font-bold">Bitte</h2>
 								<div class="flex flex-wrap gap-y-1 text-sm text-gray-800">
 									{data.analysis.request}
 								</div>
@@ -152,11 +189,32 @@
 												class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
 											>
 												{#if message.pathMarker.type === 'path_start'}
-													🚀 Gestartet: {message.pathMarker.path.replace('_', ' ').replace('idle', 'Gesprächsführung').replace('self empathy', 'Selbst-Empathie').replace('other empathy', 'Fremd-Empathie').replace('action planning', 'Handlungsplanung').replace('conflict resolution', 'Konfliktlösung').replace('feedback', 'Gespräch beenden')}
+													🚀 Gestartet: {message.pathMarker.path
+														.replace('_', ' ')
+														.replace('idle', 'Gesprächsführung')
+														.replace('self empathy', 'Selbst-Empathie')
+														.replace('other empathy', 'Fremd-Empathie')
+														.replace('action planning', 'Handlungsplanung')
+														.replace('conflict resolution', 'Konfliktlösung')
+														.replace('feedback', 'Gespräch beenden')}
 												{:else if message.pathMarker.type === 'path_end'}
-													✅ Abgeschlossen: {message.pathMarker.path.replace('_', ' ').replace('idle', 'Gesprächsführung').replace('self empathy', 'Selbst-Empathie').replace('other empathy', 'Fremd-Empathie').replace('action planning', 'Handlungsplanung').replace('conflict resolution', 'Konfliktlösung').replace('feedback', 'Gespräch beenden')}
+													✅ Abgeschlossen: {message.pathMarker.path
+														.replace('_', ' ')
+														.replace('idle', 'Gesprächsführung')
+														.replace('self empathy', 'Selbst-Empathie')
+														.replace('other empathy', 'Fremd-Empathie')
+														.replace('action planning', 'Handlungsplanung')
+														.replace('conflict resolution', 'Konfliktlösung')
+														.replace('feedback', 'Gespräch beenden')}
 												{:else if message.pathMarker.type === 'path_switch'}
-													🔄 Gewechselt zu: {message.pathMarker.path.replace('_', ' ').replace('idle', 'Gesprächsführung').replace('self empathy', 'Selbst-Empathie').replace('other empathy', 'Fremd-Empathie').replace('action planning', 'Handlungsplanung').replace('conflict resolution', 'Konfliktlösung').replace('feedback', 'Gespräch beenden')}
+													🔄 Gewechselt zu: {message.pathMarker.path
+														.replace('_', ' ')
+														.replace('idle', 'Gesprächsführung')
+														.replace('self empathy', 'Selbst-Empathie')
+														.replace('other empathy', 'Fremd-Empathie')
+														.replace('action planning', 'Handlungsplanung')
+														.replace('conflict resolution', 'Konfliktlösung')
+														.replace('feedback', 'Gespräch beenden')}
 												{/if}
 											</div>
 										</div>

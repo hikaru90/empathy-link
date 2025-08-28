@@ -108,22 +108,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const analysis = await analyzeChat(chatId, user.id, locale, locals.pb);
 		console.log('analysis', analysis);
 
-		// Define schema with optional fields and defaults for numeric values
+		// Always use German schema for session insight format
+		const clarityValues = ['Unspezifisch', 'Vage', 'Spezifisch & Umsetzbar'] as const;
+		const defaultClarity = clarityValues[0];
+		
 		const analysisSchema = z.object({
+			emotionalShift: z.string().catch(''),
+			iStatementMuscle: z.number().catch(0),
+			clarityOfAsk: z.enum(clarityValues).catch(defaultClarity),
+			empathyAttempt: z.boolean().catch(false),
+			feelingVocabulary: z.number().catch(0),
+			dailyWin: z.string().catch(''),
 			title: z.string().catch(''),
 			observation: z.string().catch(''),
 			feelings: z.array(z.string()).catch([]),
 			needs: z.array(z.string()).catch([]),
-			request: z.string().catch(''),
-			sentimentPolarity: z.number().catch(0),
-			intensityRatio: z.number().catch(0),
-			emotionalBalance: z.number().catch(0),
-			triggerCount: z.number().catch(0),
-			resolutionCount: z.number().catch(0),
-			escalationRate: z.number().catch(0),
-			empathyRate: z.number().catch(0),
-			messageLength: z.number().catch(0),
-			readabilityScore: z.number().catch(0)
+			request: z.string().catch('')
 		});
 
 		interface Analysis extends z.infer<typeof analysisSchema> {
@@ -141,20 +141,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			console.warn('Analysis validation failed, using fallback values:', parseResult.error);
 			// Create a fallback analysis with default values
 			validatedAnalysis = {
+				emotionalShift: typeof analysis.emotionalShift === 'string' ? analysis.emotionalShift : '',
+				iStatementMuscle: typeof analysis.iStatementMuscle === 'number' ? analysis.iStatementMuscle : 0,
+				clarityOfAsk: clarityValues.includes(analysis.clarityOfAsk) ? analysis.clarityOfAsk : defaultClarity,
+				empathyAttempt: typeof analysis.empathyAttempt === 'boolean' ? analysis.empathyAttempt : false,
+				feelingVocabulary: typeof analysis.feelingVocabulary === 'number' ? analysis.feelingVocabulary : 0,
+				dailyWin: typeof analysis.dailyWin === 'string' ? analysis.dailyWin : '',
 				title: typeof analysis.title === 'string' ? analysis.title : '',
 				observation: typeof analysis.observation === 'string' ? analysis.observation : '',
 				feelings: Array.isArray(analysis.feelings) ? analysis.feelings : [],
 				needs: Array.isArray(analysis.needs) ? analysis.needs : [],
-				request: typeof analysis.request === 'string' ? analysis.request : '',
-				sentimentPolarity: typeof analysis.sentimentPolarity === 'number' ? analysis.sentimentPolarity : 0,
-				intensityRatio: typeof analysis.intensityRatio === 'number' ? analysis.intensityRatio : 0,
-				emotionalBalance: typeof analysis.emotionalBalance === 'number' ? analysis.emotionalBalance : 0,
-				triggerCount: typeof analysis.triggerCount === 'number' ? analysis.triggerCount : 0,
-				resolutionCount: typeof analysis.resolutionCount === 'number' ? analysis.resolutionCount : 0,
-				escalationRate: typeof analysis.escalationRate === 'number' ? analysis.escalationRate : 0,
-				empathyRate: typeof analysis.empathyRate === 'number' ? analysis.empathyRate : 0,
-				messageLength: typeof analysis.messageLength === 'number' ? analysis.messageLength : 0,
-				readabilityScore: typeof analysis.readabilityScore === 'number' ? analysis.readabilityScore : 0
+				request: typeof analysis.request === 'string' ? analysis.request : ''
 			};
 		}
 
