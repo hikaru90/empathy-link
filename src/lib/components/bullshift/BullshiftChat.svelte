@@ -78,6 +78,7 @@
 	let errorMessage = $state('');
 	let startAnimation = $state(false);
 	let text1Done = $state(false);
+	let text2Done = $state(false);
 	let suggestion = $state<string | undefined>(undefined);
 	let isMobile = $state(false);
 	let viewportHeight = $state(window.innerHeight);
@@ -85,6 +86,19 @@
 
 	// Get the current locale reactively
 	const locale = $derived(getLocale());
+
+	// Reset animation states on mount
+	onMount(() => {
+		text1Done = false;
+		text2Done = false;
+		chatTerminationModalVisible = false;
+		
+		// If history has more than 4 items, skip animations and show content immediately
+		if (history.length > 4) {
+			text1Done = true;
+			text2Done = true;
+		}
+	});
 
 	// Detect mobile and viewport changes
 	$effect(() => {
@@ -674,7 +688,7 @@
 				chatTerminationModalVisible = false;
 				// Invalidate all data to retrigger the load function and get fresh chat data
 				await invalidateAll();
-			}, chatAnalysisSuccessDuration*1000); // Show success state for 3 seconds before auto-hiding
+			}, chatAnalysisSuccessDuration * 1000); // Show success state for 3 seconds before auto-hiding
 		}
 	});
 
@@ -709,7 +723,7 @@
 	});
 </script>
 
-{#if chatId}
+{#if chatId && !chatTerminationModalVisible}
 	<div class="">
 		<div
 			bind:this={chatContainer}
@@ -722,7 +736,7 @@
 				scroll-behavior: smooth;
 			"
 		>
-			{#if history.length === 0}
+			{#if history.length === 4}
 				<h1 class="mb-3 text-2xl font-light">
 					<TypewriterText
 						text="Hi {String(user?.firstName).charAt(0).toUpperCase() +
@@ -739,92 +753,100 @@
 						<TypewriterText
 							text="Beschreib mir eine Situation, und ich helfe dir, sie zu verarbeiten. Vertrau mir – wir
 					schaffen das gemeinsam!"
+							onComplete={() => {
+								text2Done = true;
+							}}
 						/>
 					{/if}
 				</h2>
 			{/if}
-			{#each history.filter((msg) => !msg.hidden) as message}
-				<!-- Path marker display -->
-				{#if message.pathMarker}
-					<div class="mb-4 flex justify-center">
-						<div
-							class="inline-flex items-center gap-2 rounded-full border border-green-900/5 bg-green-900/10 px-3 py-1 text-xs font-medium text-green-900"
-						>
-							{#if message.pathMarker.type === 'path_start'}
-								{message.pathMarker.path
-									.replace('_', ' ')
-									.replace('idle', 'Gesprächsführung gestartet')
-									.replace('self empathy', 'Selbst-Empathie gestartet')
-									.replace('other empathy', 'Fremd-Empathie gestartet')
-									.replace('action planning', 'Handlungsplanung gestartet')
-									.replace('conflict resolution', 'Konfliktlösung gestartet')
-									.replace('memory', 'Erinnerungen abrufen gestartet')
-									.replace('feedback', 'Gespräch beenden gestartet')}
-							{:else if message.pathMarker.type === 'path_end'}
-								{message.pathMarker.path
-									.replace('_', ' ')
-									.replace('idle', 'Gesprächsführung abgeschlossen')
-									.replace('self empathy', 'Selbst-Empathie abgeschlossen')
-									.replace('other empathy', 'Fremd-Empathie abgeschlossen')
-									.replace('action planning', 'Handlungsplanung abgeschlossen')
-									.replace('conflict resolution', 'Konfliktlösung abgeschlossen')
-									.replace('memory', 'Erinnerungen abrufen abgeschlossen')
-									.replace('feedback', 'Gespräch beenden abgeschlossen')}
-							{:else if message.pathMarker.type === 'path_switch'}
-								{message.pathMarker.path
-									.replace('_', ' ')
-									.replace('idle', 'Zu Gesprächsführung gewechselt')
-									.replace('self empathy', 'Zu Selbst-Empathie gewechselt')
-									.replace('other empathy', 'Zu Fremd-Empathie gewechselt')
-									.replace('action planning', 'Zu Handlungsplanung gewechselt')
-									.replace('conflict resolution', 'Zu Konfliktlösung gewechselt')
-									.replace('memory', 'Zu Erinnerungen abrufen gewechselt')
-									.replace('feedback', 'Zu Gesprächsabschluss gewechselt')}
-							{/if}
+			<div
+				class="transition-opacity duration-700 {text2Done
+					? 'pointer-events-auto opacity-100'
+					: 'pointer-events-none opacity-0'}"
+			>
+				{#each history.filter((msg) => !msg.hidden) as message}
+					<!-- Path marker display -->
+					{#if message.pathMarker}
+						<div class="mb-4 flex justify-center">
+							<div
+								class="inline-flex items-center gap-2 rounded-full border border-green-900/5 bg-green-900/10 px-3 py-1 text-xs font-medium text-green-900"
+							>
+								{#if message.pathMarker.type === 'path_start'}
+									{message.pathMarker.path
+										.replace('_', ' ')
+										.replace('idle', 'Gesprächsführung gestartet')
+										.replace('self empathy', 'Selbst-Empathie gestartet')
+										.replace('other empathy', 'Fremd-Empathie gestartet')
+										.replace('action planning', 'Handlungsplanung gestartet')
+										.replace('conflict resolution', 'Konfliktlösung gestartet')
+										.replace('memory', 'Erinnerungen abrufen gestartet')
+										.replace('feedback', 'Gespräch beenden gestartet')}
+								{:else if message.pathMarker.type === 'path_end'}
+									{message.pathMarker.path
+										.replace('_', ' ')
+										.replace('idle', 'Gesprächsführung abgeschlossen')
+										.replace('self empathy', 'Selbst-Empathie abgeschlossen')
+										.replace('other empathy', 'Fremd-Empathie abgeschlossen')
+										.replace('action planning', 'Handlungsplanung abgeschlossen')
+										.replace('conflict resolution', 'Konfliktlösung abgeschlossen')
+										.replace('memory', 'Erinnerungen abrufen abgeschlossen')
+										.replace('feedback', 'Gespräch beenden abgeschlossen')}
+								{:else if message.pathMarker.type === 'path_switch'}
+									{message.pathMarker.path
+										.replace('_', ' ')
+										.replace('idle', 'Zu Gesprächsführung gewechselt')
+										.replace('self empathy', 'Zu Selbst-Empathie gewechselt')
+										.replace('other empathy', 'Zu Fremd-Empathie gewechselt')
+										.replace('action planning', 'Zu Handlungsplanung gewechselt')
+										.replace('conflict resolution', 'Zu Konfliktlösung gewechselt')
+										.replace('memory', 'Zu Erinnerungen abrufen gewechselt')
+										.replace('feedback', 'Zu Gesprächsabschluss gewechselt')}
+								{/if}
+							</div>
 						</div>
-					</div>
-				{:else if !message.pathMarker}
-					<!-- Show recommendations if available -->
-					{#if message.role === 'model' && message.recommendations && message.recommendations.length > 0}
-						<RecommendationCard recommendations={message.recommendations} />
-					{/if}
+					{:else if !message.pathMarker}
+						<!-- Show recommendations if available -->
+						{#if message.role === 'model' && message.recommendations && message.recommendations.length > 0}
+							<RecommendationCard recommendations={message.recommendations} />
+						{/if}
 
-					<!-- Regular message display -->
-					<div
-						aria-label={message.role}
-						class="message {message.role} mb-4 flex {message.role === 'user'
-							? 'ml-4 justify-end'
-							: 'mr-4 justify-start'}"
-					>
+						<!-- Regular message display -->
 						<div
-							class="inline-block break-words rounded-b-xl px-3 py-1.5 shadow-lg shadow-black/5 {message.role ===
-							'user'
-								? 'rounded-tl-xl rounded-tr border border-white/40 bg-offwhite '
-								: message.role === 'error'
-									? 'rounded-tl-md rounded-tr-xl border border-red-300 bg-red-100 text-red-800'
-									: message.feedbackConfirmation
-										? 'rounded-tl rounded-tr-xl border border-green-200 bg-green-50 text-green-800'
-										: 'rounded-tl rounded-tr-xl border border-white bg-white/90'}"
+							aria-label={message.role}
+							class="message {message.role} mb-4 flex {message.role === 'user'
+								? 'ml-4 justify-end'
+								: 'mr-4 justify-start'}"
 						>
-							<div class="flex items-start gap-2">
-								<div class="markdown text-sm">
-									{#if 'text' in message.parts[0]}
-										{@html marked(message.parts[0].text)}
-									{:else if 'functionCall' in message.parts[0]}
-										<div class="text-xs">
-											<span class="font-bold">Funktion:</span>
-											{message.parts[0].functionCall.name}
-											<span class="font-bold">Argumente:</span>
-											{JSON.stringify(message.parts[0].functionCall.args)}
-										</div>
-									{/if}
+							<div
+								class="inline-block break-words rounded-b-xl px-3 py-1.5 shadow-lg shadow-black/5 {message.role ===
+								'user'
+									? 'rounded-tl-xl rounded-tr border border-white/40 bg-offwhite '
+									: message.role === 'error'
+										? 'rounded-tl-md rounded-tr-xl border border-red-300 bg-red-100 text-red-800'
+										: message.feedbackConfirmation
+											? 'rounded-tl rounded-tr-xl border border-green-200 bg-green-50 text-green-800'
+											: 'rounded-tl rounded-tr-xl border border-white bg-white/90'}"
+							>
+								<div class="flex items-start gap-2">
+									<div class="markdown text-sm">
+										{#if 'text' in message.parts[0]}
+											{@html marked(message.parts[0].text)}
+										{:else if 'functionCall' in message.parts[0]}
+											<div class="text-xs">
+												<span class="font-bold">Funktion:</span>
+												{message.parts[0].functionCall.name}
+												<span class="font-bold">Argumente:</span>
+												{JSON.stringify(message.parts[0].functionCall.args)}
+											</div>
+										{/if}
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				{/if}
-			{/each}
-
+					{/if}
+				{/each}
+			</div>
 			{#if isLoading}
 				<div class="flex items-center justify-start">
 					<div
@@ -845,10 +867,12 @@
 
 			<div class="flex items-center justify-center">
 				<button
-					class="{history.length > 0
+					class="{history.length > 4
 						? 'pointer-events-auto opacity-100'
 						: 'pointer-events-none opacity-0'} mb-4 flex items-center gap-2 rounded-full border border-black/10 py-1 pl-3 pr-2 text-sm transition"
 					onclick={() => {
+						text1Done = false;
+						text2Done = false;
 						chatTerminationModalVisible = true;
 						startAnalysis();
 					}}
@@ -862,7 +886,7 @@
 		<div class="fixed bottom-[62px] left-0 right-0 px-4 pb-6 pt-4">
 			<div class="rounded-2xl bg-neutral-100 p-2">
 				<div class="flex items-center justify-center">
-					{#if history.length > 0}
+					{#if history.length > 4}
 						<div
 							class="block max-h-0 w-full transition-all duration-500 {suggestion
 								? 'mb-2 max-h-20'
@@ -1052,10 +1076,13 @@
 		<div class="w-full">
 			<a
 				href="/bullshift/stats/chats/{chatAnalysisId}"
-				class="relative flex w-full items-center justify-between gap-2 rounded-full bg-teal-600 py-2 pl-4 pr-2 text-sm font-medium text-white transition-colors hover:bg-teal-700 overflow-hidden"
+				class="relative flex w-full items-center justify-between gap-2 overflow-hidden rounded-full bg-teal-600 py-2 pl-4 pr-2 text-sm font-medium text-white transition-colors hover:bg-teal-700"
 			>
-				<div class="absolute -ml-4 h-full w-full bg-teal-700 block-animation" style="animation-duration: {chatAnalysisSuccessDuration}s;"></div>
-				<div class="flex items-center justify-between gap-2 w-full relative z-10">
+				<div
+					class="block-animation absolute -ml-4 h-full w-full bg-teal-700"
+					style="animation-duration: {chatAnalysisSuccessDuration}s;"
+				></div>
+				<div class="relative z-10 flex w-full items-center justify-between gap-2">
 					Zur Analyse gehen
 					<ChevronRight class="size-6 rounded-full bg-white/20 p-0.5" />
 				</div>
@@ -1070,20 +1097,21 @@
 		<div></div>
 	{/if}
 </div>
+
 <style lang="scss">
 	.block-animation {
 		animation-name: block;
 		animation-timing-function: linear;
 	}
-		@keyframes block {
-			0% {
-				width: 100%
-			}
-			90% {
-				width: 0;
-			}
-			100% {
-				width: 0;
-			}
+	@keyframes block {
+		0% {
+			width: 100%;
 		}
+		90% {
+			width: 0;
+		}
+		100% {
+			width: 0;
+		}
+	}
 </style>
