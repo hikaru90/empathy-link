@@ -81,6 +81,7 @@
 	let suggestion = $state<string | undefined>(undefined);
 	let isMobile = $state(false);
 	let viewportHeight = $state(window.innerHeight);
+	const chatAnalysisSuccessDuration = 3;
 
 	// Get the current locale reactively
 	const locale = $derived(getLocale());
@@ -91,11 +92,11 @@
 			isMobile = window.innerWidth <= 768;
 			viewportHeight = window.innerHeight;
 		};
-		
+
 		checkMobile();
 		window.addEventListener('resize', checkMobile);
 		window.addEventListener('orientationchange', checkMobile);
-		
+
 		// Use ResizeObserver to detect viewport changes (like virtual keyboard)
 		if (typeof ResizeObserver !== 'undefined') {
 			const resizeObserver = new ResizeObserver((entries) => {
@@ -112,16 +113,16 @@
 					}
 				}
 			});
-			
+
 			resizeObserver.observe(document.documentElement);
-			
+
 			return () => {
 				resizeObserver.disconnect();
 				window.removeEventListener('resize', checkMobile);
 				window.removeEventListener('orientationchange', checkMobile);
 			};
 		}
-		
+
 		return () => {
 			window.removeEventListener('resize', checkMobile);
 			window.removeEventListener('orientationchange', checkMobile);
@@ -134,7 +135,9 @@
 			const handleScroll = () => {
 				// If user scrolls up, don't auto-scroll down
 				// If user scrolls near bottom, auto-scroll to bottom
-				const isNearBottom = chatContainer!.scrollTop + chatContainer!.clientHeight >= chatContainer!.scrollHeight - 100;
+				const isNearBottom =
+					chatContainer!.scrollTop + chatContainer!.clientHeight >=
+					chatContainer!.scrollHeight - 100;
 				if (isNearBottom) {
 					// User is near bottom, ensure we stay at bottom
 					setTimeout(() => {
@@ -144,9 +147,9 @@
 					}, 50);
 				}
 			};
-			
+
 			chatContainer.addEventListener('scroll', handleScroll);
-			
+
 			return () => {
 				if (chatContainer) {
 					chatContainer.removeEventListener('scroll', handleScroll);
@@ -165,7 +168,7 @@
 			const tokenCheckResponse = await fetch('/api/ai/checkTokenUsage', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ 
+				body: JSON.stringify({
 					message: messageToSend // Let the API estimate tokens from the actual message
 				})
 			});
@@ -175,19 +178,19 @@
 			if (tokenCheckResponse.ok) {
 				const tokenData = await tokenCheckResponse.json();
 				console.log('Token check data:', tokenData);
-				
+
 				if (!tokenData.canSendMessage) {
 					console.log('TOKEN LIMIT REACHED - BLOCKING MESSAGE');
 					// Show error message to user
 					errorMessage = `Du hast dein Token-Limit erreicht (${tokenData.tokenUsage.totalUsed}/${tokenData.tokenUsage.totalLimit} Tokens verwendet). Bitte kontaktiere den Support für eine Erhöhung.`;
-					
+
 					// Add error message to chat history as a red bubble
 					history = [
 						...history,
 						{ role: 'user', parts: [{ text: messageToSend }], timestamp: Date.now() },
 						{ role: 'error', parts: [{ text: errorMessage }], timestamp: Date.now() }
 					];
-					
+
 					userMessage = ''; // Clear input
 					setTimeout(() => {
 						scrollDown();
@@ -342,10 +345,10 @@
 			const lastMessage = document.querySelector('.message:last-of-type');
 			const allMessages = document.querySelectorAll('.message');
 			const lastMessageAlt = allMessages[allMessages.length - 1];
-			
-			console.log('Scrolling down:', { 
-				isMobile, 
-				hasLastMessage: !!lastMessage, 
+
+			console.log('Scrolling down:', {
+				isMobile,
+				hasLastMessage: !!lastMessage,
 				hasLastMessageAlt: !!lastMessageAlt,
 				allMessagesCount: allMessages.length,
 				hasChatContainer: !!chatContainer,
@@ -355,28 +358,28 @@
 				chatContainerClientHeight: chatContainer?.clientHeight,
 				historyLength: history.length
 			});
-			
+
 			// Try to find the last message using either selector
 			const targetMessage = lastMessage || lastMessageAlt;
-			
+
 			if (targetMessage) {
 				console.log('Found last message, scrolling into view with 100px offset');
 				// Temporarily add scroll margin to create the offset
 				const originalScrollMargin = targetMessage.style.scrollMarginTop;
 				targetMessage.style.scrollMarginTop = '80px';
-				
+
 				// Use scrollIntoView to scroll the correct scrollable parent
-				targetMessage.scrollIntoView({ 
-					behavior: 'smooth', 
+				targetMessage.scrollIntoView({
+					behavior: 'smooth',
 					block: 'start',
 					inline: 'nearest'
 				});
-				
+
 				// Remove the scroll margin after scrolling
 				setTimeout(() => {
 					targetMessage.style.scrollMarginTop = originalScrollMargin;
 				}, 500);
-				
+
 				console.log('Scroll: align last message with 100px offset from top');
 			} else if (chatContainer) {
 				console.log('No messages found, scrolling to bottom of container');
@@ -671,7 +674,7 @@
 				chatTerminationModalVisible = false;
 				// Invalidate all data to retrigger the load function and get fresh chat data
 				await invalidateAll();
-			}, 1500); // Show success state for 1.5 seconds before auto-hiding
+			}, chatAnalysisSuccessDuration*1000); // Show success state for 3 seconds before auto-hiding
 		}
 	});
 
@@ -687,12 +690,12 @@
 
 	// Scroll to bottom when chat container is ready and history is loaded
 	$effect(() => {
-		console.log('Scroll effect triggered:', { 
-			hasChatContainer: !!chatContainer, 
+		console.log('Scroll effect triggered:', {
+			hasChatContainer: !!chatContainer,
 			historyLength: history.length,
 			chatId: chatId
 		});
-		
+
 		if (chatContainer && history.length > 0) {
 			console.log('Conditions met, attempting to scroll...');
 			// Use multiple requestAnimationFrame calls to ensure DOM is fully rendered
@@ -708,9 +711,9 @@
 
 {#if chatId}
 	<div class="">
-		<div 
-			bind:this={chatContainer} 
-			class="messages rounded-lg pt-4 overflow-y-auto scroll-smooth"
+		<div
+			bind:this={chatContainer}
+			class="messages overflow-y-auto scroll-smooth rounded-lg pt-4"
 			class:pb-52={!suggestion}
 			class:pb-80={suggestion}
 			style="
@@ -861,8 +864,8 @@
 				<div class="flex items-center justify-center">
 					{#if history.length > 0}
 						<div
-							class="mb-2 block max-h-0 w-full transition-all duration-500 {suggestion
-								? 'max-h-20'
+							class="block max-h-0 w-full transition-all duration-500 {suggestion
+								? 'mb-2 max-h-20'
 								: ''}"
 						>
 							<button
@@ -1002,56 +1005,85 @@
 
 <!-- Custom non-interactive modal -->
 <div
-	class="fixed inset-0 z-[1001] flex items-center justify-center bg-background {chatTerminationModalVisible
+	class="fixed inset-0 z-[1001] flex flex-col items-center justify-between bg-background p-6 {chatTerminationModalVisible
 		? 'pointer-events-auto scale-100 opacity-100'
 		: 'pointer-events-none scale-90 opacity-0'} transition duration-300"
 >
-	<div class="mx-4 max-w-md rounded-lg p-6">
-		<div class="text-center">
-			<h3 class="mb-4 text-lg font-semibold">Chat Auswertung</h3>
+	<h3 class="text-lg font-semibold">Chat Auswertung</h3>
 
-			{#if analyzerIsRunning || memorizerIsRunning}
-				<!-- Loading state with sparkle pill -->
-				<div class="mb-4 flex flex-col items-center gap-3">
-					<SparklePill fast={true} class="h-4 w-8 shadow-xl dark:shadow-gray-200/30" />
-					{#if analyzerIsRunning}
-						<p class="animate-pulse text-sm text-gray-600">Dein Chat wird ausgewertet</p>
-					{:else if memorizerIsRunning}
-						<p class="animate-pulse text-sm text-gray-600">Dein Chat wird abgespeichert</p>
-					{/if}
-				</div>
-			{:else if analyzerFailed || memorizerFailed}
-				<!-- Error state -->
-				<div class="mb-4">
-					{#if analyzerFailed}
-						<p class="mb-4 text-sm text-red-600">Dein Chat konnte nicht ausgewertet werden.</p>
-					{:else if memorizerFailed}
-						<p class="mb-4 text-sm text-red-600">Dein Chat konnte nicht abgespeichert werden.</p>
-					{/if}
-					<Button
-						class="bg-black text-white"
-						onclick={() => {
-							startAnalysis();
-						}}
-					>
-						Erneut versuchen
-					</Button>
-				</div>
-			{:else if chatAnalysisId}
-				<!-- Success state -->
-				<div class="mb-4 flex flex-col items-center gap-3">
-					<div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-						<SquareCheck class="h-6 w-6 text-green-600" />
-					</div>
-					<p class="text-sm text-gray-600">Dein Chat wurde ausgewertet und abgespeichert</p>
-				</div>
-			{:else}
-				<!-- Initial state -->
-				<div class="mb-4 flex flex-col items-center gap-3">
-					<SparklePill fast={true} class="h-4 w-8" />
-					<p class="animate-pulse text-sm text-gray-600">Chat wird vorbereitet...</p>
-				</div>
+	{#if analyzerIsRunning || memorizerIsRunning}
+		<!-- Loading state with sparkle pill -->
+		<div class="-mt-10 flex flex-col items-center gap-3">
+			<SparklePill fast={true} class="h-4 w-8 shadow-xl dark:shadow-gray-200/30" />
+			{#if analyzerIsRunning}
+				<p class="animate-pulse text-sm text-gray-600">Dein Chat wird ausgewertet</p>
+			{:else if memorizerIsRunning}
+				<p class="animate-pulse text-sm text-gray-600">Dein Chat wird abgespeichert</p>
 			{/if}
 		</div>
-	</div>
+		<div></div>
+	{:else if analyzerFailed || memorizerFailed}
+		<!-- Error state -->
+		<div class="-mt-10">
+			{#if analyzerFailed}
+				<p class="mb-4 text-sm text-red-600">Dein Chat konnte nicht ausgewertet werden.</p>
+			{:else if memorizerFailed}
+				<p class="mb-4 text-sm text-red-600">Dein Chat konnte nicht abgespeichert werden.</p>
+			{/if}
+		</div>
+		<div>
+			<Button
+				class="bg-black text-white"
+				onclick={() => {
+					startAnalysis();
+				}}
+			>
+				Erneut versuchen
+			</Button>
+		</div>
+	{:else if chatAnalysisId}
+		<!-- Success state -->
+		<div class="-mt-10 flex flex-col items-center gap-3">
+			<div class="flex h-12 w-12 items-center justify-center rounded-full bg-teal-100">
+				<SquareCheck class="h-6 w-6 text-teal-600" />
+			</div>
+			<p class="text-sm text-gray-600">Dein Chat wurde ausgewertet</p>
+		</div>
+		<div class="w-full">
+			<a
+				href="/bullshift/stats/chats/{chatAnalysisId}"
+				class="relative flex w-full items-center justify-between gap-2 rounded-full bg-teal-600 py-2 pl-4 pr-2 text-sm font-medium text-white transition-colors hover:bg-teal-700 overflow-hidden"
+			>
+				<div class="absolute -ml-4 h-full w-full bg-teal-700 block-animation" style="animation-duration: {chatAnalysisSuccessDuration}s;"></div>
+				<div class="flex items-center justify-between gap-2 w-full relative z-10">
+					Zur Analyse gehen
+					<ChevronRight class="size-6 rounded-full bg-white/20 p-0.5" />
+				</div>
+			</a>
+		</div>
+	{:else}
+		<!-- Initial state -->
+		<div class="-mt-10 flex flex-col items-center gap-3">
+			<SparklePill fast={true} class="h-4 w-8" />
+			<p class="animate-pulse text-sm text-gray-600">Chat wird vorbereitet</p>
+		</div>
+		<div></div>
+	{/if}
 </div>
+<style lang="scss">
+	.block-animation {
+		animation-name: block;
+		animation-timing-function: linear;
+	}
+		@keyframes block {
+			0% {
+				width: 100%
+			}
+			90% {
+				width: 0;
+			}
+			100% {
+				width: 0;
+			}
+		}
+</style>
