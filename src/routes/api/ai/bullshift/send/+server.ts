@@ -321,6 +321,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		let currentSystemInstruction;
 		let memoryContext = '';
 
+		// Get user preferences from database for system prompt customization
+		let userWithPreferences = user;
+		try {
+			const userData = await pb.collection('users').getOne(user.id);
+			userWithPreferences = {
+				...user,
+				aiAnswerLength: userData.aiAnswerLength || 'short',
+				toneOfVoice: userData.toneOfVoice || 'heartfelt',
+				nvcKnowledge: userData.nvcKnowledge || 'beginner'
+			};
+			console.log('🎛️ User preferences loaded:', {
+				aiAnswerLength: userWithPreferences.aiAnswerLength,
+				toneOfVoice: userWithPreferences.toneOfVoice,
+				nvcKnowledge: userWithPreferences.nvcKnowledge
+			});
+		} catch (error) {
+			console.error('Error loading user preferences, using defaults:', error);
+		}
+
 		// Handle memory path specially
 		if (pathStateForAI?.activePath === 'memory') {
 			console.log('🧠 Memory path detected - searching for all user memories...');
@@ -337,10 +356,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				console.log('❌ No memories found for memory path');
 			}
 			
-			currentSystemInstruction = getSystemPromptForPath('memory', user, memoryContext);
+			currentSystemInstruction = getSystemPromptForPath('memory', userWithPreferences, memoryContext);
 		} else {
-			// For non-memory paths, use standard approach
-			currentSystemInstruction = getSystemPromptForPath(pathStateForAI?.activePath || 'idle', user);
+			// For non-memory paths, use standard approach with user preferences
+			currentSystemInstruction = getSystemPromptForPath(pathStateForAI?.activePath || 'idle', userWithPreferences);
 		}
 		
 		// Convert DB history to Gemini format (excludes path markers, hidden messages)
@@ -351,7 +370,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		console.log('Gemini history length:', geminiHistory.length);
 		console.log('DB history (raw):', JSON.stringify(chatInDb.history, null, 2));
 		console.log('Gemini history (filtered):', JSON.stringify(geminiHistory, null, 2));
-		console.log('System instruction for path:', pathStateForAI?.activePath, currentSystemInstruction.substring(0, 100) + '...');
+		console.log('System instruction for path:', pathStateForAI?.activePath, currentSystemInstruction);
 		console.log('=== END DEBUG ===');
 		
 		const geminiChat = ai.chats.create({

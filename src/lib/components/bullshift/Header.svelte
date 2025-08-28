@@ -11,6 +11,8 @@
 	import SparklePill from '$lib/components/SparklePill.svelte';
 	import { cn } from '$lib/utils';
 	import ChartColumnDecreasing from 'lucide-svelte/icons/chart-column-decreasing';
+	import FileCog from 'lucide-svelte/icons/file-cog';
+
 	interface Props {
 		absolute?: boolean;
 		class?: string;
@@ -92,6 +94,13 @@
 				{/if}
 			</Drawer.Header>
 			<div class="flex flex-col gap-2 p-4 pb-24">
+				<a
+						href="/settings"
+						class="flex items-center justify-between rounded-full border border-white/30 bg-offwhite px-3 py-1.5 text-left text-sm shadow-md shadow-black/5"
+					>
+						Chat-Einstellungen
+						<FileCog class="size-4" />
+					</a>
 				<button
 					class="flex items-center justify-between rounded-full border border-white/30 bg-offwhite px-3 py-1.5 text-sm shadow-md shadow-black/5"
 					onclick={restartOnboarding}

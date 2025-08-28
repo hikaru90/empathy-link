@@ -26,10 +26,9 @@ export interface PathMarker {
 	previousPath?: string;
 }
 
-const importantRules = `WICHTIGE REGELN:
+const importantRules = `
 - Sei dabei stets unterstützend, niemals direktiv, und erkenne die Autonomie des Nutzers an.
 - Vermeide offensichtliche Aussagen des Nutzers zu wiederholen.
-- Formuliere deine Antworten so knapp wie möglich, maximal 2 Sätze.
 - Verwende keine Emojis.
 - Verwende keine Fett-Schrift.
 - Stelle niemals mehr als eine Frage pro Nachricht.
@@ -70,6 +69,10 @@ export const CONVERSATION_PATHS: Record<string, PathDefinition> = {
 - "Es scheint, als ob da auch die Perspektive der anderen Person wichtig ist. Sollen wir uns dem widmen?"
 - "Du hast schon viel verstanden. Was wäre der nächste hilfreiche Schritt für dich?"
 
+**WICHTIGE REGELN FÜR DEINE ANTWORTEN:**
+[answerLengthPreference]
+[toneOfVoicePreference]
+[nvcKnowledgePreference]
 ${importantRules}
 `,
 		entryCondition: 'Gespräch beginnt, Nutzerabsicht ist unklar, oder Richtungswechsel wird benötigt',
@@ -89,6 +92,11 @@ Dein Ansatz:
 - Unterstütze sie dabei, klare Bitten an sich selbst zu formulieren
 
 Achte auf Zeichen, dass sie sich verstanden fühlen oder mit dieser Selbsterforschung vollständig sind. Wenn sie Auflösung, Klarheit oder Selbstverständnis ausdrücken, erkenne dies an und schlage sanft vor, Empathie für andere zu erkunden, falls relevant.
+
+**WICHTIGE REGELN FÜR DEINE ANTWORTEN:**
+[answerLengthPreference]
+[toneOfVoicePreference]
+[nvcKnowledgePreference]
 ${importantRules}`,
 		entryCondition: 'Nutzer möchte die eigenen Gefühle und Bedürfnisse verstehen',
 		exitCondition: 'Nutzer zeigt Selbstverständnis, Klarheit oder fühlt sich erleichtert bezüglich der Situation',
@@ -107,6 +115,11 @@ Dein Ansatz:
 - Unterstütze sie dabei, die Perspektive der anderen Person zu verstehen
 
 Achte auf Zeichen, dass sie echtes Verständnis oder Empathie für die andere Person entwickelt haben. Wenn sie Einsicht über die Perspektive des anderen zeigen oder Mitgefühl ausdrücken, erkenne diesen Fortschritt an.
+
+**WICHTIGE REGELN FÜR DEINE ANTWORTEN:**
+[answerLengthPreference]
+[toneOfVoicePreference]
+[nvcKnowledgePreference]
 ${importantRules}`,
 		entryCondition: 'Nutzer ist bereit, Empathie für eine andere Person zu erkunden',
 		exitCondition: 'Nutzer zeigt Verständnis oder Mitgefühl für die andere Person',
@@ -125,6 +138,10 @@ Dein Ansatz:
 - Hilf ihnen, mögliche Herausforderungen und Reaktionen zu antizipieren
 
 Achte auf Zeichen, dass sie einen klaren Plan haben, bei dessen Umsetzung sie sich sicher fühlen.
+
+[answerLengthPreference]
+[toneOfVoicePreference]
+[nvcKnowledgePreference]
 ${importantRules}`,
 		entryCondition: 'Nutzer hat Selbstverständnis und/oder Empathie für andere entwickelt',
 		exitCondition: 'Nutzer hat einen klaren, umsetzbaren Plan, den er bereit ist zu implementieren',
@@ -143,6 +160,11 @@ Dein Ansatz:
 - Hilf ihnen, spezifische, machbare Bitten zu formulieren
 
 Konzentriere dich darauf, gegenseitiges Verständnis zu schaffen und Lösungen zu finden, die die Bedürfnisse aller erfüllen.
+
+**WICHTIGE REGELN FÜR DEINE ANTWORTEN:**
+[answerLengthPreference]
+[toneOfVoicePreference]
+[nvcKnowledgePreference]
 ${importantRules}`,
 		entryCondition: 'Nutzer hat es mit einem zwischenmenschlichen Konflikt zu tun',
 		exitCondition: 'Nutzer hat eine Strategie, um den Konflikt konstruktiv anzugehen',
@@ -200,7 +222,13 @@ Wenn alle Fragen beantwortet wurden, beende IMMER mit:
 4. "Danke! [nächste Frage]"
 5. Wiederhole für alle PFLICHT-Fragen
 6. Stelle optional weitere Fragen falls gewünscht
-7. **PFLICHT**: "Vielen Dank für dein Feedback! Du kannst jetzt auf den Button 'Chat abschließen' klicken, um das Gespräch zu beenden."`,
+7. **PFLICHT**: "Vielen Dank für dein Feedback! Du kannst jetzt auf den Button 'Chat abschließen' klicken, um das Gespräch zu beenden."
+
+**WICHTIGE REGELN FÜR DEINE ANTWORTEN:**
+[answerLengthPreference]
+[toneOfVoicePreference]
+[nvcKnowledgePreference]
+${importantRules}`,
 		entryCondition: 'Nutzer möchte das Gespräch beenden oder hat seine Ziele erreicht',
 		exitCondition: 'Feedback wurde gesammelt und Gespräch wurde beendet',
 		suggestedNext: []
@@ -231,10 +259,16 @@ Du hast Zugang zu den gespeicherten Erinnerungen aus früheren Gesprächen mit d
 
 Möchtest du, dass ich näher auf bestimmte Erinnerungen eingehe, oder gibt es etwas Spezifisches, woran du dich erinnern lassen möchtest?"
 
-**WICHTIG:** Verwende NIEMALS Phrasen wie "Als KI habe ich kein Gedächtnis" - du HAST diese spezifischen Erinnerungen über den Nutzer.`,
+**WICHTIG:** Verwende NIEMALS Phrasen wie "Als KI habe ich kein Gedächtnis" - du HAST diese spezifischen Erinnerungen über den Nutzer.
+
+[answerLengthPreference]
+[toneOfVoicePreference]
+[nvcKnowledgePreference]
+
+${importantRules}`,
 		entryCondition: 'Nutzer fragt nach Erinnerungen, Gedächtnis oder "was erinnerst du"',
 		exitCondition: 'Nutzer ist zufrieden mit den abgerufenen Erinnerungen',
-		suggestedNext: ['idle', 'selfempathy', 'otherempathy', 'actionplanning', 'conflictresolution']
+		suggestedNext: ['idle', 'self_empathy', 'other_empathy', 'action_planning', 'conflict_resolution']
 	}
 };
 
@@ -270,11 +304,47 @@ ${memoryContext}
 		);
 	}
 	
-	// Add user context if available
-	if (userContext?.firstName) {
-		systemPrompt = `You are speaking with ${userContext.firstName}. ${systemPrompt}`;
+	// Generate user preference strings based on context (locally scoped)
+	let answerLengthPreference = '';
+	let toneOfVoicePreference = '';
+	let nvcKnowledgePreference = '';
+	
+	if (userContext) {
+		// Answer length preference
+		if (userContext.aiAnswerLength === 'short') {
+			answerLengthPreference = '- Halte deine Antworten so kurz wie möglich. 1-2 Sätze maximal';
+		} else if (userContext.aiAnswerLength === 'medium') {
+			answerLengthPreference = '- Gib ausführliche Antworten mit maximal 3 Sätzen';
+		} else if (userContext.aiAnswerLength === 'long') {
+			answerLengthPreference = '- Gib ausführliche und erklärende Antworten mit maximal 4 Sätzen';
+		}
+		
+		// Tone of voice preference  
+		if (userContext.toneOfVoice === 'analytical') {
+			toneOfVoicePreference = '- Verwende einen sachlichen, strukturierten Kommunikationsstil\n- Fokussiere auf logische Zusammenhänge und konkrete Schritte';
+		} else if (userContext.toneOfVoice === 'heartfelt') {
+			toneOfVoicePreference = '- Verwende einen empathischen, warmherzigen Kommunikationsstil\n- Betone emotionale Unterstützung und Verständnis';
+		}
+		
+		// NVC knowledge level preference
+		if (userContext.nvcKnowledge === 'beginner') {
+			nvcKnowledgePreference = '- Erkläre GFK-Konzepte und -Begriffe wenn nötig\n- Verwende einfache Sprache und führe den Nutzer behutsam durch den Prozess';
+		} else if (userContext.nvcKnowledge === 'advanced') {
+			nvcKnowledgePreference = '- Nutze GFK-Fachbegriffe selbstverständlich\n- Fokussiere auf subtile Aspekte und fortgeschrittene Techniken';
+		}
+		
+		// Add user name context if available
+		if (userContext.firstName) {
+			systemPrompt = `Du sprichst mit ${userContext.firstName}. ${systemPrompt}`;
+		}
 	}
-
+	
+	// Replace template variables in the system prompt
+	systemPrompt = systemPrompt
+		.replace('[answerLengthPreference]', answerLengthPreference)
+		.replace('[toneOfVoicePreference]', toneOfVoicePreference)
+		.replace('[nvcKnowledgePreference]', nvcKnowledgePreference)
+	
 	return systemPrompt;
 }
 
