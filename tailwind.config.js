@@ -67,6 +67,8 @@ const config = {
 				'black': 'hsl(var(--black) / <alpha-value>)',
 				'forest': 'hsl(var(--forest) / <alpha-value>)',
 				'lilac': 'hsl(var(--lilac) / <alpha-value>)',
+				'rose': 'hsl(var(--rose) / <alpha-value>)',
+				'orange': 'hsl(var(--orange) / <alpha-value>)',
 				border: 'hsl(var(--border) / <alpha-value>)',
 				input: 'hsl(var(--input) / <alpha-value>)',
 				ring: 'hsl(var(--ring) / <alpha-value>)',

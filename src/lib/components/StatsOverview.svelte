@@ -4,7 +4,8 @@
 	import { onMount } from 'svelte';
 	import StatsFeelings from '$src/lib/components/StatsFeelings.svelte';
 	import StatsNeeds from '$src/lib/components/StatsNeeds.svelte';
-	import StatsChatOverview from './StatsChatOverview.svelte';
+	import StatsChatOverview from '$src/lib/components/StatsChatOverview.svelte';
+	import HeadingExplanation from '$src/lib/components/HeadingExplanation.svelte';
 
 	interface Props {
 		data: any;
@@ -46,8 +47,26 @@
 	};
 </script>
 
-<div class="flex flex-col gap-6 py-4">
-	<StatsChatOverview data={data.analyses} />
-	<StatsFeelings data={getFeelings()} />
-	<StatsNeeds data={getNeeds()} />
+<div class="flex flex-col gap-8 pt-4 pb-8">
+	<div>
+		<HeadingExplanation
+			title="Deine Reflektionen im Überblick"
+			description="Jedes Gespräch ist ein Schritt zu mehr Klarheit. Entdecke hier deine Entwicklung und gewonnene Einsichten."
+		/>
+		<StatsChatOverview data={data.analyses} />
+	</div>
+	<div>
+		<HeadingExplanation
+			title="Deine häufigsten Gefühle"
+			description="Diese Gefühle sind in deinen Reflexionen aufgetaucht. Je öfter du sie benennst, desto bewusster wirst du dir deiner emotionalen Muster."
+		/>
+		<StatsFeelings data={getFeelings()} rawAnalyses={data.analyses} />
+	</div>
+	<div>
+		<HeadingExplanation
+			title="Deine wichtigsten Bedürfnisse"
+			description="Diese Bedürfnisse haben sich in deinen Gesprächen gezeigt. Sie zu kennen hilft dir, bewusstere Entscheidungen zu treffen und besser für dich zu sorgen."
+		/>
+		<StatsNeeds data={getNeeds()} rawAnalyses={data.analyses} />
+	</div>
 </div>

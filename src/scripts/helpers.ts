@@ -157,6 +157,80 @@ export const generateHslaColors = (hue: number, saturation: number, lightness: n
 	console.log('colors',colors);
 	return colors;
 };
+export const generateHslaColorGroup = (baseColors: string[], length: number) => {
+	const colors: string[] = [];
+
+	// Helper function to get CSS custom property value and convert to HSLA
+	const getColorFromCSSVar = (colorName: string, opacity: number = 1): string => {
+		if (!browser) {
+			// Fallback for SSR - return a default color
+			return `hsla(0, 0%, 50%, ${opacity})`;
+		}
+
+		// Remove any prefixes and get just the color name
+		let cssVarName = colorName;
+		
+		// Handle different input formats
+		if (colorName.startsWith('--')) {
+			cssVarName = colorName.slice(2); // Remove --
+		} else if (colorName.startsWith('bg-')) {
+			cssVarName = colorName.slice(3); // Remove bg-
+		} else if (colorName.includes('text-')) {
+			cssVarName = colorName.replace('text-', '');
+		}
+
+		// Get the CSS custom property value
+		const cssValue = getComputedStyle(document.documentElement)
+			.getPropertyValue(`--${cssVarName}`)
+			.trim();
+
+		if (cssValue) {
+			// CSS custom properties are stored as "h s l" format in your app.pcss
+			// Split and parse the values
+			const [h, s, l] = cssValue.split(' ').map(v => parseFloat(v.replace('%', '')));
+			
+			if (!isNaN(h) && !isNaN(s) && !isNaN(l)) {
+				return `hsla(${h}, ${s}%, ${l}%, ${opacity})`;
+			}
+		}
+
+		// If it's already a complete color value, handle it
+		if (colorName.includes('hsl') || colorName.includes('rgb') || colorName.startsWith('#')) {
+			if (opacity === 1) return colorName;
+			
+			// Convert to HSLA with opacity
+			if (colorName.includes('hsla')) {
+				return colorName.replace(/[\d.]+\)$/, `${opacity})`);
+			} else if (colorName.includes('hsl')) {
+				return colorName.replace('hsl', 'hsla').replace(')', `, ${opacity})`);
+			}
+		}
+
+		// Fallback: return a default color
+		console.warn(`Color not found: ${colorName}, using fallback`);
+		return `hsla(0, 0%, 50%, ${opacity})`;
+	};
+
+	for (let i = 0; i < length; i++) {
+		if (i < baseColors.length) {
+			// Use the base colors for the first iterations with full opacity
+			colors.push(getColorFromCSSVar(baseColors[i], 1));
+		} else {
+			// After we've used all base colors, start alternating with reduced opacity
+			const baseColorIndex = i % baseColors.length;
+			const baseColor = baseColors[baseColorIndex];
+			
+			// Calculate opacity reduction based on how many times we've cycled through
+			const cycleNumber = Math.floor(i / baseColors.length);
+			const opacity = Math.max(0.2, 1 - (cycleNumber * 0.25)); // Start at 1, reduce by 0.25 each cycle, min 0.2
+			
+			colors.push(getColorFromCSSVar(baseColor, opacity));
+		}
+	}
+
+	console.log('colors', colors);
+	return colors;
+};
 
 export const groupBy = (array: any[], key: string) =>
 	Object.entries(

@@ -32,6 +32,7 @@
 {#if !initialized}
 	<Skeleton class="h-[20px] w-[100px] rounded-full" />
 {:else}
+
 	<div class="relative z-0">
 		<div
 			style="background: radial-gradient(circle at center, rgba(255,255,255,0.7), transparent 67%);"
@@ -43,11 +44,11 @@
 			class="rounded-t-xl border-b border-black/5 bg-offwhite px-5 pb-3 pt-4 shadow-2xl shadow-black/10 dark:bg-muted"
 		>
 			<div class="flex items-center justify-between">
-				<h2 class="text-md mb-2 font-bold">Chats</h2>
+				<h2 class="text-md mb-2 font-bold">Meine Reflektionen</h2>
 				<a
 						href="/bullshift/stats/chats"
 						class="rounded-full border border-needs-foreground/20 px-2 py-1 text-xs"
-						>Alle ansehen</a>
+						>Alle anzeigen</a>
 			</div>
 			<div class="flex items-center text-2xs">
 				<div class="w-1/6">
