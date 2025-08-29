@@ -883,7 +883,7 @@
 			</div>
 		</div>
 
-		<div class="fixed bottom-[62px] left-0 right-0 px-4 pb-6 pt-4">
+		<div class="fixed bottom-[62px] left-0 right-0 px-3 pb-5 pt-4">
 			<div class="rounded-2xl bg-neutral-100 p-2">
 				<div class="flex items-center justify-center">
 					{#if history.length > 4}
