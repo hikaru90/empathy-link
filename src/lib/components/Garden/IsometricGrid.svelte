@@ -107,11 +107,26 @@
 	};
 
 	// Touch handlers for mobile
+	let initialPinchDistance = $state(0);
+	let initialScale = $state(1);
+
+	const getTouchDistance = (touches: TouchList): number => {
+		if (touches.length < 2) return 0;
+		const dx = touches[0].clientX - touches[1].clientX;
+		const dy = touches[0].clientY - touches[1].clientY;
+		return Math.sqrt(dx * dx + dy * dy);
+	};
+
 	const handleTouchStart = (e: TouchEvent) => {
 		if (e.touches.length === 1) {
 			isDragging = true;
 			lastMouseX = e.touches[0].clientX;
 			lastMouseY = e.touches[0].clientY;
+		} else if (e.touches.length === 2) {
+			// Pinch zoom start
+			isDragging = false;
+			initialPinchDistance = getTouchDistance(e.touches);
+			initialScale = scale;
 		}
 	};
 
@@ -129,14 +144,23 @@
 			translateY = newTranslateY;
 			lastMouseX = e.touches[0].clientX;
 			lastMouseY = e.touches[0].clientY;
+		} else if (e.touches.length === 2) {
+			// Pinch zoom
+			const currentDistance = getTouchDistance(e.touches);
+			if (initialPinchDistance > 0) {
+				const scaleChange = currentDistance / initialPinchDistance;
+				const newScale = Math.max(0.5, Math.min(3, initialScale * scaleChange));
+				scale = newScale;
+			}
 		}
 	};
 
 	const handleTouchEnd = () => {
 		isDragging = false;
+		initialPinchDistance = 0;
 	};
 
-	const diamondHeight = 252
+	const diamondHeight = 252;
 	const diamondWidth = 504;
 </script>
 
@@ -160,15 +184,16 @@
 		class="relative h-full w-full transition-transform duration-100 ease-out"
 		style="transform: translate({translateX}px, {translateY}px) scale({scale});"
 	>
-		<div 
-			class="relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[{diamondWidth}px] h-[{diamondHeight}px]">
-			<img src="/diagrams/plotBase.svg" class="absolute top-0 left-0 w-full" alt="Plot Base" />
+		<div
+			class="relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform w-[{diamondWidth}px] h-[{diamondHeight}px]"
+		>
+			<img src="/diagrams/plotBase.svg" style="width: calc(28px * 9);" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none scale-[2] mt-5" alt="Plot Base" />
 			{#each plots as plot (plot.x + '-' + plot.y)}
 				<div
-					class="absolute h-10 w-10 cursor-pointer transition-all duration-200 ease-in-out hover:z-10 -mt-3"
+					class="absolute -mt-3 h-10 w-10 cursor-pointer transition-all duration-200 ease-in-out hover:z-10"
 					class:empty={!plot.plant_id}
 					class:planted={plot.plant_id}
-					style="--x: {plot.x}; --y: {plot.y}; left: calc((var(--x) - var(--y)) * 28px + 50% - 20px); top: calc((var(--x) + var(--y)) * 14px + 50% - 120px); transform-style: preserve-3d;"
+					style="--x: {plot.x}; --y: {plot.y}; left: calc((var(--x) - var(--y)) * calc(28px / env(device-pixel-ratio, 1)) + 50% - 20px); top: calc((var(--x) + var(--y)) * calc(14px / env(device-pixel-ratio, 1)) + 50% - 120px); transform-style: preserve-3d;"
 					onclick={() => onPlotClick?.(plot.x, plot.y)}
 					onkeydown={(e) => e.key === 'Enter' && onPlotClick?.(plot.x, plot.y)}
 					role="button"
