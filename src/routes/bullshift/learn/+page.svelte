@@ -253,5 +253,5 @@
 			{/each}
 		{/if}
 	</div>
-	<Footer />
+	<Footer user={data.user} />
 </div>

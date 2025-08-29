@@ -61,7 +61,7 @@
 			</div>
 		{/if}
 	</div>
-	<Footer />
+	<Footer user={data.user} />
 </div>
 
 <style>

@@ -288,7 +288,7 @@
 							/>
 						</div>
 					</div>
-					<Footer absolute />
+					<Footer user={data.user} absolute />
 					</div>
 				{/if}
 			</main>

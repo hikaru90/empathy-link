@@ -10,9 +10,10 @@
 	interface Props {
 		absolute?: boolean;
 		class?: string;
+		user: any;
 	}
 
-	let { absolute = false, class: className = undefined }: Props = $props();	
+	let { absolute = false, class: className = undefined, user }: Props = $props();	
 
 	type MenuItem = {
 		slug: string;
@@ -48,9 +49,9 @@
 		{
 			slug: 'community',
 			heading: 'Community',
-			path: '/bullshift/community',
+			path: '/community',
 			icon: Users,
-			available: false
+			available: user?.role === 'admin' ? true : false
 		}
 	]);
 	let footerVisible = false;

@@ -119,7 +119,7 @@
 			{/if}
 		</div>
 	</div>
-	<Footer />
+	<Footer user={data.user} />
 	{#if showOnboarding}
 		<OnboardingWelcome onComplete={completeOnboarding} />
 	{/if}

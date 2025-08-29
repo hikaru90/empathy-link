@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
+  import Footer from '$lib/components/bullshift/Footer.svelte';
   interface Props {
     data: PageData;
   }
@@ -15,3 +16,5 @@
     {/each}
   </div>
 </div>
+
+<Footer user={data.user} />

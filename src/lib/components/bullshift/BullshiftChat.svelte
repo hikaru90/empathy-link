@@ -79,6 +79,7 @@
 	let startAnimation = $state(false);
 	let text1Done = $state(false);
 	let text2Done = $state(false);
+	let scrollingEnabled = $state(true);
 	let suggestion = $state<string | undefined>(undefined);
 	let isMobile = $state(false);
 	let viewportHeight = $state(window.innerHeight);
@@ -97,6 +98,10 @@
 		if (history.length > 4) {
 			text1Done = true;
 			text2Done = true;
+			scrollingEnabled = true;
+		} else if (history.length === 4) {
+			// For initial chat, disable scrolling until animations complete
+			scrollingEnabled = false;
 		}
 	});
 
@@ -120,7 +125,7 @@
 						setTimeout(() => {
 							checkMobile();
 							// Re-scroll if we're on mobile and the viewport changed
-							if (isMobile && chatContainer) {
+							if (isMobile && chatContainer && scrollingEnabled) {
 								chatContainer.scrollTop = chatContainer.scrollHeight;
 							}
 						}, 100);
@@ -155,7 +160,7 @@
 				if (isNearBottom) {
 					// User is near bottom, ensure we stay at bottom
 					setTimeout(() => {
-						if (chatContainer) {
+						if (chatContainer && scrollingEnabled) {
 							chatContainer.scrollTop = chatContainer.scrollHeight;
 						}
 					}, 50);
@@ -352,7 +357,11 @@
 		});
 	};
 	const scrollDown = () => {
-		console.log('scrollDown function called');
+		console.log('scrollDown function called, scrollingEnabled:', scrollingEnabled);
+		if (!scrollingEnabled) {
+			console.log('Scrolling disabled, skipping scroll');
+			return;
+		}
 		// Use requestAnimationFrame to ensure DOM has updated
 		requestAnimationFrame(() => {
 			// Find the last message element - try multiple selectors
@@ -694,11 +703,19 @@
 
 	// Scroll to bottom when suggestion appears/disappears
 	$effect(() => {
-		if (suggestion !== undefined) {
+		if (suggestion !== undefined && scrollingEnabled) {
 			// Suggestion state changed, scroll to bottom after a delay to allow for layout changes
 			setTimeout(() => {
 				scrollDown();
 			}, 100);
+		}
+	});
+
+	// Enable scrolling when both text animations are complete
+	$effect(() => {
+		if (history.length === 4 && text1Done && text2Done && !scrollingEnabled) {
+			console.log('Both text animations complete, enabling scrolling');
+			scrollingEnabled = true;
 		}
 	});
 
@@ -707,10 +724,11 @@
 		console.log('Scroll effect triggered:', {
 			hasChatContainer: !!chatContainer,
 			historyLength: history.length,
-			chatId: chatId
+			chatId: chatId,
+			scrollingEnabled: scrollingEnabled
 		});
 
-		if (chatContainer && history.length > 0) {
+		if (chatContainer && history.length > 0 && scrollingEnabled) {
 			console.log('Conditions met, attempting to scroll...');
 			// Use multiple requestAnimationFrame calls to ensure DOM is fully rendered
 			requestAnimationFrame(() => {
@@ -762,8 +780,8 @@
 			{/if}
 			<div
 				class="transition-opacity duration-700 {text2Done
-					? 'pointer-events-auto opacity-100'
-					: 'pointer-events-none opacity-0'}"
+					? 'pointer-events-auto opacity-100 h-auto'
+					: 'pointer-events-none opacity-0 h-0'}"
 			>
 				{#each history.filter((msg) => !msg.hidden) as message}
 					<!-- Path marker display -->

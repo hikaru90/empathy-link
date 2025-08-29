@@ -326,5 +326,5 @@
 		</Card>
 	</main>
 
-	<Footer />
+	<Footer user={data.user} />
 </div>

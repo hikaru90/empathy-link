@@ -40,5 +40,5 @@
 		/>
 		
 	</div>
-	<Footer />
+	<Footer user={data.user} />
 </div>
