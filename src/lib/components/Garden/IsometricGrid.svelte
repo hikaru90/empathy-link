@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { pb } from '$scripts/pocketbase';
+
 	interface Plot {
 		x: number;
 		y: number;
@@ -11,10 +13,15 @@
 
 	interface Props {
 		plots: Plot[];
+		items?: Array<{
+			id: string;
+			name: string;
+			sprite?: string;
+		}>;
 		onPlotClick?: (x: number, y: number) => void;
 	}
 
-	let { plots, onPlotClick }: Props = $props();
+	let { plots, items = [], onPlotClick }: Props = $props();
 
 	// Zoom and pan state
 	let scale = $state(1);
@@ -24,47 +31,45 @@
 	let lastMouseX = $state(0);
 	let lastMouseY = $state(0);
 
-	// Plant sprites based on growth stage and type
-	const getPlantSprite = (plot: Plot): string => {
-		if (!plot.plant_id) return '';
+	// Get plant display based on item data or fallback to emoji
+	const getPlantDisplay = (plot: Plot): { type: 'sprite' | 'emoji', content: string } => {
+		if (!plot.plant_id) return { type: 'emoji', content: '' };
 
+		// Find the item in the items array
+		const item = items.find(item => item.id === plot.plant_id);
+		
+		// Use sprite if item has one
+		if (item?.sprite) {
+			const imageUrl = `${pb.baseUrl}/api/files/items/${item.id}/${item.sprite}`;
+			return { type: 'sprite', content: imageUrl };
+		}
+
+		// Fallback to emoji based on growth stage
 		const stage = plot.growth_stage;
 
-		// Simple emoji-based sprites for now
+		// Simple emoji-based sprites for fallback
 		if (plot.plant_id.includes('rose')) {
 			switch (stage) {
-				case 0:
-					return '🌱';
-				case 1:
-					return '🌿';
-				case 2:
-					return '🌹';
-				default:
-					return '🌹';
+				case 0: return { type: 'emoji', content: '🌱' };
+				case 1: return { type: 'emoji', content: '🌿' };
+				case 2: return { type: 'emoji', content: '🌹' };
+				default: return { type: 'emoji', content: '🌹' };
 			}
 		} else if (plot.plant_id.includes('oak')) {
 			switch (stage) {
-				case 0:
-					return '🌱';
-				case 1:
-					return '🌿';
-				case 2:
-					return '🌳';
-				default:
-					return '🌳';
+				case 0: return { type: 'emoji', content: '🌱' };
+				case 1: return { type: 'emoji', content: '🌿' };
+				case 2: return { type: 'emoji', content: '🌳' };
+				default: return { type: 'emoji', content: '🌳' };
 			}
 		}
 
 		// Default progression
 		switch (stage) {
-			case 0:
-				return '🌱';
-			case 1:
-				return '🌿';
-			case 2:
-				return '🌸';
-			default:
-				return '🌸';
+			case 0: return { type: 'emoji', content: '🌱' };
+			case 1: return { type: 'emoji', content: '🌿' };
+			case 2: return { type: 'emoji', content: '🌸' };
+			default: return { type: 'emoji', content: '🌸' };
 		}
 	};
 
@@ -91,9 +96,10 @@
 			const deltaY = e.clientY - lastMouseY;
 
 			// Apply panning limits based on scale
-			const maxPan = 200 * scale;
+			const maxPan = 400 * scale;
+			const maxPanY = 200 * scale; // Tighter bottom boundary
 			const newTranslateX = Math.max(-maxPan, Math.min(maxPan, translateX + deltaX));
-			const newTranslateY = Math.max(-maxPan, Math.min(maxPan, translateY + deltaY));
+			const newTranslateY = Math.max(-maxPanY, Math.min(maxPan, translateY + deltaY));
 
 			translateX = newTranslateX;
 			translateY = newTranslateY;
@@ -136,9 +142,10 @@
 			const deltaY = e.touches[0].clientY - lastMouseY;
 
 			// Apply same panning limits for touch
-			const maxPan = 200 * scale;
+			const maxPan = 400 * scale;
+			const maxPanY = 200 * scale; // Tighter bottom boundary
 			const newTranslateX = Math.max(-maxPan, Math.min(maxPan, translateX + deltaX));
-			const newTranslateY = Math.max(-maxPan, Math.min(maxPan, translateY + deltaY));
+			const newTranslateY = Math.max(-maxPanY, Math.min(maxPan, translateY + deltaY));
 
 			translateX = newTranslateX;
 			translateY = newTranslateY;
@@ -214,11 +221,16 @@
 
 					<!-- Plant -->
 					{#if plot.plant_id}
+						{@const display = getPlantDisplay(plot)}
 						<div
-							class="absolute -top-2.5 left-1/2 z-[2] -translate-x-1/2 transform animate-pulse"
+							class="absolute bottom-2.5 w-10 left-1/2 z-[2] -translate-x-1/2 transform animate-pulse"
 							style="animation: gentle-sway 3s ease-in-out infinite;"
 						>
-							<span class="block text-2xl drop-shadow-lg">{getPlantSprite(plot)}</span>
+							{#if display.type === 'sprite'}
+							<img src={display.content} alt="Plant" class="w-24" />
+							{:else}
+								<span class="block text-2xl drop-shadow-lg">{display.content}</span>
+							{/if}
 						</div>
 					{:else}
 						<div

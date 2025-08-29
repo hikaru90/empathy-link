@@ -22,17 +22,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         );
 
         // Get plant info
-        const plant = await pb.collection('plants_catalog').getOne(plantId);
+        const plant = await pb.collection('items').getOne(plantId);
 
-        // Get user's seeds
-        const userSeeds = await pb.collection('user_seeds').getFirstListItem(
-            `user="${user.id}"`
+        // Check if user has this item in their inventory
+        const userItem = await pb.collection('user_items').getFirstListItem(
+            `user="${user.id}" && item="${plantId}"`
         );
-
-        // Check if user has enough seeds
-        const seedType = getSeedTypeForPlant(plant.category);
-        if ((userSeeds.seed_inventory[seedType] || 0) < plant.seed_cost) {
-            return new Response('Insufficient seeds', { status: 400 });
+        
+        if (!userItem || userItem.quantity < 1) {
+            return new Response('Item not in inventory', { status: 400 });
         }
 
         // Check if plot is empty
@@ -41,7 +39,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             return new Response('Plot already occupied', { status: 400 });
         }
 
-        // Update grid data
+        // Deduct item from inventory FIRST
+        const newQuantity = userItem.quantity - 1;
+        if (newQuantity > 0) {
+            await pb.collection('user_items').update(userItem.id, {
+                quantity: newQuantity
+            });
+        } else {
+            // Delete the item if quantity becomes 0
+            await pb.collection('user_items').delete(userItem.id);
+        }
+
+        // Update grid data AFTER successful inventory update
         const gridData = { ...garden.grid_data };
         gridData.plots[plotIndex] = {
             ...gridData.plots[plotIndex],
@@ -56,18 +65,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             total_plants: garden.total_plants + 1
         });
 
-        // Deduct seeds
-        const updatedInventory = { ...userSeeds.seed_inventory };
-        updatedInventory[seedType] = (updatedInventory[seedType] || 0) - plant.seed_cost;
-
-        await pb.collection('user_seeds').update(userSeeds.id, {
-            seed_inventory: updatedInventory
-        });
-
         return json({ 
             success: true, 
             plot: gridData.plots[plotIndex],
-            remainingSeeds: updatedInventory[seedType]
+            remainingQuantity: newQuantity > 0 ? newQuantity : 0
         });
 
     } catch (error) {
@@ -76,11 +77,3 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     }
 };
 
-function getSeedTypeForPlant(category: string): string {
-    switch (category) {
-        case 'flower': return 'flower_seeds';
-        case 'tree': return 'tree_seeds';
-        case 'decoration': return 'decoration_tokens';
-        default: return 'basic';
-    }
-}

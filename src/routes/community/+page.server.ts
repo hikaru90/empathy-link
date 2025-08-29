@@ -52,33 +52,57 @@ export const load: PageServerLoad = async ({ locals }) => {
             }
         }
 
-        // Try to get user seeds
+        // Try to get user seeds - get all and use the first one, or create new
         let userSeeds;
         try {
-            userSeeds = await pb.collection('user_seeds').getFirstListItem(
-                `user="${user.id}"`
-            );
-        } catch (error) {
-            // Seeds don't exist, create initial inventory
-            userSeeds = await pb.collection('user_seeds').create({
-                user: user.id,
-                seed_inventory: {
-                    basic: 5, // Give some starter seeds
-                    rare: 1,
-                    legendary: 0,
-                    flower_seeds: 3,
-                    tree_seeds: 1,
-                    decoration_tokens: 2
-                },
-                total_seeds_earned: 5
+            const existingSeeds = await pb.collection('user_seeds').getFullList({
+                filter: `user="${user.id}"`,
+                sort: 'created'
             });
+            
+            if (existingSeeds.length > 0) {
+                userSeeds = existingSeeds[0]; // Use the oldest one
+                
+                // If there are multiple records, delete the duplicates
+                if (existingSeeds.length > 1) {
+                    console.log(`Found ${existingSeeds.length} user_seeds records for user ${user.id}, keeping the oldest`);
+                    for (let i = 1; i < existingSeeds.length; i++) {
+                        await pb.collection('user_seeds').delete(existingSeeds[i].id);
+                    }
+                }
+            } else {
+                // No seeds exist, create initial inventory
+                userSeeds = await pb.collection('user_seeds').create({
+                    user: user.id,
+                    seed_inventory: {
+                        basic: 5, // Give some starter seeds
+                        rare: 1,
+                        legendary: 0,
+                        flower_seeds: 3,
+                        tree_seeds: 1,
+                        decoration_tokens: 2
+                    },
+                    total_seeds_earned: 5
+                });
+            }
+        } catch (error) {
+            console.error('Error handling user seeds:', error);
+            throw error;
         }
 
-        // Get available plants from catalog
-        const plantsAvailable = await pb.collection('plants_catalog').getFullList({
-            filter: 'is_active=true',
-            sort: 'category,seed_cost,name'
-        });
+        // Get available items from shop
+        let plantsAvailable;
+        try {
+            console.log('Fetching items from PocketBase...');
+            plantsAvailable = await pb.collection('items').getFullList({
+                filter: 'is_active=true',
+                sort: 'category,seed_cost,name'
+            });
+            console.log('Items fetched:', plantsAvailable);
+        } catch (error) {
+            console.error('Error fetching items:', error);
+            plantsAvailable = [];
+        }
 
         return {
             garden,

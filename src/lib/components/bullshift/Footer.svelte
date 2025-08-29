@@ -57,9 +57,21 @@
 	let footerVisible = false;
 
 	const isCurrentRoute = (path: string) => {
-		const sanitizedRoute = page.data.route.split('/')[2];
-		if (!sanitizedRoute && path === '/bullshift') return true;
-		return path.includes(sanitizedRoute);
+		const currentPath = page.data.route;
+		
+		// Handle exact matches for root-level routes like /community
+		if (currentPath === path) return true;
+		
+		// Handle /bullshift as root chat (only when exactly on /bullshift)
+		if (currentPath === '/bullshift' && path === '/bullshift') return true;
+		
+		// Handle bullshift sub-routes (but not for non-bullshift routes)
+		if (currentPath.startsWith('/bullshift/') && path.startsWith('/bullshift/')) {
+			const sanitizedRoute = currentPath.split('/')[2];
+			return path.includes(sanitizedRoute);
+		}
+		
+		return false;
 	};
 
 	console.log('');

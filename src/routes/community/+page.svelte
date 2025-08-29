@@ -7,8 +7,7 @@
 	import SeedInventory from '$lib/components/Garden/SeedInventory.svelte';
 	import type { PageData } from './$types';
 	import SparklePill from '$lib/components/SparklePill.svelte';
-	import * as Drawer from '$lib/components/ui/drawer/index.js';
-	import { clsx } from 'clsx';
+	import GardenInfoButton from '$lib/components/GardenInfoButton.svelte';
 
 	interface Props {
 		data: PageData;
@@ -18,6 +17,8 @@
 
 	let isLoading = $state(true);
 	let infoDrawerActive = $state('300px');
+
+	const translatedWeather = $derived(data.garden.current_weather === 'sunny' ? 'Sonnig' : data.garden.current_weather === 'partly_cloudy' ? 'Teilweise bewölkt' : data.garden.current_weather === 'overcast' ? 'Bedeckt' : data.garden.current_weather === 'rainy' ? 'Regnerisch' : data.garden.current_weather === 'stormy' ? 'Stürmisch' : data.garden.current_weather === 'foggy' ? 'Nebelig' : data.garden.current_weather === 'snowy' ? 'Schneefall' : data.garden.current_weather);
 
 	onMount(() => {
 		isLoading = false;
@@ -31,6 +32,8 @@
 
 <div class="h-svh bg-background flex flex-col">
 	<Header user={data.user} class="flex-shrink-0 z-10" />
+	<!-- Garden Info Button -->
+	<GardenInfoButton />
 	
 	<main class="flex-1 relative">
 			{#if isLoading}
@@ -42,82 +45,43 @@
 				<div class="absolute top-16 z-10 flex justify-between items-center w-full px-4">
 					<div class="flex gap-2">
 						<!-- Seed Inventory -->
-						<SeedInventory userSeeds={data.userSeeds} />
-						
-						<!-- Garden Info Button -->
-						<Drawer.Root snapPoints={['300px', 1]} bind:activeSnapPoint={infoDrawerActive}>
-							<Drawer.Trigger>
-								<button class="flex items-center gap-2 rounded-lg border border-white/20 bg-white/80 px-4 py-2 backdrop-blur-sm transition-colors hover:bg-white/90 dark:bg-gray-800/80 dark:hover:bg-gray-700/90">
-									<span class="text-lg">❓</span>
-									<span class="font-semibold text-gray-900 dark:text-white">Info</span>
-								</button>
-							</Drawer.Trigger>
-							<Drawer.Overlay class="fixed inset-0 bg-black/40" />
-							<Drawer.Portal>
-								<Drawer.Content class="fixed flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]">
-									<div
-										class={clsx("flex flex-col max-w-md mx-auto w-full p-4 pt-5", {
-											"overflow-y-auto": infoDrawerActive === 1,
-											"overflow-hidden": infoDrawerActive !== 1,
-										})}
-									>
-										<div class="flex items-center justify-center gap-2 mb-4">
-											<span class="text-lg">🌱</span>
-											<h1 class="text-2xl font-medium text-gray-900 dark:text-white">Wie funktioniert der Garten?</h1>
-										</div>
+						<SeedInventory 
+							userSeeds={data.userSeeds} 
+							plantsAvailable={data.plantsAvailable}
+							onPurchase={async (plantId) => {
+								try {
+									const response = await fetch('/api/garden/purchase', {
+										method: 'POST',
+										headers: { 'Content-Type': 'application/json' },
+										body: JSON.stringify({ plantId })
+									});
 
-										<div class="space-y-4">
-											<div class="flex items-start gap-3">
-												<span class="text-2xl">💬</span>
-												<div>
-													<h3 class="font-medium text-gray-900 dark:text-white mb-1">
-														Gespräche abschließen
-													</h3>
-													<p class="text-gray-600 dark:text-gray-300">
-														Klicke auf "Chat Abschließen" um Samen zu verdienen
-													</p>
-												</div>
-											</div>
-											<div class="flex items-start gap-3">
-												<span class="text-2xl">🌱</span>
-												<div>
-													<h3 class="font-medium text-gray-900 dark:text-white mb-1">
-														Pflanzen kaufen
-													</h3>
-													<p class="text-gray-600 dark:text-gray-300">
-														Verwende deine Samen um Blumen, Bäume und Dekorationen zu kaufen
-													</p>
-												</div>
-											</div>
-											<div class="flex items-start gap-3">
-												<span class="text-2xl">🌤️</span>
-												<div>
-													<h3 class="font-medium text-gray-900 dark:text-white mb-1">
-														Wetter & Stimmung
-													</h3>
-													<p class="text-gray-600 dark:text-gray-300">
-														Das Wetter in deinem Garten spiegelt deine aktuelle Stimmung wider
-													</p>
-												</div>
-											</div>
-										</div>
-									</div>
-								</Drawer.Content>
-							</Drawer.Portal>
-						</Drawer.Root>
+									if (response.ok) {
+										// Refresh the page to show updated seed count
+										window.location.reload();
+									} else {
+										const error = await response.text();
+										console.error('Fehler beim Kauf:', error);
+									}
+								} catch (error) {
+									console.error('Error purchasing:', error);
+								}
+							}}
+						/>
+						
 					</div>
 
 					<!-- Garden Stats -->
-					<div class="flex gap-4 text-sm text-gray-600 dark:text-gray-300">
-						<div class="flex items-center gap-2">
+					<div class="flex gap-2.5 text-sm text-black/80">
+						<div class="flex items-center gap-1.5">
 							<span class="text-green-500">🌿</span>
 							<span>{data.garden.total_plants} Pflanzen</span>
 						</div>
-						<div class="flex items-center gap-2">
+						<div class="flex items-center gap-1.5">
 							<span class="text-blue-500">🌤️</span>
-							<span class="capitalize">{data.garden.current_weather}</span>
+							<span class="capitalize">{translatedWeather}</span>
 						</div>
-						<div class="flex items-center gap-2">
+						<div class="flex items-center gap-1.5">
 							<span class="text-purple-500">⭐</span>
 							<span>Level {data.garden.garden_level}</span>
 						</div>
@@ -125,7 +89,7 @@
 				</div>
 
 				<!-- Main Garden View -->
-				<GardenView 
+				<GardenView class="relative z-0"
 					garden={data.garden} 
 					userSeeds={data.userSeeds}
 					plantsAvailable={data.plantsAvailable}
