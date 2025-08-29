@@ -24,7 +24,7 @@
 			<div class="w-full flex flex-col items-center justify-center py-32">
 				{#if verifyMail}
 					<div class="max-container relative">
-						<div class="text-white">
+						<div class="text-black">
 							{m.page_login_verifyMail()}
 						</div>
 					</div>
