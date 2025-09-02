@@ -43,7 +43,15 @@
 			return { type: 'sprite', content: imageUrl };
 		}
 		
-		// Fallback emoji logic
+		// Terraform items
+		if (plant.category === 'terraform') {
+			if (plant.name.toLowerCase().includes('dirt')) return { type: 'emoji', content: '🟫' };
+			if (plant.name.toLowerCase().includes('water')) return { type: 'emoji', content: '💧' };
+			if (plant.name.toLowerCase().includes('path')) return { type: 'emoji', content: '🛤️' };
+			return { type: 'emoji', content: '🔧' };
+		}
+		
+		// Fallback emoji logic for plants
 		if (plant.name.toLowerCase().includes('rose')) return { type: 'emoji', content: '🌹' };
 		if (plant.name.toLowerCase().includes('oak')) return { type: 'emoji', content: '🌳' };
 		if (plant.name.toLowerCase().includes('sunflower')) return { type: 'emoji', content: '🌻' };
@@ -65,6 +73,7 @@
 			case 'tree': return 'text-green-600';
 			case 'vegetable': return 'text-orange-500';
 			case 'decoration': return 'text-purple-500';
+			case 'terraform': return 'text-amber-600';
 			default: return 'text-gray-500';
 		}
 	};
@@ -115,7 +124,7 @@
 						<p>Keine Items verfügbar</p>
 					</div>
 				{:else}
-					<div class="space-y-3">
+					<div class="space-y-3 max-h-64 overflow-y-auto">
 						{#each plantsAvailable as plant}
 							{@const affordable = canAfford(plant)}
 							{@const display = getPlantDisplay(plant)}

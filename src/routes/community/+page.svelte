@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { invalidateAll } from '$app/navigation';
 	import Header from '$lib/components/bullshift/Header.svelte';
 	import Footer from '$lib/components/bullshift/Footer.svelte';
 	import GardenView from '$lib/components/Garden/GardenView.svelte';
@@ -57,8 +58,8 @@
 									});
 
 									if (response.ok) {
-										// Refresh the page to show updated seed count
-										window.location.reload();
+										// Invalidate all data to refresh seed count and inventory
+										await invalidateAll();
 									} else {
 										const error = await response.text();
 										console.error('Fehler beim Kauf:', error);

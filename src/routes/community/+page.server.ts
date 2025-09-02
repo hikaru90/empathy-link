@@ -26,7 +26,8 @@ export const load: PageServerLoad = async ({ locals }) => {
                     plant_id: null,
                     planted_at: null,
                     growth_stage: 0,
-                    last_watered: null
+                    last_watered: null,
+                    build_level: 0
                 }))
             };
 

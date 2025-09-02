@@ -9,6 +9,7 @@
 		planted_at: string | null;
 		growth_stage: number;
 		last_watered: string | null;
+		build_level?: number;
 	}
 
 	interface Props {
@@ -42,6 +43,12 @@
 		if (item?.sprite) {
 			const imageUrl = `${pb.baseUrl}/api/files/items/${item.id}/${item.sprite}`;
 			return { type: 'sprite', content: imageUrl };
+		}
+
+		// Handle terraform items (shouldn't appear as plants, but just in case)
+		if (item?.category === 'terraform') {
+			// Don't show terraform items as plants - they modify the terrain itself
+			return { type: 'emoji', content: '' };
 		}
 
 		// Fallback to emoji based on growth stage
@@ -196,11 +203,16 @@
 		>
 			<img src="/diagrams/plotBase.svg" style="width: calc(28px * 9);" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none scale-[2] mt-5" alt="Plot Base" />
 			{#each plots as plot (plot.x + '-' + plot.y)}
+				<!-- Debug: Show plot info for debugging -->
+				{#if plot.build_level && plot.build_level > 0}
+					{console.log(`Plot ${plot.x}-${plot.y}: type=${plot.type}, build_level=${plot.build_level}`)}
+				{/if}
 				<div
 					class="absolute -mt-3 h-10 w-10 cursor-pointer transition-all duration-200 ease-in-out hover:z-10"
 					class:empty={!plot.plant_id}
 					class:planted={plot.plant_id}
-					style="--x: {plot.x}; --y: {plot.y}; left: calc((var(--x) - var(--y)) * calc(28px / env(device-pixel-ratio, 1)) + 50% - 20px); top: calc((var(--x) + var(--y)) * calc(14px / env(device-pixel-ratio, 1)) + 50% - 120px); transform-style: preserve-3d;"
+					class:elevated={plot.build_level && plot.build_level > 0}
+					style="left: calc((({plot.x}) - ({plot.y})) * calc(28px / env(device-pixel-ratio, 1)) + 50% - 20px); top: calc((({plot.x}) + ({plot.y})) * calc(14px / env(device-pixel-ratio, 1)) + 50% - 120px); transform: translateY({-(plot.build_level || 0) * 3}px); transform-style: preserve-3d;"
 					onclick={() => onPlotClick?.(plot.x, plot.y)}
 					onkeydown={(e) => e.key === 'Enter' && onPlotClick?.(plot.x, plot.y)}
 					role="button"
@@ -208,38 +220,50 @@
 				>
 					<!-- Plot Base -->
 					<div
-						class="relative h-full w-full transform-gpu border border-amber-800 shadow-inner"
+						class="relative h-full w-full transform-gpu shadow-inner transition-all duration-200 hover:brightness-125 hover:contrast-110"
 						class:bg-gradient-to-br={true}
+						class:border-amber-800={plot.type === 'soil'}
 						class:from-amber-700={plot.type === 'soil'}
 						class:to-amber-600={plot.type === 'soil'}
+						class:border-blue-400={plot.type === 'water'}
 						class:from-blue-500={plot.type === 'water'}
 						class:to-blue-600={plot.type === 'water'}
+						class:border-gray-600={plot.type === 'path'}
 						class:from-gray-500={plot.type === 'path'}
 						class:to-gray-400={plot.type === 'path'}
-						style="transform: scaleY(0.5) rotate(45deg); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.2);"
+						class:border-amber-900={plot.type === 'dirt'}
+						class:from-amber-800={plot.type === 'dirt'}
+						class:to-amber-900={plot.type === 'dirt'}
+						class:border={true}
+						style="transform: scaleY({plot.build_level && plot.build_level > 0 ? (plot.type === 'dirt' ? 0.6 - (plot.build_level * 0.05) : 0.5 - (plot.build_level * 0.05)) : (plot.type === 'dirt' ? 0.6 : 0.5)}) rotate(45deg); box-shadow: inset 0 1px 0 rgba(255,255,255,{plot.type === 'dirt' ? 0.2 : 0.1}), 0 {(plot.build_level || 0) + 2}px 4px rgba(0,0,0,{0.2 + (plot.build_level || 0) * 0.1});"
 					></div>
+
+					<!-- Dirt Block Fill (3D effect for elevated plots) -->
+					{#if plot.build_level && plot.build_level > 0 && plot.type === 'dirt'}
+						<!-- Left side of dirt block -->
+						<div
+							class="absolute left-1/4 bottom-0 w-1/2 bg-gradient-to-b from-amber-700 to-amber-800"
+							style="height: {plot.build_level * 4}px; transform: translateY(50%) translateX(-50%) skewY(-45deg) scaleX(0.7); transform-origin: bottom center; z-index: -1;"
+						></div>
+						<!-- Right side of dirt block -->
+						<div
+							class="absolute right-1/4 bottom-0 w-1/2 bg-gradient-to-b from-amber-800 to-amber-900"
+							style="height: {plot.build_level * 4}px; transform: translateY(50%) translateX(50%) skewY(45deg) scaleX(0.7); transform-origin: bottom center; z-index: -1;"
+						></div>
+					{/if}
 
 					<!-- Plant -->
 					{#if plot.plant_id}
 						{@const display = getPlantDisplay(plot)}
 						<div
-							class="absolute bottom-2.5 w-10 left-1/2 z-[2] -translate-x-1/2 transform animate-pulse"
+							class="absolute bottom-2.5 w-10 left-1/2 z-[2] -translate-x-1/2 transform animate-pulse pointer-events-none"
 							style="animation: gentle-sway 3s ease-in-out infinite;"
 						>
 							{#if display.type === 'sprite'}
-							<img src={display.content} alt="Plant" class="w-24" />
+							<img src={display.content} alt="Plant" class="w-24 pointer-events-none" />
 							{:else}
-								<span class="block text-2xl drop-shadow-lg">{display.content}</span>
+								<span class="block text-2xl drop-shadow-lg pointer-events-none">{display.content}</span>
 							{/if}
-						</div>
-					{:else}
-						<div
-							class="empty-indicator absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform opacity-0 transition-opacity duration-200"
-						>
-							<span
-								class="flex h-5 w-5 items-center justify-center rounded-full bg-white/90 text-sm font-bold text-blue-500 shadow-md"
-								>+</span
-							>
 						</div>
 					{/if}
 				</div>
@@ -262,9 +286,6 @@
 		}
 	}
 
-	.empty:hover .empty-indicator {
-		opacity: 1;
-	}
 
 	/* Responsive adjustments */
 	@media (max-width: 768px) {

@@ -1,5 +1,82 @@
 # Garden Gamification Feature Specification
 
+## Recent Implementation Changes
+
+*This section documents the major changes made during development that differ from the original specification.*
+
+### Major Architecture Changes (2024)
+
+#### 1. Simplified Seed Economy
+- **Original**: Multiple seed types (basic, rare, legendary, flower_seeds, tree_seeds, decoration_tokens)
+- **Current**: Single "basic" seed currency for all purchases
+- **Reason**: Simplified user experience and reduced complexity
+- **Impact**: All items now cost basic seeds, easier to understand and manage
+
+#### 2. Collection Schema Updates
+- **Changed**: `plants_catalog` → `items` collection
+- **Added**: `terraform` boolean column for plot modification items
+- **Added**: `sprite` column for item display images
+- **Reason**: More flexible system for different item types including terrain modification
+
+#### 3. Inventory System Implementation
+- **Added**: `user_items` collection for purchased item inventory
+- **Added**: `/api/garden/inventory` endpoint to fetch user's items
+- **Added**: `/api/garden/purchase` endpoint for buying items with seeds
+- **Flow**: Purchase item → Add to inventory → Plant from inventory
+- **Reason**: Separation of purchase and planting actions for better UX
+
+#### 4. Terraform System
+- **New Feature**: Items can modify plot terrain types
+- **Dirt Block**: Raises build level, allows elevated planting
+- **Water Block**: Creates water plots that prevent building
+- **Implementation**: `terraform` flag in items determines terrain modification behavior
+
+#### 5. Component Architecture
+- **SeedInventory.svelte**: Now contains integrated shop drawer (simplified from separate shop)
+- **IsometricGrid.svelte**: Displays items using PocketBase file API URLs
+- **GardenView.svelte**: Handles real inventory system with plant/unplant functionality
+- **Weather Effects**: Implemented with canvas-based sun rays and rain animations
+
+#### 6. API Endpoints Implemented
+```typescript
+// Core garden functionality
+GET  /api/garden/inventory     // Get user's item inventory
+POST /api/garden/purchase      // Buy items with seeds  
+POST /api/garden/plant         // Plant items from inventory
+POST /api/garden/unplant       // Remove plants back to inventory
+
+// Collection schemas
+items: {
+  name: string,
+  category: string,
+  seed_cost: number, 
+  description: string,
+  rarity: string,
+  sprite?: string,        // Image file for display
+  terraform: boolean      // Modifies plot terrain
+}
+
+user_items: {
+  user: relation(users),
+  item: relation(items),
+  quantity: number,
+  acquired_at: datetime
+}
+```
+
+#### 7. PocketBase File Integration
+- Sprite URLs: `${pb.baseUrl}/api/files/items/${itemId}/${filename}`
+- Used across all garden components for consistent item display
+- Supports both sprite images and emoji fallbacks
+
+#### 8. User Experience Improvements
+- **Purchase Flow**: Click seeds → Browse shop → Buy item → Item added to inventory
+- **Planting Flow**: Click empty plot → Browse inventory → Select item → Plant item  
+- **Terraform Flow**: Buy terraform items → Use like plants but modify plot type instead
+- **No Alerts**: All error handling via console.log instead of disruptive alerts
+
+---
+
 ## Overview
 
 This document outlines the design and implementation requirements for a garden-based gamification system that encourages user engagement through chat completion rewards and social interaction.
@@ -204,13 +281,23 @@ src/lib/components/Garden/
   "plots": [
     {
       "x": 0, "y": 0,
-      "type": "soil", // 'soil', 'water', 'path', 'decoration'
+      "type": "soil", // 'soil', 'water', 'path', 'decoration', 'dirt'
       "plant_id": "plant_rose_001",
-      "planted_at": "2024-01-15T10:30:00Z",
+      "planted_at": "2024-01-15T10:30:00Z", 
       "growth_stage": 2, // 0-4 (seed, sprout, young, mature, flowering)
-      "last_watered": "2024-01-16T08:00:00Z"
+      "last_watered": "2024-01-16T08:00:00Z",
+      "build_level": 1 // NEW: 0=ground, 1=raised (dirt block), affects visual depth
     },
-    // ... 80 more plots
+    {
+      "x": 1, "y": 0,
+      "type": "water", // Water plots cannot have plants
+      "plant_id": null,
+      "planted_at": null,
+      "growth_stage": 0,
+      "last_watered": null,
+      "build_level": 0
+    },
+    // ... 79 more plots
   ]
 }
 ```
@@ -238,23 +325,47 @@ src/lib/components/Garden/
 }
 ```
 
-**plants_catalog** collection:
+**items** collection:
 ```javascript
-// Collection: plants_catalog
+// Collection: items (renamed from plants_catalog)
 {
-  id: "auto-generated", // e.g., "plant_rose_001"
-  name: "text", // "Red Rose"
-  category: "select(flower,vegetable,tree,decoration)",
+  id: "auto-generated", // e.g., "plant_rose_001", "terraform_dirt_001"
+  name: "text", // "Red Rose", "Dirt Block"
+  category: "select(flower,vegetable,tree,decoration,terraform)",
   seed_cost: "number",
-  growth_time_hours: "number",
-  weather_preference: "select(sunny,rainy,cloudy,stormy,any)",
+  growth_time_hours: "number", // Only relevant for plants
+  weather_preference: "select(sunny,rainy,cloudy,stormy,any)", // Only relevant for plants
   rarity: "select(common,rare,legendary)",
-  sprite_image: "file", // Plant sprite image
+  sprite: "file", // Item sprite image (renamed from sprite_image)
   description: "text",
   unlock_level: "number", // Garden level required
   is_active: "bool", // Available in shop
+  terraform: "bool", // NEW: Whether this item modifies plot terrain
+  terraform_type: "select(dirt,water,path,decoration)", // NEW: What terrain type it creates
   created: "datetime",
   updated: "datetime"
+}
+
+// Example terraform items:
+{
+  id: "terraform_dirt_001",
+  name: "Dirt Block",
+  category: "terraform", 
+  seed_cost: 3,
+  terraform: true,
+  terraform_type: "dirt",
+  description: "Raises the build level of a plot, allowing elevated planting",
+  is_active: true
+},
+{
+  id: "terraform_water_001", 
+  name: "Water Block",
+  category: "terraform",
+  seed_cost: 5,
+  terraform: true,
+  terraform_type: "water", 
+  description: "Creates a water feature that prevents building",
+  is_active: true
 }
 ```
 
