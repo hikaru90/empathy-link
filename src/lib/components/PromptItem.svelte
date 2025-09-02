@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
 	import type { DbPrompt } from '$lib/server/prompts';
 	import FilePenLine from 'lucide-svelte/icons/file-pen-line';
 	import Check from 'lucide-svelte/icons/check';
@@ -146,11 +147,12 @@
 		}
 	}
 
-	function handleFormSuccess() {
+	async function handleFormSuccess() {
 		isEditing = false;
 		pathConfigJson = '';
 		pathConfigError = null;
 		showPreview = false;
+		await invalidateAll();
 	}
 </script>
 
@@ -262,43 +264,45 @@
 					Active
 				</label>
 			</div>
-			<div class="mb-4">
-				<label class="mb-1 block text-sm font-medium text-gray-700">Path Config (JSON)</label>
-				<div class="mb-2 flex items-center gap-2">
-					<button
-						type="button"
-						class="flex items-center gap-1 rounded border border-gray-300 bg-white px-2 py-1 text-xs hover:bg-gray-50"
-						onclick={convertToJson}
-						title="Convert JavaScript object to valid JSON"
-					>
-						<RefreshCw class="h-3 w-3" />
-						Convert to JSON
-					</button>
-				</div>
-				<div class="relative">
-					<textarea
-						name="path_config"
-						bind:value={pathConfigJson}
-						oninput={handlePathConfigInput}
-						rows="5"
-						class="w-full rounded-md border border-gray-300 px-3 py-2 pr-8 font-mono text-sm"
-						placeholder="Enter JavaScript object or JSON..."
-					></textarea>
-					{#if pathConfigJson.trim()}
-						<div class="absolute right-2 top-2">
-							{#if pathConfigError}
-								<X class="h-4 w-4 text-red-500" />
-							{:else}
-								<Check class="h-4 w-4 text-green-500" />
-							{/if}
-						</div>
+			{#if prompt.category === 'path'}
+				<div class="mb-4">
+					<label class="mb-1 block text-sm font-medium text-gray-700">Path Config (JSON)</label>
+					<div class="mb-2 flex items-center gap-2">
+						<button
+							type="button"
+							class="flex items-center gap-1 rounded border border-gray-300 bg-white px-2 py-1 text-xs hover:bg-gray-50"
+							onclick={convertToJson}
+							title="Convert JavaScript object to valid JSON"
+						>
+							<RefreshCw class="h-3 w-3" />
+							Convert to JSON
+						</button>
+					</div>
+					<div class="relative">
+						<textarea
+							name="path_config"
+							bind:value={pathConfigJson}
+							oninput={handlePathConfigInput}
+							rows="5"
+							class="w-full rounded-md border border-gray-300 px-3 py-2 pr-8 font-mono text-sm"
+							placeholder="Enter JavaScript object or JSON..."
+						></textarea>
+						{#if pathConfigJson.trim()}
+							<div class="absolute right-2 top-2">
+								{#if pathConfigError}
+									<X class="h-4 w-4 text-red-500" />
+								{:else}
+									<Check class="h-4 w-4 text-green-500" />
+								{/if}
+							</div>
+						{/if}
+					</div>
+					{#if pathConfigError}
+						<p class="mt-1 text-xs text-red-500">{pathConfigError}</p>
 					{/if}
+					<p class="mt-1 text-xs text-gray-500">Enter a JavaScript object or valid JSON</p>
 				</div>
-				{#if pathConfigError}
-					<p class="mt-1 text-xs text-red-500">{pathConfigError}</p>
-				{/if}
-				<p class="mt-1 text-xs text-gray-500">Enter a JavaScript object or valid JSON</p>
-			</div>
+			{/if}
 			<div class="flex gap-2">
 				<button type="submit" class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
 					Update Prompt
@@ -317,9 +321,9 @@
 	<!-- Prompt Display -->
 	<button
 		onclick={startEdit}
-		class="group relative cursor-pointer rounded-lg border p-4 text-left w-full {prompt.active
-			? 'bg-white'
-			: 'bg-gray-50'}"
+		class="group relative bg-offwhite cursor-pointer rounded-lg border border-white/20 p-4 text-left w-full {prompt.active
+			? ''
+			: ''}"
 	>
 		<div class="mb-2 flex items-start justify-between">
 			<div class="w-full">

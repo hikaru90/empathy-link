@@ -58,7 +58,7 @@
 		<!-- Prompts List -->
 		<div class="space-y-4">
 			{#each Object.entries(promptsByCategory) as [category, categoryPrompts]}
-				<Collapsible.Root class="overflow-hidden rounded-lg border border-white bg-offwhite shadow-sm">
+				<Collapsible.Root class="overflow-hidden rounded-lg border border-white shadow-sm">
 					<Collapsible.Trigger class="flex w-full items-center justify-between bg-gray-50 px-4 py-2 transition-colors">
 						<h2 class="text-lg font-semibold capitalize">
 							{category} Prompts ({(categoryPrompts as DbPrompt[]).length})

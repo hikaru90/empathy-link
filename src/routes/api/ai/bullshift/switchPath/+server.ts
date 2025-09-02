@@ -15,7 +15,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: 'Missing required fields' }, { status: 400 });
 		}
 
-		const result = await switchPath(chatId, newPathId, user, locale || 'de');
+		const result = await switchPath(chatId, newPathId, user, locale || 'de', locals.pb);
 
 		if (!result.success) {
 			return json({ error: 'Failed to switch path' }, { status: 500 });

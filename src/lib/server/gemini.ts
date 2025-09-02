@@ -518,7 +518,7 @@ export const createChatWithNvcContext = async (
 	return ai.chats.create(nvcAwareModel);
 };
 
-export const initChat = async (user: any, locale: string, initialPath?: string) => {
+export const initChat = async (user: any, locale: string, initialPath?: string, authenticatedPb?: any) => {
 	const pathId = initialPath || 'idle';
 	console.log('initChat called with pathId:', pathId);
 
@@ -574,7 +574,7 @@ Ich kann dir in verschiedenen Bereichen zur Seite stehen:
 		});
 	}
 
-	const dbChat = await pb.collection('chats').create({
+	const dbChat = await (authenticatedPb || pb).collection('chats').create({
 		history: encryptChatHistory(initialHistory),
 		user: user.id,
 		module: 'bullshift',
@@ -582,7 +582,7 @@ Ich kann dir in verschiedenen Bereichen zur Seite stehen:
 	});
 
 	// Get system instruction for the specific path
-	const systemInstruction = await getSystemPromptForPath(pathId, user);
+	const systemInstruction = await getSystemPromptForPath(pathId, user, undefined, authenticatedPb);
 
 	// Store only the path state (no persistent Gemini chat)
 	chatPaths.set(dbChat.id, pathState);
@@ -602,7 +602,8 @@ export const switchPath = async (
 	chatId: string,
 	newPathId: string,
 	user: any,
-	locale: string
+	locale: string,
+	authenticatedPb?: any
 ): Promise<{
 	success: boolean;
 	newSystemInstruction?: string;
@@ -610,7 +611,7 @@ export const switchPath = async (
 }> => {
 	try {
 		const currentPathState = chatPaths.get(chatId);
-		const chatInDb = await pb.collection('chats').getOne(chatId);
+		const chatInDb = await (authenticatedPb || pb).collection('chats').getOne(chatId);
 
 		// Decrypt history if it exists
 		if (chatInDb && chatInDb.history) {
@@ -637,10 +638,10 @@ export const switchPath = async (
 		};
 
 		// Get new system instruction
-		const newSystemInstruction = await getSystemPromptForPath(newPathId, user);
+		const newSystemInstruction = await getSystemPromptForPath(newPathId, user, undefined, authenticatedPb);
 
 		// Update database with new path state only (path markers will be added by send endpoint)
-		await pb.collection('chats').update(chatId, {
+		await (authenticatedPb || pb).collection('chats').update(chatId, {
 			pathState: newPathState
 		});
 

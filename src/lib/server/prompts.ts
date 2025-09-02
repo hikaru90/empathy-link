@@ -4,6 +4,7 @@
  */
 
 import { pb } from '$scripts/pocketbase';
+import type PocketBase from 'pocketbase';
 
 export interface DbPrompt {
 	id: string;
@@ -40,19 +41,33 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 /**
  * Get a prompt from the database by slug
  */
-export async function getPrompt(slug: string): Promise<DbPrompt | null> {
+export async function getPrompt(slug: string, authenticatedPb?: PocketBase): Promise<DbPrompt | null> {
 	try {
+		// Use authenticated instance if provided, otherwise fall back to global
+		const pbInstance = authenticatedPb || pb;
+		console.log(`🔍 Getting prompt for slug: ${slug}`);
+		console.log(`🔐 Using authenticated instance: ${!!authenticatedPb}`);
+		
 		// Check cache first
 		if (promptCache.has(slug) && Date.now() < cacheExpiry) {
+			console.log(`✅ Found prompt in cache: ${slug}`);
 			return promptCache.get(slug)!;
 		}
 
 		// If cache is expired, refresh all prompts
 		if (Date.now() >= cacheExpiry) {
-			await refreshPromptCache();
+			console.log(`🔄 Cache expired, refreshing prompts from database...`);
+			await refreshPromptCache(pbInstance);
 		}
 
-		return promptCache.get(slug) || null;
+		const cachedPrompt = promptCache.get(slug);
+		if (cachedPrompt) {
+			console.log(`✅ Found prompt after cache refresh: ${slug}`);
+			return cachedPrompt;
+		} else {
+			console.log(`❌ Prompt not found in database: ${slug}`);
+			return null;
+		}
 	} catch (error) {
 		console.error(`Error fetching prompt ${slug}:`, error);
 		return null;
@@ -62,11 +77,17 @@ export async function getPrompt(slug: string): Promise<DbPrompt | null> {
 /**
  * Refresh the entire prompt cache from database
  */
-async function refreshPromptCache(): Promise<void> {
+async function refreshPromptCache(pbInstance: PocketBase): Promise<void> {
 	try {
-		const prompts = await pb.collection('prompts').getFullList<DbPrompt>({
+		console.log(`🔄 Refreshing prompt cache from database...`);
+		const prompts = await pbInstance.collection('prompts').getFullList<DbPrompt>({
 			filter: 'active = true',
 			sort: 'slug'
+		});
+
+		console.log(`📊 Found ${prompts.length} active prompts in database:`);
+		prompts.forEach(prompt => {
+			console.log(`  - ${prompt.slug} (${prompt.category})`);
 		});
 
 		promptCache.clear();
@@ -75,6 +96,7 @@ async function refreshPromptCache(): Promise<void> {
 		});
 
 		cacheExpiry = Date.now() + CACHE_DURATION;
+		console.log(`✅ Prompt cache refreshed, expires in ${CACHE_DURATION / 1000}s`);
 	} catch (error) {
 		console.error('Error refreshing prompt cache:', error);
 		// Extend cache expiry on error to avoid constant retries
@@ -89,7 +111,8 @@ async function refreshPromptCache(): Promise<void> {
 export async function processShortcodes(
 	content: string, 
 	userContext?: any,
-	processedSlugs = new Set<string>()
+	processedSlugs = new Set<string>(),
+	authenticatedPb?: PocketBase
 ): Promise<string> {
 	// Find all shortcodes in the format [slugName]
 	const shortcodeRegex = /\[([a-z0-9_-]+)\]/gi;
@@ -130,7 +153,7 @@ export async function processShortcodes(
 		}
 
 		// Handle database prompts
-		const prompt = await getPrompt(slug);
+		const prompt = await getPrompt(slug, authenticatedPb);
 		if (prompt) {
 			// Add to processed set to prevent cycles
 			const newProcessedSlugs = new Set(processedSlugs);
@@ -140,7 +163,8 @@ export async function processShortcodes(
 			const resolvedContent = await processShortcodes(
 				prompt.content, 
 				userContext, 
-				newProcessedSlugs
+				newProcessedSlugs,
+				authenticatedPb
 			);
 			
 			processedContent = processedContent.replace(fullMatch, resolvedContent);
@@ -204,8 +228,8 @@ function generateNvcKnowledgePreference(userContext: any): string {
 /**
  * Get a complete path definition from database prompt
  */
-export async function getPathDefinition(pathId: string): Promise<PathDefinition | null> {
-	const prompt = await getPrompt(pathId);
+export async function getPathDefinition(pathId: string, authenticatedPb?: PocketBase): Promise<PathDefinition | null> {
+	const prompt = await getPrompt(pathId, authenticatedPb);
 	if (!prompt || prompt.category !== 'path') {
 		return null;
 	}
@@ -223,9 +247,10 @@ export async function getPathDefinition(pathId: string): Promise<PathDefinition 
 /**
  * Get all active path definitions
  */
-export async function getAllPaths(): Promise<Record<string, PathDefinition>> {
+export async function getAllPaths(authenticatedPb?: PocketBase): Promise<Record<string, PathDefinition>> {
 	try {
-		const prompts = await pb.collection('prompts').getFullList<DbPrompt>({
+		const pbInstance = authenticatedPb || pb;
+		const prompts = await pbInstance.collection('prompts').getFullList<DbPrompt>({
 			filter: 'active = true && category = "path"',
 			sort: 'slug'
 		});
@@ -256,9 +281,10 @@ export async function getAllPaths(): Promise<Record<string, PathDefinition>> {
 export async function getSystemPromptForPath(
 	pathId: string, 
 	userContext?: any, 
-	memoryContext?: string
+	memoryContext?: string,
+	authenticatedPb?: PocketBase
 ): Promise<string> {
-	const prompt = await getPrompt(pathId);
+	const prompt = await getPrompt(pathId, authenticatedPb);
 	if (!prompt) {
 		throw new Error(`Prompt not found: ${pathId}`);
 	}
@@ -282,7 +308,7 @@ ${memoryContext}
 	}
 	
 	// Process all shortcodes with user context
-	systemPrompt = await processShortcodes(systemPrompt, userContext);
+	systemPrompt = await processShortcodes(systemPrompt, userContext, new Set<string>(), authenticatedPb);
 	
 	return systemPrompt;
 }
@@ -290,14 +316,14 @@ ${memoryContext}
 /**
  * Suggest next paths for a given path
  */
-export async function suggestNextPaths(currentPath: string): Promise<PathDefinition[]> {
-	const path = await getPathDefinition(currentPath);
+export async function suggestNextPaths(currentPath: string, authenticatedPb?: PocketBase): Promise<PathDefinition[]> {
+	const path = await getPathDefinition(currentPath, authenticatedPb);
 	if (!path || !path.suggestedNext) return [];
 	
 	const suggestions: PathDefinition[] = [];
 	
 	for (const pathId of path.suggestedNext) {
-		const suggestedPath = await getPathDefinition(pathId);
+		const suggestedPath = await getPathDefinition(pathId, authenticatedPb);
 		if (suggestedPath) {
 			suggestions.push(suggestedPath);
 		}

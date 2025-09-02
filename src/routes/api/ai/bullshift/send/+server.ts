@@ -302,7 +302,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					
 					if (CONVERSATION_PATHS[nextPath]) {
 						try {
-							const switchResult = await switchPath(chatId, nextPath, user, locale || 'de');
+							const switchResult = await switchPath(chatId, nextPath, user, locale || 'de', locals.pb);
 							if (switchResult.success) {
 								pathSwitchedEarly = true;
 								earlyNewPathId = nextPath;
@@ -364,11 +364,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				console.log('❌ No memories found for memory path');
 			}
 			
-			currentSystemInstruction = await getSystemPromptForPath('memory', userWithPreferences, memoryContext);
+			currentSystemInstruction = await getSystemPromptForPath('memory', userWithPreferences, memoryContext, locals.pb);
 		} else {
 			// For non-memory paths, use standard approach with user preferences
-			currentSystemInstruction = await getSystemPromptForPath(pathStateForAI?.activePath || 'idle', userWithPreferences);
+			currentSystemInstruction = await getSystemPromptForPath(pathStateForAI?.activePath || 'idle', userWithPreferences, undefined, locals.pb);
 		}
+		
+		// Log the system prompt being used
+		console.log('🎯 SYSTEM PROMPT BEING USED:');
+		console.log('Path:', pathStateForAI?.activePath || 'idle');
+		console.log('User preferences:', {
+			aiAnswerLength: userWithPreferences?.aiAnswerLength,
+			toneOfVoice: userWithPreferences?.toneOfVoice,
+			nvcKnowledge: userWithPreferences?.nvcKnowledge,
+			firstName: userWithPreferences?.firstName
+		});
+		console.log('Memory context:', memoryContext || 'none');
+		console.log('=== FULL SYSTEM PROMPT ===');
+		console.log(currentSystemInstruction);
+		console.log('=== END SYSTEM PROMPT ===');
 		
 		// Convert DB history to Gemini format (excludes path markers, hidden messages)
 		const geminiHistory = convertHistoryToGemini(chatInDb.history);

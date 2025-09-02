@@ -27,8 +27,8 @@
 		<a
 			href={link.href}
 			class="{currentPage == link.href
-				? 'text-primary'
-				: 'text-muted-foreground'} rounded-full border border-white/20 bg-offwhite px-3 py-1 shadow-md shadow-black/5"
+				? 'text-black border-white/40'
+				: 'text-muted-foreground border-white/20'} rounded-full border bg-offwhite px-3 py-1 shadow-sm shadow-black/5"
 			>{link.label}</a
 		>
 	{/each}

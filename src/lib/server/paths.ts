@@ -328,18 +328,22 @@ export function createPathMarker(
 /**
  * Get system prompt for path - tries database first, falls back to hardcoded
  */
-export async function getSystemPromptForPath(pathId: string, userContext?: any, memoryContext?: string): Promise<string> {
+export async function getSystemPromptForPath(pathId: string, userContext?: any, memoryContext?: string, authenticatedPb?: any): Promise<string> {
 	// Try database first
 	try {
-		const dbPrompt = await getDbSystemPromptForPath(pathId, userContext, memoryContext);
+		console.log(`🔍 Attempting to get database prompt for path: ${pathId}`);
+		const dbPrompt = await getDbSystemPromptForPath(pathId, userContext, memoryContext, authenticatedPb);
 		if (dbPrompt) {
+			console.log(`✅ Successfully retrieved database prompt for path: ${pathId}`);
 			return dbPrompt;
 		}
+		console.log(`❌ Database prompt returned null/empty for path: ${pathId}`);
 	} catch (error) {
 		console.warn(`Database prompt failed for ${pathId}, falling back to hardcoded:`, error);
 	}
 
 	// Fallback to hardcoded prompts
+	console.log(`🔄 Falling back to hardcoded prompt for path: ${pathId}`);
 	return getHardcodedSystemPromptForPath(pathId, userContext, memoryContext);
 }
 
@@ -371,37 +375,27 @@ ${memoryContext}
 	let nvcKnowledgePreference = '';
 	
 	if (userContext) {
-		// Answer length preference
+		// Answer length preference - use dynamic shortcodes
 		if (userContext.aiAnswerLength === 'short') {
-			answerLengthPreference = `**KRITISCHE LÄNGEN-REGEL:** 
-- MAXIMAL 1-2 Sätze pro Antwort. NIEMALS mehr.
-- Sei extrem präzise und direkt auf den Punkt.
-- Überprüfe vor dem Senden: Hast du mehr als 2 Sätze geschrieben? Dann KÜRZE radikal.
-- Diese Regel hat ABSOLUTE Priorität über alle anderen Anweisungen.`;
+			answerLengthPreference = '[answerLengthPreferenceShort]';
 		} else if (userContext.aiAnswerLength === 'medium') {
-			answerLengthPreference = `**STRIKTE LÄNGEN-REGEL:**
-- MAXIMAL 3 Sätze pro Antwort. Zähle deine Sätze vor dem Senden.
-- Jeder Satz muss wertvoll sein. Keine Füllwörter.
-- Diese Regel ist NICHT verhandelbar.`;
+			answerLengthPreference = '[answerLengthPreferenceMedium]';
 		} else if (userContext.aiAnswerLength === 'long') {
-			answerLengthPreference = `**LÄNGEN-REGEL:**
-- MAXIMAL 4 Sätze pro Antwort. Zähle deine Sätze.
-- Sei ausführlich, aber respektiere diese Grenze absolut.
-- Überprüfe: Mehr als 4 Sätze = KÜRZEN erforderlich.`;
+			answerLengthPreference = '[answerLengthPreferenceLong]';
 		}
 		
 		// Tone of voice preference  
 		if (userContext.toneOfVoice === 'analytical') {
-			toneOfVoicePreference = '- Verwende einen sachlichen, strukturierten Kommunikationsstil\n- Fokussiere auf logische Zusammenhänge und konkrete Schritte';
+			toneOfVoicePreference = '[toneOfVoicePreferenceAnalytical]';
 		} else if (userContext.toneOfVoice === 'heartfelt') {
-			toneOfVoicePreference = '- Verwende einen empathischen, warmherzigen Kommunikationsstil\n- Betone emotionale Unterstützung und Verständnis';
+			toneOfVoicePreference = '[toneOfVoicePreferenceHeartfelt]';
 		}
 		
 		// NVC knowledge level preference
 		if (userContext.nvcKnowledge === 'beginner') {
-			nvcKnowledgePreference = '- Erkläre GFK-Konzepte und -Begriffe wenn nötig\n- Verwende einfache Sprache und führe den Nutzer behutsam durch den Prozess';
+			nvcKnowledgePreference = '[nvcKnowledgePreferenceBeginner]';
 		} else if (userContext.nvcKnowledge === 'advanced') {
-			nvcKnowledgePreference = '- Nutze GFK-Fachbegriffe selbstverständlich\n- Fokussiere auf subtile Aspekte und fortgeschrittene Techniken';
+			nvcKnowledgePreference = '[nvcKnowledgePreferenceAdvanced]';
 		}
 		
 		// Add user name context if available

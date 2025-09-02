@@ -20,7 +20,7 @@ export const load: PageServerLoad = async ({ locals }) => {
             });
         } catch (error) {
             console.log('No chat record found, creating a new one');
-            const initResponse = await initChat(user, locale);
+            const initResponse = await initChat(user, locale, undefined, locals.pb);
             console.log('initResponse:', initResponse);
             chatRecord = await pb.collection('chats').getOne(initResponse.chatId);
             systemPrompt = initResponse.systemInstruction;
@@ -29,7 +29,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         // Restore path state in memory if it exists
         if (chatRecord.pathState?.activePath) {
             console.log('Loading existing chat with path:', chatRecord.pathState.activePath);
-            systemPrompt = await getSystemPromptForPath(chatRecord.pathState.activePath, user);
+            systemPrompt = await getSystemPromptForPath(chatRecord.pathState.activePath, user, undefined, locals.pb);
             // Restore path state in memory
             chatPaths.set(chatRecord.id, chatRecord.pathState);
         } else {

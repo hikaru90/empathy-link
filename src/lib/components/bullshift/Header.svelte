@@ -12,6 +12,10 @@
 	import { cn } from '$lib/utils';
 	import ChartColumnDecreasing from 'lucide-svelte/icons/chart-column-decreasing';
 	import FileCog from 'lucide-svelte/icons/file-cog';
+	import Megaphone from 'lucide-svelte/icons/megaphone';
+	import Calendar from 'lucide-svelte/icons/calendar';
+	import Inbox from '$lib/components/Inbox.svelte';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		absolute?: boolean;
@@ -21,16 +25,30 @@
 
 	let { absolute = false, class: className, user }: Props = $props();
 
-	const notifications = [
-		{
-			id: 1,
-			title: 'New message',
-			message: 'You have a new message'
-		}
-	];
-
+	let unreadCount = $state(0);
 	let isOpen = $state(false);
 	let userMenuIsOpen = $state(false);
+
+	async function fetchUnreadCount() {
+		try {
+			const response = await fetch('/api/messages?unread=true&perPage=1');
+			if (response.ok) {
+				const data = await response.json();
+				unreadCount = data.unreadCount;
+			}
+		} catch (error) {
+			console.error('Failed to fetch unread count:', error);
+		}
+	}
+
+	onMount(() => {
+		fetchUnreadCount();
+		
+		// Refresh unread count every 5 minutes
+		const interval = setInterval(fetchUnreadCount, 5 * 60 * 1000);
+		
+		return () => clearInterval(interval);
+	});
 
 	function restartOnboarding() {
 		console.log('Restarting onboarding...');
@@ -76,10 +94,12 @@
 		onclick={() => (isOpen = true)}
 	>
 		<Bell class="size-3 text-white" />
-		{#if notifications.length > 0}
+		{#if unreadCount > 0}
 			<div
 				class="absolute right-1 top-1 flex size-3 -translate-y-1/2 translate-x-1/2 transform items-center justify-center rounded-full bg-bullshift text-xs text-white"
-			></div>
+			>
+				{unreadCount > 9 ? '9+' : unreadCount}
+			</div>
 		{/if}
 	</button>
 </nav>
@@ -101,6 +121,13 @@
 						Chat-Einstellungen
 						<FileCog class="size-4" />
 					</a>
+				<a
+					href="/bullshift/reminders"
+					class="flex items-center justify-between rounded-full border border-white/30 bg-offwhite px-3 py-1.5 text-left text-sm shadow-md shadow-black/5"
+				>
+					Meine Erinnerungen
+					<Calendar class="size-4" />
+				</a>
 				<button
 					class="flex items-center justify-between rounded-full border border-white/30 bg-offwhite px-3 py-1.5 text-sm shadow-md shadow-black/5"
 					onclick={restartOnboarding}
@@ -115,6 +142,13 @@
 					>
 						Backend
 						<ChartColumnDecreasing class="size-4" />
+					</a>
+					<a
+						href="/bullshift/admin/messages"
+						class="flex items-center justify-between rounded-full border border-white/30 bg-offwhite px-3 py-1.5 text-left text-sm shadow-md shadow-black/5"
+					>
+						Nachrichten-Admin
+						<Megaphone class="size-4" />
 					</a>
 				{/if}
 				<form action="/app/auth/logout" method="POST" class="w-full">
@@ -133,18 +167,13 @@
 
 <!-- notifications menu -->
 <Drawer.Root bind:open={isOpen}>
-	<Drawer.Content class="bottom-0">
-		<div class="mx-auto w-full max-w-sm">
-			<Drawer.Header class="mt-4">
-				<Drawer.Title>Benachrichtigungen</Drawer.Title>
+	<Drawer.Content class="bottom-0 h-[80vh]">
+		<div class="mx-auto w-full max-w-2xl h-full flex flex-col">
+			<Drawer.Header class="mt-4 flex-shrink-0">
+				<Drawer.Title>Nachrichten</Drawer.Title>
 			</Drawer.Header>
-			<div class="p-4 pb-24">
-				{#each notifications as notification}
-					<div class="flex flex-col items-center justify-between rounded-lg bg-black/10 px-4 py-2">
-						<div class="text-sm font-medium">{notification.title}</div>
-						<div class="text-sm text-muted-foreground">{notification.message}</div>
-					</div>
-				{/each}
+			<div class="flex-1 overflow-hidden">
+				<Inbox />
 			</div>
 		</div>
 	</Drawer.Content>
