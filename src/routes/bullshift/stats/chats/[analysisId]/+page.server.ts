@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { pb } from '$scripts/pocketbase';
+import { decryptChatHistory } from '$lib/utils/chatEncryption.js';
 
 
 export const load: PageServerLoad = async ({ locals, params }) => {
@@ -12,6 +13,11 @@ export const load: PageServerLoad = async ({ locals, params }) => {
         // const analysis = await pb.collection('analyses').getFirstListItem(`chat = "${id}"`, {
         //     expand: 'chat'
         // });
+
+        // Decrypt chat history if it exists
+        if (analysis.expand?.chat?.history) {
+            analysis.expand.chat.history = decryptChatHistory(analysis.expand.chat.history);
+        }
 
         return {
             analysis,

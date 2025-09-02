@@ -3,6 +3,7 @@ import { pb } from '$scripts/pocketbase';
 import { getModel, initChat, chatPaths, getCurrentPath } from '$lib/server/gemini';
 import { getSystemPromptForPath } from '$lib/server/paths';
 import { redirect } from '@sveltejs/kit';
+import { decryptChatHistory } from '$lib/utils/chatEncryption.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
     const user = locals.user;
@@ -33,13 +34,14 @@ export const load: PageServerLoad = async ({ locals }) => {
             chatPaths.set(chatRecord.id, chatRecord.pathState);
         } else {
             // Fallback to old system for existing chats without path data
-            const {model, systemInstruction: oldSystemInstruction} = await getModel(user, locale, chatRecord?.history);
+            const decryptedHistory = decryptChatHistory(chatRecord?.history || []);
+            const {model, systemInstruction: oldSystemInstruction} = await getModel(user, locale, decryptedHistory);
             systemPrompt = oldSystemInstruction;
         }
 
         return {
             chatId: chatRecord.id,
-            history: chatRecord.history || [],
+            history: decryptChatHistory(chatRecord.history || []),
             systemPrompt
         };
     } catch (error) {

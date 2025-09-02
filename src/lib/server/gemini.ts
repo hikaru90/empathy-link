@@ -7,6 +7,7 @@ import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
 import type { HistoryEntry } from '$routes/api/ai/selfempathy/initChat/+server';
 import type { Chat, CreateChatParameters } from '@google/genai';
 import { m } from '$lib/translations';
+import { encryptChatHistory, decryptChatHistory } from '$lib/utils/chatEncryption.js';
 import { saveTrace } from './tools';
 import {
 	type PathState,
@@ -358,7 +359,7 @@ export const sendMessage = async (
 
 		// Store in DB with full metadata (this format is only for our database)
 		await pb.collection('chats').update(chatId, {
-			history: await chat.getHistory(),
+			history: encryptChatHistory(await chat.getHistory()),
 			updated: new Date().toISOString()
 		});
 
@@ -574,7 +575,7 @@ Ich kann dir in verschiedenen Bereichen zur Seite stehen:
 	}
 
 	const dbChat = await pb.collection('chats').create({
-		history: initialHistory,
+		history: encryptChatHistory(initialHistory),
 		user: user.id,
 		module: 'bullshift',
 		pathState
@@ -610,6 +611,11 @@ export const switchPath = async (
 	try {
 		const currentPathState = chatPaths.get(chatId);
 		const chatInDb = await pb.collection('chats').getOne(chatId);
+
+		// Decrypt history if it exists
+		if (chatInDb && chatInDb.history) {
+			chatInDb.history = decryptChatHistory(chatInDb.history);
+		}
 
 		if (!currentPathState || !chatInDb) {
 			throw new Error('Chat not found');

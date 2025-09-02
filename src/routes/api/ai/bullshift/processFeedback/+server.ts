@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { pb } from '$scripts/pocketbase';
 import { getCurrentPath } from '$lib/server/gemini';
+import { encryptChatHistory, decryptChatHistory } from '$lib/utils/chatEncryption.js';
 
 // Helper function to extract feedback from conversation (moved from send endpoint)
 const extractFeedbackFromConversation = (history: any[]): any | null => {
@@ -151,6 +152,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (!chat) {
 			return json({ error: 'Chat not found' }, { status: 404 });
 		}
+		
+		// Decrypt chat history before processing
+		if (chat.history) {
+			chat.history = decryptChatHistory(chat.history);
+		}
 
 		// Verify user owns chat
 		if (chat.user !== user.id) {
@@ -198,8 +204,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				hidden: false
 			});
 
-			// Update chat with new history including feedback confirmation
-			await pb.collection('chats').update(chatId, { history: updatedHistory });
+			// Update chat with new history including feedback confirmation (encrypt before storing)
+			await pb.collection('chats').update(chatId, { history: encryptChatHistory(updatedHistory) });
 
 			console.log('✅ Complete user feedback successfully stored in feedback record:', chat.feedbackId);
 			

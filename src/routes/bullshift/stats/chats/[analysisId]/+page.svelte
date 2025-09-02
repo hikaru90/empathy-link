@@ -42,6 +42,18 @@
 						}).format(new Date(data.analysis.created))}
 					</p>
 
+					{#if data.analysis.conversationGoal}
+						<div class="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4 mb-6">
+							<div class="flex items-center gap-3">
+								<span class="text-2xl">🎯</span>
+								<div>
+									<div class="mb-2 font-semibold text-blue-800">Gesprächsziel</div>
+									<div class="text-blue-700">{data.analysis.conversationGoal}</div>
+								</div>
+							</div>
+						</div>
+					{/if}
+
 					{#if data.analysis.dailyWin}
 						<div class="mt-6 rounded-lg border border-white bg-white/80 p-4 mb-6">
 							<div class="mb-2 font-semibold">Erkenntnis</div>

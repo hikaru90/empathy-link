@@ -4,6 +4,7 @@ import type { RequestHandler } from './$types';
 import { pb } from '$scripts/pocketbase';
 import type { Content, Chat } from '@google/genai';
 import { initChat } from '$lib/server/gemini';
+import { encryptChatHistory, decryptChatHistory } from '$lib/utils/chatEncryption.js';
 
 
 export interface HistoryEntry {
@@ -38,7 +39,7 @@ const initChatInDb = async (user: any, chat: any) => {
 	let chatData: Partial<DbChatSession> = {
 		user: user.id,
 		module: 'bullshift',
-		history: chat.history || [], // This will now include timestamps
+		history: encryptChatHistory(chat.history || []), // Encrypt before storing
 	};
 
 	const record = await pb.collection('chats').create(chatData);
@@ -48,6 +49,12 @@ const initChatInDb = async (user: any, chat: any) => {
 const getChatFromDb = async (chatId: string) => {
 	console.log('getChatFromDb chatId', chatId);
 	const record = await pb.collection('chats').getOne(chatId);
+	
+	// Decrypt history before returning
+	if (record.history) {
+		record.history = decryptChatHistory(record.history);
+	}
+	
 	return record;
 };
 

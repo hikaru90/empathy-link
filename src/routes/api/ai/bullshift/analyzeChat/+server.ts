@@ -4,6 +4,7 @@ import { initChat } from '$lib/server/gemini';
 import type { Content } from '@google/genai';
 import { analyzeChat, extractMemories } from '$lib/server/tools';
 import { z } from 'zod';
+import { encryptChatHistory, decryptChatHistory } from '$lib/utils/chatEncryption.js';
 
 export interface HistoryEntry {
 	role: 'user' | 'model';
@@ -34,7 +35,7 @@ const initChatInDb = async (user: any, chat: any, pb: any) => {
 	let chatData: Partial<DbChatSession> = {
 		user: user.id,
 		module: 'bullshift',
-		history: chat.history || [], // This will now include timestamps
+		history: encryptChatHistory(chat.history || []), // Encrypt before storing
 	};
 
 	const record = await pb.collection('chats').create(chatData);
@@ -44,6 +45,12 @@ const initChatInDb = async (user: any, chat: any, pb: any) => {
 const getChatFromDb = async (chatId: string, pb: any) => {
 	console.log('getChatFromDb chatId', chatId);
 	const record = await pb.collection('chats').getOne(chatId);
+	
+	// Decrypt history before returning
+	if (record.history) {
+		record.history = decryptChatHistory(record.history);
+	}
+	
 	return record;
 };
 const formatHistoryForGemini = (history?: HistoryEntry[]): Content[] => {
@@ -123,7 +130,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			observation: z.string().catch(''),
 			feelings: z.array(z.string()).catch([]),
 			needs: z.array(z.string()).catch([]),
-			request: z.string().catch('')
+			request: z.string().catch(''),
+			conversationGoal: z.string().catch('')
 		});
 
 		interface Analysis extends z.infer<typeof analysisSchema> {
@@ -151,7 +159,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				observation: typeof analysis.observation === 'string' ? analysis.observation : '',
 				feelings: Array.isArray(analysis.feelings) ? analysis.feelings : [],
 				needs: Array.isArray(analysis.needs) ? analysis.needs : [],
-				request: typeof analysis.request === 'string' ? analysis.request : ''
+				request: typeof analysis.request === 'string' ? analysis.request : '',
+				conversationGoal: typeof analysis.conversationGoal === 'string' ? analysis.conversationGoal : ''
 			};
 		}
 

@@ -12,6 +12,7 @@ import {
 	type PathSwitchAnalysis,
 	type Sensitivity
 } from '$lib/server/gemini';
+import { encryptChatHistory, decryptChatHistory } from '$lib/utils/chatEncryption.js';
 import { CONVERSATION_PATHS, getSystemPromptForPath } from '$lib/server/paths';
 import { analyzeChatFlow, saveChatFeedback } from '$lib/server/chatAnalysis';
 import { pb } from '$scripts/pocketbase';
@@ -198,6 +199,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (!chatInDb) {
 			console.log('Chat not found in database for chatId:', chatId);
 			return json({ error: 'Chat session not found' }, { status: 404 });
+		}
+		
+		// Decrypt chat history before processing
+		if (chatInDb.history) {
+			console.log('🔓 Decrypting history from database. Sample encrypted text:', chatInDb.history[0]?.parts[0]?.text?.substring(0, 50) + '...');
+			chatInDb.history = decryptChatHistory(chatInDb.history);
+			console.log('🔓 Decrypted sample text:', chatInDb.history[0]?.parts[0]?.text?.substring(0, 50) + '...');
 		}
 		let state = chatInDb?.state || initialState;
 
@@ -525,7 +533,9 @@ Reagiere empathisch auf ihre Nachricht und schlage dann basierend auf dem Kontex
 		
 		// Store initial history without feedback confirmation
 		let finalHistoryToSave = [...historyToSave];
-		await pb.collection('chats').update(chatId, { history: finalHistoryToSave });
+		const encryptedHistory = encryptChatHistory(finalHistoryToSave);
+		
+		await pb.collection('chats').update(chatId, { history: encryptedHistory });
 
 		// Trigger automatic feedback analysis if we switched to feedback path
 		// OR for testing: if user message contains "test feedback"

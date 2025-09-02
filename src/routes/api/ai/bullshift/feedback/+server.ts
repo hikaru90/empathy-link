@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { pb } from '$scripts/pocketbase';
 import { analyzeChatFlow, saveChatFeedback } from '$lib/server/chatAnalysis';
+import { encryptChatHistory, decryptChatHistory } from '$lib/utils/chatEncryption.js';
 
 export interface UserFeedback {
 	helpfulness: number; // 1-10
@@ -35,6 +36,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const chat = await pb.collection('chats').getOne(chatId);
 		if (!chat) {
 			return json({ error: 'Chat not found' }, { status: 404 });
+		}
+		
+		// Decrypt chat history before processing
+		if (chat.history) {
+			chat.history = decryptChatHistory(chat.history);
 		}
 
 		// Verifikation: Benutzer gehört Chat

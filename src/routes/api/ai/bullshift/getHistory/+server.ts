@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { pb } from '$scripts/pocketbase';
+import { decryptChatHistory } from '$lib/utils/chatEncryption.js';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
@@ -26,7 +27,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		return json({
-			history: chatInDb.history || []
+			history: decryptChatHistory(chatInDb.history || [])
 		});
 	} catch (error) {
 		console.error('Error fetching chat history:', error);

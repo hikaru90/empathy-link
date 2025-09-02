@@ -4,6 +4,7 @@ import { PRIVATE_GEMINI_API_KEY } from '$env/static/private';
 import { GoogleGenAI, Type } from '@google/genai';
 import { pb } from '$scripts/pocketbase';
 import { saveTrace } from '$lib/server/tools';
+import { decryptChatHistory } from '$lib/utils/chatEncryption.js';
 
 const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 
@@ -123,16 +124,19 @@ async function evaluateSingleChat(chatId: string, userId: string): Promise<ChatE
 		throw new Error('Chat has no history');
 	}
 
+	// Decrypt chat history before processing
+	const decryptedHistory = decryptChatHistory(chatRecord.history);
+	
 	// Separate user and AI messages
-	const userMessages = chatRecord.history.filter((entry: HistoryEntry) => entry.role === 'user');
-	const aiMessages = chatRecord.history.filter((entry: HistoryEntry) => entry.role === 'model');
+	const userMessages = decryptedHistory.filter((entry: HistoryEntry) => entry.role === 'user');
+	const aiMessages = decryptedHistory.filter((entry: HistoryEntry) => entry.role === 'model');
 
 	if (aiMessages.length === 0) {
 		throw new Error('Chat has no AI responses to evaluate');
 	}
 
 	// Create evaluation prompt
-	const evaluationPrompt = createEvaluationPrompt(chatRecord.history, userMessages, aiMessages);
+	const evaluationPrompt = createEvaluationPrompt(decryptedHistory, userMessages, aiMessages);
 	
 	// Get evaluation from AI with the response object for token tracking
 	const { evaluation, aiResponse } = await getAIEvaluationWithResponse(evaluationPrompt);

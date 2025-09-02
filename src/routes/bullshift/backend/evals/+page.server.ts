@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { pb } from '$scripts/pocketbase';
 import { redirect } from '@sveltejs/kit';
+import { decryptChatHistory } from '$lib/utils/chatEncryption.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const user = locals.user;
@@ -16,6 +17,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 			fields: 'id,module,history,created,updated'
 		});
 
+		// Decrypt chat history for all chats
+		chats.forEach(chat => {
+			if (chat.history) {
+				chat.history = decryptChatHistory(chat.history);
+			}
+		});
+
 		// Try to get evaluated chats, but handle missing collection gracefully
 		let evaluatedChats: any[] = [];
 		let evaluations: any[] = [];
@@ -28,6 +36,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 			evaluations = await pb.collection('chatEvals').getFullList({
 				sort: '-created',
 				expand: 'chatId'
+			});
+
+			// Decrypt chat history for expanded chats
+			evaluations.forEach(evaluation => {
+				if (evaluation.expand?.chatId?.history) {
+					evaluation.expand.chatId.history = decryptChatHistory(evaluation.expand.chatId.history);
+				}
 			});
 		} catch (collectionError: any) {
 			console.log('chatEvals collection not found, starting fresh:', collectionError.message);
