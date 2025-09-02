@@ -364,10 +364,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				console.log('❌ No memories found for memory path');
 			}
 			
-			currentSystemInstruction = getSystemPromptForPath('memory', userWithPreferences, memoryContext);
+			currentSystemInstruction = await getSystemPromptForPath('memory', userWithPreferences, memoryContext);
 		} else {
 			// For non-memory paths, use standard approach with user preferences
-			currentSystemInstruction = getSystemPromptForPath(pathStateForAI?.activePath || 'idle', userWithPreferences);
+			currentSystemInstruction = await getSystemPromptForPath(pathStateForAI?.activePath || 'idle', userWithPreferences);
 		}
 		
 		// Convert DB history to Gemini format (excludes path markers, hidden messages)

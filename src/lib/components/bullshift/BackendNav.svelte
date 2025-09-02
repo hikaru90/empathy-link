@@ -14,11 +14,15 @@
 		{
 			label: 'Feedback',
 			href: '/bullshift/backend/feedback'
+		},
+		{
+			label: 'Prompts',
+			href: '/bullshift/backend/prompts'
 		}
 	]);
 </script>
 
-<div class="flex items-center justify-center gap-2">
+<div class="flex items-center justify-center gap-2 mb-6">
 	{#each links as link}
 		<a
 			href={link.href}

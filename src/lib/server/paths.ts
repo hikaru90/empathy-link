@@ -1,7 +1,15 @@
 /**
  * Path-based conversation system for staged AI interactions
  * Supports lifecycle management: start → end → switch
+ * Now uses database-driven prompts with shortcode support
  */
+
+import { 
+	getSystemPromptForPath as getDbSystemPromptForPath,
+	getAllPaths as getDbPaths,
+	suggestNextPaths as getDbSuggestNextPaths,
+	type PathDefinition as DbPathDefinition
+} from './prompts.js';
 
 export interface PathDefinition {
 	id: string;
@@ -317,7 +325,28 @@ export function createPathMarker(
 	};
 }
 
-export function getSystemPromptForPath(pathId: string, userContext?: any, memoryContext?: string): string {
+/**
+ * Get system prompt for path - tries database first, falls back to hardcoded
+ */
+export async function getSystemPromptForPath(pathId: string, userContext?: any, memoryContext?: string): Promise<string> {
+	// Try database first
+	try {
+		const dbPrompt = await getDbSystemPromptForPath(pathId, userContext, memoryContext);
+		if (dbPrompt) {
+			return dbPrompt;
+		}
+	} catch (error) {
+		console.warn(`Database prompt failed for ${pathId}, falling back to hardcoded:`, error);
+	}
+
+	// Fallback to hardcoded prompts
+	return getHardcodedSystemPromptForPath(pathId, userContext, memoryContext);
+}
+
+/**
+ * Original hardcoded prompt function (now as fallback)
+ */
+function getHardcodedSystemPromptForPath(pathId: string, userContext?: any, memoryContext?: string): string {
 	const path = CONVERSATION_PATHS[pathId];
 	if (!path) {
 		throw new Error(`Unknown path: ${pathId}`);
@@ -390,7 +419,36 @@ ${memoryContext}
 	return systemPrompt;
 }
 
-export function suggestNextPaths(currentPath: string): PathDefinition[] {
+/**
+ * Suggest next paths - tries database first, falls back to hardcoded
+ */
+export async function suggestNextPaths(currentPath: string): Promise<PathDefinition[]> {
+	// Try database first
+	try {
+		const dbPaths = await getDbSuggestNextPaths(currentPath);
+		if (dbPaths.length > 0) {
+			// Convert DbPathDefinition to PathDefinition
+			return dbPaths.map(path => ({
+				id: path.id,
+				name: path.name,
+				systemPrompt: path.systemPrompt,
+				entryCondition: path.entryCondition,
+				exitCondition: path.exitCondition,
+				suggestedNext: path.suggestedNext
+			}));
+		}
+	} catch (error) {
+		console.warn(`Database path suggestions failed for ${currentPath}, falling back to hardcoded:`, error);
+	}
+
+	// Fallback to hardcoded paths
+	return getHardcodedSuggestNextPaths(currentPath);
+}
+
+/**
+ * Original hardcoded suggest next paths function (now as fallback)
+ */
+function getHardcodedSuggestNextPaths(currentPath: string): PathDefinition[] {
 	const path = CONVERSATION_PATHS[currentPath];
 	if (!path || !path.suggestedNext) return [];
 	

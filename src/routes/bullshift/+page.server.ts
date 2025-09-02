@@ -29,7 +29,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         // Restore path state in memory if it exists
         if (chatRecord.pathState?.activePath) {
             console.log('Loading existing chat with path:', chatRecord.pathState.activePath);
-            systemPrompt = getSystemPromptForPath(chatRecord.pathState.activePath, user);
+            systemPrompt = await getSystemPromptForPath(chatRecord.pathState.activePath, user);
             // Restore path state in memory
             chatPaths.set(chatRecord.id, chatRecord.pathState);
         } else {

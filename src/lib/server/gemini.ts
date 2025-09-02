@@ -582,7 +582,7 @@ Ich kann dir in verschiedenen Bereichen zur Seite stehen:
 	});
 
 	// Get system instruction for the specific path
-	const systemInstruction = getSystemPromptForPath(pathId, user);
+	const systemInstruction = await getSystemPromptForPath(pathId, user);
 
 	// Store only the path state (no persistent Gemini chat)
 	chatPaths.set(dbChat.id, pathState);
@@ -637,7 +637,7 @@ export const switchPath = async (
 		};
 
 		// Get new system instruction
-		const newSystemInstruction = getSystemPromptForPath(newPathId, user);
+		const newSystemInstruction = await getSystemPromptForPath(newPathId, user);
 
 		// Update database with new path state only (path markers will be added by send endpoint)
 		await pb.collection('chats').update(chatId, {
