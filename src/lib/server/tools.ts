@@ -332,12 +332,15 @@ export const saveTrace = async (
 			message: message.substring(0, 5000), // Limit message length to prevent DB issues
 			response: response?.substring(0, 10000), // Limit response length
 			module: module,
-			chat: chatId || null, // Allow null if chatId is invalid
+			// For path-testing module, don't try to link to non-existent chat records
+			chat: module === 'path-testing' ? null : (chatId || null),
 			user: userId || null, // Allow null if userId is invalid
 			inputTokens: inputTokenCount || 0,
 			outputTokens: outputTokenCount || 0,
 			// Only include systemInstruction if it's short enough
-			...(systemInstruction && systemInstruction.length <= 1000 && { systemInstruction })
+			...(systemInstruction && systemInstruction.length <= 1000 && { systemInstruction }),
+			// Store the test chatId as metadata for path testing
+			...(module === 'path-testing' && chatId && { testChatId: chatId })
 		};
 		
 		// console.log(':::saveTrace data:', traceData);

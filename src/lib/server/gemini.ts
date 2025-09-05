@@ -134,7 +134,7 @@ Respond exclusively with a JSON object in this format:
 }`;
 
 		const model = ai.chats.create({
-			model: 'gemini-2.0-flash',
+			model: 'gemini-2.5-flash',
 			config: {
 				temperature: 0.1, // Low temperature for consistent analysis
 				systemInstruction: systemPrompt
@@ -209,7 +209,11 @@ export const analyzePathSwitchingIntent = async (
 	console.log('::analyzePathSwitchingIntent');
 	try {
 		const systemPrompt = locale === 'de'
-			? `Du bist ein Experte für Gesprächsanalyse und Gewaltfreie Kommunikation. Analysiere, ob der Nutzer zu einem anderen Gesprächspfad wechseln möchte oder sollte.
+			? `Du bist ein Experte für Gesprächsanalyse und Gewaltfreie Kommunikation. Analysiere sehr konservativ, ob der Nutzer EXPLIZIT zu einem anderen Gesprächspfad wechseln möchte.
+
+WICHTIG: Sei sehr zurückhaltend mit Pfadwechseln. Schlage nur dann einen Wechsel vor, wenn der Nutzer:
+1. EXPLIZIT einen anderen Themenbereich erwähnt, oder
+2. Den aktuellen Prozess eindeutig als abgeschlossen betrachtet
 
 Aktueller Pfad: ${currentPath}
 Verfügbare Pfade:
@@ -221,11 +225,13 @@ Verfügbare Pfade:
 - memory: Erinnerungen abrufen (gespeicherte Informationen über den Nutzer)
 - feedback: Gespräch beenden (Feedback sammeln und Gespräch abschließen)
 
-Analysiere folgende Aspekte:
+Kriterien für Pfadwechsel (ALLE müssen erfüllt sein):
 
-1. **Explizite Wechselabsicht**: Hat der Nutzer explizit einen Wechsel zu einem anderen Themenbereich angedeutet?
-2. **Natürliche Vollendung**: Ist der aktuelle Pfad natürlich abgeschlossen und der Nutzer bereit für den nächsten Schritt?
-3. **Thematischer Wechsel**: Deutet der Inhalt der Nachricht auf ein anderes Thema hin?
+1. **Explizite Wechselabsicht**: Der Nutzer hat klar und eindeutig einen anderen Themenbereich erwähnt
+2. **Eindeutige Signale**: Die Nachricht enthält unmissverständliche Wechselsignale
+3. **Kontextpassung**: Der vorgeschlagene Pfad passt perfekt zum Nutzerinhalt
+
+NUR bei diesen sehr klaren Beispielen wechseln:
 
 Beispiele für explizite Wechselabsichten:
 - "ich würde gerne empathie für jemand anderen aufbringen"
@@ -237,6 +243,8 @@ Beispiele für explizite Wechselabsichten:
 - "erinnerst du dich an unsere früheren gespräche"
 - "was haben wir früher besprochen"
 
+STANDARD: Wenn Zweifel besteht, NICHT wechseln. Confidence unter 80 sollte shouldSwitch = false ergeben.
+
 Antworte ausschließlich mit einem JSON-Objekt:
 {
   "shouldSwitch": boolean,
@@ -245,7 +253,11 @@ Antworte ausschließlich mit einem JSON-Objekt:
   "reason": "kurze Erklärung der Analyse",
   "currentPathComplete": boolean
 }`
-			: `You are an expert in conversation analysis and Nonviolent Communication. Analyze whether the user wants to or should switch to another conversation path.
+			: `You are an expert in conversation analysis and Nonviolent Communication. Analyze very conservatively whether the user EXPLICITLY wants to switch to another conversation path.
+
+IMPORTANT: Be very cautious with path switches. Only suggest a switch if the user:
+1. EXPLICITLY mentions another topic area, or
+2. Clearly considers the current process as completed
 
 Current path: ${currentPath}
 Available paths:
@@ -257,11 +269,13 @@ Available paths:
 - memory: Memory recall (retrieve stored information about the user)
 - feedback: End Conversation (collect feedback and conclude conversation)
 
-Analyze the following aspects:
+Criteria for path switching (ALL must be met):
 
-1. **Explicit switching intent**: Has the user explicitly indicated a switch to another topic area?
-2. **Natural completion**: Is the current path naturally completed and the user ready for the next step?
-3. **Thematic change**: Does the message content indicate a different topic?
+1. **Explicit switching intent**: The user has clearly and unambiguously mentioned another topic area
+2. **Unambiguous signals**: The message contains unmistakable switching signals
+3. **Context fit**: The suggested path fits perfectly with the user content
+
+Switch ONLY with these very clear examples:
 
 Examples of explicit switching intentions:
 - "I would like to develop empathy for someone else"
@@ -273,6 +287,8 @@ Examples of explicit switching intentions:
 - "what did we discuss before"
 - "what do you know about me"
 
+DEFAULT: When in doubt, do NOT switch. Confidence below 80 should result in shouldSwitch = false.
+
 Respond exclusively with a JSON object:
 {
   "shouldSwitch": boolean,
@@ -283,7 +299,7 @@ Respond exclusively with a JSON object:
 }`;
 
 		const model = ai.chats.create({
-			model: 'gemini-2.0-flash',
+			model: 'gemini-2.5-flash',
 			config: {
 				temperature: 0.1, // Low temperature for consistent analysis
 				systemInstruction: systemPrompt
@@ -313,6 +329,13 @@ Analysiere diese Nachricht auf Pfadwechselabsicht.`;
 		// Parse the JSON response
 		const analysis = JSON.parse(cleanedResponseText) as PathSwitchAnalysis;
 		console.log('::analyzePathSwitchingIntent - analysis', analysis);
+		console.log('🔍 Path switching analysis details:', {
+			shouldSwitch: analysis.shouldSwitch,
+			confidence: analysis.confidence,
+			suggestedPath: analysis.suggestedPath,
+			reason: analysis.reason,
+			currentPathComplete: analysis.currentPathComplete
+		});
 
 		// Save trace for monitoring if chatId and userId are provided
 		if (chatId && userId) {
@@ -454,7 +477,7 @@ export const getModel = async (user: object, locale: string, history?: HistoryEn
 	const systemInstruction = await getSystemInstruction(user, locale);
 
 	const model: CreateChatParameters = {
-		model: 'gemini-2.0-flash',
+		model: 'gemini-2.5-flash',
 		config: await getConfig(user, locale)
 	};
 

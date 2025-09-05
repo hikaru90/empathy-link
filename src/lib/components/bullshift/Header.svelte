@@ -96,7 +96,7 @@
 		<Bell class="size-3 text-white" />
 		{#if unreadCount > 0}
 			<div
-				class="absolute right-1 top-1 flex size-3 -translate-y-1/2 translate-x-1/2 transform items-center justify-center rounded-full bg-bullshift text-xs text-white"
+				class="absolute right-1 top-1 flex size-4 -translate-y-1/2 translate-x-1/2 transform items-center justify-center rounded-full bg-bullshift text-2xs text-white font-bold"
 			>
 				{unreadCount > 9 ? '9+' : unreadCount}
 			</div>
@@ -121,13 +121,6 @@
 						Chat-Einstellungen
 						<FileCog class="size-4" />
 					</a>
-				<a
-					href="/bullshift/reminders"
-					class="flex items-center justify-between rounded-full border border-white/30 bg-offwhite px-3 py-1.5 text-left text-sm shadow-md shadow-black/5"
-				>
-					Meine Erinnerungen
-					<Calendar class="size-4" />
-				</a>
 				<button
 					class="flex items-center justify-between rounded-full border border-white/30 bg-offwhite px-3 py-1.5 text-sm shadow-md shadow-black/5"
 					onclick={restartOnboarding}

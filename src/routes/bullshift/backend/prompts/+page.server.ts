@@ -1,6 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { redirect } from '@sveltejs/kit';
 import type { DbPrompt } from '$lib/server/prompts';
+import { PromptVersioningService } from '$lib/server/promptVersioning.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const user = locals.user;
@@ -27,7 +28,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		
 		// Fetch all prompts from database using the authenticated instance
 		const prompts = await locals.pb.collection('prompts').getFullList({
-			sort: 'category,slug'
+			sort: 'category,slug,-version',
+			expand: 'parent_id'
 		});
 
 		console.log('✅ Fetched prompts:', prompts.length, 'items');
@@ -109,6 +111,8 @@ export const actions: Actions = {
 		try {
 			const data = await request.formData();
 			const id = data.get('id') as string;
+			const createNewVersion = data.get('create_new_version') === 'on';
+			
 			const promptData: any = {
 				slug: data.get('slug') as string,
 				name: data.get('name') as string,
@@ -118,6 +122,28 @@ export const actions: Actions = {
 				description: data.get('description') as string || '',
 				active: data.get('active') === 'on'
 			};
+			
+			const versioningService = new PromptVersioningService();
+			
+			// If creating new version (default behavior for content changes)
+			if (createNewVersion) {
+				const result = await versioningService.createNewPromptVersion(
+					locals.pb,
+					id,
+					promptData,
+					user.id
+				);
+				
+				if (result.success) {
+					return { 
+						success: true, 
+						message: `New prompt version created: v${result.newVersion.version}`,
+						new_version: result.newVersion
+					};
+				} else {
+					return { error: result.error };
+				}
+			}
 
 			// Only add path_config if your collection has this field
 			const pathConfigStr = data.get('path_config') as string;

@@ -292,13 +292,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 				// Switch path BEFORE generating response if user wants to switch
 				if (pathSwitchAnalysis?.shouldSwitch && 
-					(pathSwitchAnalysis?.confidence || 0) >= 70 && 
+					(pathSwitchAnalysis?.confidence || 0) >= 80 && // Increased from 50 to 80 for much less aggressive switching
 					pathSwitchAnalysis?.suggestedPath && 
 					pathSwitchAnalysis.suggestedPath !== currentPath.activePath) {
 					
 					const nextPath = pathSwitchAnalysis.suggestedPath;
 					console.log('🔄 Switching path BEFORE AI response generation');
 					console.log('🎯 Switching from:', currentPath.activePath, 'to:', nextPath);
+					console.log('📊 Confidence:', pathSwitchAnalysis.confidence, 'Reason:', pathSwitchAnalysis.reason);
 					
 					if (CONVERSATION_PATHS[nextPath]) {
 						try {
@@ -316,6 +317,35 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		} catch (error) {
 			console.error('❌ Error analyzing path switching intent early:', error);
+		}
+
+		// Fallback: Check for explicit path switch keywords if AI analysis failed or was inconclusive
+		if (!pathSwitchAnalysis || !pathSwitchAnalysis.shouldSwitch) {
+			console.log('🔍 AI analysis inconclusive, checking for explicit keywords...');
+			const lastUserMessage = message.toLowerCase();
+			
+			// Check for explicit path switch keywords
+			const pathSwitchKeywords = {
+				'other_empathy': ['andere person', 'jemand anderen', 'fremdempathie', 'empathie für jemand anderen'],
+				'action_planning': ['handlung', 'was tun', 'nächster schritt', 'plan', 'handlungsplan', 'umsetzen'],
+				'conflict_resolution': ['konflikt', 'streit', 'problem lösen', 'konflikt lösen', 'auseinandersetzung'],
+				'memory': ['erinnerung', 'was weißt du', 'erinnerst du dich', 'früher', 'vorher'],
+				'feedback': ['beenden', 'ende', 'stop', 'aufhören', 'danke', 'tschüss', 'fertig']
+			};
+			
+			for (const [path, keywords] of Object.entries(pathSwitchKeywords)) {
+				if (keywords.some(keyword => lastUserMessage.includes(keyword))) {
+					console.log(`🔍 Keyword-based path switch detected: ${path}`);
+					pathSwitchAnalysis = {
+						shouldSwitch: true,
+						confidence: 85,
+						suggestedPath: path,
+						reason: 'Explicit keyword detected',
+						currentPathComplete: true
+					};
+					break;
+				}
+			}
 		}
 
 		// console.log('Performing GFK analysis on message:', message);
@@ -396,7 +426,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		console.log('=== END DEBUG ===');
 		
 		const geminiChat = ai.chats.create({
-			model: 'gemini-2.0-flash',
+			model: 'gemini-2.5-flash',
 			config: {
 				systemInstruction: currentSystemInstruction
 			},
@@ -405,6 +435,42 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Send message normally (GFK analysis commented out)
 		let response: GenerateContentResponse;
+		
+		// Helper function to handle AI calls with retry logic for 503 errors
+		const sendMessageWithRetry = async (chat: any, messageToSend: string, maxRetries = 3): Promise<GenerateContentResponse> => {
+			for (let attempt = 1; attempt <= maxRetries; attempt++) {
+				try {
+					return await chat.sendMessage({ message: messageToSend });
+				} catch (error: any) {
+					console.error(`❌ AI call attempt ${attempt} failed:`, error);
+					
+					// Check if it's a 503 model overloaded error
+					const isModelOverloaded = error?.status === 503 || 
+						error?.message?.toLowerCase()?.includes('overloaded') ||
+						error?.message?.toLowerCase()?.includes('503') ||
+						error?.code === 503;
+					
+					if (isModelOverloaded) {
+						console.log(`🔄 Model overloaded (503), attempt ${attempt}/${maxRetries}`);
+						
+						if (attempt < maxRetries) {
+							// Wait before retry (exponential backoff)
+							const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+							console.log(`⏳ Waiting ${delay}ms before retry...`);
+							await new Promise(resolve => setTimeout(resolve, delay));
+							continue;
+						} else {
+							// Max retries reached - return specific error for frontend handling
+							throw new Error(`MODEL_OVERLOADED:${error.message || 'The AI model is currently overloaded. Please try again.'}`);
+						}
+					} else {
+						// Not a 503 error, throw immediately
+						throw error;
+					}
+				}
+			}
+			throw new Error('Max retries reached');
+		};
 		
 		// If we switched to idle path, generate a proactive orchestrator message instead of normal response
 		if (pathSwitchedEarly && earlyNewPathId === 'idle') {
@@ -422,10 +488,10 @@ Verfügbare Richtungen:
 
 Reagiere empathisch auf ihre Nachricht und schlage dann basierend auf dem Kontext sinnvolle nächste Schritte vor.`;
 
-			response = await geminiChat.sendMessage({ message: orchestratorPrompt });
+			response = await sendMessageWithRetry(geminiChat, orchestratorPrompt);
 		} else {
 			// Normal message processing
-			response = await geminiChat.sendMessage({ message });
+			response = await sendMessageWithRetry(geminiChat, message);
 		}
 		
 		// // If there are NVC violations, create a temporary chat with context for enhanced response
@@ -628,8 +694,19 @@ Reagiere empathisch auf ihre Nachricht und schlage dann basierend auf dem Kontex
 			feedbackData,
 			recommendations
 		});
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Error sending message:', error);
+		
+		// Check if it's a model overloaded error
+		if (error?.message?.startsWith('MODEL_OVERLOADED:')) {
+			const errorMessage = error.message.replace('MODEL_OVERLOADED:', '');
+			return json({ 
+				error: 'MODEL_OVERLOADED',
+				message: errorMessage,
+				canRetry: true
+			}, { status: 503 });
+		}
+		
 		return json({ error: 'Failed to send message' }, { status: 500 });
 	}
 };

@@ -23,7 +23,7 @@ export const POST = async ({ request }) => {
 
   try {
     const chatSession = ai.chats.create({
-      model: "gemini-2.0-flash",
+      		model: "gemini-2.5-flash",
       config: {
         temperature: 0,
         topP: 0.95,

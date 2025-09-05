@@ -83,6 +83,8 @@
 	let suggestion = $state<string | undefined>(undefined);
 	let isMobile = $state(false);
 	let viewportHeight = $state(window.innerHeight);
+	let lastFailedMessage = $state<string>('');
+	let showModelOverloadError = $state(false);
 	const chatAnalysisSuccessDuration = 3;
 
 	// Get the current locale reactively
@@ -267,6 +269,17 @@
 				return;
 			}
 
+			// Handle 503 model overloaded error specially
+			if (response.status === 503) {
+				const errorData = await response.json().catch(() => ({}));
+				if (errorData.error === 'MODEL_OVERLOADED') {
+					lastFailedMessage = messageToSend;
+					showModelOverloadError = true;
+					isLoading = false;
+					return;
+				}
+			}
+
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
@@ -290,9 +303,9 @@
 						parts: [{ text: data.response }],
 						timestamp: data.timestamp
 					};
-					if (data.recommendations && data.recommendations.length > 0) {
-						aiMessage.recommendations = data.recommendations;
-					}
+					// if (data.recommendations && data.recommendations.length > 0) {
+					//	aiMessage.recommendations = data.recommendations;
+					// }
 					history = [...history, aiMessage];
 				}
 			} else {
@@ -302,14 +315,14 @@
 					parts: [{ text: data.response }],
 					timestamp: data.timestamp
 				};
-				if (data.recommendations && data.recommendations.length > 0) {
-					aiMessage.recommendations = data.recommendations;
-				}
+				// if (data.recommendations && data.recommendations.length > 0) {
+				//	aiMessage.recommendations = data.recommendations;
+				// }
 				history = [...history, aiMessage];
 			}
 
 			// Now that we have the AI's response, generate a suggestion for the user's next message
-			await suggestResponse();
+			// await suggestResponse();
 		} catch (error) {
 			console.error('Failed to send message:', error);
 
@@ -593,6 +606,22 @@
 		addText(text);
 		sendMessage();
 	};
+
+	// Function to regenerate the last failed message
+	const regenerateMessage = async () => {
+		if (!lastFailedMessage) return;
+		
+		showModelOverloadError = false;
+		userMessage = lastFailedMessage;
+		await handleSendMessage(lastFailedMessage);
+		lastFailedMessage = '';
+	};
+
+	// Function to dismiss the error
+	const dismissError = () => {
+		showModelOverloadError = false;
+		lastFailedMessage = '';
+	};
 	const addText = (text: string) => {
 		if (!textareaRef) {
 			// Fallback to old behavior if no textarea ref
@@ -679,7 +708,7 @@
 		}
 
 		if (history.length > 0) {
-			suggestResponse();
+			// suggestResponse();
 		}
 	});
 
@@ -743,6 +772,44 @@
 
 {#if chatId && !chatTerminationModalVisible}
 	<div class="">
+		<!-- Model Overload Error Banner -->
+		{#if showModelOverloadError}
+			<div class="mb-4 rounded-lg border border-orange-200 bg-orange-50 p-4">
+				<div class="flex items-start gap-3">
+					<div class="flex-shrink-0">
+						<RotateCcw class="h-5 w-5 text-orange-600" />
+					</div>
+					<div class="flex-1">
+						<h3 class="text-sm font-medium text-orange-800">
+							KI-Modell ist überlastet
+						</h3>
+						<p class="mt-1 text-sm text-orange-700">
+							Das KI-Modell ist momentan überlastet. Deine Nachricht wurde nicht gesendet. 
+							Du kannst es erneut versuchen oder einen Moment warten.
+						</p>
+						<div class="mt-3 flex gap-2">
+							<Button
+								size="sm"
+								onclick={regenerateMessage}
+								class="bg-orange-600 text-white hover:bg-orange-700"
+							>
+								<RotateCcw class="mr-2 h-4 w-4" />
+								Erneut versuchen
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onclick={dismissError}
+								class="border-orange-300 text-orange-700 hover:bg-orange-100"
+							>
+								Verwerfen
+							</Button>
+						</div>
+					</div>
+				</div>
+			</div>
+		{/if}
+
 		<div
 			bind:this={chatContainer}
 			class="messages overflow-y-auto scroll-smooth rounded-lg pt-4"
@@ -825,9 +892,9 @@
 						</div>
 					{:else if !message.pathMarker}
 						<!-- Show recommendations if available -->
-						{#if message.role === 'model' && message.recommendations && message.recommendations.length > 0}
+						<!-- {#if message.role === 'model' && message.recommendations && message.recommendations.length > 0}
 							<RecommendationCard recommendations={message.recommendations} />
-						{/if}
+						{/if} -->
 
 						<!-- Regular message display -->
 						<div

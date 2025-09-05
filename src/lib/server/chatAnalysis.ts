@@ -173,7 +173,7 @@ ${pathSequence.join(' → ')}
 
 	try {
 		const analysisChat = ai.chats.create({
-			model: 'gemini-2.0-flash',
+			model: 'gemini-2.5-flash',
 			config: {
 				temperature: 0.1, // Niedrige Temperatur für konsistente Analyse
 				systemInstruction: 'Du bist ein Experte für Gesprächsanalyse und Gewaltfreie Kommunikation. Analysiere Gespräche objektiv und konstruktiv.'

@@ -451,25 +451,72 @@ function getHardcodedSuggestNextPaths(currentPath: string): PathDefinition[] {
 		.filter(Boolean);
 }
 
-export function shouldSuggestPathEnd(
+export async function shouldSuggestPathEnd(
 	lastMessages: Array<{ role: string; content: string }>,
-	currentPath: string
-): boolean {
-	// Simple heuristic - look for completion indicators in last few user messages
-	const userMessages = lastMessages
-		.filter(m => m.role === 'user')
-		.slice(-3)
-		.map(m => m.content.toLowerCase());
+	currentPath: string,
+	ai: any // Gemini AI instance
+): Promise<boolean> {
+	// Use AI to analyze completion instead of hardcoded keywords
+	const analysisPrompt = `Analyze these recent messages to determine if the user has naturally completed the current conversation stage.
 
-	const completionIndicators = [
-		'i feel better', 'i understand', 'that makes sense', 'i feel lighter',
-		'thank you', 'that helps', 'i see now', 'i get it', 'clear now',
-		'ready to move on', 'next step', 'what now'
-	];
+Current path: ${currentPath}
 
-	return userMessages.some(message => 
-		completionIndicators.some(indicator => message.includes(indicator))
-	);
+Recent messages:
+${lastMessages.slice(-3).map(m => `${m.role}: ${m.content}`).join('\n')}
+
+Focus on natural completion indicators like:
+- User expressing satisfaction or understanding
+- User indicating they feel better or resolved
+- User asking "what's next" or similar
+- User thanking or expressing gratitude
+- User showing readiness to move on
+
+Respond with JSON only:
+{
+  "shouldEnd": boolean,
+  "confidence": 0-100,
+  "reason": "explanation"
+}`;
+
+	try {
+		const model = ai.chats.create({
+			model: 'gemini-2.5-flash',
+			config: {
+				temperature: 0.1,
+				systemInstruction: 'You are an expert in conversation analysis. Determine if a conversation stage is naturally complete.'
+			}
+		});
+
+		const result = await model.sendMessage({ message: analysisPrompt });
+		
+		// Clean the response text
+		let cleanedResponseText = (result.text || '{}').trim();
+		if (cleanedResponseText.startsWith('```json')) {
+			cleanedResponseText = cleanedResponseText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+		} else if (cleanedResponseText.startsWith('```')) {
+			cleanedResponseText = cleanedResponseText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+		}
+		
+		const response = JSON.parse(cleanedResponseText);
+		return response.shouldEnd || false;
+	} catch (error) {
+		console.error('Error in AI path completion analysis:', error);
+		// Fallback to simple heuristic if AI fails
+		const userMessages = lastMessages
+			.filter(m => m.role === 'user')
+			.slice(-3)
+			.map(m => m.content.toLowerCase());
+
+		const completionIndicators = [
+			'i feel better', 'i understand', 'that makes sense', 'i feel lighter',
+			'thank you', 'that helps', 'i see now', 'i get it', 'clear now',
+			'ready to move on', 'next step', 'what now'
+		];
+
+		return userMessages.some(message => 
+			completionIndicators.some(indicator => message.includes(indicator))
+		);
+	}
 }
 
 /**
@@ -560,7 +607,7 @@ Respond with JSON only:
 
 	try {
 		const model = ai.chats.create({
-			model: 'gemini-2.0-flash',
+			model: 'gemini-2.5-flash',
 			config: {
 				temperature: 0.1,
 				systemInstruction: 'You are an expert in conversation analysis and nonviolent communication. Analyze conversations to determine stage completion.'
@@ -588,7 +635,7 @@ Respond with JSON only:
 	} catch (error) {
 		console.error('Error in AI path analysis:', error);
 		// Fallback to simple heuristic
-		const shouldEnd = shouldSuggestPathEnd(messages, currentPath);
+		const shouldEnd = await shouldSuggestPathEnd(messages, currentPath, ai);
 		return {
 			shouldEnd,
 			confidence: shouldEnd ? 60 : 20,

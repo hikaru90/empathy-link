@@ -18,7 +18,11 @@
 		{
 			label: 'Prompts',
 			href: '/bullshift/backend/prompts'
-		}
+		},
+		{
+			label: 'Prompt Performance',
+			href: '/bullshift/backend/prompt-performance'
+		},
 	]);
 </script>
 

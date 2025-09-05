@@ -55,7 +55,7 @@ WENN es KEINE schwierige emotionale Frage ist:
 KI-Nachricht: "${lastMessages.slice(-1)[0]}"`
 
 		const model = ai.chats.create({
-			model: 'gemini-2.0-flash',
+			model: 'gemini-2.5-flash',
 			config: {
 				temperature: 0.3, // Lower temperature for more consistent decision-making
 				systemInstruction: prompt
