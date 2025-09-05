@@ -101,8 +101,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 						totalScore += testResult.overallScore;
 						if (testResult.passed) passedTests++;
 						
-						// Small delay between tests
-						await new Promise(resolve => setTimeout(resolve, 1000));
+						// Small delay between tests (reduced for faster execution)
+						await new Promise(resolve => setTimeout(resolve, 200));
 						
 					} catch (testError) {
 						console.error(`Test ${scenario.id} failed:`, testError);

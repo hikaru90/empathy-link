@@ -253,9 +253,10 @@ RESPONSE GUIDELINES:
 - React authentically to the AI's approach
 - If triggered, show resistance/defensiveness 
 - If feeling heard, gradually open up more
-- Keep responses realistic (50-150 words)
+- Keep responses SHORT and realistic (30-80 words maximum)
 - Don't make unrealistic breakthroughs too quickly
 - Show emotional progression consistent with your journey
+- Be concise - real people don't give long speeches in therapy
 
 Respond in German as this person would naturally respond.
 
@@ -289,6 +290,8 @@ VERHALTENSREGELN:
 - Öffne dich nur langsam (Verletzlichkeitslevel: ${persona.vulnerabilityLevel}/10)
 - Reagiere negativ auf deine Trigger
 - Zeige Fortschritt entsprechend deinem Weg: ${persona.progressionPath.join(' → ')}
+- Halte deine Antworten KURZ (maximal 2-3 Sätze)
+- Sei prägnant - echte Menschen reden nicht viel in Therapie
 
 Du bist NICHT kooperativ oder therapeutisch - du bist eine echte Person mit echten Problemen und Widerständen.`;
 	}

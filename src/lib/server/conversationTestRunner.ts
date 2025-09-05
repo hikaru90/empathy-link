@@ -172,8 +172,8 @@ export class ConversationTestRunner {
 				});
 			}
 			
-			// Small delay to avoid API rate limits
-			await new Promise(resolve => setTimeout(resolve, 500));
+			// Small delay to avoid API rate limits (reduced for faster execution)
+			await new Promise(resolve => setTimeout(resolve, 200));
 		}
 		
 		return results;

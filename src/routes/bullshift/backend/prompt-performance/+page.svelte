@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import {
 		Card,
@@ -42,9 +43,9 @@
 
 	// Test Runner State
 	let selectedTestType = 'multi_turn'; // 'multi_turn', 'path_performance'
-	let selectedQualityTestType = 'all'; // For multi-turn tests: 'all', 'single'
+	let selectedQualityTestType = 'single'; // For multi-turn tests: 'all', 'single'
 	let selectedTestCategory = '';
-	let selectedScenario = '';
+	let selectedScenario = 'mt_ug_01_defensive_to_vulnerable';
 	let selectedPromptId = '';
 	let isRunning = false;
 	let testResults: any = null;
@@ -67,6 +68,7 @@
 	let testRuns: any[] = [];
 	let selectedTestRun: any = null;
 	let latestTestRunData: any = null;
+	let showAllTestRuns = false; // Control showing more than 3 test runs
 
 	// Progress tracking state
 	let currentTestName = '';
@@ -460,6 +462,9 @@
 			isCancelling = false;
 			pathAbortController = null;
 			currentTestName = '';
+			
+			// Refresh data after test completion
+			invalidateAll();
 		}
 	}
 
@@ -520,6 +525,9 @@
 		// Create abort controller for cancellation
 		abortController = new AbortController();
 
+		// Start duration tracking
+		const testStartTime = Date.now();
+
 		try {
 			progress = 10;
 			currentTestName = 'Preparing multi-turn conversation tests...';
@@ -573,8 +581,12 @@
 
 			progress = 90;
 
+			// Calculate actual test duration
+			const actualDuration = Date.now() - testStartTime;
+			console.log(`⏱️ Test completed in ${actualDuration}ms`);
+
 			// Save results to database
-			await saveTestResultsToDatabase('multi_turn', result);
+			await saveTestResultsToDatabase('multi_turn', result, actualDuration);
 
 			progress = 100;
 			currentTestName = 'Multi-turn tests completed!';
@@ -590,6 +602,9 @@
 			isCancelling = false;
 			abortController = null;
 			currentTestName = '';
+			
+			// Refresh data after test completion
+			invalidateAll();
 		}
 	}
 
@@ -1017,6 +1032,9 @@ ${result.results
 			isCancelling = false;
 			abortController = null;
 			currentTestName = '';
+			
+			// Refresh data after test completion
+			invalidateAll();
 		}
 	}
 
@@ -1069,7 +1087,7 @@ ${result.results
 	}
 
 	// Save test results to test_runs collection
-	async function saveTestResultsToDatabase(testType: string, result: any) {
+	async function saveTestResultsToDatabase(testType: string, result: any, actualDuration?: number) {
 		try {
 			console.log('💾 Saving test results to database...');
 			console.log('📊 Raw result structure:', result);
@@ -1275,7 +1293,7 @@ ${result.results
 				unique_paths_used: uniquePathsUsed,
 				path_switching_quality: pathSwitchingQuality,
 				detailed_results: detailedResults,
-				duration_ms: 5000, // Placeholder - could be calculated from actual duration
+				duration_ms: actualDuration || 0, // Use actual test duration
 				export_url: '', // Not used for multi-turn tests
 				user: data.user?.id || null
 			};
@@ -1314,6 +1332,11 @@ ${result.results
 		} catch (error) {
 			console.error('Error loading test runs:', error);
 		}
+	}
+
+	// Toggle showing all test runs
+	function toggleShowAllTestRuns() {
+		showAllTestRuns = !showAllTestRuns;
 	}
 
 	// Get the latest test run entry
@@ -1731,7 +1754,15 @@ ${result.results
 										{#if latestRun.detailed_results?.length > 0}
 											<Button
 												onclick={() => {
-													testResults = { detailedResults: latestRun.detailed_results };
+													// Structure the data to match the expected format from test execution
+													testResults = {
+														testType: 'multi_turn',
+														detailedResults: latestRun.detailed_results.map((result: any) => ({
+															...result,
+															overallScore: result.overallScore || result.averageTurnScore || 0,
+															passed: result.passed !== undefined ? result.passed : (result.overallScore || result.averageTurnScore || 0) >= 60
+														}))
+													};
 													activeTab = 'testing';
 												}}
 												variant="outline"
@@ -2220,7 +2251,7 @@ ${result.results
 					<CardContent class="space-y-4">
 						{#if testRuns && testRuns.length > 0}
 							<div class="space-y-3">
-								{#each testRuns as testRun}
+								{#each (showAllTestRuns ? testRuns : testRuns.slice(0, 3)) as testRun}
 									<div class="flex items-center justify-between rounded-lg border p-3">
 										<div class="flex-1">
 											<div class="mb-1 flex items-center gap-2">
@@ -2250,6 +2281,19 @@ ${result.results
 										</Button>
 									</div>
 								{/each}
+								
+								{#if testRuns.length > 3}
+									<div class="flex justify-center pt-2">
+										<Button 
+											variant="ghost" 
+											size="sm" 
+											onclick={toggleShowAllTestRuns}
+											class="text-blue-600 hover:text-blue-700"
+										>
+											{showAllTestRuns ? 'Show Less' : `Show More (${testRuns.length - 3} more)`}
+										</Button>
+									</div>
+								{/if}
 							</div>
 						{:else}
 							<div class="py-8 text-center text-gray-500">
@@ -3503,8 +3547,8 @@ ${result.results
 								</div>
 							{/if}
 
-							<!-- Individual Test Conversations -->
-							{#if testResults.detailedResults && testResults.detailedResults.length > 0}
+							<!-- Individual Test Conversations (only show if not in Test Run Details view) -->
+							{#if testResults.detailedResults && testResults.detailedResults.length > 0 && !selectedTestRun}
 								<div class="space-y-4">
 									<h3 class="font-semibold">💬 Individual Test Conversations</h3>
 									<div class="space-y-6">
