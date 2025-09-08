@@ -186,7 +186,7 @@ export const MULTI_TURN_TEST_SCENARIOS: MultiTurnTestScenario[] = [
 		personaId: 'workplace_conflict',
 		initialMessage: 'Mein Chef ist ein totaler Kontrollfreak. Er vertraut niemandem und macht alles kaputt.',
 		expectedPath: 'self_empathy',
-		maxTurns: 6,
+		maxTurns: 14,
 		
 		turnEvaluations: [
 			{
@@ -290,7 +290,7 @@ export const MULTI_TURN_TEST_SCENARIOS: MultiTurnTestScenario[] = [
 		personaId: 'self_critical',
 		initialMessage: 'Ich bin einfach nicht gut genug für meinen Job. Ich werde sicher bald gefeuert.',
 		expectedPath: 'self_empathy',
-		maxTurns: 10,
+		maxTurns: 14,
 		
 		turnEvaluations: [
 			{
@@ -438,15 +438,34 @@ export interface PathTestResult {
 
 export class MultiTurnTestRunner {
 	private userSimulator: TestUserSimulator;
+	private ai: any;
+	private analyzePathCompletion: any;
+	private getSystemPromptForPath: any;
+	private ConversationEvaluator: any;
 	
 	constructor() {
 		this.userSimulator = new TestUserSimulator();
+	}
+	
+	private async initializeIfNeeded() {
+		if (!this.ai) {
+			const geminiModule = await import('./gemini.js');
+			const pathsModule = await import('./paths.js');
+			const evaluatorModule = await import('./conversationEvaluator.js');
+			this.ai = geminiModule.ai;
+			this.analyzePathCompletion = pathsModule.analyzePathCompletion;
+			this.getSystemPromptForPath = pathsModule.getSystemPromptForPath;
+			this.ConversationEvaluator = evaluatorModule.ConversationEvaluator;
+		}
 	}
 	
 	/**
 	 * Run a multi-turn conversation test scenario
 	 */
 	async runMultiTurnTest(scenario: MultiTurnTestScenario, pb?: any, signal?: AbortSignal): Promise<MultiTurnTestResult> {
+		// Initialize cached imports once
+		await this.initializeIfNeeded();
+		
 		console.log(`🔄 Running multi-turn test: ${scenario.name}`);
 		console.log(`🔍 Scenario details:`, {
 			id: scenario.id,
@@ -477,6 +496,25 @@ export class MultiTurnTestRunner {
 		let criticalFailureOccurred = false;
 		const pathUsage = new Map<string, {turns: number[], prompts: string[], scores: number[]}>(); // Track path usage
 		
+		// Track the current active path (starts with idle like real app, then flows to expected path)
+		let currentActivePath = 'idle';
+		console.log(`🎯 Initial currentActivePath set to: ${currentActivePath} (will flow to expected: ${scenario.expectedPath})`);
+		
+		// Get initial system prompt from database (start with idle like real app)
+		console.log(`🔍 Getting initial system prompt for path: ${currentActivePath}`);
+		const initialSystemPrompt = await this.getSystemPromptForPath(
+			currentActivePath,
+			{ 
+				firstName: 'TestUser',
+				aiAnswerLength: 'medium',
+				toneOfVoice: 'heartfelt',
+				nvcKnowledge: context.userPersona.communicationStyle === 'resistant' ? 'beginner' : 'intermediate'
+			},
+			undefined, // No memory context for tests
+			pb // Pass the PB instance from locals
+		);
+		console.log(`✅ Successfully retrieved system prompt for path: ${currentActivePath}`);
+		
 		for (let turn = 1; turn <= scenario.maxTurns && !criticalFailureOccurred; turn++) {
 			// Check for cancellation
 			if (signal?.aborted) {
@@ -488,10 +526,17 @@ export class MultiTurnTestRunner {
 			
 			try {
 				// Generate AI response (this would call your actual AI system)
-				console.log(`  🤖 Generating AI response for turn ${turn}`);
-				const aiResult = await this.generateAIResponse(context, scenario.expectedPath, pb);
+				console.log(`  🤖 Generating AI response for turn ${turn} (current path: ${currentActivePath})`);
+				console.log(`  📍 DEBUG: Passing currentActivePath to generateAIResponse: ${currentActivePath}`);
+				const aiResult = await this.generateAIResponse(context, currentActivePath, initialSystemPrompt, pb);
 				console.log(`  ✅ AI response generated: "${aiResult.response.substring(0, 100)}..."`);
 				console.log(`  📍 Path used: ${aiResult.pathUsed}`);
+				
+				// Update current active path if it changed
+				if (aiResult.pathUsed !== currentActivePath) {
+					console.log(`🔄 Path changed from ${currentActivePath} to ${aiResult.pathUsed}`);
+					currentActivePath = aiResult.pathUsed;
+				}
 				
 				// Track path usage
 				if (!pathUsage.has(aiResult.pathUsed)) {
@@ -507,43 +552,17 @@ export class MultiTurnTestRunner {
 				console.log(`  ✅ User response: "${userResult.userResponse}"`);
 				context = userResult.updatedContext;
 				
-				// Evaluate this turn if specified
-				const turnEvaluation = scenario.turnEvaluations.find(te => te.turnNumber === turn);
-				let turnScore = 50; // Default
-				let criticalFailures: string[] = [];
-				
-				if (turnEvaluation) {
-					const evaluation = await this.evaluateTurn(
-						aiResult.response, 
-						userResult.userResponse,
-						context,
-						turnEvaluation
-					);
-					turnScore = evaluation.score;
-					criticalFailures = evaluation.criticalFailures;
-				}
-				
-				// Track score for this path
-				pathData.scores.push(turnScore);
-				
+				// Store turn data without per-turn analysis
 				turnResults.push({
 					turnNumber: turn,
 					aiResponse: aiResult.response,
 					userResponse: userResult.userResponse,
-					turnScore,
-					criticalFailures,
+					turnScore: 0, // Will be calculated after conversation completion
+					criticalFailures: [],
 					progressAchieved: context.progressMade,
-					evaluation: turnEvaluation,
+					evaluation: null,
 					pathUsed: aiResult.pathUsed
 				});
-				
-				overallScore += turnScore;
-				
-				// Check for critical failures
-				if (criticalFailures.length > 0) {
-					console.log(`  ⚠️ Critical failures detected: ${criticalFailures.join(', ')}`);
-					criticalFailureOccurred = true;
-				}
 				
 			} catch (error) {
 				console.error(`  ❌ Turn ${turn} failed:`, error);
@@ -551,8 +570,18 @@ export class MultiTurnTestRunner {
 			}
 		}
 		
+		// Perform overall conversation analysis after completion
+		console.log(`📊 Analyzing complete conversation (${turnResults.length} turns)...`);
+		const overallEvaluation = await this.evaluateOverallConversation(turnResults, scenario, context);
+		
+		// Update turn results with overall scores
+		turnResults.forEach(turn => {
+			turn.turnScore = overallEvaluation.score;
+			turn.evaluation = overallEvaluation.evaluation;
+		});
+		
 		// Calculate final score
-		const finalScore = turnResults.length > 0 ? overallScore / turnResults.length : 0;
+		const finalScore = overallEvaluation.score;
 		
 		// Analyze overall conversation
 		const conversationAnalysis = this.analyzeConversation(turnResults, scenario, context);
@@ -583,28 +612,80 @@ export class MultiTurnTestRunner {
 	}
 	
 	/**
-	 * Generate AI response using the actual conversation system
+	 * Generate AI response using the actual conversation system with dynamic path switching
 	 * Returns both the response and the path that was used
 	 */
-	private async generateAIResponse(context: ConversationContext, expectedPath: string, pb?: any): Promise<{response: string, pathUsed: string, promptUsed: string}> {
-		// Import conversation system
-		const { ai } = await import('./gemini.js');
-		const { getSystemPromptForPath } = await import('./paths.js');
+	private async generateAIResponse(context: ConversationContext, currentPath: string, systemPrompt: string, pb?: any): Promise<{response: string, pathUsed: string, promptUsed: string}> {
+		console.log(`    🔍 DEBUG: generateAIResponse called with currentPath: ${currentPath}`);
 		
-		// Get appropriate system prompt
-		console.log(`🔍 Looking up prompt for path: "${expectedPath}"`);
-		const systemPrompt = await getSystemPromptForPath(
-			expectedPath,
-			{ 
-				firstName: 'TestUser',
-				aiAnswerLength: 'medium',
-				toneOfVoice: 'heartfelt',
-				nvcKnowledge: context.userPersona.communicationStyle === 'resistant' ? 'beginner' : 'intermediate'
-			},
-			undefined, // No memory context for tests
-			pb // Pass the PB instance from locals
-		);
-		console.log(`✅ System prompt retrieved successfully for: ${expectedPath}`);
+		// Use cached imports (already initialized)
+		
+		// Convert conversation history to format expected by path analysis
+		const pathAnalysisMessages = context.conversationHistory.map(msg => ({
+			role: msg.role,
+			content: msg.content
+		}));
+		
+		console.log(`    📝 DEBUG: Created pathAnalysisMessages, about to call analyzePathCompletion with currentPath: ${currentPath}`);
+		
+		// Check if we should switch paths based on conversation content (less frequently like real app)
+		let activePathId = currentPath;
+		let pathSwitchOccurred = false;
+		
+		// Only do path analysis every 2-3 turns to match real app behavior
+		const shouldAnalyzePath = context.conversationHistory.length % 3 === 0 || context.conversationHistory.length >= 5;
+		
+		if (shouldAnalyzePath) {
+			try {
+				const pathCompletion = await this.analyzePathCompletion(
+					pathAnalysisMessages,
+					currentPath,
+					this.ai
+				);
+			
+			console.log(`🔍 Path analysis result:`, {
+				shouldEnd: pathCompletion.shouldEnd,
+				confidence: pathCompletion.confidence,
+				reason: pathCompletion.reason,
+				suggestedNext: pathCompletion.suggestedNext,
+				currentPath: currentPath
+			});
+			
+			// Be more responsive to explicit requests (90%+) and allow natural completion (60%+)
+			if (pathCompletion.shouldEnd && pathCompletion.confidence > 55) {
+				console.log(`🔄 Path switch detected - Confidence: ${pathCompletion.confidence}%`);
+				console.log(`📍 Reason: ${pathCompletion.reason}`);
+				
+				// Try to determine new path based on suggestions or fallback to common switches
+				let newPath = null;
+				if (pathCompletion.suggestedNext && pathCompletion.suggestedNext.length > 0) {
+					newPath = pathCompletion.suggestedNext[0];
+				} else if (currentPath === 'self_empathy') {
+					// Common path switches from self_empathy based on reason
+					if (pathCompletion.reason.includes('action') || pathCompletion.reason.includes('plan')) {
+						newPath = 'action_planning';
+					} else if (pathCompletion.reason.includes('other') || pathCompletion.reason.includes('empathy for')) {
+						newPath = 'other_empathy';
+					}
+				}
+				
+				if (newPath && newPath !== currentPath) {
+					activePathId = newPath;
+					pathSwitchOccurred = true;
+					console.log(`🎯 Switching from ${currentPath} to ${activePathId}`);
+				} else {
+					console.log(`⚠️ Path switch indicated but no valid target path found`);
+				}
+			} else {
+				console.log(`🔒 No path switch - confidence: ${pathCompletion.confidence}%, shouldEnd: ${pathCompletion.shouldEnd}`);
+			}
+			} catch (error) {
+				console.log(`❌ Path analysis failed:`, error);
+				console.log(`⚠️ Continuing with current path: ${currentPath}`);
+			}
+		} else {
+			console.log(`⏩ Skipping path analysis this turn (turn ${context.conversationHistory.length}) - keeping current path: ${currentPath}`);
+		}
 		
 		// Build conversation history for Gemini
 		const history: Array<{role: 'user' | 'model', parts: Array<{text: string}>}> = [];
@@ -619,6 +700,16 @@ export class MultiTurnTestRunner {
 			});
 		}
 		
+		// Add path switch markers if path switching occurred (similar to real app)
+		if (pathSwitchOccurred) {
+			// Add path markers to indicate the switch (similar to real app behavior)
+			history.push({
+				role: 'model',
+				parts: [{ text: `[Pfad gewechselt zu: ${activePathId}]` }]
+			});
+			console.log(`🔀 Added path switch marker to conversation history`);
+		}
+		
 		// Ensure we start with a user message (Gemini requirement)
 		if (history.length === 0 || history[0].role === 'model') {
 			history.unshift({
@@ -627,57 +718,119 @@ export class MultiTurnTestRunner {
 			});
 		}
 		
-		// Create chat session
-		const model = ai.chats.create({
+		// Get the appropriate system prompt for the active path
+		let actualSystemPrompt = systemPrompt;
+		if (pathSwitchOccurred) {
+			try {
+				// Get the system prompt for the new path from database
+				actualSystemPrompt = await this.getSystemPromptForPath(activePathId, {
+					firstName: 'TestUser',
+					aiAnswerLength: 'medium',
+					toneOfVoice: 'heartfelt'
+				}, undefined, pb);
+				console.log(`🎯 Retrieved database system prompt for switched path: ${activePathId}`);
+				console.log(`📝 New system prompt preview: ${actualSystemPrompt.substring(0, 100)}...`);
+			} catch (error) {
+				console.log(`⚠️ Could not get system prompt for path ${activePathId}, using original:`, error);
+				actualSystemPrompt = systemPrompt;
+			}
+		}
+		
+		// Create fresh chat session with the appropriate system prompt (allows path switching)
+		console.log(`🔄 Creating fresh Gemini chat session with system prompt for: ${activePathId}`);
+		const model = this.ai.chats.create({
 			model: 'gemini-2.5-flash',
 			config: {
 				temperature: 0.7,
-				systemInstruction: systemPrompt
+				systemInstruction: actualSystemPrompt
 			},
 			history: history.slice(0, -1) // Don't include the last message, we'll send it via sendMessage
 		});
 		
 		// Get AI response to the latest user message
 		const latestUserMessage = context.conversationHistory[context.conversationHistory.length - 1];
+		console.log(`📤 Sending message to Gemini: "${latestUserMessage.content.substring(0, 50)}..."`);
 		const result = await model.sendMessage({
 			message: latestUserMessage.content
 		});
+		console.log(`📥 Received AI response: "${(result.text || '').substring(0, 100)}..."`);
+
+		if (pathSwitchOccurred) {
+			console.log(`✅ Path switch successful - AI responded using ${activePathId} system prompt`);
+		}
 		
-		// For now, we'll use the expected path, but in a real implementation
-		// we would analyze the AI response to determine which path was actually used
-		// This is a simplified version - in practice, you'd need to analyze the response
-		// to detect path markers or use the conversation system's path detection
-		
+		// Update the conversation context if path switched
+		if (pathSwitchOccurred) {
+			// Add the path switch information to the conversation history for next turn
+			context.conversationHistory.push({
+				role: 'model',
+				content: `[Pfad gewechselt zu: ${activePathId}]`
+			});
+		}
+
 		return {
 			response: result.text || '',
-			pathUsed: expectedPath, // For now, use expected path
-			promptUsed: systemPrompt
+			pathUsed: activePathId, // Use the dynamically determined path
+			promptUsed: actualSystemPrompt
 		};
 	}
 	
 	/**
-	 * Evaluate a single turn against criteria using existing evaluation system
+	 * Evaluate the overall conversation after completion
 	 */
-	private async evaluateTurn(
-		aiResponse: string,
-		userResponse: string,
-		context: ConversationContext,
-		turnEvaluation: any
-	): Promise<{score: number, criticalFailures: string[]}> {
-		// Import evaluation system
-		const { ConversationEvaluator } = await import('./conversationEvaluator.js');
+	private async evaluateOverallConversation(
+		turnResults: any[],
+		scenario: MultiTurnTestScenario,
+		context: ConversationContext
+	): Promise<{score: number, evaluation: any}> {
+		// Use cached evaluation system
 		
-		// Create a mock test scenario for evaluation
-		const mockScenario = {
-			id: `turn_${context.currentTurn}`,
-			name: `Turn ${context.currentTurn} Evaluation`,
+		// Build conversation summary for evaluation
+		const conversationSummary = turnResults.map(turn => 
+			`Turn ${turn.turnNumber}: AI: "${turn.aiResponse}" | User: "${turn.userResponse}"`
+		).join('\n');
+		
+		// Create evaluation scenario for overall conversation
+		const overallScenario = {
+			id: `${scenario.id}_overall`,
+			name: `Overall Conversation Evaluation: ${scenario.name}`,
 			category: 'multi_turn_test' as any,
-			description: 'Multi-turn conversation test evaluation',
-			inputMessage: context.conversationHistory[context.conversationHistory.length - 1].content,
-			evaluationCriteria: turnEvaluation.criteria,
+			description: `Complete ${turnResults.length}-turn conversation evaluation`,
+			inputMessage: scenario.initialMessage,
+			evaluationCriteria: {
+				userGrowth: {
+					selfAwareness: true,
+					emotionalInsight: true,
+					needsClarity: true,
+					perspective: true
+				},
+				nvcCompliance: {
+					observationWithoutEvaluation: true,
+					feelingsIdentification: true,
+					needsRecognition: true,
+					requestsNotDemands: false,
+					empathyPresent: true
+				},
+				circularPrevention: {
+					avoidsRepeatQuestions: true,
+					buildsOnPrevious: true,
+					progressesConversation: true
+				},
+				pathSwitching: {
+					recognizesCompletionSignals: true,
+					suggestsAppropriateNext: true,
+					smoothTransition: true
+				},
+				conversationBalance: {
+					questionToStatementRatio: 0.3,
+					sharesRelevantInsights: true,
+					avoidsLecturing: true,
+					maintainsDialogue: true
+				}
+			},
 			contextSetup: {
-				currentPath: 'test_path',
-				messageHistory: context.conversationHistory.slice(-3).map(msg => ({
+				currentPath: scenario.expectedPath,
+				messageHistory: context.conversationHistory.map(msg => ({
 					role: msg.role,
 					content: msg.content,
 					timestamp: msg.timestamp
@@ -692,34 +845,167 @@ export class MultiTurnTestRunner {
 		};
 		
 		try {
-			const evaluator = new ConversationEvaluator();
-			const result = await evaluator.evaluateResponse(mockScenario, aiResponse, 'test_path');
+			const evaluator = new this.ConversationEvaluator();
+			const result = await evaluator.evaluateResponse(overallScenario, conversationSummary, scenario.expectedPath);
 			
-			// Check for critical failures
-			const criticalFailures: string[] = [];
-			
-			if (turnEvaluation.criticalFailures) {
-				turnEvaluation.criticalFailures.forEach((failure: string) => {
-					if (this.checkCriticalFailure(failure, aiResponse, userResponse, context)) {
-						criticalFailures.push(failure);
-					}
-				});
-			}
+			// Enhanced analysis: identify what went wrong and suggest prompt improvements
+			const enhancedAnalysis = await this.analyzeConversationFailures(turnResults, scenario, context, result);
 			
 			return {
 				score: result.score,
-				criticalFailures
+				evaluation: {
+					...result.evaluation,
+					conversationFailures: enhancedAnalysis.failures,
+					promptSuggestions: enhancedAnalysis.suggestions,
+					improvementAreas: enhancedAnalysis.improvementAreas
+				}
 			};
 			
 		} catch (error) {
-			console.error('Turn evaluation failed:', error);
+			console.error('Overall conversation evaluation failed:', error);
 			return {
 				score: 50, // Neutral score on failure
-				criticalFailures: ['Evaluation system error']
+				evaluation: {
+					strengths: ['Conversation completed'],
+					weaknesses: ['Evaluation system error'],
+					recommendations: ['Debug evaluation system']
+				}
 			};
 		}
 	}
-	
+
+	/**
+	 * Analyze conversation failures and provide prompt improvement suggestions
+	 */
+	private async analyzeConversationFailures(
+		turnResults: any[],
+		scenario: MultiTurnTestScenario,
+		context: ConversationContext,
+		evaluationResult: any
+	): Promise<{failures: string[], suggestions: string[], improvementAreas: string[]}> {
+		
+		// Use cached ai instance
+		
+		// Build detailed conversation analysis prompt in German
+		const analysisPrompt = `Analysiere dieses ${turnResults.length}-Turn-Gespräch, um spezifische Probleme zu identifizieren und konkrete Prompt-Verbesserungsvorschläge zu geben.
+
+**GESPRÄCHSKONTEXT:**
+- Szenario: ${scenario.name} (${scenario.id})
+- Erwarteter Pfad: ${scenario.expectedPath}
+- User Persona: ${context.userPersona.name} - ${context.userPersona.emotionalState}
+- Kommunikationsstil: ${context.userPersona.communicationStyle}
+- Anfangsnachricht: "${scenario.initialMessage}"
+
+**VOLLSTÄNDIGES GESPRÄCH:**
+${turnResults.map(turn => 
+`Turn ${turn.turnNumber}:
+KI: "${turn.aiResponse}"
+User: "${turn.userResponse}"
+Fortschritt: ${turn.progressAchieved.join(', ') || 'Keiner'}`
+).join('\n\n')}
+
+**AKTUELLE BEWERTUNG:** ${evaluationResult.score}/100
+**BEWERTETE SCHWÄCHEN:** ${evaluationResult.evaluation?.weaknesses?.join(', ') || 'Keine identifiziert'}
+
+**ANALYSE-AUFGABE:**
+Identifiziere spezifische Gesprächsprobleme und gib umsetzbare Prompt-Verbesserungsvorschläge auf Deutsch.
+
+**ERFORDERLICHES OUTPUT-FORMAT:**
+Gib deine Analyse als JSON-Objekt mit exakt dieser Struktur zurück:
+
+{
+  "failures": [
+    "Spezifisches Problem 1 mit Kontext",
+    "Spezifisches Problem 2 mit Kontext",
+    "Spezifisches Problem 3 mit Kontext"
+  ],
+  "suggestions": [
+    "Spezifischer Prompt-Verbesserungsvorschlag 1",
+    "Spezifischer Prompt-Verbesserungsvorschlag 2", 
+    "Spezifischer Prompt-Verbesserungsvorschlag 3"
+  ],
+  "improvementAreas": [
+    "Verbesserungsbereich 1",
+    "Verbesserungsbereich 2",
+    "Verbesserungsbereich 3"
+  ]
+}
+
+**ANALYSE-LEITLINIEN:**
+- Fokussiere auf spezifische, umsetzbare Probleme (nicht allgemeine Themen)
+- Gib konkrete Prompt-Verbesserungsvorschläge auf Deutsch
+- Berücksichtige den emotionalen Zustand und Kommunikationsstil des Users
+- Suche nach Mustern über mehrere Turns hinweg
+- Identifiziere wo die KI das Gespräch nicht vorangebracht hat
+- Berücksichtige GFK-Prinzipien und Empathie-Effektivität
+
+**BEISPIELE FÜR GUTE PROBLEMIDENTIFIKATION:**
+- "KI wiederholte 4x dasselbe Empathie-Muster ohne zu Bedürfnissen überzugehen"
+- "KI ging nicht auf defensive User-Antworten in Turns 3-5 ein"
+- "KI gab zu früh Ratschläge (Turn 2) statt erst Vertrauen aufzubauen"
+
+**BEISPIELE FÜR GUTE VERBESSERUNGSVORSCHLÄGE:**
+- "Füge Anweisung hinzu: Nach 2-3 empathischen Antworten zu Bedürfnisidentifikation überleiten"
+- "Ergänze Leitfaden für Umgang mit defensiven Antworten durch Geduld und Validierung"
+- "Spezifiziere: Ratschläge erst nach User-Bereitschaft (Bedürfnisklarheit erreicht)"
+
+Analysiere objektiv und gib spezifisches, umsetzbares Feedback auf Deutsch.`;
+
+		try {
+			const model = this.ai.chats.create({
+				model: 'gemini-2.5-flash',
+				config: {
+					temperature: 0.1,
+					systemInstruction: 'Du bist ein Experte für Gesprächsanalyse mit Spezialisierung auf therapeutische Kommunikation und Prompt-Engineering. Gib spezifisches, umsetzbares Feedback zur Verbesserung von KI-Gesprächsprompts auf Deutsch. Antworte ausschließlich auf Deutsch.'
+				}
+			});
+
+			const result = await model.sendMessage({ message: analysisPrompt });
+			const analysis = this.parseAnalysisResponse(result.text);
+			
+			return {
+				failures: analysis.failures || [],
+				suggestions: analysis.suggestions || [],
+				improvementAreas: analysis.improvementAreas || []
+			};
+			
+		} catch (error) {
+			console.error('Conversation failure analysis failed:', error);
+			return {
+				failures: ['Analysis system error'],
+				suggestions: ['Debug analysis system'],
+				improvementAreas: ['System reliability']
+			};
+		}
+	}
+
+	/**
+	 * Parse analysis response from AI
+	 */
+	private parseAnalysisResponse(response: string): any {
+		try {
+			// Try to extract JSON from the response
+			const jsonMatch = response.match(/\{[\s\S]*\}/);
+			if (jsonMatch) {
+				return JSON.parse(jsonMatch[0]);
+			}
+			
+			// Fallback parsing if JSON extraction fails
+			return {
+				failures: ['Failed to parse analysis response'],
+				suggestions: ['Improve analysis response format'],
+				improvementAreas: ['Response parsing']
+			};
+		} catch (error) {
+			console.error('Failed to parse analysis response:', error);
+			return {
+				failures: ['JSON parsing error'],
+				suggestions: ['Fix response format'],
+				improvementAreas: ['Data parsing']
+			};
+		}
+	}
+
 	/**
 	 * Check if a critical failure occurred
 	 */

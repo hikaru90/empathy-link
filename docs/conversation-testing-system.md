@@ -167,17 +167,17 @@ export TEST_BASE_URL="http://localhost:5173"
 ### Multi-Turn Test Examples
 
 1. **Defensive User Opens Up** (`mt_ug_01_defensive_to_vulnerable`)
-   - 8-turn conversation with frustrated partner persona
+   - 14-turn conversation with frustrated partner persona
    - Tests gradual empathy building
    - Measures defensive → vulnerable progression
 
 2. **Judgment Separation** (`mt_nvc_01_observation_vs_evaluation`) 
-   - 6-turn conversation with workplace conflict persona
+   - 14-turn conversation with workplace conflict persona
    - Tests consistent NVC observation vs evaluation
    - Measures judgment → factual observation shift
 
 3. **Natural Path Switching** (`mt_ps_01_natural_path_transition`)
-   - 10-turn conversation with self-critical persona
+   - 14-turn conversation with self-critical persona
    - Tests recognition of conversation completion
    - Measures smooth transition to action planning
 

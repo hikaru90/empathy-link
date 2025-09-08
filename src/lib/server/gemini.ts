@@ -208,12 +208,7 @@ export const analyzePathSwitchingIntent = async (
 ): Promise<PathSwitchAnalysis> => {
 	console.log('::analyzePathSwitchingIntent');
 	try {
-		const systemPrompt = locale === 'de'
-			? `Du bist ein Experte für Gesprächsanalyse und Gewaltfreie Kommunikation. Analysiere sehr konservativ, ob der Nutzer EXPLIZIT zu einem anderen Gesprächspfad wechseln möchte.
-
-WICHTIG: Sei sehr zurückhaltend mit Pfadwechseln. Schlage nur dann einen Wechsel vor, wenn der Nutzer:
-1. EXPLIZIT einen anderen Themenbereich erwähnt, oder
-2. Den aktuellen Prozess eindeutig als abgeschlossen betrachtet
+		const systemPrompt = `Du bist ein Experte für Gesprächsanalyse und Gewaltfreie Kommunikation. Analysiere, ob der Nutzer zu einem anderen Gesprächspfad wechseln  sollte.
 
 Aktueller Pfad: ${currentPath}
 Verfügbare Pfade:
@@ -225,8 +220,12 @@ Verfügbare Pfade:
 - memory: Erinnerungen abrufen (gespeicherte Informationen über den Nutzer)
 - feedback: Gespräch beenden (Feedback sammeln und Gespräch abschließen)
 
-Kriterien für Pfadwechsel (ALLE müssen erfüllt sein):
+FALL A: Der Nutzer befindet sich im Pfad "idle":
+1. Du kannst gerne einen wechsel zu einem anderen Pfad vorschlagen sobald der Nutzer ein Ziel definiert hat.
 
+FALL B: Der Nutzer befindet sich bereits in einem anderen Pfad: 
+
+KITERIEN FÜR EINEN PFADWECHSEL (ALLE müssen erfüllt sein):
 1. **Explizite Wechselabsicht**: Der Nutzer hat klar und eindeutig einen anderen Themenbereich erwähnt
 2. **Eindeutige Signale**: Die Nachricht enthält unmissverständliche Wechselsignale
 3. **Kontextpassung**: Der vorgeschlagene Pfad passt perfekt zum Nutzerinhalt
@@ -251,50 +250,6 @@ Antworte ausschließlich mit einem JSON-Objekt:
   "confidence": 0-100,
   "suggestedPath": "path_id oder null",
   "reason": "kurze Erklärung der Analyse",
-  "currentPathComplete": boolean
-}`
-			: `You are an expert in conversation analysis and Nonviolent Communication. Analyze very conservatively whether the user EXPLICITLY wants to switch to another conversation path.
-
-IMPORTANT: Be very cautious with path switches. Only suggest a switch if the user:
-1. EXPLICITLY mentions another topic area, or
-2. Clearly considers the current process as completed
-
-Current path: ${currentPath}
-Available paths:
-- idle: Conversation Orchestration (meta-level, direction suggestions, conversation flow management)
-- self_empathy: Self-empathy (understanding own feelings and needs)
-- other_empathy: Other-empathy (developing empathy for other people)
-- action_planning: Action planning (planning concrete steps)
-- conflict_resolution: Conflict resolution (solving problems with others)
-- memory: Memory recall (retrieve stored information about the user)
-- feedback: End Conversation (collect feedback and conclude conversation)
-
-Criteria for path switching (ALL must be met):
-
-1. **Explicit switching intent**: The user has clearly and unambiguously mentioned another topic area
-2. **Unambiguous signals**: The message contains unmistakable switching signals
-3. **Context fit**: The suggested path fits perfectly with the user content
-
-Switch ONLY with these very clear examples:
-
-Examples of explicit switching intentions:
-- "I would like to develop empathy for someone else"
-- "can we now move to action planning"
-- "I want to solve a conflict"
-- "how can I approach this problem"
-- "what do you remember about me"
-- "do you recall our previous conversations"
-- "what did we discuss before"
-- "what do you know about me"
-
-DEFAULT: When in doubt, do NOT switch. Confidence below 80 should result in shouldSwitch = false.
-
-Respond exclusively with a JSON object:
-{
-  "shouldSwitch": boolean,
-  "confidence": 0-100,
-  "suggestedPath": "path_id or null",
-  "reason": "brief explanation of analysis",
   "currentPathComplete": boolean
 }`;
 

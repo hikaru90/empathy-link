@@ -552,57 +552,45 @@ export async function analyzePathCompletion(
 		}
 	}
 
-	// First check for explicit path change requests
-	const lastUserMessage = messages.filter(m => m.role === 'user').slice(-1)[0]?.content?.toLowerCase() || '';
-	
-	// Check for explicit path switch keywords
-	const pathSwitchIndicators = [
-		'empathie für jemand anderen', 'empathie für eine andere person', 'andere person',
-		'jemand anderen', 'fremdempathie', 'für andere', 
-		'handlung', 'was tun', 'nächster schritt', 'plan', 'handlungsplan',
-		'konflikt', 'streit', 'problem lösen', 'konflikt lösen'
-	];
-	
-	const hasExplicitSwitchRequest = pathSwitchIndicators.some(indicator => 
-		lastUserMessage.includes(indicator)
-	);
-	
-	if (hasExplicitSwitchRequest) {
-		console.log('🎯 Explicit path switch request detected in user message');
-		// Determine which path they want to switch to
-		let suggestedPath = null;
-		if (lastUserMessage.includes('andere person') || lastUserMessage.includes('jemand anderen') || lastUserMessage.includes('empathie für')) {
-			suggestedPath = 'other_empathy';
-		} else if (lastUserMessage.includes('handlung') || lastUserMessage.includes('was tun') || lastUserMessage.includes('plan')) {
-			suggestedPath = 'action_planning';
-		} else if (lastUserMessage.includes('konflikt') || lastUserMessage.includes('streit')) {
-			suggestedPath = 'conflict_resolution';
-		}
-		
-		return {
-			shouldEnd: true,
-			confidence: 95,
-			reason: 'User explicitly requested path change',
-			suggestedNext: suggestedPath ? [suggestedPath] : []
-		};
-	}
+	// Let the AI handle all path switching decisions - no keyword matching
 
-	// Create analysis prompt for natural completion detection
-	const analysisPrompt = `Analyze this conversation to determine if the user has completed the ${path.name} stage.
+	// Create analysis prompt for both natural completion AND explicit requests
+	const validPathSlugs = Object.keys(CONVERSATION_PATHS).filter(slug => slug !== currentPath);
+	const analysisPrompt = `Analyze this conversation to determine if the user should move to a different conversation stage.
 
-Exit condition: ${path.exitCondition}
+Current stage: ${path.name}
+Natural exit condition: ${path.exitCondition}
 
 Recent conversation:
 ${messages.slice(-6).map(m => `${m.role}: ${m.content}`).join('\n')}
 
-Focus on whether the user has achieved the exit condition naturally, not whether they explicitly requested a change.
+Evaluate TWO scenarios:
+1. **EXPLICIT REQUEST**: Does the user explicitly request a change in focus/topic? (e.g., "Can we talk about what I should do?", "I want to understand the other person", "Let's focus on solutions")
+2. **NATURAL COMPLETION**: Has the user naturally achieved the exit condition?
+
+For EXPLICIT requests:
+- High confidence (90-100) if user clearly requests different focus
+- Suggest the most appropriate path based on their request
+
+For NATURAL completion:
+- Medium confidence (60-80) if exit condition is met
+- Consider user's emotional state and conversation flow
+
+Available paths and when to suggest them:
+- self_empathy: Understanding own feelings/needs
+- other_empathy: Understanding others' perspectives  
+- action_planning: Concrete steps and solutions
+- conflict_resolution: Addressing interpersonal conflicts
+- feedback: Conversation feedback/meta-discussion
+
+IMPORTANT: If suggesting a next path, you MUST only use these exact valid path slugs: ${validPathSlugs.join(', ')}
 
 Respond with JSON only:
 {
   "shouldEnd": boolean,
   "confidence": 0-100,
-  "reason": "explanation",
-  "suggestedNext": ["path_id"] 
+  "reason": "explanation of why switch is/isn't recommended",
+  "suggestedNext": ["valid_path_slug_from_list_above"] 
 }`;
 
 	try {

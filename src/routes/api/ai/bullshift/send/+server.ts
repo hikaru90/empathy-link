@@ -410,9 +410,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			firstName: userWithPreferences?.firstName
 		});
 		console.log('Memory context:', memoryContext || 'none');
-		console.log('=== FULL SYSTEM PROMPT ===');
-		console.log(currentSystemInstruction);
-		console.log('=== END SYSTEM PROMPT ===');
 		
 		// Convert DB history to Gemini format (excludes path markers, hidden messages)
 		const geminiHistory = convertHistoryToGemini(chatInDb.history);

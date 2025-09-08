@@ -259,6 +259,7 @@
 		progress = 0;
 		currentTestName = '';
 		completedTests = 0;
+		selectedTestRun = null; // Clear any selected test run when starting new test
 
 		// Create abort controller for cancellation
 		pathAbortController = new AbortController();
@@ -521,6 +522,7 @@
 		currentTestName = '';
 		completedTests = 0;
 		totalTests = selectedQualityTestType === 'all' ? 3 : 1; // 3 scenarios total
+		selectedTestRun = null; // Clear any selected test run when starting new test
 
 		// Create abort controller for cancellation
 		abortController = new AbortController();
@@ -571,6 +573,9 @@
 				...result,
 				testType: 'multi_turn'
 			};
+			
+			console.log('🔍 Processed testResults:', testResults);
+			console.log('🔍 testResults.summary:', testResults.summary);
 
 			// Generate summary text
 			if (result.testType === 'single') {
@@ -590,6 +595,9 @@
 
 			progress = 100;
 			currentTestName = 'Multi-turn tests completed!';
+			
+			// Invalidate all data to refresh the UI with new test results
+			invalidateAll();
 		} catch (error: any) {
 			if (error.name === 'AbortError' || error.message.includes('cancelled')) {
 				console.log('Multi-turn testing was cancelled by user');
@@ -628,7 +636,7 @@
 ${
 	r.turnResults
 		.filter((t) => t.progressAchieved.length > 0)
-		.map((t) => `Turn ${t.turnNumber}: ${t.progressAchieved.join(', ')}`)
+		.map((t) => `Turn ${t.turnNumber}${t.pathUsed ? ` [${t.pathUsed}]` : ''}: ${t.progressAchieved.join(', ')}`)
 		.slice(0, 3)
 		.join('\n') || 'No significant progress recorded'
 }
@@ -637,7 +645,7 @@ ${
 	r.turnResults.some((t) => t.criticalFailures.length > 0)
 		? `⚠️ Critical Issues:\n${r.turnResults
 				.filter((t) => t.criticalFailures.length > 0)
-				.map((t) => `Turn ${t.turnNumber}: ${t.criticalFailures.join(', ')}`)
+				.map((t) => `Turn ${t.turnNumber}${t.pathUsed ? ` [${t.pathUsed}]` : ''}: ${t.criticalFailures.join(', ')}`)
 				.join('\n')}`
 		: '✅ No critical issues detected'
 }
@@ -677,7 +685,7 @@ ${
 ${
 	progressTurns
 		.map(
-			(t: any) => `Turn ${t.turnNumber}: ${t.progressAchieved.join(', ')} (Score: ${t.turnScore})`
+			(t: any) => `Turn ${t.turnNumber}${t.pathUsed ? ` [${t.pathUsed}]` : ''}: ${t.progressAchieved.join(', ')} (Score: ${t.turnScore})`
 		)
 		.slice(0, 5)
 		.join('\n') || 'No progress milestones recorded'
@@ -692,7 +700,7 @@ ${
 	failureTurns.length > 0
 		? `⚠️ Critical Issues Detected:
 ${failureTurns
-	.map((t: any) => `Turn ${t.turnNumber}: ${t.criticalFailures.join(', ')}`)
+	.map((t: any) => `Turn ${t.turnNumber}${t.pathUsed ? ` [${t.pathUsed}]` : ''}: ${t.criticalFailures.join(', ')}`)
 	.join('\n')}`
 		: '✅ No critical issues detected'
 }
@@ -803,6 +811,7 @@ ${result.results
 		progress = 0;
 		currentTestName = '';
 		completedTests = 0;
+		selectedTestRun = null; // Clear any selected test run when starting new test
 
 		// Create abort controller for cancellation
 		abortController = new AbortController();
@@ -2075,13 +2084,13 @@ ${result.results
 										<label class="text-sm font-medium">Multi-Turn Scenario</label>
 										<Select.Root type="single" bind:value={selectedScenario}>
 											<Select.Trigger>
-												{selectedScenario === 'mt_ug_01_defensive_to_vulnerable'
-													? 'Angry Partner → Self-Awareness (8 turns)'
-													: selectedScenario === 'mt_nvc_01_observation_vs_evaluation'
-														? 'Judgment Separation Challenge (6 turns)'
-														: selectedScenario === 'mt_ps_01_natural_path_transition'
-															? 'Natural Path Switching (10 turns)'
-															: 'Select conversation scenario'}
+																							{selectedScenario === 'mt_ug_01_defensive_to_vulnerable'
+												? 'Angry Partner → Self-Awareness (14 turns)'
+												: selectedScenario === 'mt_nvc_01_observation_vs_evaluation'
+													? 'Judgment Separation Challenge (14 turns)'
+													: selectedScenario === 'mt_ps_01_natural_path_transition'
+														? 'Natural Path Switching (14 turns)'
+														: 'Select conversation scenario'}
 											</Select.Trigger>
 											<Select.Content>
 												<Select.Group>
@@ -2090,7 +2099,7 @@ ${result.results
 														<div class="space-y-1">
 															<div class="font-medium">Angry Partner → Self-Awareness</div>
 															<div class="text-xs text-muted-foreground">
-																Frustrated partner learns to move from blame to self-awareness (8
+																Frustrated partner learns to move from blame to self-awareness (14
 																turns)
 															</div>
 														</div>
@@ -2100,7 +2109,7 @@ ${result.results
 															<div class="font-medium">Judgment Separation Challenge</div>
 															<div class="text-xs text-muted-foreground">
 																Tests AI ability to separate observations from evaluations
-																consistently (6 turns)
+																consistently (14 turns)
 															</div>
 														</div>
 													</Select.Item>
@@ -2481,6 +2490,59 @@ ${result.results
 								</div>
 							{/if}
 
+							<!-- Prompt Analysis & Recommendations -->
+							{#if selectedTestRun.detailed_results?.[0]?.turnResults?.[0]?.evaluation?.conversationFailures || selectedTestRun.detailed_results?.[0]?.turnResults?.[0]?.evaluation?.promptSuggestions}
+								{@const firstResult = selectedTestRun.detailed_results[0]}
+								{@const evaluation = firstResult.turnResults?.[0]?.evaluation}
+								<div class="rounded-lg bg-orange-50 border border-orange-200 p-4">
+									<h3 class="mb-3 font-semibold text-orange-800">💡 Conversation Analysis & Prompt Recommendations</h3>
+									
+									<div class="space-y-4">
+										<!-- Conversation Failures -->
+										{#if evaluation?.conversationFailures?.length > 0}
+											<div>
+												<h4 class="font-medium text-orange-700 mb-2">🔍 Specific Issues Identified</h4>
+												<div class="space-y-2">
+													{#each evaluation.conversationFailures as failure}
+														<div class="bg-red-50 border border-red-200 rounded p-3">
+															<div class="text-sm text-red-800">{failure}</div>
+														</div>
+													{/each}
+												</div>
+											</div>
+										{/if}
+
+										<!-- Prompt Improvement Suggestions -->
+										{#if evaluation?.promptSuggestions?.length > 0}
+											<div>
+												<h4 class="font-medium text-orange-700 mb-2">🎯 Actionable Prompt Improvements</h4>
+												<div class="space-y-2">
+													{#each evaluation.promptSuggestions as suggestion}
+														<div class="bg-green-50 border border-green-200 rounded p-3">
+															<div class="text-sm text-green-800">✅ {suggestion}</div>
+														</div>
+													{/each}
+												</div>
+											</div>
+										{/if}
+
+										<!-- Improvement Areas -->
+										{#if evaluation?.improvementAreas?.length > 0}
+											<div>
+												<h4 class="font-medium text-orange-700 mb-2">🎪 Focus Areas for Enhancement</h4>
+												<div class="flex flex-wrap gap-2">
+													{#each evaluation.improvementAreas as area}
+														<span class="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+															{area}
+														</span>
+													{/each}
+												</div>
+											</div>
+										{/if}
+									</div>
+								</div>
+							{/if}
+
 							<!-- Detailed Results with Conversations -->
 							{#if selectedTestRun.detailed_results && selectedTestRun.detailed_results.length > 0}
 								<div class="space-y-4">
@@ -2629,6 +2691,11 @@ ${result.results
 																					<span class="text-sm font-medium"
 																						>Turn {turn.turnNumber}</span
 																					>
+																					{#if turn.pathUsed}
+																						<Badge variant="outline" class="text-xs">
+																							{turn.pathUsed}
+																						</Badge>
+																					{/if}
 																					<Badge
 																						variant={turn.turnScore >= 70
 																							? 'default'
@@ -3273,6 +3340,51 @@ ${result.results
 														</div>
 													{/if}
 
+													<!-- Conversation Failures -->
+													{#if testResult.evaluation.conversationFailures && testResult.evaluation.conversationFailures.length > 0}
+														<div class="rounded-lg border border-orange-200 bg-orange-50 p-4">
+															<h4 class="mb-3 text-sm font-medium text-orange-800">🔍 What Went Wrong</h4>
+															<ul class="space-y-2">
+																{#each testResult.evaluation.conversationFailures as failure}
+																	<li class="flex items-start text-sm text-orange-700">
+																		<span class="mr-2 mt-0.5 text-orange-500">•</span>
+																		<span>{failure}</span>
+																	</li>
+																{/each}
+															</ul>
+														</div>
+													{/if}
+
+													<!-- Prompt Improvement Suggestions -->
+													{#if testResult.evaluation.promptSuggestions && testResult.evaluation.promptSuggestions.length > 0}
+														<div class="rounded-lg border border-blue-200 bg-blue-50 p-4">
+															<h4 class="mb-3 text-sm font-medium text-blue-800">💡 Prompt Improvement Suggestions</h4>
+															<ul class="space-y-2">
+																{#each testResult.evaluation.promptSuggestions as suggestion}
+																	<li class="flex items-start text-sm text-blue-700">
+																		<span class="mr-2 mt-0.5 text-blue-500">•</span>
+																		<span>{suggestion}</span>
+																	</li>
+																{/each}
+															</ul>
+														</div>
+													{/if}
+
+													<!-- Improvement Areas -->
+													{#if testResult.evaluation.improvementAreas && testResult.evaluation.improvementAreas.length > 0}
+														<div class="rounded-lg border border-purple-200 bg-purple-50 p-4">
+															<h4 class="mb-3 text-sm font-medium text-purple-800">🎯 Key Improvement Areas</h4>
+															<ul class="space-y-2">
+																{#each testResult.evaluation.improvementAreas as area}
+																	<li class="flex items-start text-sm text-purple-700">
+																		<span class="mr-2 mt-0.5 text-purple-500">•</span>
+																		<span>{area}</span>
+																	</li>
+																{/each}
+															</ul>
+														</div>
+													{/if}
+
 													<!-- Evaluation Recommendations -->
 													{#if testResult.evaluation.recommendations && testResult.evaluation.recommendations.length > 0}
 														<div class="rounded-lg border border-blue-200 bg-blue-50 p-4">
@@ -3483,7 +3595,11 @@ ${result.results
 					<Card>
 						<CardHeader>
 							<CardTitle class="flex items-center justify-between">
-								Quality Test Results
+								{#if testResults.testType === 'multi_turn'}
+									Multi-Turn Test Results
+								{:else}
+									Quality Test Results
+								{/if}
 								{#if exportData}
 									<Button onclick={downloadResults} variant="outline" size="sm">
 										<Download class="mr-2 h-4 w-4" />
@@ -3491,32 +3607,144 @@ ${result.results
 									</Button>
 								{/if}
 							</CardTitle>
-							<CardDescription
-								>Comprehensive analysis of conversation quality metrics</CardDescription
-							>
+							<CardDescription>
+								{#if testResults.testType === 'multi_turn'}
+									Comprehensive analysis of multi-turn conversation flows
+								{:else}
+									Comprehensive analysis of conversation quality metrics
+								{/if}
+							</CardDescription>
 						</CardHeader>
 						<CardContent class="space-y-6">
 							<!-- Overall Summary -->
 							{#if testResults.summary}
-								<div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-									<div class="space-y-1 text-center">
-										<p class="text-2xl font-bold">{testResults.summary.totalTests}</p>
-										<p class="text-xs text-muted-foreground">Total Tests</p>
+								{#if testResults.testType === 'multi_turn'}
+									<!-- Multi-Turn Test Summary -->
+									<div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+										<div class="space-y-1 text-center">
+											<p class="text-2xl font-bold">{testResults.summary.totalTurns || 0}</p>
+											<p class="text-xs text-muted-foreground">Total Turns</p>
+										</div>
+										<div class="space-y-1 text-center">
+											<p class="text-2xl font-bold text-green-600">{testResults.summary.success ? '✅' : '❌'}</p>
+											<p class="text-xs text-muted-foreground">Test Result</p>
+										</div>
+										<div class="space-y-1 text-center">
+											<p class="text-2xl font-bold">{Math.round(testResults.summary.overallScore || 0)}</p>
+											<p class="text-xs text-muted-foreground">Overall Score</p>
+										</div>
+										<div class="space-y-1 text-center">
+											<p class="text-2xl font-bold">{testResults.summary.pathInsights?.length || 0}</p>
+											<p class="text-xs text-muted-foreground">Paths Used</p>
+										</div>
 									</div>
-									<div class="space-y-1 text-center">
-										<p class="text-2xl font-bold text-green-600">{testResults.summary.passed}</p>
-										<p class="text-xs text-muted-foreground">Passed</p>
+								{:else}
+									<!-- Quality Test Summary -->
+									<div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+										<div class="space-y-1 text-center">
+											<p class="text-2xl font-bold">{testResults.summary.totalTests}</p>
+											<p class="text-xs text-muted-foreground">Total Tests</p>
+										</div>
+										<div class="space-y-1 text-center">
+											<p class="text-2xl font-bold text-green-600">{testResults.summary.passed}</p>
+											<p class="text-xs text-muted-foreground">Passed</p>
+										</div>
+										<div class="space-y-1 text-center">
+											<p class="text-2xl font-bold">
+												{formatPercentage(testResults.summary.passRate)}
+											</p>
+											<p class="text-xs text-muted-foreground">Pass Rate</p>
+										</div>
+										<div class="space-y-1 text-center">
+											<p class="text-2xl font-bold">{Math.round(testResults.summary.averageScore)}</p>
+											<p class="text-xs text-muted-foreground">Avg Score</p>
+										</div>
 									</div>
-									<div class="space-y-1 text-center">
-										<p class="text-2xl font-bold">
-											{formatPercentage(testResults.summary.passRate)}
-										</p>
-										<p class="text-xs text-muted-foreground">Pass Rate</p>
-									</div>
-									<div class="space-y-1 text-center">
-										<p class="text-2xl font-bold">{Math.round(testResults.summary.averageScore)}</p>
-										<p class="text-xs text-muted-foreground">Avg Score</p>
-									</div>
+								{/if}
+							{/if}
+
+							<!-- Overall Conversation Analysis (for multi-turn tests) -->
+							{#if testResults.testType === 'multi_turn' && testResults.result?.evaluation}
+								<div class="space-y-4">
+									<h3 class="font-semibold">Overall Conversation Analysis</h3>
+									
+									<!-- Conversation Failures -->
+									{#if testResults.result.evaluation.conversationFailures && testResults.result.evaluation.conversationFailures.length > 0}
+										<div class="rounded-lg border border-orange-200 bg-orange-50 p-4">
+											<h4 class="mb-3 text-sm font-medium text-orange-800">🔍 What Went Wrong</h4>
+											<ul class="space-y-2">
+												{#each testResults.result.evaluation.conversationFailures as failure}
+													<li class="flex items-start text-sm text-orange-700">
+														<span class="mr-2 mt-0.5 text-orange-500">•</span>
+														<span>{failure}</span>
+													</li>
+												{/each}
+											</ul>
+										</div>
+									{/if}
+
+									<!-- Prompt Improvement Suggestions -->
+									{#if testResults.result.evaluation.promptSuggestions && testResults.result.evaluation.promptSuggestions.length > 0}
+										<div class="rounded-lg border border-blue-200 bg-blue-50 p-4">
+											<h4 class="mb-3 text-sm font-medium text-blue-800">💡 Prompt Improvement Suggestions</h4>
+											<ul class="space-y-2">
+												{#each testResults.result.evaluation.promptSuggestions as suggestion}
+													<li class="flex items-start text-sm text-blue-700">
+														<span class="mr-2 mt-0.5 text-blue-500">•</span>
+														<span>{suggestion}</span>
+													</li>
+												{/each}
+											</ul>
+										</div>
+									{/if}
+
+									<!-- Improvement Areas -->
+									{#if testResults.result.evaluation.improvementAreas && testResults.result.evaluation.improvementAreas.length > 0}
+										<div class="rounded-lg border border-purple-200 bg-purple-50 p-4">
+											<h4 class="mb-3 text-sm font-medium text-purple-800">🎯 Key Improvement Areas</h4>
+											<ul class="space-y-2">
+												{#each testResults.result.evaluation.improvementAreas as area}
+													<li class="flex items-start text-sm text-purple-700">
+														<span class="mr-2 mt-0.5 text-purple-500">•</span>
+														<span>{area}</span>
+													</li>
+												{/each}
+											</ul>
+										</div>
+									{/if}
+
+									<!-- General Evaluation -->
+									{#if testResults.result.evaluation.strengths || testResults.result.evaluation.weaknesses}
+										<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+											{#if testResults.result.evaluation.strengths && testResults.result.evaluation.strengths.length > 0}
+												<div class="rounded-lg border border-green-200 bg-green-50 p-4">
+													<h4 class="mb-3 text-sm font-medium text-green-800">✅ Strengths</h4>
+													<ul class="space-y-2">
+														{#each testResults.result.evaluation.strengths as strength}
+															<li class="flex items-start text-sm text-green-700">
+																<span class="mr-2 mt-0.5 text-green-500">•</span>
+																<span>{strength}</span>
+															</li>
+														{/each}
+													</ul>
+												</div>
+											{/if}
+
+											{#if testResults.result.evaluation.weaknesses && testResults.result.evaluation.weaknesses.length > 0}
+												<div class="rounded-lg border border-red-200 bg-red-50 p-4">
+													<h4 class="mb-3 text-sm font-medium text-red-800">⚠️ Weaknesses</h4>
+													<ul class="space-y-2">
+														{#each testResults.result.evaluation.weaknesses as weakness}
+															<li class="flex items-start text-sm text-red-700">
+																<span class="mr-2 mt-0.5 text-red-500">•</span>
+																<span>{weakness}</span>
+															</li>
+														{/each}
+													</ul>
+												</div>
+											{/if}
+										</div>
+									{/if}
 								</div>
 							{/if}
 
@@ -3694,6 +3922,11 @@ ${result.results
 																					<span class="text-sm font-medium"
 																						>Turn {turn.turnNumber}</span
 																					>
+																					{#if turn.pathUsed}
+																						<Badge variant="outline" class="text-xs">
+																							{turn.pathUsed}
+																						</Badge>
+																					{/if}
 																					<Badge
 																						variant={turn.turnScore >= 70
 																							? 'default'
