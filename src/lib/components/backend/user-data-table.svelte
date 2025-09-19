@@ -1,6 +1,8 @@
 <script lang="ts">
-	import * as Table from "$lib/components/ui/table";
-	import { Input } from "$lib/components/ui/input";
+	import DataTable from "$lib/components/ui/data-table/data-table.svelte";
+	import type { ColumnDef } from "@tanstack/table-core";
+	import { renderComponent } from "$lib/components/ui/data-table/index.js";
+	import SortableHeaderButton from "$lib/components/backend/sortable-header-button.svelte";
 
 	interface UserStat {
 		id: string;
@@ -29,127 +31,121 @@
 
 	let { data }: Props = $props();
 
-	let filterValue = $state("");
-
 	function formatDateTime(dateString: string) {
 		return new Date(dateString).toLocaleString('de-DE');
 	}
 
-	// Simple client-side filtering
-	let filteredData = $derived(
-		filterValue.trim() === "" 
-			? data 
-			: data.filter(user => {
-				const search = filterValue.toLowerCase();
-				return (
-					user.firstName?.toLowerCase().includes(search) ||
-					user.lastName?.toLowerCase().includes(search) ||
-					user.email?.toLowerCase().includes(search) ||
-					user.role?.toLowerCase().includes(search)
-				);
-			})
-	);
+	const columns: ColumnDef<UserStat>[] = [
+		{
+			accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+			id: 'user',
+			header: 'User',
+			cell: ({ row }) => {
+				const user = row.original;
+				return `
+					<div>
+						<div class="font-medium">${user.firstName} ${user.lastName}</div>
+						<div class="text-sm text-muted-foreground">${user.email}</div>
+					</div>
+				`;
+			}
+		},
+		{
+			accessorKey: 'role',
+			header: 'Role',
+			cell: ({ getValue }) => {
+				const role = getValue() as string;
+				const isAdmin = role === 'admin';
+				return `
+					<span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
+						isAdmin ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'
+					}">
+						${role}
+					</span>
+				`;
+			}
+		},
+		{
+			accessorKey: 'chatCount',
+			header: ({ column }) => renderComponent(SortableHeaderButton, {
+				onclick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+				text: 'Chats'
+			}),
+			cell: ({ getValue }) => `<div class="text-right">${getValue()}</div>`
+		},
+		{
+			accessorKey: 'analysisCount',
+			header: ({ column }) => renderComponent(SortableHeaderButton, {
+				onclick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+				text: 'Analyses'
+			}),
+			cell: ({ getValue }) => `<div class="text-right">${getValue()}</div>`
+		},
+		{
+			accessorKey: 'traceCount',
+			header: ({ column }) => renderComponent(SortableHeaderButton, {
+				onclick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+				text: 'Traces'
+			}),
+			cell: ({ getValue }) => `<div class="text-right"><span class="text-blue-600">${getValue()}</span></div>`
+		},
+		{
+			accessorKey: 'errorCount',
+			header: ({ column }) => renderComponent(SortableHeaderButton, {
+				onclick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+				text: 'Errors'
+			}),
+			cell: ({ getValue }) => `<div class="text-right"><span class="text-red-600">${getValue()}</span></div>`
+		},
+		{
+			accessorKey: 'learnSessionCount',
+			header: 'Sessions',
+			cell: ({ getValue }) => `<div class="text-right"><span class="text-indigo-600">${getValue()}</span></div>`
+		},
+		{
+			accessorKey: 'completedSessionCount',
+			header: 'Completed',
+			cell: ({ getValue }) => `<div class="text-right"><span class="text-green-600">${getValue()}</span></div>`
+		},
+		{
+			accessorKey: 'totalTokens',
+			header: 'Total Tokens',
+			cell: ({ getValue }) => {
+				const tokens = getValue() as number;
+				return tokens > 0 
+					? `<div class="text-right"><span class="text-purple-600">${tokens.toLocaleString()}</span></div>`
+					: `<div class="text-right"><span class="text-muted-foreground">-</span></div>`;
+			}
+		},
+		{
+			accessorKey: 'avgSentimentPolarity',
+			header: 'Avg Sentiment',
+			cell: ({ getValue }) => {
+				const sentiment = getValue() as number;
+				if (sentiment === 0) {
+					return `<div class="text-right"><span class="text-muted-foreground">-</span></div>`;
+				}
+				const color = sentiment > 0 ? 'text-green-600' : 'text-red-600';
+				const sign = sentiment > 0 ? '+' : '';
+				return `<div class="text-right"><span class="${color}">${sign}${sentiment}</span></div>`;
+			}
+		},
+		{
+			accessorKey: 'avgEmpathyRate',
+			header: 'Avg Empathy',
+			cell: ({ getValue }) => {
+				const empathy = getValue() as number;
+				return empathy !== 0 
+					? `<div class="text-right"><span class="text-blue-600">${empathy}%</span></div>`
+					: `<div class="text-right"><span class="text-muted-foreground">-</span></div>`;
+			}
+		},
+		{
+			accessorKey: 'lastActivity',
+			header: 'Last Activity',
+			cell: ({ getValue }) => formatDateTime(getValue() as string)
+		}
+	];
 </script>
 
-<div class="space-y-4">
-	<div class="flex items-center justify-between">
-		<Input
-			placeholder="Filter users..."
-			bind:value={filterValue}
-			class="max-w-sm"
-		/>
-		<div class="text-sm text-muted-foreground">
-			{filteredData?.length || 0} of {data?.length || 0} user(s)
-		</div>
-	</div>
-	
-	<div class="rounded-md border border-white/20 bg-offwhite">
-		<Table.Root>
-			<Table.Header>
-				<Table.Row>
-					<Table.Head class="font-medium">User</Table.Head>
-					<Table.Head class="font-medium">Role</Table.Head>
-					<Table.Head class="font-medium text-right">Chats</Table.Head>
-					<Table.Head class="font-medium text-right">Analyses</Table.Head>
-					<Table.Head class="font-medium text-right">Traces</Table.Head>
-					<Table.Head class="font-medium text-right">Errors</Table.Head>
-					<Table.Head class="font-medium text-right">Sessions</Table.Head>
-					<Table.Head class="font-medium text-right">Completed</Table.Head>
-					<Table.Head class="font-medium text-right">Total Tokens</Table.Head>
-					<Table.Head class="font-medium text-right">Avg Sentiment</Table.Head>
-					<Table.Head class="font-medium text-right">Avg Empathy</Table.Head>
-					<Table.Head class="font-medium">Last Activity</Table.Head>
-				</Table.Row>
-			</Table.Header>
-			<Table.Body>
-				{#if filteredData?.length > 0}
-					{#each filteredData as user}
-						<Table.Row>
-							<Table.Cell>
-								<div>
-									<div class="font-medium">{user.firstName} {user.lastName}</div>
-									<div class="text-sm text-muted-foreground">{user.email}</div>
-								</div>
-							</Table.Cell>
-							<Table.Cell>
-								<span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium {user.role === 'admin' 
-									? 'bg-red-50 text-red-700' 
-									: 'bg-blue-50 text-blue-700'}">
-									{user.role}
-								</span>
-							</Table.Cell>
-							<Table.Cell class="text-right">{user.chatCount}</Table.Cell>
-							<Table.Cell class="text-right">{user.analysisCount}</Table.Cell>
-							<Table.Cell class="text-right">
-								<span class="text-blue-600">{user.traceCount}</span>
-							</Table.Cell>
-							<Table.Cell class="text-right">
-								<span class="text-red-600">{user.errorCount}</span>
-							</Table.Cell>
-							<Table.Cell class="text-right">
-								<span class="text-indigo-600">{user.learnSessionCount}</span>
-							</Table.Cell>
-							<Table.Cell class="text-right">
-								<span class="text-green-600">{user.completedSessionCount}</span>
-							</Table.Cell>
-							<Table.Cell class="text-right">
-								{#if user.totalTokens > 0}
-									<span class="text-purple-600">{user.totalTokens.toLocaleString()}</span>
-								{:else}
-									<span class="text-muted-foreground">-</span>
-								{/if}
-							</Table.Cell>
-							<Table.Cell class="text-right">
-								{#if user.avgSentimentPolarity !== 0}
-									<span class="{user.avgSentimentPolarity > 0 ? 'text-green-600' : 'text-red-600'}">
-										{user.avgSentimentPolarity > 0 ? '+' : ''}{user.avgSentimentPolarity}
-									</span>
-								{:else}
-									<span class="text-muted-foreground">-</span>
-								{/if}
-							</Table.Cell>
-							<Table.Cell class="text-right">
-								{#if user.avgEmpathyRate !== 0}
-									<span class="text-blue-600">{user.avgEmpathyRate}%</span>
-								{:else}
-									<span class="text-muted-foreground">-</span>
-								{/if}
-							</Table.Cell>
-							<Table.Cell>{formatDateTime(user.lastActivity)}</Table.Cell>
-						</Table.Row>
-					{/each}
-				{:else}
-					<Table.Row>
-						<Table.Cell colspan="12" class="text-center text-muted-foreground py-8">
-							{#if !data || data.length === 0}
-								No users found
-							{:else}
-								No users match your search
-							{/if}
-						</Table.Cell>
-					</Table.Row>
-				{/if}
-			</Table.Body>
-		</Table.Root>
-	</div>
-</div>
+<DataTable {data} {columns} />

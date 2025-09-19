@@ -1,47 +1,87 @@
 <script lang="ts" generics="TData, TValue">
-	import { createTable, Render, Subscribe, createRender } from "svelte-headless-table";
-	import { addPagination, addSortBy, addTableFilter, addHiddenColumns } from "svelte-headless-table/plugins";
-	import * as Table from "$lib/components/ui/table";
-	import { Button } from "$lib/components/ui/button";
-	import { Input } from "$lib/components/ui/input";
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
+	import {
+		type ColumnDef,
+		type PaginationState,
+		type SortingState,
+		type ColumnFiltersState,
+		type VisibilityState,
+		getCoreRowModel,
+		getPaginationRowModel,
+		getSortedRowModel,
+		getFilteredRowModel
+	} from "@tanstack/table-core";
+	import { Button } from "$lib/components/ui/button/index.js";
+	import { Input } from "$lib/components/ui/input/index.js";
+	import * as Table from "$lib/components/ui/table/index.js";
+	import { createSvelteTable, FlexRender } from "$lib/components/ui/data-table/index.js";
 	import { cn } from "$lib/utils.js";
-	import { ChevronDown } from "lucide-svelte";
-	
+
 	interface Props {
 		data: TData[];
-		columns: any[];
+		columns: ColumnDef<TData, TValue>[];
 		class?: string;
 	}
 
 	let { data, columns, class: className, ...restProps }: Props = $props();
 
-	const table = createTable(data, {
-		sort: addSortBy({ disableMultiSort: true }),
-		page: addPagination(),
-		filter: addTableFilter({
-			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase()),
-		}),
-		hide: addHiddenColumns(),
+	let sorting = $state<SortingState>([]);
+	let columnFilters = $state<ColumnFiltersState>([]);
+	let columnVisibility = $state<VisibilityState>({});
+	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
+
+	const table = createSvelteTable({
+		get data() {
+			return data;
+		},
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		enableSorting: true,
+		onSortingChange: (updater) => {
+			if (updater instanceof Function) {
+				sorting = updater(sorting);
+			} else {
+				sorting = updater;
+			}
+		},
+		onColumnFiltersChange: (updater) => {
+			if (updater instanceof Function) {
+				columnFilters = updater(columnFilters);
+			} else {
+				columnFilters = updater;
+			}
+		},
+		onColumnVisibilityChange: (updater) => {
+			if (updater instanceof Function) {
+				columnVisibility = updater(columnVisibility);
+			} else {
+				columnVisibility = updater;
+			}
+		},
+		onPaginationChange: (updater) => {
+			if (updater instanceof Function) {
+				pagination = updater(pagination);
+			} else {
+				pagination = updater;
+			}
+		},
+		state: {
+			get sorting() {
+				return sorting;
+			},
+			get columnFilters() {
+				return columnFilters;
+			},
+			get columnVisibility() {
+				return columnVisibility;
+			},
+			get pagination() {
+				return pagination;
+			}
+		}
 	});
-
-	const tableColumns = table.createColumns(columns);
-
-	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates, flatColumns } =
-		table.createViewModel(tableColumns);
-
-	const { hasNextPage, hasPreviousPage, pageIndex, pageCount, pageSize } = pluginStates.page;
-	const { filterValue } = pluginStates.filter;
-	const { hiddenColumnIds } = pluginStates.hide;
-
-	const ids = flatColumns.map((col) => col.id);
-	let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
-
-	$: $hiddenColumnIds = Object.entries(hideForId)
-		.filter(([, hide]) => !hide)
-		.map(([id]) => id);
-
-	const hidableCols = ["lastName", "email", "role"];
 </script>
 
 <div class="w-full">
@@ -49,109 +89,72 @@
 		<Input
 			class="max-w-sm"
 			placeholder="Filter users..."
-			type="text"
-			bind:value={$filterValue}
+			oninput={(e) => {
+				const value = e.currentTarget.value;
+				// Set global filter on the first column that exists
+				const firstColumn = table.getAllColumns()[0];
+				if (firstColumn) {
+					firstColumn.setFilterValue(value);
+				}
+			}}
 		/>
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger asChild let:builder>
-				<Button variant="outline" class="ml-auto" builders={[builder]}>
-					Columns <ChevronDown class="ml-2 h-4 w-4" />
-				</Button>
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content align="end">
-				{#each flatColumns as col}
-					{#if hidableCols.includes(col.id)}
-						<DropdownMenu.CheckboxItem
-							class="capitalize"
-							checked={hideForId[col.id]}
-							onCheckedChange={(value) => (hideForId[col.id] = value)}
-						>
-							{col.header}
-						</DropdownMenu.CheckboxItem>
-					{/if}
-				{/each}
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
 	</div>
 	<div class="rounded-md border">
-		<Table.Root {...$tableAttrs} class={cn("", className)} {...restProps}>
+		<Table.Root class={cn("", className)} {...restProps}>
 			<Table.Header>
-				{#each $headerRows as headerRow}
-					<Subscribe rowAttrs={headerRow.attrs()}>
-						<Table.Row>
-							{#each headerRow.cells as cell (cell.id)}
-								<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()} let:props>
-									<Table.Head {...attrs} class={cn("[&:has([role=checkbox])]:pl-3")}>
-										{#if cell.id === "amount"}
-											<div class="text-right font-medium">
-												<Render of={cell.render()} />
-											</div>
-										{:else if cell.id === "email"}
-											<Button variant="ghost" on:click={props.sort.toggle}>
-												<Render of={cell.render()} />
-												<CaretSort
-													class={cn(
-														$props.sort.order === "asc" || $props.sort.order === "desc"
-															? "text-foreground"
-															: "text-muted-foreground",
-														"ml-2 h-4 w-4"
-													)}
-												/>
-											</Button>
-										{:else}
-											<Render of={cell.render()} />
-										{/if}
-									</Table.Head>
-								</Subscribe>
-							{/each}
-						</Table.Row>
-					</Subscribe>
+				{#each table.getHeaderGroups() as headerGroup}
+					<Table.Row>
+						{#each headerGroup.headers as header}
+							<Table.Head colSpan={header.colSpan} class={cn("[&:has([role=checkbox])]:pl-3")}>
+								{#if !header.isPlaceholder}
+									<FlexRender content={header.column.columnDef.header} context={header.getContext()} />
+								{/if}
+							</Table.Head>
+						{/each}
+					</Table.Row>
 				{/each}
 			</Table.Header>
-			<Table.Body {...$tableBodyAttrs}>
-				{#each $pageRows as row (row.id)}
-					<Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-						<Table.Row {...rowAttrs} data-state={row.isSelected() && "selected"}>
-							{#each row.cells as cell (cell.id)}
-								<Subscribe attrs={cell.attrs()} let:attrs>
-									<Table.Cell class="[&:has([role=checkbox])]:pl-3" {...attrs}>
-										{#if cell.id === "amount"}
-											<div class="text-right font-medium">
-												<Render of={cell.render()} />
-											</div>
-										{:else if cell.id === "status"}
-											<div class="capitalize">
-												<Render of={cell.render()} />
-											</div>
-										{:else}
-											<Render of={cell.render()} />
-										{/if}
-									</Table.Cell>
-								</Subscribe>
-							{/each}
-						</Table.Row>
-					</Subscribe>
+			<Table.Body>
+				{#each table.getRowModel().rows as row}
+					<Table.Row data-state={row.getIsSelected() && "selected"}>
+						{#each row.getVisibleCells() as cell}
+							<Table.Cell class="[&:has([role=checkbox])]:pl-3">
+								<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />
+							</Table.Cell>
+						{/each}
+					</Table.Row>
+				{:else}
+					<Table.Row>
+						<Table.Cell colSpan={columns.length} class="h-24 text-center">
+							No results.
+						</Table.Cell>
+					</Table.Row>
 				{/each}
 			</Table.Body>
 		</Table.Root>
 	</div>
 	<div class="flex items-center justify-end space-x-2 py-4">
 		<div class="flex-1 text-sm text-muted-foreground">
-			{Math.min($pageIndex * $pageSize + 1, data.length)} - {Math.min(($pageIndex + 1) * $pageSize, data.length)} of {data.length} user(s)
+			{table.getFilteredSelectedRowModel().rows.length} of{' '}
+			{table.getFilteredRowModel().rows.length} row(s) selected.
 		</div>
 		<div class="space-x-2">
 			<Button
 				variant="outline"
 				size="sm"
-				on:click={() => ($pageIndex = $pageIndex - 1)}
-				disabled={!$hasPreviousPage}>Previous</Button
+				onclick={() => table.previousPage()}
+				disabled={!table.getCanPreviousPage()}
 			>
+				Previous
+			</Button>
 			<Button
 				variant="outline"
 				size="sm"
-				disabled={!$hasNextPage}
-				on:click={() => ($pageIndex = $pageIndex + 1)}>Next</Button
+				onclick={() => table.nextPage()}
+				disabled={!table.getCanNextPage()}
 			>
+				Next
+			</Button>
 		</div>
 	</div>
 </div>

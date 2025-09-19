@@ -37,6 +37,8 @@
 	{:else if result instanceof RenderSnippetConfig}
 		{@const { snippet, params } = result}
 		{@render snippet(params)}
+	{:else if typeof result === "string"}
+		{@html result}
 	{:else}
 		{result}
 	{/if}
