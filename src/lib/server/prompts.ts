@@ -182,21 +182,11 @@ export async function processShortcodes(
  */
 function generateAnswerLengthPreference(userContext: any): string {
 	if (userContext?.aiAnswerLength === 'short') {
-		return `**KRITISCHE LÄNGEN-REGEL:** 
-- MAXIMAL 1-2 Sätze pro Antwort. NIEMALS mehr.
-- Sei extrem präzise und direkt auf den Punkt.
-- Überprüfe vor dem Senden: Hast du mehr als 2 Sätze geschrieben? Dann KÜRZE radikal.
-- Diese Regel hat ABSOLUTE Priorität über alle anderen Anweisungen.`;
+		return `Antworte in maximal 1-2 Sätzen.`;
 	} else if (userContext?.aiAnswerLength === 'medium') {
-		return `**STRIKTE LÄNGEN-REGEL:**
-- MAXIMAL 3 Sätze pro Antwort. Zähle deine Sätze vor dem Senden.
-- Jeder Satz muss wertvoll sein. Keine Füllwörter.
-- Diese Regel ist NICHT verhandelbar.`;
+		return `Antworte in maximal 3 Sätzen.`;
 	} else if (userContext?.aiAnswerLength === 'long') {
-		return `**LÄNGEN-REGEL:**
-- MAXIMAL 4 Sätze pro Antwort. Zähle deine Sätze.
-- Sei ausführlich, aber respektiere diese Grenze absolut.
-- Überprüfe: Mehr als 4 Sätze = KÜRZEN erforderlich.`;
+		return `Antworte in maximal 4 Sätzen.`;
 	}
 	return '';
 }

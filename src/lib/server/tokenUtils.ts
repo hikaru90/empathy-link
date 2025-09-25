@@ -14,7 +14,7 @@ export interface TokenLimits {
 }
 
 export const TOKEN_LIMITS: TokenLimits = {
-	DAILY_LIMIT: 100000, // 100k tokens per day for regular users
+	DAILY_LIMIT: 500000, // 500k tokens per day for regular users
 	ADMIN_DAILY_LIMIT: 1000000 // 1M tokens per day for admin users (effectively unlimited)
 };
 

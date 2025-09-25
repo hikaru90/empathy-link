@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { pb } from '$scripts/pocketbase';
 import { CONVERSATION_PATHS, type PathMarker } from '$lib/server/paths';
+import { aggregateTokenCosts } from '$lib/server/tokenPricing';
 import { redirect } from '@sveltejs/kit';
 // Helper function to analyze path transitions from chat history
 function analyzePathTransitions(history: any[]) {
@@ -130,9 +131,13 @@ export const load: PageServerLoad = async ({ locals, params }) => {
         // Get available path definitions for reference
         const availablePaths = Object.values(CONVERSATION_PATHS);
 
+        // Calculate token costs
+        const tokenCostBreakdown = aggregateTokenCosts(traces);
+
         return {
             record,
             traces,
+            tokenCostBreakdown,
             pathAnalysis: {
                 transitions: pathTransitions,
                 segments: pathSegments,

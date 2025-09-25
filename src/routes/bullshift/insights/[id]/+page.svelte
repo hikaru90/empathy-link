@@ -15,14 +15,10 @@
 		return options.find((option) => option.name === functionName)?.color || 'text-gray-600';
 	};
 
-	const getTokenPriceInCents = (tokens: number) => {
-		const inputTokenPrice = 0.075 / 1000000;
-		const outputTokenPrice = 0.3 / 1000000;
-		return (tokens * inputTokenPrice) + (tokens * outputTokenPrice) * 100;
-	};
-
-	const getTotalTokenPriceInCents = () => {
-		return data.traces?.reduce((acc, trace) => acc + getTokenPriceInCents(trace.inputTokens + trace.outputTokens), 0) || 0;
+	const getTokenPriceInCents = (inputTokens: number, outputTokens: number) => {
+		const inputTokenPrice = 0.075 / 1000000; // $0.075 per 1M input tokens
+		const outputTokenPrice = 0.3 / 1000000;  // $0.30 per 1M output tokens
+		return (inputTokens * inputTokenPrice + outputTokens * outputTokenPrice) * 100;
 	};
 
 	const getPathColor = (pathId: string) => {
@@ -300,14 +296,61 @@
 		</div>
 	{/if}
 
-	<div class="flex justify-start">
-		<div class="flex justify-start items-center gap-2 bg-blue-200 rounded-md px-4 py-2 shadow-md mb-2">
-			<h2 class="font-bold">Total Token Price</h2>
-			<div class="text-sm">
-				{getTotalTokenPriceInCents().toFixed(2)} Cents
+	<!-- Token Usage & Cost Summary -->
+	{#if data.tokenCostBreakdown}
+		<div class="mb-10">
+			<h2 class="text-lg font-bold mb-4">Token Usage & Cost Summary</h2>
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+				<!-- Input Tokens -->
+				<div class="p-4 border rounded-lg bg-green-50 border-green-200">
+					<div class="text-sm text-green-600 font-medium mb-1">Input Tokens</div>
+					<div class="text-2xl font-bold text-green-800">{data.tokenCostBreakdown.inputTokens.toLocaleString()}</div>
+					<div class="text-xs text-green-600 mt-1">${data.tokenCostBreakdown.inputCostUSD.toFixed(4)} USD</div>
+				</div>
+
+				<!-- Output Tokens -->
+				<div class="p-4 border rounded-lg bg-blue-50 border-blue-200">
+					<div class="text-sm text-blue-600 font-medium mb-1">Output Tokens</div>
+					<div class="text-2xl font-bold text-blue-800">{data.tokenCostBreakdown.outputTokens.toLocaleString()}</div>
+					<div class="text-xs text-blue-600 mt-1">${data.tokenCostBreakdown.outputCostUSD.toFixed(4)} USD</div>
+				</div>
+
+				<!-- Total Tokens -->
+				<div class="p-4 border rounded-lg bg-purple-50 border-purple-200">
+					<div class="text-sm text-purple-600 font-medium mb-1">Total Tokens</div>
+					<div class="text-2xl font-bold text-purple-800">{data.tokenCostBreakdown.totalTokens.toLocaleString()}</div>
+					<div class="text-xs text-purple-600 mt-1">Combined usage</div>
+				</div>
+
+				<!-- Total Cost -->
+				<div class="p-4 border rounded-lg bg-orange-50 border-orange-200">
+					<div class="text-sm text-orange-600 font-medium mb-1">Total Cost</div>
+					<div class="text-2xl font-bold text-orange-800">{data.tokenCostBreakdown.totalCostCents.toFixed(2)}¢</div>
+					<div class="text-xs text-orange-600 mt-1">${data.tokenCostBreakdown.totalCostUSD.toFixed(4)} USD</div>
+				</div>
+			</div>
+
+			<!-- Cost Breakdown -->
+			<div class="p-4 border rounded-lg bg-gray-50">
+				<h3 class="font-semibold mb-3">Cost Breakdown</h3>
+				<div class="space-y-2 text-sm">
+					<div class="flex justify-between">
+						<span>Input tokens ({data.tokenCostBreakdown.inputTokens.toLocaleString()}) @ $0.075/1M:</span>
+						<span class="font-mono">${data.tokenCostBreakdown.inputCostUSD.toFixed(4)}</span>
+					</div>
+					<div class="flex justify-between">
+						<span>Output tokens ({data.tokenCostBreakdown.outputTokens.toLocaleString()}) @ $0.30/1M:</span>
+						<span class="font-mono">${data.tokenCostBreakdown.outputCostUSD.toFixed(4)}</span>
+					</div>
+					<hr class="my-2">
+					<div class="flex justify-between font-semibold">
+						<span>Total Cost:</span>
+						<span class="font-mono">${data.tokenCostBreakdown.totalCostUSD.toFixed(4)} ({data.tokenCostBreakdown.totalCostCents.toFixed(2)}¢)</span>
+					</div>
+				</div>
 			</div>
 		</div>
-	</div>
+	{/if}
 
 	{#if data.traces?.length > 0}
 		<div class="mb-10">
@@ -334,7 +377,7 @@
 								{/if}
 							</div>
 							<div>
-								{getTokenPriceInCents(trace.inputTokens + trace.outputTokens).toFixed(4)} Cents
+								{getTokenPriceInCents(trace.inputTokens, trace.outputTokens).toFixed(4)} Cents
 							</div>
 						</div>
 						<div class="flex justify-between rounded-md bg-black/10 p-1 text-xs text-white/60">
