@@ -25,15 +25,15 @@ export const selfempathyChats = new Map<string, Chat>();
 // Remove persistent chat storage - we'll create chats on demand
 export const chatPaths = new Map<string, PathState>();
 
-// Utility function to convert DB history to Gemini format
-export const convertHistoryToGemini = (dbHistory: any[]) => {
-	return dbHistory
+// Utility function to convert DB history to Gemini format with sliding window
+export const convertHistoryToGemini = (dbHistory: any[], maxMessages: number = 20) => {
+	const filtered = dbHistory
 		// Filter out path markers and other non-conversational entries
-		.filter(entry => 
-			!entry.pathMarker && 
-			entry.role && 
-			entry.parts && 
-			entry.parts[0]?.text && 
+		.filter(entry =>
+			!entry.pathMarker &&
+			entry.role &&
+			entry.parts &&
+			entry.parts[0]?.text &&
 			entry.parts[0].text.trim() !== ''
 		)
 		// Convert to Gemini format
@@ -41,6 +41,25 @@ export const convertHistoryToGemini = (dbHistory: any[]) => {
 			role: entry.role,
 			parts: entry.parts
 		}));
+
+	// Implement sliding window: keep only the most recent messages
+	// Always ensure we start with a user message (Gemini requirement)
+	if (filtered.length <= maxMessages) {
+		return filtered;
+	}
+
+	const recentMessages = filtered.slice(-maxMessages);
+
+	// Ensure first message is from user (Gemini requirement)
+	if (recentMessages.length > 0 && recentMessages[0].role !== 'user') {
+		// Find the first user message in the recent slice
+		const firstUserIndex = recentMessages.findIndex(msg => msg.role === 'user');
+		if (firstUserIndex > 0) {
+			return recentMessages.slice(firstUserIndex);
+		}
+	}
+
+	return recentMessages;
 };
 
 export const getIds = (map: Map<string, Chat>) => {

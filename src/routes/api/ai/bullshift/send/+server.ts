@@ -249,24 +249,36 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		try {
 			if (currentPath?.activePath) {
+				// Check for path switch indicators to avoid unnecessary AI calls
+				const pathSwitchKeywords = [
+					'beenden', 'ende', 'stop', 'aufhören', 'abbrechen', 'fertig',
+					'selbst-empathie', 'fremd-empathie', 'handlungsplanung', 'konfliktlösung',
+					'anderes thema', 'wechseln zu', 'gehen zu', 'andere person', 'jemand anderen',
+					'handlung', 'was tun', 'nächster schritt', 'plan', 'handlungsplan',
+					'konflikt', 'streit', 'problem lösen', 'erinnerung', 'was weißt du'
+				];
+
+				const hasPathSwitchIndicator = pathSwitchKeywords.some(keyword =>
+					message.toLowerCase().includes(keyword)
+				);
+
 				// Special handling for feedback path - only allow explicit switches
 				if (currentPath.activePath === 'feedback') {
-					// In feedback path, only allow switching if user explicitly asks to end or switch
 					const explicitSwitchKeywords = [
 						'beenden', 'ende', 'stop', 'aufhören', 'abbrechen',
 						'selbst-empathie', 'fremd-empathie', 'handlungsplanung', 'konfliktlösung',
 						'anderes thema', 'wechseln zu', 'gehen zu'
 					];
-					
-					const hasExplicitSwitch = explicitSwitchKeywords.some(keyword => 
+
+					const hasExplicitSwitch = explicitSwitchKeywords.some(keyword =>
 						message.toLowerCase().includes(keyword)
 					);
-					
+
 					if (!hasExplicitSwitch) {
 						console.log('🔒 Feedback path: Preventing automatic path switching, staying in feedback');
 						// Skip path analysis to prevent automatic switching
 					} else {
-						console.log('🔓 Feedback path: Explicit switch detected, allowing path analysis');
+						console.log('🔓 Feedback path: Explicit switch detected, running path analysis');
 						pathSwitchAnalysis = await analyzePathSwitchingIntent(
 							message,
 							currentPath.activePath,
@@ -276,8 +288,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 							user.id
 						);
 					}
-				} else {
-					// Normal path switching analysis for non-feedback paths
+				} else if (hasPathSwitchIndicator) {
+					// Only run AI path analysis if there are indicators
+					console.log('🔍 Path switch indicators detected, running AI analysis');
 					pathSwitchAnalysis = await analyzePathSwitchingIntent(
 						message,
 						currentPath.activePath,
@@ -286,6 +299,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 						chatId,
 						user.id
 					);
+				} else {
+					console.log('⚡ No path switch indicators, skipping AI analysis (token optimization)');
 				}
 				
 				console.log('🔍 Pre-response path analysis result:', pathSwitchAnalysis);
@@ -380,17 +395,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Handle memory path specially
 		if (pathStateForAI?.activePath === 'memory') {
-			console.log('🧠 Memory path detected - searching for all user memories...');
-			const relevantMemories = await searchSimilarMemories(message, user.id, 10);
+			console.log('🧠 Memory path detected - searching for user memories...');
+			const relevantMemories = await searchSimilarMemories(message, user.id, 5);
 			console.log(`📝 Found ${relevantMemories.length} memories for memory path`);
 			
 			if (relevantMemories.length > 0) {
 				memoryContext = relevantMemories
-					.map(m => `- ${m.key || 'Erinnerung'}: ${m.value}`)
+					.map(m => `- ${m.value}`)
 					.join('\n');
 				console.log('🧠 Memory context for memory path:', memoryContext);
 			} else {
-				memoryContext = '- Keine gespeicherten Erinnerungen gefunden';
+				memoryContext = '- Keine Erinnerungen gefunden';
 				console.log('❌ No memories found for memory path');
 			}
 			
