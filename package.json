@@ -27,7 +27,10 @@
 		"machine-translate": "inlang machine translate --project project.inlang",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
-		"db:studio": "drizzle-kit studio"
+		"db:studio": "drizzle-kit studio",
+		"migrate:list": "node scripts/migrate-pocketbase-to-postgres.js list",
+		"migrate:export": "node scripts/migrate-pocketbase-to-postgres.js export",
+		"migrate:run": "node scripts/migrate-pocketbase-to-postgres.js migrate"
 	},
 	"devDependencies": {
 		"@inlang/cli": "^3.0.0",

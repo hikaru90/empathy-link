@@ -1,5 +1,4 @@
 import type { PageServerLoad } from './$types';
-import { pb } from '$scripts/pocketbase';
 import { decryptChatHistory } from '$lib/utils/chatEncryption.js';
 
 
@@ -7,7 +6,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     const user = locals.user;
 
     try {
-        const analyses = await pb.collection('analyses').getFullList({
+        const analyses = await locals.pb.collection('analyses').getFullList({
             filter: `user = "${user.id}"`,
             sort: '-created',
             expand: 'chat'

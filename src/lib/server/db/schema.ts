@@ -5,9 +5,29 @@ import {
 	real,
 	integer,
 	uuid,
-	index
+	index,
+	boolean
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
+
+export const users = pgTable(
+	'users',
+	{
+		id: text('id').primaryKey(),
+		email: text('email').notNull().unique(),
+		username: text('username').notNull().unique(),
+		name: text('name'),
+		verified: boolean('verified').notNull().default(false),
+		passwordHash: text('password_hash'), // Will be null for migrated users
+		passwordResetRequired: boolean('password_reset_required').notNull().default(false),
+		avatar: text('avatar'),
+		created: timestamp('created').notNull().defaultNow(),
+		updated: timestamp('updated').notNull().defaultNow()
+	},
+	(table) => ({
+		emailIdx: index('email_idx').on(table.email)
+	})
+);
 
 export const memories = pgTable(
 	'memories',
@@ -35,5 +55,7 @@ export const memories = pgTable(
 	})
 );
 
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
 export type Memory = typeof memories.$inferSelect;
 export type NewMemory = typeof memories.$inferInsert;

@@ -56,7 +56,7 @@ const initModel = async (user?: object, systemInstruction?: string, history?: Hi
 		const testHistory = initHistory(user!, history);
 		console.log('testHistory', testHistory);
 		const chat = ai.chats.create({
-			model: 'gemini-1.5-flash',
+			model: 'gemini-2.0-flash-lite',
 			config: {
 				systemInstruction: systemInstruction,
 				temperature: 0,

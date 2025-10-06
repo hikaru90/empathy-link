@@ -15,4 +15,4 @@ export const migrationClient = postgres(connectionString, { max: 1 });
 export const db = drizzle(queryClient, { schema });
 
 // Type exports
-export type { Memory, NewMemory } from './schema.js';
+export type { User, NewUser, Memory, NewMemory } from './schema.js';

@@ -5,6 +5,7 @@ import type { GenerateContentResponse } from '@google/genai';
 import type { State } from '$routes/api/ai/bullshift/send/+server';
 import type { HistoryEntry } from '$routes/api/ai/selfempathy/initChat/+server';
 import { m, setLocale } from '$lib/translations';
+import { decryptChatHistory } from '$lib/utils/chatEncryption.js';
 
 interface Chat {
 	id: string;
@@ -51,11 +52,15 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 		});
 
 		const chatRecord = await pb.collection('chats').getOne(chatId);
+
+		// Decrypt chat history before analyzing
+		const decryptedHistory = decryptChatHistory(chatRecord.history);
+
 		// Include both user and model messages for context, but exclude path markers and hidden messages
-		const relevantMessages = chatRecord.history
-			.filter((chat: HistoryEntry) => 
+		const relevantMessages = decryptedHistory
+			.filter((chat: HistoryEntry) =>
 				(chat.role === 'user' || chat.role === 'model') &&
-				!chat.pathMarker && 
+				!chat.pathMarker &&
 				!chat.hidden
 			);
 		const concatenatedHistory = relevantMessages
@@ -85,7 +90,7 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 
 		const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 		const model = {
-			model: 'gemini-1.5-flash',
+			model: 'gemini-2.0-flash-lite',
 			config: {
 				systemInstruction,
 				responseMimeType: 'application/json',
@@ -208,7 +213,13 @@ export const extractMemories = async (userId: string, locale: string = 'en', spe
 			return;
 		}
 
-		const concatenatedHistory = userChats.map((chat) => JSON.stringify(chat.history)).join('\n');
+		// Decrypt chat histories before processing
+		const concatenatedHistory = userChats
+			.map((chat) => {
+				const decryptedHistory = decryptChatHistory(chat.history);
+				return JSON.stringify(decryptedHistory);
+			})
+			.join('\n');
 
 		if (!concatenatedHistory) {
 			console.log('concatenatedHistory is empty, skipping memory extraction');
@@ -228,7 +239,7 @@ export const extractMemories = async (userId: string, locale: string = 'en', spe
 
 		const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 		const model = {
-			model: 'gemini-1.5-flash',
+			model: 'gemini-2.0-flash-lite',
 			config: {
 				systemInstruction,
 				responseMimeType: 'application/json',
@@ -380,7 +391,7 @@ export const defineCurrentStep = async (
 
 	const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 	const model = {
-		model: 'gemini-1.5-flash',
+		model: 'gemini-2.0-flash-lite',
 		config: {
 			systemInstruction,
 			responseMimeType: 'application/json',
@@ -430,7 +441,7 @@ export const shouldSaveObservationTool = async (
 
 	const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 	const model = {
-		model: 'gemini-1.5-flash',
+		model: 'gemini-2.0-flash-lite',
 		config: {
 			systemInstruction,
 			responseMimeType: 'application/json',
@@ -475,7 +486,7 @@ export const saveObservation = async (
 
 	const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 	const model = {
-		model: 'gemini-1.5-flash',
+		model: 'gemini-2.0-flash-lite',
 		config: {
 			systemInstruction,
 			responseMimeType: 'application/json',
@@ -528,7 +539,7 @@ export const shouldAnalyzeFeelingsTool = async (
 
 	const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 	const model = {
-		model: 'gemini-1.5-flash',
+		model: 'gemini-2.0-flash-lite',
 		config: {
 			systemInstruction,
 			responseMimeType: 'application/json',
@@ -572,7 +583,7 @@ export const analyzeAndSaveFeelings = async (message: string, chatId: string, us
 
 	const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 	const model = {
-		model: 'gemini-1.5-flash',
+		model: 'gemini-2.0-flash-lite',
 		config: {
 			systemInstruction,
 			responseMimeType: 'application/json',

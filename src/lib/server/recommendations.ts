@@ -148,7 +148,7 @@ STRENGE REGELN:
 - Falls KEINE explizite Lernabsicht erkennbar ist, gib IMMER ein leeres recommendations Array zurück`;
 
 			const model = {
-				model: 'gemini-1.5-flash',
+				model: 'gemini-2.0-flash-lite',
 				config: {
 					systemInstruction: prompt,
 					responseMimeType: 'application/json',

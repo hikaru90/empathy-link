@@ -1,5 +1,4 @@
 import type { PageServerLoad } from './$types';
-import { pb } from '$scripts/pocketbase';
 import { decryptChatHistory } from '$lib/utils/chatEncryption.js';
 
 
@@ -8,12 +7,12 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 
     try {
-        const memories = await pb.collection('memories').getFullList({
+        const memories = await locals.pb.collection('memories').getFullList({
             filter: `user = "${user.id}"`,
             sort: '-created'
         });
 
-        const analyses = await pb.collection('analyses').getFullList({
+        const analyses = await locals.pb.collection('analyses').getFullList({
             filter: `user = "${user.id}"`,
             sort: '-created',
             expand: 'chat'
