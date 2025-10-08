@@ -549,7 +549,7 @@ export const initChat = async (user: any, locale: string, initialPath?: string, 
 
 	// If starting with idle path, add proactive welcome message
 	if (pathId === 'idle') {
-		const welcomeMessage1 = `Ich begleite dich dabei, schwierige Situationen zu erforschen – ob Streit mit einer wichtigen Person oder ein innerer Konflikt, bei dem du hin- und hergerissen bist.<br/><br/>Es geht dabei nicht um Tipps oder fertige Lösungen, sondern ich helfe dir, deine eigenen Gefühle und Gedanken zu sortieren. So findest du selbst heraus, was dir wichtig ist.<br/><br/>Manchmal schauen wir gemeinsam auf deine Sicht, manchmal auf die Perspektive der anderen Person. Wichtig ist: Du kannst hier nichts falsch machen. Alles, was dich bewegt, hat hier seinen Platz. <br/><br/>Und deine Gespräche bleiben natürlich privat und sicher – sie gehören nur dir. Was beschäftigt dich gerade?`;
+		const welcomeMessage1 = `Ich begleite dich dabei, schwierige Situationen zu erforschen – ob Streit mit einer wichtigen Person oder ein innerer Konflikt, bei dem du hin- und hergerissen bist.<br/><br/>Es geht dabei nicht um Tipps oder fertige Lösungen, sondern ich helfe dir, deine eigenen Gefühle und Gedanken zu sortieren. So findest du selbst heraus, was dir wichtig ist.<br/><br/>Manchmal schauen wir gemeinsam auf deine Sicht, manchmal auf die Perspektive der anderen Person. Wichtig ist: Du kannst hier nichts falsch machen. Alles, was dich bewegt, hat hier seinen Platz. <br/><br/>Und deine Gespräche bleiben natürlich privat und sicher – sie gehören nur dir.`;
 
 		const welcomeMessage2 = `Was kann ich heute für Dich tun?`;
 
