@@ -34,72 +34,99 @@ const getLocalizedPrompt = (promptKey: string, variables: Record<string, any> = 
 
 export const analyzeChat = async (chatId: string, userId: string, locale: string, pb: any) => {
 	try {
-		console.log('analyzeChat called with locale:', locale);
-		console.log('Current setLocale available:', typeof setLocale);
-		
+		console.log('🔍 [analyzeChat] START - chatId:', chatId, 'userId:', userId, 'locale:', locale);
+		console.log('🔍 [analyzeChat] setLocale available:', typeof setLocale);
+
+		console.log('🔍 [analyzeChat] Step 1: Fetching feelings from database');
 		const feelingsRecords = await pb.collection('feelings').getFullList({
 			sort: 'category,sort'
-		})
+		});
+		console.log('🔍 [analyzeChat] Step 1 SUCCESS: Fetched', feelingsRecords.length, 'feelings');
+
 		// Always use German feelings and needs
 		const feelings = feelingsRecords.map((feeling) => {
 			return feeling.nameDE
 		});
+
+		console.log('🔍 [analyzeChat] Step 2: Fetching needs from database');
 		const needsRecords = await pb.collection('needs').getFullList({
 			sort: 'category,sort'
-		})
+		});
+		console.log('🔍 [analyzeChat] Step 2 SUCCESS: Fetched', needsRecords.length, 'needs');
+
 		const needs = needsRecords.map((need) => {
 			return need.nameDE
 		});
 
+		console.log('🔍 [analyzeChat] Step 3: Fetching chat record for chatId:', chatId);
 		const chatRecord = await pb.collection('chats').getOne(chatId);
+		console.log('🔍 [analyzeChat] Step 3 SUCCESS: Chat record found, history length:', chatRecord.history?.length || 0);
 
-		// Decrypt chat history before analyzing
+		console.log('🔍 [analyzeChat] Step 4: Decrypting chat history');
 		const decryptedHistory = decryptChatHistory(chatRecord.history);
+		console.log('🔍 [analyzeChat] Step 4 SUCCESS: Decrypted history length:', decryptedHistory.length);
 
 		// Include both user and model messages for context, but exclude path markers and hidden messages
+		console.log('🔍 [analyzeChat] Step 5: Filtering relevant messages');
 		const relevantMessages = decryptedHistory
 			.filter((chat: HistoryEntry) =>
 				(chat.role === 'user' || chat.role === 'model') &&
 				!chat.pathMarker &&
 				!chat.hidden
 			);
+		console.log('🔍 [analyzeChat] Step 5 SUCCESS: Filtered to', relevantMessages.length, 'relevant messages');
+
 		const concatenatedHistory = relevantMessages
 			.map((chat: HistoryEntry) => JSON.stringify(chat))
 			.join('\n');
 
-		console.log('concatenatedHistory', concatenatedHistory);
-		const message = `
-      The chat history is:
-      ${concatenatedHistory}
-      `;
+		console.log('🔍 [analyzeChat] Step 6: Concatenated history length:', concatenatedHistory.length, 'characters');
 
-		console.log('About to call getLocalizedPrompt with feelings:', feelings.slice(0, 3));
-		console.log('About to call getLocalizedPrompt with needs:', needs.slice(0, 3));
-		
+		console.log('🔍 [analyzeChat] Step 7: Preparing system instruction with', feelings.length, 'feelings and', needs.length, 'needs');
+
 		// Always use German locale for consistency
 		setLocale('de');
+
+		// Include full lists in message, with clear instructions not to echo them
+		const message = `
+Chat History:
+${concatenatedHistory}
+
+Available Feelings (select from these, DO NOT echo them back):
+${feelings.join(', ')}
+
+Available Needs (select from these, DO NOT echo them back):
+${needs.join(', ')}
+
+IMPORTANT: Your response must ONLY contain the JSON object with the analysis. Do NOT include the lists above in your response.
+		`;
+
+		// System instruction without the full lists
 		const systemInstruction = getLocalizedPrompt('analyzeChat', {
-			feelings: feelings.join(', '),
-			needs: needs.join(', ')
+			feelings: '[See message for full list]',
+			needs: '[See message for full list]'
 		});
-		
-		console.log('Generated systemInstruction preview:', systemInstruction.substring(0, 200) + '...');
+
+		console.log('🔍 [analyzeChat] Step 7 SUCCESS: System instruction length:', systemInstruction.length, 'characters');
 
 		// Always use German enum values
 		const clarityEnumValues = ['Unspezifisch', 'Vage', 'Spezifisch & Umsetzbar'];
 
+		console.log('🔍 [analyzeChat] Step 8: Initializing Gemini AI');
 		const ai = new GoogleGenAI({ apiKey: PRIVATE_GEMINI_API_KEY });
 		const model = {
 			model: 'gemini-2.0-flash-lite',
 			config: {
 				systemInstruction,
 				responseMimeType: 'application/json',
+				maxOutputTokens: 8192, // Increase token limit to prevent truncation
+				temperature: 0.3, // Lower temperature for more structured output
 				responseSchema: {
 					type: Type.OBJECT,
 					properties: {
 						emotionalShift: {
 							type: Type.STRING,
-							description: 'Description of emotional journey from beginning to end'
+							description: 'Brief description of emotional journey (max 100 words)'
 						},
 						iStatementMuscle: {
 							type: Type.NUMBER,
@@ -120,44 +147,111 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 						},
 						dailyWin: {
 							type: Type.STRING,
-							description: 'Encouraging statement about biggest success in session'
+							description: 'Short encouraging statement (max 50 words)'
 						},
 						title: {
 							type: Type.STRING,
-							description: 'A short title for the session'
+							description: 'A short title for the session (max 10 words)'
 						},
 						observation: {
 							type: Type.STRING,
-							description: 'The factual observation as per NVC'
+							description: 'The factual observation as per NVC (concise, max 150 words)'
 						},
 						feelings: {
 							type: Type.ARRAY,
 							items: {
 								type: Type.STRING,
 							},
-							description: 'The feelings of the user based on the feelings list'
+							description: 'Array of feeling words from the provided list'
 						},
 						needs: {
 							type: Type.ARRAY,
 							items: {
 								type: Type.STRING,
 							},
-							description: 'The needs of the user based on the needs list'
+							description: 'Array of need words from the provided list'
 						},
 						request: {
 							type: Type.STRING,
-							description: 'The clearest actionable request made by user'
+							description: 'The clearest actionable request (concise, max 100 words)'
 						}
-					}
+					},
+					required: ['emotionalShift', 'iStatementMuscle', 'clarityOfAsk', 'empathyAttempt', 'feelingVocabulary', 'dailyWin', 'title', 'observation', 'feelings', 'needs', 'request']
 				}
 			}
 		}
+		console.log('🔍 [analyzeChat] Step 8 SUCCESS: Model configured with maxOutputTokens: 8192');
+
+		console.log('🔍 [analyzeChat] Step 9: Creating chat and sending message to Gemini');
 		const chat = ai.chats.create(model);
 		const result = await chat.sendMessage({ message });
-		console.log('result', result);
-		const response = result.text;
-		const responseJson = JSON.parse(response || '{}');
+		console.log('🔍 [analyzeChat] Step 9 SUCCESS: Received response from Gemini');
 
+		console.log('🔍 [analyzeChat] Step 10: Parsing Gemini response');
+		const response = result.text;
+		console.log('🔍 [analyzeChat] Step 10a: Response text length:', response?.length || 0);
+		console.log('🔍 [analyzeChat] Step 10b: Response preview (first 500 chars):', response?.substring(0, 500));
+
+		// If response is suspiciously long, log more details
+		if (response && response.length > 5000) {
+			console.error('⚠️ [analyzeChat] WARNING: Response is abnormally long!');
+			console.error('⚠️ [analyzeChat] Response length:', response.length);
+			console.error('⚠️ [analyzeChat] Response start:', response.substring(0, 1000));
+			console.error('⚠️ [analyzeChat] Response end:', response.substring(response.length - 1000));
+		}
+
+		let responseJson;
+		try {
+			// Try to parse the response as-is first
+			responseJson = JSON.parse(response || '{}');
+			console.log('🔍 [analyzeChat] Step 10 SUCCESS: Parsed JSON response');
+		} catch (parseError) {
+			console.error('❌ [analyzeChat] Step 10 JSON parse error:', parseError.message);
+			console.error('❌ [analyzeChat] Parse error position:', parseError.message.match(/position (\d+)/)?.[1]);
+			console.error('❌ [analyzeChat] Full response length:', response?.length);
+			console.error('❌ [analyzeChat] Response around error position:', response?.substring(26500, 26600));
+
+			// Try to fix common JSON issues
+			try {
+				// Remove markdown code blocks if present
+				let cleanedResponse = response.trim();
+				if (cleanedResponse.startsWith('```json')) {
+					cleanedResponse = cleanedResponse.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+				} else if (cleanedResponse.startsWith('```')) {
+					cleanedResponse = cleanedResponse.replace(/^```\s*/, '').replace(/\s*```$/, '');
+				}
+
+				// Try parsing the cleaned response
+				responseJson = JSON.parse(cleanedResponse);
+				console.log('🔍 [analyzeChat] Step 10 SUCCESS: Parsed cleaned JSON response');
+			} catch (secondParseError) {
+				console.error('❌ [analyzeChat] Step 10 Second parse attempt failed:', secondParseError.message);
+
+				// If all else fails, return a safe fallback
+				console.log('🔍 [analyzeChat] Using fallback empty response');
+				responseJson = {
+					emotionalShift: '',
+					iStatementMuscle: 0,
+					clarityOfAsk: 'Unspezifisch',
+					empathyAttempt: false,
+					feelingVocabulary: 0,
+					dailyWin: '',
+					title: '',
+					observation: '',
+					feelings: [],
+					needs: [],
+					request: ''
+				};
+			}
+		}
+
+		console.log('🔍 [analyzeChat] Step 10c: Response fields:', Object.keys(responseJson));
+		console.log('🔍 [analyzeChat] Step 10d: observation:', responseJson.observation);
+		console.log('🔍 [analyzeChat] Step 10e: feelings:', responseJson.feelings);
+		console.log('🔍 [analyzeChat] Step 10f: needs:', responseJson.needs);
+		console.log('🔍 [analyzeChat] Step 10g: request:', responseJson.request);
+
+		console.log('🔍 [analyzeChat] Step 11: Saving trace for token usage tracking');
 		// Save trace for token usage tracking
 		saveTrace(
 			'analyzeChat',
@@ -170,10 +264,19 @@ export const analyzeChat = async (chatId: string, userId: string, locale: string
 			systemInstruction,
 			pb
 		);
+		console.log('🔍 [analyzeChat] Step 11 SUCCESS: Trace saved');
 
+		console.log('🔍 [analyzeChat] COMPLETE - Returning analysis result');
 		return responseJson;
 	} catch (error) {
-		console.error('Error analyzing chat:', error);
+		console.error('❌ [analyzeChat] ERROR at some step:', error);
+		console.error('❌ [analyzeChat] Error name:', error?.name);
+		console.error('❌ [analyzeChat] Error message:', error?.message);
+		console.error('❌ [analyzeChat] Error stack:', error?.stack);
+		console.error('❌ [analyzeChat] chatId:', chatId);
+		console.error('❌ [analyzeChat] userId:', userId);
+		console.error('❌ [analyzeChat] locale:', locale);
+
 		// Return a safe fallback object to prevent the endpoint from crashing
 		return {
 			emotionalShift: '',

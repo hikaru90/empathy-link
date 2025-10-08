@@ -85,6 +85,6 @@
 		</div>
 
 		{#if showOnboarding}
-			<OnboardingWelcome onComplete={completeOnboarding} />
+			<OnboardingWelcome onComplete={completeOnboarding} user={data.user} />
 		{/if}
 	</div>

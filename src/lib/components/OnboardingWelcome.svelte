@@ -4,59 +4,50 @@
 	import { goto } from '$app/navigation';
 	import LearnStepIndicator from '$lib/components/bullshift/Learn/LearnStepIndicator.svelte';
 	import LearnGotoNextButton from '$lib/components/bullshift/Learn/LearnGotoNextButton.svelte';
+	import UserGoal from '$lib/components/UserGoal.svelte';
 	import { marked } from 'marked';
 	import Gradient from '$lib/components/Gradient.svelte';
 
 	interface Props {
 		onComplete?: () => void;
+		user?: App.User;
 	}
 
-	let { onComplete }: Props = $props();
+	let { onComplete, user }: Props = $props();
 
 	let currentStep = $state(0);
 
 	const steps = [
 		{
-			title: 'Schön, dass du hier bist!',
-			content: `Empathie-Link hilft dir dabei, dich mit dir selbst und anderen Menschen zu verbinden - auch in schwierigen Momenten. 
+			title: 'Willkommen bei Empathy-Link',
+			content: `Schön, dass du hier bist. Wir unterstützen dich dabei, klarer und empathischer zu kommunizieren, um dich selbst und andere besser zu verstehen. 
 			`,
 			image: 1
 		},
 		{
-			title: 'Was ist Gewaltfreie Kommunikation?',
-			content: `Gewaltfreie Kommunikation (GFK) nach Marshall Rosenberg ist eine Art zu sprechen und zuzuhören, die Empathie und ehrlichen Ausdruck fördert. Sie hilft uns, Konflikte friedlich zu lösen und tiefere Verbindungen aufzubauen.`,
+			title: 'Was möchtest du mit Empathy-Link erreichen?',
+			content: '',
+			component: 'userGoal'
+		},
+		{
+			title: 'Empathie lohnt sich',
+			content: `Eine Harvard-Studie zeigt: Enge, positive Beziehungen sind einer der wichtigsten Faktoren für Gesundheit, Wohlbefinden und Lebenszufriedenheit – wichtiger als Erfolg, Einkommen oder Status. Gute Verbindung zu anderen bedeutet ein gutes Leben.`,
 			image: 5
 		},
 		{
-			title: 'Die 4 Schritte der GFK',
-			content: `
-- **Beobachten**
-Beschreibe objektiv, ohne zu bewerten oder zu urteilen.
-
-- **Fühlen**
-Teile mit, welche Emotionen durch die Beobachtung ausgelöst wurden.
-
-- **Bedürfnisse erkennen**
-Identifiziere die dahinterliegenden Bedürfnisse, die deine Gefühle verursachen.
-
-- **Bitten**
-Formuliere eine konkrete, erfüllbare Bitte, die zur Erfüllung deiner Bedürfnisse beiträgt.
-			`,
+			title: 'Spür mal rein',
+			content: `Weitere Studien zeigen, wenn wir unsere Gefühle benennen, entsteht mehr Klarheit. Wir verstehen uns selbst besser – Irritationen werden greifbar, und wir reagieren weniger impulsiv. Das hilft uns, bewusster und gelassener zu handeln.`,
 			image: 3
 		},
 		{
-			title: 'Deine Empathie-Reise beginnt',
-			content: `Mit Empathie-Link kannst du:
-
-- **Selbstempathie** praktizieren und dich besser verstehen
-- **Konflikte** empathisch und konstruktiv lösen
-- **Lernen** und deine GFK-Fähigkeiten vertiefen
-- **Verbindungen** zu anderen Menschen stärken`,
+			title: ' Deine Gespräche gehören dir!',
+			content: `Dein persönlicher Coach wird von KI unterstützt. Sie hilft dir, deine Gefühle, Bedürfnisse und Muster zu reflektieren.
+			Alle Daten sind sicher verschlüsselt, nur für dich sichtbar und nicht zurückverfolgbar.`,
 			image: 6
 		},
 		{
-			title: 'Bereit loszulegen?',
-			content: `Du bist jetzt bereit, Empathie-Link zu erkunden! Beginne mit dem Dashboard, um einen Überblick über deine Reise zu bekommen, oder starte direkt mit einer Selbstempathie-Session.`,
+			title: 'Deine Empathie-Reise kann starten!',
+			content: `Danke, dass du dir Zeit genommen hast. Dein Coach ist jetzt für dich da – lass uns gemeinsam beginnen.`,
 			image: 7
 		}
 	];
@@ -91,9 +82,9 @@ Formuliere eine konkrete, erfüllbare Bitte, die zur Erfüllung deiner Bedürfni
 	}
 </script>
 
-<div class="fixed left-0 top-0 z-[1000] flex h-svh w-full flex-col bg-offwhite p-6">
+<div class="fixed left-0 top-0 z-[1000] flex h-svh w-full flex-col bg-offwhite p-6 overflow-x-hidden overflow-y-auto">
 	<!-- Scrollable content area -->
-	<div class="flex flex-1 flex-col gap-6 overflow-hidden">
+	<div class="flex flex-1 flex-col gap-6">
 		<div class="flex justify-center">
 			<LearnStepIndicator
 				topic="onboarding"
@@ -107,18 +98,24 @@ Formuliere eine konkrete, erfüllbare Bitte, die zur Erfüllung deiner Bedürfni
 			/>
 		</div>
 
-		<div class="flex w-full items-center justify-center -my-4">
+		<div class="-my-4 flex w-full items-center justify-center">
 			<Gradient class="size-48" shape={steps[currentStep].image} blur={true} />
 		</div>
-		
+
 		<!-- Scrollable text content -->
-		<div class="flex flex-1 flex-col gap-4 overflow-y-auto">
+		<div class="flex flex-1 flex-col gap-4">
 			<h3 class="max-w-[12em] text-2xl font-light">
 				{steps[currentStep].title}
 			</h3>
-			<div class="marked flex flex-col gap-2">
-				{@html marked(steps[currentStep].content)}
-			</div>
+			{#if steps[currentStep].component}
+				{#if steps[currentStep].component === 'userGoal'}
+				<UserGoal {user} />
+				{/if}
+			{:else}
+				<div class="marked flex flex-col gap-2">
+					{@html marked(steps[currentStep].content)}
+				</div>
+			{/if}
 		</div>
 	</div>
 

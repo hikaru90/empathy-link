@@ -372,12 +372,12 @@ const getUserMemories = async (userId: string, userMessage?: string): Promise<st
 	try {
 		// Import hybrid memory system dynamically to avoid circular dependencies
 		const { getRelevantMemories } = await import('./hybridMemory.js');
-		
+
 		// If we have a user message, use vector-based retrieval for context-aware memories
 		if (userMessage) {
 			return await getRelevantMemories(userId, userMessage, 5);
 		}
-		
+
 		// Fallback to PocketBase for backward compatibility
 		const memories = await pb.collection('memories').getFullList({
 			filter: `user = "${userId}"`,
@@ -549,13 +549,7 @@ export const initChat = async (user: any, locale: string, initialPath?: string, 
 
 	// If starting with idle path, add proactive welcome message
 	if (pathId === 'idle') {
-		const welcomeMessage1 = `Hallo! Schön, dass du da bist. Ich bin hier, um dir zu helfen und unser Gespräch zu begleiten.<br/><br/>
-
-Ich kann dir in verschiedenen Bereichen zur Seite stehen:
-- **Selbst-Empathie**: Deine eigenen Gefühle und Bedürfnisse besser verstehen
-- **Fremd-Empathie**: Andere Menschen und ihre Perspektiven verstehen
-- **Handlungsplanung**: Konkrete Schritte entwickeln und umsetzen
-- **Konfliktlösung**: Zwischenmenschliche Probleme konstruktiv angehen`;
+		const welcomeMessage1 = `Ich begleite dich dabei, schwierige Situationen zu erforschen – ob Streit mit einer wichtigen Person oder ein innerer Konflikt, bei dem du hin- und hergerissen bist.<br/><br/>Es geht dabei nicht um Tipps oder fertige Lösungen, sondern ich helfe dir, deine eigenen Gefühle und Gedanken zu sortieren. So findest du selbst heraus, was dir wichtig ist.<br/><br/>Manchmal schauen wir gemeinsam auf deine Sicht, manchmal auf die Perspektive der anderen Person. Wichtig ist: Du kannst hier nichts falsch machen. Alles, was dich bewegt, hat hier seinen Platz. <br/><br/>Und deine Gespräche bleiben natürlich privat und sicher – sie gehören nur dir. Was beschäftigt dich gerade?`;
 
 		const welcomeMessage2 = `Was kann ich heute für Dich tun?`;
 

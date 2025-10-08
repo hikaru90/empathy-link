@@ -100,11 +100,11 @@ const formatHistoryForGemini = (history?: HistoryEntry[]): Content[] => {
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
-		console.log('analyzeChat server');
+		console.log('🚀 [analyzeChat API] START');
 		const { locale, chatId } = await request.json();
 		const user = locals.user;
 
-		console.log('analyzeChat DEBUG:', {
+		console.log('🚀 [analyzeChat API] Request params:', {
 			hasUser: !!user,
 			userId: user?.id,
 			chatId,
@@ -112,13 +112,24 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			authStoreValid: locals.pb?.authStore?.isValid
 		});
 
+		console.log('🚀 [analyzeChat API] Calling analyzeChat function...');
 		const analysis = await analyzeChat(chatId, user.id, locale, locals.pb);
-		console.log('analysis', analysis);
+		console.log('🚀 [analyzeChat API] Analysis returned:', {
+			hasObservation: !!analysis.observation,
+			observationLength: analysis.observation?.length || 0,
+			hasFeelings: !!analysis.feelings,
+			feelingsCount: analysis.feelings?.length || 0,
+			hasNeeds: !!analysis.needs,
+			needsCount: analysis.needs?.length || 0,
+			hasRequest: !!analysis.request,
+			requestLength: analysis.request?.length || 0
+		});
 
 		// Always use German schema for session insight format
 		const clarityValues = ['Unspezifisch', 'Vage', 'Spezifisch & Umsetzbar'] as const;
 		const defaultClarity = clarityValues[0];
-		
+
+		console.log('🚀 [analyzeChat API] Validating analysis with Zod schema');
 		const analysisSchema = z.object({
 			emotionalShift: z.string().catch(''),
 			iStatementMuscle: z.number().catch(0),
@@ -141,12 +152,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Use safeParse to avoid throwing errors
 		const parseResult = analysisSchema.safeParse(analysis);
-		
+
 		let validatedAnalysis: Analysis;
 		if (parseResult.success) {
+			console.log('🚀 [analyzeChat API] Validation SUCCESS');
 			validatedAnalysis = parseResult.data;
 		} else {
-			console.warn('Analysis validation failed, using fallback values:', parseResult.error);
+			console.error('❌ [analyzeChat API] Validation FAILED:', parseResult.error);
+			console.error('❌ [analyzeChat API] Raw analysis object:', JSON.stringify(analysis, null, 2));
 			// Create a fallback analysis with default values
 			validatedAnalysis = {
 				emotionalShift: typeof analysis.emotionalShift === 'string' ? analysis.emotionalShift : '',
@@ -162,29 +175,57 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				request: typeof analysis.request === 'string' ? analysis.request : '',
 				conversationGoal: typeof analysis.conversationGoal === 'string' ? analysis.conversationGoal : ''
 			};
+			console.log('🚀 [analyzeChat API] Using fallback values:', {
+				observation: validatedAnalysis.observation,
+				feelings: validatedAnalysis.feelings,
+				needs: validatedAnalysis.needs,
+				request: validatedAnalysis.request
+			});
 		}
 
 		validatedAnalysis.user = user.id;
 		validatedAnalysis.chat = chatId;
 
-		const analysisRecord = await locals.pb.collection('analyses').create(validatedAnalysis);
-		const initiatedChat = await initChat(user, locale);
+		console.log('🚀 [analyzeChat API] Creating analysis record in database');
+		console.log('🚀 [analyzeChat API] Analysis to save:', {
+			observation: validatedAnalysis.observation,
+			feelings: validatedAnalysis.feelings,
+			needs: validatedAnalysis.needs,
+			request: validatedAnalysis.request
+		});
 
-		console.log('🧠 Triggering memory extraction after chat analysis...');
-		console.log('📋 Chat ID being analyzed:', chatId);
+		const analysisRecord = await locals.pb.collection('analyses').create(validatedAnalysis);
+		console.log('🚀 [analyzeChat API] Analysis record created with ID:', analysisRecord.id);
+		console.log('🚀 [analyzeChat API] Saved record:', {
+			observation: analysisRecord.observation,
+			feelings: analysisRecord.feelings,
+			needs: analysisRecord.needs,
+			request: analysisRecord.request
+		});
+
+		console.log('🚀 [analyzeChat API] Initializing new chat');
+		const initiatedChat = await initChat(user, locale);
+		console.log('🚀 [analyzeChat API] New chat initialized');
+
+		console.log('🧠 [analyzeChat API] Triggering memory extraction...');
+		console.log('📋 [analyzeChat API] Chat ID being analyzed:', chatId);
 		try {
 			await extractMemories(user.id, locale, chatId);
-			console.log('✅ Memory extraction completed');
+			console.log('✅ [analyzeChat API] Memory extraction completed');
 		} catch (error) {
-			console.error('❌ Memory extraction failed:', error);
+			console.error('❌ [analyzeChat API] Memory extraction failed:', error);
+			console.error('❌ [analyzeChat API] Memory extraction error details:', error?.message);
 		}
 
 		const res = {initiatedChat: initiatedChat, analysis: analysisRecord};
-		console.log('res from analyzeChat',res);
+		console.log('🚀 [analyzeChat API] COMPLETE - Returning response');
 
 		return json(res);
 	} catch (error) {
-		console.error('Failed to initialize chat:', error);
+		console.error('❌ [analyzeChat API] FATAL ERROR:', error);
+		console.error('❌ [analyzeChat API] Error name:', error?.name);
+		console.error('❌ [analyzeChat API] Error message:', error?.message);
+		console.error('❌ [analyzeChat API] Error stack:', error?.stack);
 		return json({ error: 'Failed to initialize chat' }, { status: 500 });
 	}
 };

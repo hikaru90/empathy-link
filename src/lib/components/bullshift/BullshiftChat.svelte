@@ -827,13 +827,14 @@
 						text="Hi {String(user?.firstName).charAt(0).toUpperCase() +
 							String(user?.firstName).slice(
 								1
-							)}, ich bin hier, um Dir bei Herausforderungen in deinem Leben zu helfen."
+							)}, ich begleite dich dabei, Konflikte und schwierige Situationen zu klären – Schritt für Schritt."
 						onComplete={() => {
 							text1Done = true;
+							text2Done = true;
 						}}
 					/>
 				</h1>
-				<h2 class="mb-6 text-2xl font-light text-black/40">
+				<!-- <h2 class="mb-6 text-2xl font-light text-black/40">
 					{#if text1Done}
 						<TypewriterText
 							text="Beschreib mir eine Situation, und ich helfe dir, sie zu verarbeiten. Vertrau mir – wir
@@ -843,7 +844,7 @@
 							}}
 						/>
 					{/if}
-				</h2>
+				</h2> -->
 			{/if}
 			<div
 				class="transition-opacity duration-700 {text2Done
