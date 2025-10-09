@@ -22,7 +22,7 @@
 			title: 'Willkommen bei Empathy-Link',
 			content: `Schön, dass du hier bist. Wir unterstützen dich dabei, klarer und empathischer zu kommunizieren, um dich selbst und andere besser zu verstehen. 
 			`,
-			image: 1
+			image: 100
 		},
 		{
 			title: 'Was möchtest du mit Empathy-Link erreichen?',

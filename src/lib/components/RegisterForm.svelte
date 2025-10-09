@@ -22,9 +22,9 @@
 		validators: zodClient(formSchema),
 		onResult: ({ result }) => {
 			console.log('result', result);
-			if (result.type === 'failure') toast.error(m_page_register_toasts_error());
+			if (result.type === 'failure') toast.error(m.page_register_toasts_error());
 			if (result.type === 'success') {
-				toast.success(m_page_register_toasts_success());
+				toast.success(m.page_register_toasts_success());
 			}
 		}
 	});
