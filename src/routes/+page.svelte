@@ -27,7 +27,7 @@
 		{ name: 'functionSectionTarget', color: 'bg-sky-100' },
 		{ name: 'moduleSectionTarget', color: 'bg-lilac' },
 		{ name: 'privacySectionTarget', color: 'bg-emerald-900/30' },
-		{ name: 'aboutSectionTarget', color: 'bg-request-background' },
+		{ name: 'aboutSectionTarget', color: 'bg-[#E19B52]' },
 		{ name: 'faqSectionTarget', color: 'bg-neutral-200' }
 	];
 

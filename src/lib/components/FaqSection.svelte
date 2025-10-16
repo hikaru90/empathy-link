@@ -34,8 +34,8 @@
 </script>
 
 
-<div class="mb-40">
-  <h2 use:checkVisibility class="transform opacity-0 translate-y-10 is-visible:translate-y-0 is-visible:opacity-100 transition-all duration-700 mb-8 font-display text-2xl font-semibold lg:text-4xl text-center">
+<div class="mb-24 md:mb-40">
+  <h2 use:checkVisibility class="transform opacity-0 translate-y-10 is-visible:translate-y-0 is-visible:opacity-100 transition-all duration-700 mb-10 font-display text-4xl font-semibold lg:text-5xl text-left">
     {m.page_home_components_faq_heading()}
   </h2>
 

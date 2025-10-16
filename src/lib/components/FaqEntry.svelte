@@ -17,11 +17,11 @@
 
 <div class="rounded-lg border border-white bg-white/90">
 	<button onclick={toggle} class="flex w-full items-center justify-between p-4">
-		<h3 class="font-bold">{faq.question}</h3>
-		<Plus class="size-5 transform transition-transform duration-300 {isOpen ? 'rotate-45' : ''}" />
+		<h3 class="font-bold text-left mr-4">{faq.question}</h3>
+		<Plus class="size-5 transform transition-transform duration-300 flex-shrink-0 {isOpen ? 'rotate-45' : ''}" />
 	</button>
 	<div class="transition-all duration-300 {isOpen ? 'max-h-[1000px]' : 'max-h-0 overflow-hidden'}">
-		<div class="text-neutral-800 p-4">
+		<div class="text-neutral-800 p-4 text-left">
 			{@html marked(faq.answer)}
 		</div>
 	</div>

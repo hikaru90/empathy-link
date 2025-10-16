@@ -59,19 +59,19 @@
 
 </script>
 
-<div class="mb-40 relative overflow-visible">
+<div class="mb-24 md:mb-40 relative overflow-visible">
 	<div use:checkVisibility class="opacity-0 scale-0 is-visible:opacity-[0.3] is-visible:scale-100 size-[2000px] absolute top-2/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -z-10 transition-all duration-1000 delay-500" style="background: radial-gradient(circle, yellow 0%, transparent 60%);">
 	</div>
 	<div class="flex flex-col items-center">
 		<div class="relative">
-			<h2 use:checkVisibility class="transform opacity-0 translate-y-10 is-visible:translate-y-0 is-visible:opacity-100 transition-all duration-700 mb-8 font-display text-2xl font-semibold lg:text-4xl max-w-[13em] text-center">
+			<h2 use:checkVisibility class="transform opacity-0 translate-y-10 is-visible:translate-y-0 is-visible:opacity-100 transition-all duration-700 mb-8 font-display text-4xl font-semibold md:text-5xl max-w-[13em] md:text-center">
 				{m.page_home_components_privacy_heading()}
 			</h2>
 			<!-- <div class="bg-red-500 rounded-full px-2 py-0.5 text-xs text-white absolute -top-0 -right-0 transform translate-x-full -translate-y-full">
 				{m.menu_soon()}
 			</div> -->
 		</div>
-		<p class="max-w-md text-center mb-8">
+		<p class="max-w-md md:text-center mb-8">
 			{m.page_home_components_privacy_description()}
 		</p>
 	</div>
@@ -92,8 +92,8 @@
 							</div>
 						</div>
 					</div>
-					<div class="flex flex-col">
-						<div class="font-bold">{card.content}</div>
+					<div class="flex flex-col gap-2">
+						<div class="font-bold text-lg">{card.content}</div>
 						<p class="">
 							{card.content2}
 						</p>

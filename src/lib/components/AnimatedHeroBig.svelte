@@ -25,7 +25,7 @@
 	];
 </script>
 
-<div class="relative z-10 flex h-svh flex-col justify-center md:pt-32">
+<div class="relative z-10 flex md:h-svh flex-col justify-center pt-32 md:pt-32 mb-24 md:mb-0">
 	{#each colors as color}
 		<div
 			class="absolute z-0 size-full -translate-x-1/2 -translate-y-1/2 transform rounded-full opacity-25"
@@ -35,23 +35,23 @@
 
 	<div class="flex flex-col md:flex-row">
 		<div class="md:order-1 flex items-center justify-center mb-10 md:mb-0">
-			<MockupHero class="w-40 md:w-60 lg:right-0 lg:w-96" />
+			<MockupHero class="w-52 md:w-60 lg:right-0 lg:w-96 -mb-4 md:mb-0" />
 		</div>
 		<div class="z-10 flex flex-grow flex-col justify-center">
-			<h1 class="mb-10 font-display text-4xl font-semibold leading-[106%] md:text-5xl lg:text-7xl">
+			<h1 class="mb-10 font-display text-5xl font-semibold leading-[106%] md:text-7xl">
 				{m.page_home_hero()}
 				<span
 					style="background-image: url('/women.jpg')"
-					class="-mb-1 inline-block h-[0.8em] w-[2.3em] rounded-full bg-cover bg-center"
+					class="-mb-1 hidden md:inline-block h-[0.8em] w-[2.3em] rounded-full bg-cover bg-center"
 				></span>
 				{m.page_home_hero2()}
 			</h1>
-			<div class="mb-10 max-w-[30em] text-xl">
+			<div class="mb-10 max-w-[30em] text-lg md:text-xl">
 				{m.page_home_hero_subline()}
 			</div>
-			<a href="/app/auth/login" class="flex">
+			<a href="/app/auth/login" class="flex text-lg">
 					<GradientImage
-						class="rounded-lg md:rounded-xl bg-lilac px-3 py-3 font-bold text-black shadow-lg dark:shadow-gray-300/30 lg:px-7 lg:py-5 lg:text-lg"
+						class="rounded-xl bg-lilac px-6 py-4 font-bold text-black shadow-lg dark:shadow-gray-300/30 lg:px-7 lg:py-5"
 					>
 						<div class="relative z-10">
 							{m.page_home_cta()}

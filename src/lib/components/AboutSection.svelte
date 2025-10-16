@@ -49,32 +49,54 @@
 	});
 </script>
 
-<div class="mb-40">
-	<div class="flex flex-col items-center text-center lg:items-start lg:text-left md:flex-row">
+<div class="mb-24 md:mb-40">
+	<div class="flex flex-col items-center md:flex-row lg:items-start lg:text-left">
 		<div class="relative">
 			<h2
 				use:checkVisibility
-				class="mb-8 translate-y-10 transform font-display text-2xl font-semibold opacity-0 transition-all duration-700 is-visible:translate-y-0 is-visible:opacity-100 lg:text-4xl"
+				class="mb-8 translate-y-10 transform font-display text-4xl font-semibold opacity-0 transition-all duration-700 is-visible:translate-y-0 is-visible:opacity-100 lg:text-5xl"
 			>
 				{m.page_home_components_about_heading()}
 			</h2>
 			<div class="max-w-[40em]">
-				<div use:checkVisibility class="opacity-0 is-visible:opacity-100 transition-opacity duration-700">
+				<div
+					use:checkVisibility
+					class="opacity-0 transition-opacity duration-700 is-visible:opacity-100"
+				>
 					{m.page_home_components_about_text1()}
 				</div>
-				<div use:checkVisibility class="delay-100 opacity-0 is-visible:opacity-100 transition-opacity duration-700 mb-4">
+				<div
+					use:checkVisibility
+					class="mb-4 opacity-0 transition-opacity delay-100 duration-700 is-visible:opacity-100"
+				>
 					{m.page_home_components_about_text2()}
 				</div>
-				<div use:checkVisibility class="delay-200 opacity-0 is-visible:opacity-100 transition-opacity duration-700 mb-4">
+				<div
+					use:checkVisibility
+					class="mb-4 opacity-0 transition-opacity delay-200 duration-700 is-visible:opacity-100"
+				>
 					{m.page_home_components_about_text3()}
 				</div>
-				<div use:checkVisibility class="delay-300 opacity-0 is-visible:opacity-100 transition-opacity duration-700">
+				<div
+					use:checkVisibility
+					class="opacity-0 transition-opacity delay-300 duration-700 is-visible:opacity-100"
+				>
 					{@html marked(m.page_home_components_about_text4())}
 				</div>
 			</div>
 		</div>
-		<div use:checkVisibility class="delay-400 opacity-0 is-visible:opacity-100 transition-all scale-0 is-visible:scale-100 duration-700 relative -mt-10">
-			<img src="/AlexMarie.png" alt="Alex und Marie" class="w-[350px]" />
+		<div class="relative">
+			<div
+			use:checkVisibility
+			class="absolute left-1/2 top-1/2 -z-10 size-[3000px] -translate-x-1/2 -translate-y-1/2 scale-0 transform opacity-0 transition-all duration-700 is-visible:scale-100 is-visible:opacity-50"
+			style="background: radial-gradient(circle, #EAE1D8 0%, transparent 60%);"
+			></div>
+			<div
+			use:checkVisibility
+			class="delay-400 relative md:-mt-10 scale-0 overflow-visible opacity-0 transition-all duration-700 is-visible:scale-100 is-visible:opacity-100"
+			>
+			<img src="/AlexMarie.png" alt="Alex und Marie" class="block w-52 mt-20 md:mt-0 md:w-[350px] relative z-20" />
+		</div>
 		</div>
 	</div>
 </div>

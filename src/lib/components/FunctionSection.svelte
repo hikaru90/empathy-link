@@ -38,11 +38,11 @@
 	</div>
 
 <div class="flex items-center justify-center relative z-10">
-	<h2 use:checkVisibility class="transform opacity-0 translate-y-10 is-visible:translate-y-0 is-visible:opacity-100 transition-all duration-700 font-display text-2xl font-semibold lg:text-5xl mb-20 max-w-[13em] text-center">
+	<h2 use:checkVisibility class="transform opacity-0 translate-y-10 is-visible:translate-y-0 is-visible:opacity-100 transition-all duration-700 font-display text-4xl font-semibold lg:text-5xl mb-10 md:mb-20 max-w-[13em] md:text-center">
 		{m.page_home_components_selfempathy_heading()}
 	</h2>
 </div>
-<div class="mb-40 flex flex-col items-center justify-center gap-16 md:gap-20 lg:flex-row">
+<div class="mb-24 md:mb-40 flex flex-col items-center justify-center gap-16 md:gap-20 lg:flex-row">
 	<div class="flex flex-col items-start justify-center gap-6">
 		
 		<p class="max-w-md z-10">
@@ -52,7 +52,7 @@
 			{#each new Array(3) as cta, index}
 			<div class="flex gap-4">
 				<!-- <GradientImage class="mt-1 w-7 h-3.5 rounded-full shadow-md" /> -->
-				<div use:checkVisibility class="transform opacity-0 is-visible:translate-x-0 is-visible:opacity-100 transition-all duration-700 {index % 2 === 0 ? '-ml-4 translate-x-10':'ml-4 -translate-x-10'} bg-white/90 py-4 px-6 rounded-lg border border-white flex flex-col gap-2 brigthness-110">
+				<div use:checkVisibility class="transform opacity-0 is-visible:translate-x-0 is-visible:opacity-100 transition-all duration-700 {index % 2 === 0 ? 'md:-ml-4 md:translate-x-10':'md:ml-4 md:-translate-x-10'} bg-white/90 py-5 px-6 rounded-xl border border-white flex flex-col gap-6 md:gap-2 brigthness-110">
 					<h3 class="font-bold">
 						{usps[index].heading}
 					</h3>
@@ -64,19 +64,19 @@
 			{/each}
 		</div>
 	</div>
-	<div class="relative flex z-10">
-		<div use:checkVisibility class="transform opacity-0 translate-x-1/3 is-visible:translate-x-10 is-visible:opacity-100 transition-all duration-700">
+	<div class="relative flex z-10 -ml-10">
+		<div use:checkVisibility class="transform opacity-0 translate-x-1/3 is-visible:translate-x-10 is-visible:opacity-100 transition-all duration-700 -rotate-3">
 			<PhoneMockup
 			mockup="screenshot-fight2.png"
 			color="bg-background"
-			class="w-40 md:w-60"
+			class="w-56 md:w-60"
 			/>
 		</div>
-		<div use:checkVisibility class="transform -translate-x-1/3 is-visible:translate-x-0 transition-all duration-700">
+		<div use:checkVisibility class="transform -translate-x-1/3 is-visible:translate-x-0 transition-all duration-700 rotate-6">
 			<PhoneMockup
 			mockup="screenshot-dashboard.png"
 			color="bg-background"
-			class="w-40 -ml-36 md:w-60"
+			class="w-56 -ml-36 md:w-60"
 			/>
 		</div>
 	</div>

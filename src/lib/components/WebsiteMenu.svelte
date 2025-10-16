@@ -7,7 +7,10 @@
 	import { goto } from '$app/navigation';
 	import { scroll, windowHeight, windowWidth, backgroundColor, currentSection } from '$store/page';
 	import { setLocale } from '$lib/translations';
+	import Menu from 'lucide-svelte/icons/menu';
+	import X from 'lucide-svelte/icons/x';
 	import WebsiteHamburgerMenu from '$lib/components/WebsiteHamburgerMenu.svelte';
+	import GradientImage from '$lib/components/GradientImage.svelte';
 
 	interface Props {
 		user: App.User;
@@ -19,6 +22,7 @@
 	let menuIsVisible = $state(true);
 	const scrollThreshold = 50;
 	let scrollbarOffset = $state(16);
+	let dialogOpen = $state(false);
 
 	const langs = [
 		{ value: 'en', label: 'English' },
@@ -63,12 +67,16 @@
 	]);
 
 	const scrollToTarget = (target: string) => {
+		dialogOpen = false;
 		const targetDiv = document.getElementById(target);
 		if (targetDiv) {
 			scrollToElement(targetDiv, 400);
 		} else {
 			console.warn(`Target element with id "${target}" not found`);
 		}
+		setTimeout(() => {
+			menuIsVisible = true;
+		}, 450);
 	};
 
 	const handleScroll = (value: number) => {
@@ -95,16 +103,18 @@
 </script>
 
 <div style="width:{$windowWidth}px;" class="fixed left-0 top-0 z-[100]">
-	<div class="p-4 rounded-xl">
+	<div class="rounded-xl p-4">
 		<div
-			class="{menuIsVisible ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} {$scroll > 5
+			class="{menuIsVisible
+				? 'max-h-96 translate-y-0 opacity-100'
+				: 'max-h-0 -translate-y-20 opacity-0'} {$scroll > 5
 				? 'shadow-xl shadow-black/5 delay-150'
-				: ''} overflow-hidden transition-all rounded-2xl"
+				: ''} overflow-hidden rounded-2xl transition-all"
 		>
 			<nav
 				class="{$scroll > 5
-					? $backgroundColor/95
-					: 'bg-white-background/80'} flex items-center justify-between px-3.5 py-3 transition-all duration-500 lg:py-3 backdrop-blur-2xl backdrop-brightness-110"
+					? $backgroundColor / 95
+					: 'bg-white-background/80'} flex items-center justify-between px-3.5 py-3 backdrop-blur-2xl backdrop-brightness-110 transition-all duration-500 lg:py-3"
 			>
 				<button onclick={() => scrollToTarget('topTarget')} class="w-1 overflow-visible px-3">
 					<div>
@@ -114,7 +124,11 @@
 				<div class="hidden items-center gap-7 lg:flex">
 					{#each menuItems() as item}
 						<button onclick={() => scrollToTarget(item.target)} class="group relative">
-							<div class="relative z-10 {item.target === $currentSection ? 'underline underline-offset-2' : ''}">
+							<div
+								class="relative z-10 {item.target === $currentSection
+									? 'underline underline-offset-2'
+									: ''}"
+							>
 								{item.label}
 							</div>
 						</button>
@@ -123,16 +137,57 @@
 				<div class="flex w-0 items-center justify-end gap-4">
 					<a
 						href="/app/auth/login"
-						class="hidden rounded-md bg-lilac px-5 py-2 font-bold text-black lg:block shadow-lg shadow-black/10"
+						class="hidden rounded-md bg-lilac px-5 py-2 font-bold text-black shadow-lg shadow-black/10 lg:block"
 					>
 						{m.page_login_heading()}
 					</a>
 					<div class="lg:hidden">
-						<WebsiteHamburgerMenu {user} menuItems={menuItems()} />
+						<button onclick={() => {menuIsVisible = false;(dialogOpen = true)}} class="z-10 flex items-center">
+							<Menu class="size-6" />
+						</button>
 					</div>
 				</div>
 			</nav>
 		</div>
 	</div>
 	<!-- <slot name="submenu" /> -->
+</div>
+<div
+	class="fixed bottom-0 left-0 right-0 top-0 z-[1003] transform bg-white {dialogOpen
+		? 'pointer-events-auto scale-100 opacity-100'
+		: 'pointer-events-none scale-90 opacity-0'} p-4 transition-all duration-200 flex flex-col"
+>
+	<div class="flex items-center justify-end">
+		<button onclick={() => {menuIsVisible = true;(dialogOpen = false)}} class="z-10 flex items-center p-3.5">
+			<X class="size-6" />
+		</button>
+	</div>
+	<div class="flex flex-col justify-center gap-4 flex-grow">
+		<div class="flex flex-col gap-4 flex-grow items-start p-4">
+			{#each menuItems() as item, index}
+				<button onclick={() => scrollToTarget(item.target)} class="group relative">
+					<div
+						class="transform transition-all duration-200 {dialogOpen
+							? 'translate-y-0 opacity-100'
+							: 'translate-y-10 opacity-0'} relative z-10 text-lg {item.target === $currentSection
+							? 'underline underline-offset-2'
+							: ''}"
+						style="transition-delay: {index * 100}ms;"
+					>
+						{item.label}
+					</div>
+				</button>
+			{/each}
+		</div>
+
+		<a href="/app/auth/login" class="flex p-4">
+			<GradientImage
+				class="rounded-lg bg-lilac p-3 font-bold text-black shadow-lg dark:shadow-gray-300/30 md:rounded-xl lg:px-7 lg:py-5 lg:text-lg"
+			>
+				<div class="relative z-10">
+					{m.page_login_heading()}
+				</div>
+			</GradientImage>
+		</a>
+	</div>
 </div>

@@ -46,10 +46,12 @@
 	};
 </script>
 
-<Sheet.Root bind:open={dialogOpen}>
-	<button onclick={() => (dialogOpen = true)} class="flex items-center">
-		<Menu user={user} class="size-6" />
-	</button>
+
+
+
+
+<!-- <Sheet.Root bind:open={dialogOpen}>
+	
 	<Sheet.Content class="{$backgroundColor} z-[1003] flex flex-col border-muted">
 		<Sheet.Header
 			class="flex flex-row items-center justify-between border-b border-black/10 px-5 py-2.5"
@@ -100,4 +102,4 @@
 			</div>
 		</div>
 	</Sheet.Content>
-</Sheet.Root>
+</Sheet.Root> -->

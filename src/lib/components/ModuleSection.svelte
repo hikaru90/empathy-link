@@ -58,8 +58,8 @@
 	]);
 </script>
 
-<div class="flex flex-col items-center mb-40 pt-12 md:pt-0">
-	<h2 use:checkVisibility class="transform opacity-0 translate-y-10 is-visible:translate-y-0 is-visible:opacity-100 transition-all duration-700 mb-8 md:mb:10 max-w-[13em] text-center font-display text-3xl md:text-4xl font-semibold lg:text-5xl">
+<div class="flex flex-col items-center mb-24 md:mb-40 pt-12 md:pt-0">
+	<h2 use:checkVisibility class="transform opacity-0 translate-y-10 is-visible:translate-y-0 is-visible:opacity-100 transition-all duration-700 mb-8 md:mb:10 max-w-[13em] md:text-center font-display text-4xl font-semibold md:text-5xl">
 		{m.page_home_components_the4steps_heading()}
 	</h2>
 
@@ -70,16 +70,10 @@
 	<!-- <Modules /> -->
 
 
-	<div class="relative mb-16 md:mb:20">
-    <div class="hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-			<!-- <div class="w-28 stroke-black fill-none dark:stroke-neon">
-				{@html Connector}
-			</div> -->
-      <!-- <img src="/connector.svg" alt="connector" class="w-28 text-red-200"> -->
-    </div>
-		<div use:checkVisibility class="transform opacity-0 scale-75 is-visible:scale-100 is-visible:opacity-100 transition-all duration-700 md:-m-4 flex flex-wrap items-stretch justify-center">
+	<div class="relative">
+		<div use:checkVisibility class="transform opacity-0 scale-75 is-visible:scale-100 is-visible:opacity-100 transition-all duration-700 flex flex-wrap items-stretch justify-center">
 			{#each cards as card, index}
-				<div class="group relative h-52 md:h-[330px] w-full px-4 py-3 md:py-4 md:w-1/2 md:max-w-[460px]" style="transition-delay: {(index +1) * 200}ms;">
+				<div use:checkVisibility class="transform opacity-0 translate-y-10 is-visible:translate-y-0 is-visible:opacity-100 transition-all duration-700 group relative md:h-[330px] w-full px-4 py-3 md:py-4 md:w-1/2 md:max-w-[460px]" >
 					<!-- <div
 						class="absolute left-full top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-first:md:block dark:bg-neon"
 					></div>
@@ -87,16 +81,18 @@
 						class="absolute left-0 top-1/2 hidden h-1 w-8 -translate-x-4 -translate-y-1/2 transform bg-black/90 group-last:md:block dark:bg-neon"
 					></div> -->
 					<div class="flex h-full flex-col justify-between rounded-3xl bg-muted p-5 md:px-6 md:pt-6 md:pb-7 lg:px-8 lg:pt-8 lg:pb-10 shadow-lg">
-						<div class="flex flex-row md:flex-col gap-2 items-center md:items-start">
-							<div class="flex items-center font-display -ml-0.5 text-lg bg-background rounded-xl pl-1 pr-3 py-1 shadow-lg shadow-white border border-black/5">
-								<card.icon class="size-7 rounded-lg mr-2 flex items-center justify-center bg-black p-2 text-white" />
+						
+						<div class="flex flex-col gap-2 items-start flex-grow mb-10 md:mb-0">
+							<div class="flex items-center font-display -ml-0.5 text-lg bg-background/5 rounded-xl pl-1 pr-3 py-1 shadow-lg shadow-white border border-black/5">
+								<card.icon class="size-6 md:size-7 rounded-lg mr-2 flex items-center justify-center bg-black p-1.5 md:p-2 text-white" />
 								{card.subheading}
 							</div>
-							<h3 class="md:mb-6 font-display text-xl font-semibold md:text-2xl">
+						</div>
+						
+						<div class="flex flex-col gap-2">
+							<h3 class="font-display text-xl font-semibold md:text-2xl">
 								{card.heading}
 							</h3>
-						</div>
-						<div class="flex">
 							<p class="">
 								{card.text}
 							</p>
