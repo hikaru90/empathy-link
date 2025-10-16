@@ -11,6 +11,9 @@
 	import IconLearn from '$assets/icons/icon-learn.svg?raw';
 	import PhoneMockup from '$lib/components/PhoneMockup.svelte';
 	import { getLocale } from '$src/paraglide/runtime';
+	import { checkVisibility } from '$lib/actions';
+	import { marked } from 'marked';
+
 	const locale = $derived(getLocale());
 
 	let tableRows = $derived([
@@ -47,30 +50,33 @@
 </script>
 
 <div class="mb-40">
-	<div class="flex flex-col items-center lg:items-start text-center lg:text-left">
-		<div class="skeumorphic-button mb-4 h-12 w-12 rounded-full bg-offwhite dark:bg-muted p-1">
-			<div
-				class="flex items-center justify-center rounded-full bg-black fill-offwhite dark:fill-neon p-1.5 shadow-inner"
-			>
-				{@html IconLearn}
-			</div>
-		</div>
-		<div class="mb-3 ml-0.5 text-black/60 dark:text-white/80">
-			4. {moduleName}
-		</div>
+	<div class="flex flex-col items-center text-center lg:items-start lg:text-left md:flex-row">
 		<div class="relative">
-			<h2 class="mb-8 font-display text-2xl font-semibold lg:text-4xl">
-				{m.page_home_components_learn_heading()}
+			<h2
+				use:checkVisibility
+				class="mb-8 translate-y-10 transform font-display text-2xl font-semibold opacity-0 transition-all duration-700 is-visible:translate-y-0 is-visible:opacity-100 lg:text-4xl"
+			>
+				{m.page_home_components_about_heading()}
 			</h2>
-			<div class="bg-red-500 rounded-full px-2 py-0.5 text-xs text-white absolute -top-0 -right-0 transform translate-x-full -translate-y-full">
-				{m.menu_soon()}
+			<div class="max-w-[40em]">
+				<div use:checkVisibility class="opacity-0 is-visible:opacity-100 transition-opacity duration-700">
+					{m.page_home_components_about_text1()}
+				</div>
+				<div use:checkVisibility class="delay-100 opacity-0 is-visible:opacity-100 transition-opacity duration-700 mb-4">
+					{m.page_home_components_about_text2()}
+				</div>
+				<div use:checkVisibility class="delay-200 opacity-0 is-visible:opacity-100 transition-opacity duration-700 mb-4">
+					{m.page_home_components_about_text3()}
+				</div>
+				<div use:checkVisibility class="delay-300 opacity-0 is-visible:opacity-100 transition-opacity duration-700">
+					{@html marked(m.page_home_components_about_text4())}
+				</div>
 			</div>
 		</div>
-		<p class="max-w-md mb-8">
-			{m.page_home_components_learn_description()}
-		</p>
+		<div use:checkVisibility class="delay-400 opacity-0 is-visible:opacity-100 transition-all scale-0 is-visible:scale-100 duration-700 relative -mt-10">
+			<img src="/AlexMarie.png" alt="Alex und Marie" class="w-[350px]" />
+		</div>
 	</div>
-
 </div>
 
 <style lang="scss">

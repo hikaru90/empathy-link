@@ -8,11 +8,11 @@
 	import IconLearn from '$assets/icons/icon-learn.svg?raw';
 	import { get } from 'svelte/store';
 	import IconEye from '$assets/icons/icon-eye.svg?raw';
-	import IconHeart from '$assets/icons/icon-heart.svg?raw';
+	import Heart from '$assets/icons/heart.svg?raw';
 	import IconSwirl from '$assets/icons/icon-swirl.svg?raw';
 	import IconSteps from '$assets/icons/icon-steps.svg?raw';
 	import SendHorizontal from 'lucide-svelte/icons/send-horizontal'
-	import Heart from 'lucide-svelte/icons/heart'
+	import GradientImage from '$lib/components/GradientImage.svelte';
 
 	let menuItems = $state([
 		{
@@ -56,46 +56,53 @@
 <div class="relative h-full w-full p-[1.2em]">
 	<div class="pop-in">
 		<div class="flex items-center justify-center">
-			<div
+			<!-- <div
 				style="background-image: url('{backgroundImage}'); background-size: 300% 100%"
 				class="animate-bg-fast flex h-[1em] w-[2em] flex-col items-center justify-center rounded-full shadow-lg"
-			></div>
+			></div> -->
+			<GradientImage class="w-10 h-4 rounded-full shadow-md" fast />
 		</div>
 	</div>
 
 	<div class="relative flex h-full flex-col justify-between pb-[3.6em]">
 		<div class="flex flex-col gap-px sm:gap-[0.5em]">
-			<div class="step step1 bg-observation-background">
-				<div class="w-[2em] fill-observation-foreground">
+			<div class="step step1 h-[5em] w-full pr-4">
+				<div class="bg-white/90 border border-white size-full shadow-lg rounded-[0.8em]"></div>
+				<!-- <div class="w-[2em] fill-observation-foreground">
 					{@html IconEye}
-				</div>
+				</div> -->
 			</div>
-			<div class="step step2 bg-feelings-background">
-				<div class="w-[2em] fill-feelings-foreground">
+			<div class="step step2 h-[2em] w-full pl-4">
+				<div class="bg-lilac/90 border border-lilac size-full shadow-lg rounded-[0.8em]"></div>
+				<!-- <div class="w-[2em] fill-feelings-foreground">
 					{@html IconHeart}
-				</div>
+				</div> -->
 			</div>
-			<div class="step step3 bg-needs-background">
-				<div class="w-[2em] fill-needs-foreground">
+			<div class="step step3 h-[3em] w-full pr-4">
+				<div class="bg-white/90 border border-white size-full shadow-lg rounded-[0.8em]"></div>
+				<!-- <div class="w-[2em] fill-needs-foreground">
 					{@html IconSwirl}
-				</div>
+				</div> -->
 			</div>
-			<div class="step step4 bg-request-background">
-				<div class="w-[2em] fill-request-foreground">
+			<div class="step step4 h-[2em] w-full pl-4">
+				<div class="bg-lilac/90 border border-lilac size-full shadow-lg rounded-[0.8em]"></div>
+				<!-- <div class="w-[2em] fill-request-foreground">
 					{@html IconSteps}
-				</div>
+				</div> -->
 			</div>
 		</div>
-		<div class="step5 flex items-center justify-center rounded-full p-[1em] shadow-lg">
-			<div class="flex w-full items-center justify-between fill-observation-foreground">
-				<div class="h-[0.5em] w-[3em] rounded bg-slate-600"></div>
-				<SendHorizontal class="text-slate-500" />
+		<div class="step5 flex items-center justify-center rounded-full px-[1em] py-[0.5em] shadow-lg mb-[0.5em]">
+			<div class="flex w-full items-center justify-between fill-lilac">
+				<div class="h-[0.5em] w-[3em] rounded bg-lilac"></div>
+				<SendHorizontal class="text-purple-500 w-[2em]" />
 			</div>
 		</div>
 
-		<div class="absolute flex h-full w-full items-center justify-center pb-[3em]">
+		<div class="absolute flex h-full w-full items-center justify-center pb-[6em]">
 			<div class="heart">
-				<Heart class="size-[5em] text-red-400" />
+				<div class="w-[8em] fill-request-foreground">
+					{@html Heart}
+				</div>
 			</div>
 		</div>
 	</div>
@@ -131,7 +138,7 @@
 
 <style lang="scss">
 	.step {
-		@apply flex items-center justify-center rounded-[1.6em] p-[0.3em] shadow-lg;
+		@apply flex items-center justify-center m-[0.3em];
 	}
 	:root {
 		--duration: 6s;
@@ -182,28 +189,24 @@
 		}
 	}
 	@keyframes step5 {
-		0%,
-		27.5% {
-			@apply bg-slate-700 opacity-0;
+		0%,27% {
+			@apply bg-black opacity-0;
 			transform: scale(0);
 		}
 		35% {
-			@apply bg-slate-700 opacity-100;
+			@apply bg-black opacity-100;
 			transform: scale(1);
 		}
 		40% {
-			@apply bg-slate-700;
+			@apply bg-black;
 		}
-		40.1% {
-			@apply bg-white;
+		41% {
+			@apply bg-slate-600;
 		}
-		50% {
-			@apply bg-slate-700;
+		42% {
+			@apply bg-black;
 		}
-		55% {
-			@apply opacity-0;
-		}
-		100% {
+		55%,100% {
 			@apply opacity-0;
 		}
 	}

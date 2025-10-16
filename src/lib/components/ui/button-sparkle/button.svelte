@@ -3,7 +3,7 @@
 	import { Button as ButtonPrimitive } from 'bits-ui';
 	import { cn } from '$lib/utils';
 	import { buttonVariants, type Props, type Events } from '.';
-	import backgroundImage from '$assets/images/holo3.jpg';
+	import backgroundImage from '$assets/images/sparklePill3.webp';
 
 	type $$Props = Props;
 	type $$Events = Events;

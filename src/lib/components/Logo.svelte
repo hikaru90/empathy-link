@@ -1,5 +1,6 @@
 <script lang="ts">
   import SparklePill from '$lib/components/SparklePill.svelte'
+  import GradientImage from '$lib/components/GradientImage.svelte';
 
   interface Props {
     simplified?: boolean;
@@ -24,7 +25,8 @@
 <div class="font-sans font-semibold flex items-center gap-1 text-xl">
   Empathy
   <div>
-    <SparklePill class="shadow-md dark:shadow-gray-200/30" />
+    <GradientImage class="w-7 h-3.5 rounded-full shadow-md" />
+    <!-- <SparklePill class="shadow-md dark:shadow-gray-200/30" /> -->
   </div>
   Link
 </div>

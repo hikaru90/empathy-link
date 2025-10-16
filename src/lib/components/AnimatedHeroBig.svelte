@@ -6,6 +6,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { scroll, windowWidth } from '$store/page';
 	import MockupHero from '$lib/components/MockupHero.svelte';
+	import GradientImage from '$lib/components/GradientImage.svelte';
 
 	let animationWidth = 1000;
 
@@ -13,24 +14,54 @@
 		animationWidth = window?.document?.getElementById('animation')?.getBoundingClientRect()?.width;
 		console.log('animationWidth', animationWidth);
 	};
+
+	const colors = [
+		// { colorName: 'forest', color: '#17545A', size: 200, x: 75, y: 25 },
+		// { colorName: 'forest', color: '#17545A', size: 200, x: 75, y: 25 },
+		// { colorName: 'rose', color: '#F0BADA', size: 100, x: 100, y: 0 },
+
+		{ colorName: 'lilac', color: '#D8BEFF', size: 400, x: 0, y: 0 }
+		// { colorName: 'orange', color: '#FF9C34', size: 400, x: 0, y: 0 },
+	];
 </script>
 
-<div class="relative z-10 flex h-svh flex-col pt-20 md:pt-32">
-	<div class="flex-grow flex flex-col justify-center">
-		<h1
-			class="mb-10 max-w-[14em] font-display text-4xl font-semibold leading-[106%] md:text-5xl lg:text-7xl"
-		>
-			{m.page_home_hero()}
-		</h1>
-		<a href="/app/auth/login">
-			<SparkleButton
-				class="rounded-lg px-3 py-5 font-bold text-black shadow-lg dark:shadow-gray-300/30 lg:px-6 lg:py-7 lg:text-lg"
-			>
-				{m.page_home_cta()}
-			</SparkleButton>
-		</a>
+<div class="relative z-10 flex h-svh flex-col justify-center md:pt-32">
+	{#each colors as color}
+		<div
+			class="absolute z-0 size-full -translate-x-1/2 -translate-y-1/2 transform rounded-full opacity-25"
+			style="width: {color.size}%; height: {color.size}%; left: {color.x}%; top: {color.y}%; background: radial-gradient(circle, {color.color} 0%, transparent 60%);"
+		></div>
+	{/each}
+
+	<div class="flex flex-col md:flex-row">
+		<div class="md:order-1 flex items-center justify-center mb-10 md:mb-0">
+			<MockupHero class="w-40 md:w-60 lg:right-0 lg:w-96" />
+		</div>
+		<div class="z-10 flex flex-grow flex-col justify-center">
+			<h1 class="mb-10 font-display text-4xl font-semibold leading-[106%] md:text-5xl lg:text-7xl">
+				{m.page_home_hero()}
+				<span
+					style="background-image: url('/women.jpg')"
+					class="-mb-1 inline-block h-[0.8em] w-[2.3em] rounded-full bg-cover bg-center"
+				></span>
+				{m.page_home_hero2()}
+			</h1>
+			<div class="mb-10 max-w-[30em] text-xl">
+				{m.page_home_hero_subline()}
+			</div>
+			<a href="/app/auth/login" class="flex">
+					<GradientImage
+						class="rounded-lg md:rounded-xl bg-lilac px-3 py-3 font-bold text-black shadow-lg dark:shadow-gray-300/30 lg:px-7 lg:py-5 lg:text-lg"
+					>
+						<div class="relative z-10">
+							{m.page_home_cta()}
+						</div>
+					</GradientImage>
+			</a>
+		</div>
 	</div>
-	<div class="relative md:mb-32 lg:mb-60">
+
+	<!-- <div class="relative md:mb-32 lg:mb-60">
 		<div class="-mx-5 mt-20 flex items-center md:mx-0">
 			<div class="hidden rounded-full bg-muted-dark/40 md:block md:size-32 lg:size-40"></div>
 			<div class="-ml-16 hidden rounded-full bg-muted-dark md:block md:size-32 lg:size-40"></div>
@@ -39,10 +70,8 @@
 				class="h-52 w-full bg-cover bg-right md:-ml-16 md:h-32 md:w-[300px] md:rounded-full md:bg-center lg:h-40 lg:w-[500px]"
 			></div>
 		</div>
-		<MockupHero
-			class="absolute -right-4 top-0 w-40 md:w-60 lg:right-0 lg:w-96 -mt-20"
-		/>
-	</div>
+		
+	</div> -->
 </div>
 
 <style lang="scss">

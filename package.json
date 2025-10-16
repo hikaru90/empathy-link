@@ -83,7 +83,7 @@
 		"drizzle-kit": "^0.31.4",
 		"drizzle-orm": "^0.44.5",
 		"formsnap": "^1.0.0",
-		"lucide-svelte": "^0.487.0",
+		"lucide-svelte": "^0.504.0",
 		"marked": "^15.0.7",
 		"mode-watcher": "^1.0.6",
 		"pg": "^8.16.3",

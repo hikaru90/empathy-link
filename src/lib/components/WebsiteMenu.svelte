@@ -6,6 +6,7 @@
 	import { setCookie, scrollToElement } from '$scripts/helpers';
 	import { goto } from '$app/navigation';
 	import { scroll, windowHeight, windowWidth, backgroundColor, currentSection } from '$store/page';
+	import { setLocale } from '$lib/translations';
 	import WebsiteHamburgerMenu from '$lib/components/WebsiteHamburgerMenu.svelte';
 
 	interface Props {
@@ -24,10 +25,10 @@
 		{ value: 'de', label: 'German' }
 	];
 
-	const handleSelect: (event: SelectedChangeEvent) => void = (event) => {
+	const handleSelect = (event: any) => {
 		if (event) {
 			setCookie('locale', event.value);
-			locale.update(() => event.value);
+			setLocale(event.value);
 		}
 	};
 
@@ -54,17 +55,20 @@
 		return scrollbarWidth;
 	});
 	let menuItems = $derived(() => [
-		{ label: m.menu_sections_the4steps(), target: 'stepsTarget' },
-		{ label: m.menu_sections_modules(), target: 'modulesTarget' },
-		{ label: m.menu_sections_selfempathy(), target: 'selfempathyTarget' },
-		{ label: m.menu_sections_fight(), target: 'fightTarget' },
-		{ label: m.menu_sections_feedback(), target: 'feedbackTarget' },
-		{ label: m.menu_sections_learn(), target: 'learnTarget' }
+		{ label: m.menu_sections_selfempathy(), target: 'functionSectionTarget' },
+		{ label: m.menu_sections_the4steps(), target: 'moduleSectionTarget' },
+		{ label: m.menu_sections_fight(), target: 'privacySectionTarget' },
+		{ label: m.menu_sections_learn(), target: 'aboutSectionTarget' },
+		{ label: m.menu_sections_faq(), target: 'faqSectionTarget' }
 	]);
 
-	const scrollToTarget = (target) => {
+	const scrollToTarget = (target: string) => {
 		const targetDiv = document.getElementById(target);
-		scrollToElement(targetDiv, 400);
+		if (targetDiv) {
+			scrollToElement(targetDiv, 400);
+		} else {
+			console.warn(`Target element with id "${target}" not found`);
+		}
 	};
 
 	const handleScroll = (value: number) => {
@@ -91,47 +95,44 @@
 </script>
 
 <div style="width:{$windowWidth}px;" class="fixed left-0 top-0 z-[100]">
-	<div
-		class="{menuIsVisible ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} {$scroll > 5
-			? 'shadow-xl shadow-black/5 delay-150'
-			: ''} overflow-hidden transition-all"
-	>
-		<nav
-			class="{$scroll > 5
-				? $backgroundColor
-				: 'bg-white-background'} flex items-center justify-between px-5 py-3 transition-all duration-500 lg:py-3"
+	<div class="p-4 rounded-xl">
+		<div
+			class="{menuIsVisible ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} {$scroll > 5
+				? 'shadow-xl shadow-black/5 delay-150'
+				: ''} overflow-hidden transition-all rounded-2xl"
 		>
-			<a href="/" class="w-1 overflow-visible">
-				<div>
-					<Logo />
+			<nav
+				class="{$scroll > 5
+					? $backgroundColor/95
+					: 'bg-white-background/80'} flex items-center justify-between px-3.5 py-3 transition-all duration-500 lg:py-3 backdrop-blur-2xl backdrop-brightness-110"
+			>
+				<button onclick={() => scrollToTarget('topTarget')} class="w-1 overflow-visible px-3">
+					<div>
+						<Logo />
+					</div>
+				</button>
+				<div class="hidden items-center gap-7 lg:flex">
+					{#each menuItems() as item}
+						<button onclick={() => scrollToTarget(item.target)} class="group relative">
+							<div class="relative z-10 {item.target === $currentSection ? 'underline underline-offset-2' : ''}">
+								{item.label}
+							</div>
+						</button>
+					{/each}
 				</div>
-			</a>
-			<div class="hidden items-center gap-7 lg:flex">
-				{#each menuItems() as item}
-					<button onclick={scrollToTarget(item.target)} class="group relative">
-						<div
-							class="shadow-x absolute -bottom-1 -left-3 -right-3 -top-1 z-0 rounded-md bg-white-background/30 opacity-0 shadow-md transition-opacity group-hover:opacity-100"
-						></div>
-						<div
-							class="{item.target === $currentSection
-								? 'opacity-100'
-								: 'opacity-0'} absolute -bottom-1 -left-3 -right-3 -top-1 rounded-md bg-black/5 shadow-inner shadow-black/20 transition-opacity duration-300"
-						></div>
-						<div class="relative z-10">
-							{item.label}
-						</div>
-					</button>
-				{/each}
-			</div>
-			<div class="flex w-1 items-center justify-end gap-4">
-				<a href="/app/auth/login" class="hidden lg:block px-5 py-2 rounded-md bg-black text-white">
-					{m.page_login_heading()}
-				</a>
-				<div class="lg:hidden">
-					<WebsiteHamburgerMenu user={user} menuItems={menuItems()} />
+				<div class="flex w-0 items-center justify-end gap-4">
+					<a
+						href="/app/auth/login"
+						class="hidden rounded-md bg-lilac px-5 py-2 font-bold text-black lg:block shadow-lg shadow-black/10"
+					>
+						{m.page_login_heading()}
+					</a>
+					<div class="lg:hidden">
+						<WebsiteHamburgerMenu {user} menuItems={menuItems()} />
+					</div>
 				</div>
-			</div>
-		</nav>
+			</nav>
+		</div>
 	</div>
 	<!-- <slot name="submenu" /> -->
 </div>

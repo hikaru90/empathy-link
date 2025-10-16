@@ -319,19 +319,64 @@ export const getQueryParam = (paramName: string): string | null => {
  * @returns The full URL to the media file, or empty string if invalid
  */
 export const getMediaUrl = (
-	collection: string, 
-	recordId: string, 
-	filename: string, 
+	collection: string,
+	recordId: string,
+	filename: string,
 	baseUrl: string
 ): string => {
 	if (!collection || !recordId || !filename || !baseUrl) {
 		return '';
 	}
-	
+
 	// Handle full URLs that are already constructed
 	if (filename.startsWith('http://') || filename.startsWith('https://')) {
 		return filename;
 	}
-	
+
 	return `${baseUrl}/api/files/${collection}/${recordId}/${filename}`;
+};
+
+/**
+ * Setup visibility tracking for elements with checkVisibility class
+ * Adds 'is-visible' class when elements enter viewport
+ * @param container - The container element to observe (defaults to document.body)
+ * @param offset - Offset in pixels from viewport edge (default 0)
+ * @param threshold - Percentage of element that must be visible (default 0.1 = 10%)
+ * @returns Cleanup function to disconnect observer
+ */
+export const setupVisibilityTracking = (
+	container?: HTMLElement,
+	offset: number = 0,
+	threshold: number = 0.1
+): (() => void) => {
+	if (!browser) return () => {};
+
+	const observerOptions = {
+		root: null, // viewport
+		rootMargin: `${offset}px`,
+		threshold: threshold
+	};
+
+	const observer = new IntersectionObserver((entries) => {
+		entries.forEach((entry) => {
+			if (entry.isIntersecting) {
+				entry.target.classList.add('is-visible');
+			} else {
+				entry.target.classList.remove('is-visible');
+			}
+		});
+	}, observerOptions);
+
+	// Find all elements with checkVisibility class
+	const targetContainer = container || document.body;
+	const elements = targetContainer.querySelectorAll('.checkVisibility');
+
+	elements.forEach((element) => {
+		observer.observe(element);
+	});
+
+	// Return cleanup function
+	return () => {
+		observer.disconnect();
+	};
 };

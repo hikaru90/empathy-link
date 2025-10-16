@@ -27,28 +27,29 @@
 		{
 			title: 'Was möchtest du mit Empathy-Link erreichen?',
 			content: '',
-			component: 'userGoal'
+			component: 'userGoal',
+			image: 102
 		},
 		{
 			title: 'Empathie lohnt sich',
-			content: `Eine Harvard-Studie zeigt: Enge, positive Beziehungen sind einer der wichtigsten Faktoren für Gesundheit, Wohlbefinden und Lebenszufriedenheit – wichtiger als Erfolg, Einkommen oder Status. Gute Verbindung zu anderen bedeutet ein gutes Leben.`,
-			image: 5
+			content: `Enge, positive Beziehungen sind einer der wichtigsten Faktoren für Gesundheit, Wohlbefinden und Lebenszufriedenheit – wichtiger als Erfolg, Einkommen oder Status. Gute Verbindung zu anderen bedeutet ein gutes Leben.`,
+			image: 105
 		},
 		{
 			title: 'Spür mal rein',
 			content: `Weitere Studien zeigen, wenn wir unsere Gefühle benennen, entsteht mehr Klarheit. Wir verstehen uns selbst besser – Irritationen werden greifbar, und wir reagieren weniger impulsiv. Das hilft uns, bewusster und gelassener zu handeln.`,
-			image: 3
+			image: 104
 		},
 		{
 			title: ' Deine Gespräche gehören dir!',
 			content: `Dein persönlicher Coach wird von KI unterstützt. Sie hilft dir, deine Gefühle, Bedürfnisse und Muster zu reflektieren.
 			Alle Daten sind sicher verschlüsselt, nur für dich sichtbar und nicht zurückverfolgbar.`,
-			image: 6
+			image: 103
 		},
 		{
 			title: 'Deine Empathie-Reise kann starten!',
 			content: `Danke, dass du dir Zeit genommen hast. Dein Coach ist jetzt für dich da – lass uns gemeinsam beginnen.`,
-			image: 7
+			image: 106
 		}
 	];
 	const formattedSteps = steps.map((step, index) => {
@@ -128,6 +129,10 @@
 			displaySkipButton={true}
 			onSkip={() => {
 				skipOnboarding();
+			}}
+			displayBackButton={true}
+			onPrev={() => {
+				prevStep();
 			}}
 		>
 			Weiter

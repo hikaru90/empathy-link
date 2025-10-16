@@ -3,17 +3,18 @@
 	import AnimatedHeroBig from '$lib/components/AnimatedHeroBig.svelte';
 	import Locale from '$lib/components/Locale.svelte';
 	import { m } from '$lib/translations';
-	import The4Steps from '$lib/components/The4Steps.svelte';
+	import ModuleSection from '$src/lib/components/ModuleSection.svelte';
 	import Modules from '$lib/components/Modules.svelte';
-	import Selfempathy from '$lib/components/Selfempathy.svelte';
+	import FunctionSection from '$src/lib/components/FunctionSection.svelte';
 	import Fight from '$lib/components/Fight.svelte';
-	import Feedback from '$lib/components/Feedback.svelte';
-	import Learn from '$lib/components/Learn.svelte';
+	import Privacy from '$lib/components/Privacy.svelte';
+	import AboutSection from '$src/lib/components/AboutSection.svelte';
 	import { scroll, windowHeight } from '$store/page';
 	import { onMount } from 'svelte';
 	import { backgroundColor, currentSection } from '$store/page';
-	import type { ActionOptions } from 'puppeteer';
 	import { browser } from '$app/environment';
+	import UspsSection from '$src/lib/components/UspsSection.svelte';
+	import FaqSection from '$src/lib/components/FaqSection.svelte';
 
 	interface Props {
 		data: App.Locals;
@@ -23,28 +24,31 @@
 
 	const targetColors = [
 		{ name: 'topTarget', color: 'bg-white-background' },
-		{ name: 'stepsTarget', color: 'bg-background' },
-		{ name: 'modulesTarget', color: 'bg-background' },
-		{ name: 'selfempathyTarget', color: 'bg-observation-background dark:bg-white-background' },
-		{ name: 'fightTarget', color: 'bg-feelings-background dark:bg-background' },
-		{ name: 'feedbackTarget', color: 'bg-needs-background dark:bg-white-background' },
-		{ name: 'learnTarget', color: 'bg-request-background dark:bg-background' }
+		{ name: 'functionSectionTarget', color: 'bg-sky-100' },
+		{ name: 'moduleSectionTarget', color: 'bg-lilac' },
+		{ name: 'privacySectionTarget', color: 'bg-emerald-900/30' },
+		{ name: 'aboutSectionTarget', color: 'bg-request-background' },
+		{ name: 'faqSectionTarget', color: 'bg-neutral-200' }
 	];
 
 	const updateBackgroundColor = () => {
 		if (!browser) return;
-		
+
 		const targets = targetColors;
-		let newColor = '';
-		let section = '';
+		let newColor = targetColors[0].color; // Default to first section color
+		let section = targetColors[0].name;
 
-		const offset = 100; // You can change this value to adjust the offset
+		const viewportCenter = window.innerHeight / 2;
 
-		for (const target of targets) {
+		// Find which section we're currently in based on scroll position
+		// Work backwards through sections to find the last one we've passed
+		for (let i = targets.length - 1; i >= 0; i--) {
+			const target = targets[i];
 			const targetDiv = document.getElementById(target.name);
 			if (targetDiv) {
 				const rect = targetDiv.getBoundingClientRect();
-				if (rect.top + offset >= 0 && rect.bottom + offset <= window.innerHeight) {
+				// If the marker is above the viewport center, we're in this section
+				if (rect.top <= viewportCenter) {
 					newColor = target.color;
 					section = target.name;
 					break;
@@ -52,10 +56,8 @@
 			}
 		}
 
-		if (newColor) {
-			backgroundColor.set(newColor);
-			currentSection.set(section);
-		}
+		backgroundColor.set(newColor);
+		currentSection.set(section);
 	};
 
 	scroll.subscribe(() => updateBackgroundColor());
@@ -70,29 +72,42 @@
 	<WebsiteMenu user={data.user} />
 	<div class="{$backgroundColor} relative flex-grow transition duration-500">
 		<div id="topTarget"></div>
-		<div class="relative z-0 mb-20">
+		<div class="relative z-0 mb-0">
 			<div class="max-container">
 				<AnimatedHeroBig />
 			</div>
 		</div>
 		<div class="max-container relative z-10 pb-40">
-			<div id="stepsTarget"></div>
-			<The4Steps />
 
-			<div id="modulesTarget"></div>
-			<Modules />
+			<div class="relative">
+				<div id="uspsSectionTarget" class="absolute -top-20"></div>
+			</div>
+			<UspsSection />
 
-			<div id="selfempathyTarget"></div>
-			<Selfempathy />
+			<div class="relative">
+				<div id="functionSectionTarget" class="absolute -top-20"></div>
+			</div>
+			<FunctionSection />
 
-			<div id="fightTarget"></div>
-			<Fight />
+			<div class="relative">
+				<div id="moduleSectionTarget" class="absolute -top-20"></div>
+			</div>
+			<ModuleSection />
 
-			<div id="feedbackTarget"></div>
-			<Feedback />
+			<div class="relative">
+				<div id="privacySectionTarget" class="absolute -top-20"></div>
+			</div>
+			<Privacy />
+			
+			<div class="relative">
+			<div id="aboutSectionTarget" class="absolute -top-20"></div>
+			</div>
+			<AboutSection />
 
-			<div id="learnTarget"></div>
-			<Learn />
+			<div class="relative">
+				<div id="faqSectionTarget" class="absolute -top-20"></div>
+			</div>
+			<FaqSection />
 		</div>
 	</div>
 </div>

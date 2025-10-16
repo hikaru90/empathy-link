@@ -1,4 +1,4 @@
-import { fontFamily } from 'tailwindcss/defaultTheme';
+import defaultTheme from 'tailwindcss/defaultTheme';
 
 /** @type {import('tailwindcss').Config} */
 const config = {
@@ -69,6 +69,8 @@ const config = {
 				'lilac': 'hsl(var(--lilac) / <alpha-value>)',
 				'rose': 'hsl(var(--rose) / <alpha-value>)',
 				'orange': 'hsl(var(--orange) / <alpha-value>)',
+				'cream': 'hsl(var(--cream) / <alpha-value>)',
+				'pink': 'hsl(var(--pink) / <alpha-value>)',
 				border: 'hsl(var(--border) / <alpha-value>)',
 				input: 'hsl(var(--input) / <alpha-value>)',
 				ring: 'hsl(var(--ring) / <alpha-value>)',
@@ -109,27 +111,33 @@ const config = {
 			},
 
 			fontFamily: {
-				sans: ['Inter, sans-serif'],
-				display: ['Inter Tight, sans-serif']
-			}
+				sans: ['Inter', ...defaultTheme.fontFamily.sans],
+				display: ['Inter Tight', ...defaultTheme.fontFamily.sans]
+			},
+
+			plugins: [
+				function ({ addVariant }) {
+					addVariant('group-first', ({ modifySelectors, separator }) => {
+						modifySelectors(({ className }) => {
+							return `.group:first-child .${className}`;
+						});
+					});
+				},
+				function ({ addVariant }) {
+					addVariant('group-last', ({ modifySelectors, separator }) => {
+						modifySelectors(({ className }) => {
+							return `.group:last-child .${className}`;
+						});
+					});
+				},
+			]
+		}
+	},
+	plugins: [
+		function ({ addVariant }) {
+			addVariant('is-visible', '&[data-visible="true"]');
 		},
-		plugins: [
-			function ({ addVariant }) {
-				addVariant('group-first', ({ modifySelectors, separator }) => {
-					modifySelectors(({ className }) => {
-						return `.group:first-child .${className}`;
-					});
-				});
-			},
-			function ({ addVariant }) {
-				addVariant('group-last', ({ modifySelectors, separator }) => {
-					modifySelectors(({ className }) => {
-						return `.group:last-child .${className}`;
-					});
-				});
-			},
-		],
-	}
+	]
 };
 
 export default config;
