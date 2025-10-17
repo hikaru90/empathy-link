@@ -34,7 +34,7 @@
 </script>
 
 <div class="relative overflow-visible">
-	<div use:checkVisibility class="opacity-0 scale-0 is-visible:opacity-25 is-visible:scale-100 transition-all duration-700 delay-500 size-[2000px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 z-0" style="background: radial-gradient(circle, #FF9C34 0%, transparent 60%);">
+	<div use:checkVisibility class="pointer-events-none opacity-0 scale-0 is-visible:opacity-25 is-visible:scale-100 transition-all duration-700 delay-500 size-[2000px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 z-0" style="background: radial-gradient(circle, #FF9C34 0%, transparent 60%);">
 	</div>
 
 <div class="flex items-center justify-center relative z-10">

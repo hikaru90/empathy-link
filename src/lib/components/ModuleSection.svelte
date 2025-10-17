@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { m } from '$lib/translations';
+	import GradientImage from '$lib/components/GradientImage.svelte';
 	import Plus from 'lucide-svelte/icons/plus';
 	import Modules from '$lib/components/Modules.svelte';
 	import Connector from "$assets/icons/connector.svg?raw";
@@ -114,6 +115,16 @@
       {m.default_page_home_components_the4steps_cta_text()}
     </Button>
   </div> -->
+
+	<a href="/app/auth/login" class="flex text-lg cursor-pointer mt-10">
+		<GradientImage
+			class="rounded-xl bg-lilac font-bold text-black shadow-lg dark:shadow-gray-300/30 border border-black/5"
+		>
+			<div class="relative z-10 shadow-inner shadow-white/20 px-6 py-4 lg:px-7 lg:py-5">
+				{m.page_home_cta()}
+			</div>
+		</GradientImage>
+</a>
 </div>
 
 <style lang="scss">

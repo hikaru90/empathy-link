@@ -114,7 +114,7 @@
 			<nav
 				class="{$scroll > 5
 					? $backgroundColor / 95
-					: 'bg-white-background/80'} flex items-center justify-between px-3.5 py-3 backdrop-blur-2xl backdrop-brightness-110 transition-all duration-500 lg:py-3"
+					: 'bg-white-background/80'} flex items-center justify-between px-3.5 py-3 backdrop-blur-2xl backdrop-brightness-110 transition-all duration-500 lg:py-3 shadow-[inset_0_0_2px_0px_rgba(255,255,255,0.8)] rounded-2xl"
 			>
 				<button onclick={() => scrollToTarget('topTarget')} class="w-1 overflow-visible px-3">
 					<div>
@@ -137,9 +137,11 @@
 				<div class="flex w-0 items-center justify-end gap-4">
 					<a
 						href="/app/auth/login"
-						class="hidden rounded-md bg-lilac px-5 py-2 font-bold text-black shadow-lg shadow-black/10 lg:block"
+						class="hidden bg-lilac font-bold text-black shadow-lg shadow-black/10 lg:block rounded-md border border-black/5"
 					>
+					<div class="shadow-inner shadow-white/20 px-5 py-2 rounded-md">
 						{m.page_login_heading()}
+					</div>
 					</a>
 					<div class="lg:hidden">
 						<button onclick={() => {menuIsVisible = false;(dialogOpen = true)}} class="z-10 flex items-center">

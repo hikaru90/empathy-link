@@ -16,6 +16,8 @@
 	import UspsSection from '$src/lib/components/UspsSection.svelte';
 	import FaqSection from '$src/lib/components/FaqSection.svelte';
 	import FooterWebsite from '$src/lib/components/FooterWebsite.svelte';
+	import NewsletterSection from '$src/lib/components/NewsletterSection.svelte';
+	import B2BSection from '$src/lib/components/B2BSection.svelte';
 
 
 	interface Props {
@@ -30,7 +32,9 @@
 		{ name: 'moduleSectionTarget', color: 'bg-lilac' },
 		{ name: 'privacySectionTarget', color: 'bg-emerald-900/30' },
 		{ name: 'aboutSectionTarget', color: 'bg-[#E19B52]' },
-		{ name: 'faqSectionTarget', color: 'bg-neutral-200' }
+		{ name: 'newsletterSectionTarget', color: 'bg-sky-50' },
+		{ name: 'faqSectionTarget', color: 'bg-neutral-200' },
+		{ name: 'b2bSectionTarget', color: 'bg-orange-50' }
 	];
 
 	const updateBackgroundColor = () => {
@@ -107,11 +111,21 @@
 			<AboutSection />
 
 			<div class="relative">
+				<div id="newsletterSectionTarget" class="absolute -top-20"></div>
+			</div>
+			<NewsletterSection />
+
+			<div class="relative">
 				<div id="faqSectionTarget" class="absolute -top-20"></div>
 			</div>
 			<FaqSection />
 
+			<div class="relative">
+				<div id="b2bSectionTarget" class="absolute -top-20"></div>
+			</div>
+			
 		</div>
+		<B2BSection />
 	</div>
 	<FooterWebsite />
 </div>

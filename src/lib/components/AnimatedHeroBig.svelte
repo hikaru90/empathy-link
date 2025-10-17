@@ -49,11 +49,11 @@
 			<div class="mb-10 max-w-[30em] text-lg md:text-xl">
 				{m.page_home_hero_subline()}
 			</div>
-			<a href="/app/auth/login" class="flex text-lg">
+			<a href="/app/auth/login" class="flex text-lg cursor-pointer">
 					<GradientImage
-						class="rounded-xl bg-lilac px-6 py-4 font-bold text-black shadow-lg dark:shadow-gray-300/30 lg:px-7 lg:py-5"
+						class="rounded-xl bg-lilac font-bold text-black shadow-lg dark:shadow-gray-300/30 border border-black/5"
 					>
-						<div class="relative z-10">
+						<div class="relative z-10 shadow-inner shadow-white/20 px-6 py-4 lg:px-7 lg:py-5">
 							{m.page_home_cta()}
 						</div>
 					</GradientImage>

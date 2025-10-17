@@ -68,20 +68,30 @@
 
 	async function markAsRead(messageId: string) {
 		try {
-			const response = await fetch(`/api/messages/${messageId}`, {
-				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ read: true })
+			// Use the new read receipt endpoint
+			const response = await fetch(`/api/messages/${messageId}/read`, {
+				method: 'POST'
 			});
 
 			if (response.ok) {
-				messages = messages.map(m => 
+				// Update local state immediately
+				messages = messages.map(m =>
 					m.id === messageId ? { ...m, read: true } : m
 				);
 				if (selectedMessage?.id === messageId) {
 					selectedMessage = { ...selectedMessage, read: true };
 				}
 				unreadCount = Math.max(0, unreadCount - 1);
+			} else if (response.status === 404) {
+				// Message no longer exists, remove it from the list
+				console.warn('Message not found, removing from list:', messageId);
+				messages = messages.filter(m => m.id !== messageId);
+				if (selectedMessage?.id === messageId) {
+					selectedMessage = null;
+					showMessageDialog = false;
+				}
+				// Refetch to sync with server
+				await fetchMessages();
 			}
 		} catch (error) {
 			console.error('Failed to mark message as read:', error);
@@ -174,7 +184,13 @@
 		fetchMessages();
 	});
 
+	// Refetch when filters change
 	$effect(() => {
+		// Track these dependencies
+		filterType;
+		showUnreadOnly;
+		currentPage;
+		// Refetch when any of these change
 		fetchMessages();
 	});
 </script>

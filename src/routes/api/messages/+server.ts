@@ -33,17 +33,59 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			requestKey: `messages-list-${user.id}-${page}-${type}-${unreadOnly}`,
 		});
 
-		// Get unread count
-		const unreadCount = await pb.collection('messages').getList(1, 1, {
-			filter: filter + ` && read = false`,
-			requestKey: `messages-unread-count-${user.id}`,
+		// Get all read receipts for this user for the current page of messages
+		const messageIds = messages.items.map((m: any) => m.id);
+		let readReceipts: any[] = [];
+
+		if (messageIds.length > 0) {
+			try {
+				const receiptsFilter = `user = "${user.id}" && (${messageIds.map(id => `message = "${id}"`).join(' || ')})`;
+				const receiptsResult = await pb.collection('message_reads').getFullList({
+					filter: receiptsFilter,
+					requestKey: `message-reads-${user.id}-${page}`
+				});
+				readReceipts = receiptsResult;
+			} catch (error) {
+				console.error('Error fetching read receipts:', error);
+			}
+		}
+
+		// Create a map of messageId -> read status
+		const readMap = new Map(readReceipts.map((r: any) => [r.message, true]));
+
+		// Enhance messages with read status from receipts
+		const enhancedMessages = messages.items.map((message: any) => ({
+			...message,
+			read: readMap.has(message.id) || (message.userId === user.id && message.read)
+		}));
+
+		// Filter by unread if requested (now using enhanced read status)
+		const filteredMessages = unreadOnly
+			? enhancedMessages.filter((m: any) => !m.read)
+			: enhancedMessages;
+
+		// Count unread messages (using receipts for accurate count)
+		const allMessagesFilter = `userId = "${user.id}" || (type = "public_announcement" && (sentAt <= "${new Date().toISOString()}" || sentAt = ""))`;
+		const allMessages = await pb.collection('messages').getFullList({
+			filter: allMessagesFilter,
+			requestKey: `messages-all-for-count-${user.id}`,
 		});
 
+		// Get all read receipts for counting
+		const allReadReceipts = await pb.collection('message_reads').getFullList({
+			filter: `user = "${user.id}"`,
+			requestKey: `message-reads-count-${user.id}`
+		});
+		const allReadMap = new Map(allReadReceipts.map((r: any) => [r.message, true]));
+
+		// Count unread: messages that are not in the read receipts map
+		const unreadCount = allMessages.filter((m: any) => !allReadMap.has(m.id)).length;
+
 		return json({
-			messages: messages.items,
+			messages: filteredMessages,
 			totalPages: messages.totalPages,
 			currentPage: messages.page,
-			unreadCount: unreadCount.totalItems
+			unreadCount
 		});
 	} catch (error) {
 		console.error('Error fetching messages:', error);

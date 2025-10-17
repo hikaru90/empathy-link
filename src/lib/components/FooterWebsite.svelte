@@ -4,6 +4,7 @@
 	import { setCookie, scrollToElement } from '$scripts/helpers';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import GradientImage from '$lib/components/GradientImage.svelte';
 
 	const scrollToTarget = (target: string) => {
 		const targetDiv = document.getElementById(target);
@@ -25,7 +26,17 @@
 	};
 </script>
 
-<footer class="bg-black text-white relative z-10">
+<div class="flex items-center justify-center py-20 bg-black/90">
+<a href="/app/auth/login" class="flex cursor-pointer text-lg">
+	<GradientImage
+		class="rounded-xl border border-black/5 bg-lilac font-bold text-black shadow-lg dark:shadow-gray-300/30"
+	>
+		<div class="relative z-10 px-6 py-4 shadow-inner shadow-white/20 lg:px-7 lg:py-5">
+			{m.page_home_cta()}
+    </GradientImage>
+  </a>
+</div>
+<footer class="relative z-10 bg-black text-white">
 	<div class="max-container py-20">
 		<div class="grid grid-cols-1 gap-12 lg:grid-cols-4 lg:gap-8">
 			<!-- Logo und Beschreibung -->
@@ -33,15 +44,15 @@
 				<div class="mb-6">
 					<Logo />
 				</div>
-				<p class="mb-6 text-gray-300 text-sm max-w-[28em]">
-					Empathy Link hilft dir dabei, Empathie zu deiner Superpower zu machen. 
-					Mit unserem KI-gestützten Coach lernst du, Konflikte friedlich zu lösen 
-					und tiefere Verbindungen zu schaffen.
+				<p class="mb-6 max-w-[28em] text-sm text-gray-300">
+					Empathy Link hilft dir dabei, Empathie zu deiner Superpower zu machen. Mit unserem
+					KI-gestützten Coach lernst du, Konflikte friedlich zu lösen und tiefere Verbindungen zu
+					schaffen.
 				</p>
 				<div class="flex gap-4">
-					<a 
-						href="mailto:contact@empathy-link.de" 
-						class="text-gray-300 hover:text-white transition-colors"
+					<a
+						href="mailto:contact@empathy-link.de"
+						class="text-gray-300 transition-colors hover:text-white"
 					>
 						contact@empathy-link.de
 					</a>
@@ -53,41 +64,41 @@
 				<h3 class="mb-6 text-lg font-semibold">Navigation</h3>
 				<ul class="space-y-2">
 					<li>
-						<button 
+						<button
 							onclick={() => handleNavigation('functionSectionTarget')}
-							class="text-gray-300 hover:text-white transition-colors text-left"
+							class="text-left text-gray-300 transition-colors hover:text-white"
 						>
 							{m.menu_sections_selfempathy()}
 						</button>
 					</li>
 					<li>
-						<button 
+						<button
 							onclick={() => handleNavigation('moduleSectionTarget')}
-							class="text-gray-300 hover:text-white transition-colors text-left"
+							class="text-left text-gray-300 transition-colors hover:text-white"
 						>
 							{m.menu_sections_the4steps()}
 						</button>
 					</li>
 					<li>
-						<button 
+						<button
 							onclick={() => handleNavigation('privacySectionTarget')}
-							class="text-gray-300 hover:text-white transition-colors text-left"
+							class="text-left text-gray-300 transition-colors hover:text-white"
 						>
 							{m.menu_sections_fight()}
 						</button>
 					</li>
 					<li>
-						<button 
+						<button
 							onclick={() => handleNavigation('aboutSectionTarget')}
-							class="text-gray-300 hover:text-white transition-colors text-left"
+							class="text-left text-gray-300 transition-colors hover:text-white"
 						>
 							{m.menu_sections_learn()}
 						</button>
 					</li>
 					<li>
-						<button 
+						<button
 							onclick={() => handleNavigation('faqSectionTarget')}
-							class="text-gray-300 hover:text-white transition-colors text-left"
+							class="text-left text-gray-300 transition-colors hover:text-white"
 						>
 							{m.menu_sections_faq()}
 						</button>
@@ -100,28 +111,17 @@
 				<h3 class="mb-6 text-lg font-semibold">Rechtliches</h3>
 				<ul class="space-y-2">
 					<li>
-						<a 
-							href="/imprint" 
-							class="text-gray-300 hover:text-white transition-colors"
-						>
+						<a href="/imprint" class="text-gray-300 transition-colors hover:text-white">
 							Impressum
 						</a>
 					</li>
 					<li>
-						<a 
-							href="/privacy" 
-							class="text-gray-300 hover:text-white transition-colors"
-						>
+						<a href="/privacy" class="text-gray-300 transition-colors hover:text-white">
 							Datenschutz
 						</a>
 					</li>
 					<li>
-						<a 
-							href="/terms" 
-							class="text-gray-300 hover:text-white transition-colors"
-						>
-							AGB
-						</a>
+						<a href="/terms" class="text-gray-300 transition-colors hover:text-white"> AGB </a>
 					</li>
 				</ul>
 			</div>

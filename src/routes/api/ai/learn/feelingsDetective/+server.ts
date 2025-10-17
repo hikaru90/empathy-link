@@ -70,14 +70,36 @@ Erstelle eine einfühlsame Zusammenfassung dieser Selbstreflexion, die der Perso
       config: {
         systemInstruction: systemPrompt,
         temperature: 0.7,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 8192, // Gemini 2.5 Flash max output tokens
       }
     });
-    
-    const result = await chat.sendMessage({ message: prompt });
-    const response = result.text;
 
-    if (!response) {
+    console.log('Sending message to Gemini:', prompt.substring(0, 100) + '...');
+    const result = await chat.sendMessage({ message: prompt });
+    console.log('Gemini result:', result);
+
+    // Extract text from the response - handle both direct text and candidates structure
+    let response = result.text;
+
+    // If result.text is undefined, try to extract from candidates
+    if (!response && result.candidates && result.candidates.length > 0) {
+      const candidate = result.candidates[0];
+      if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
+        response = candidate.content.parts[0].text;
+      }
+    }
+
+    console.log('Extracted text:', response);
+
+    if (!response || response.trim() === '') {
+      console.error('Empty response from Gemini. Full result:', JSON.stringify(result, null, 2));
+      console.error('Finish reason:', result.candidates?.[0]?.finishReason);
+
+      // Provide specific error messages based on finish reason
+      if (result.candidates?.[0]?.finishReason === 'MAX_TOKENS') {
+        throw new Error('AI response was cut off due to length limit. Please try again.');
+      }
+
       throw new Error('No response from AI');
     }
 

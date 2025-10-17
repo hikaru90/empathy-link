@@ -43,11 +43,19 @@
 
 	onMount(() => {
 		fetchUnreadCount();
-		
-		// Refresh unread count every 5 minutes
-		const interval = setInterval(fetchUnreadCount, 5 * 60 * 1000);
-		
+
+		// Refresh unread count every minute (more frequent)
+		const interval = setInterval(fetchUnreadCount, 60 * 1000);
+
 		return () => clearInterval(interval);
+	});
+
+	// Refresh count when drawer closes
+	$effect(() => {
+		if (!isOpen) {
+			// Drawer was just closed, refresh the count
+			fetchUnreadCount();
+		}
 	});
 
 	function restartOnboarding() {
