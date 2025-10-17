@@ -23,7 +23,7 @@
 
 <div class="relative">
 
-	<img src="/shapes/shape{shape}.png" alt="shape" class="h-96" />
+	<img src="/shapes/shape{shape}.png" alt="shape" class="w-full" />
 	<!--{#each Array(3) as _}
 		<div
 			style="backdrop-filter: blur(8px); mask: linear-gradient(to left, #00000000 0%, #000000ff 100%);"

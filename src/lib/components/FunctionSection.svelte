@@ -67,14 +67,14 @@
 	<div class="relative flex z-10 -ml-10">
 		<div use:checkVisibility class="transform opacity-0 translate-x-1/3 is-visible:translate-x-10 is-visible:opacity-100 transition-all duration-700 -rotate-3">
 			<PhoneMockup
-			mockup="screenshot-fight2.png"
+			mockup="screenshot-fight2-2.png"
 			color="bg-background"
 			class="w-56 md:w-60"
 			/>
 		</div>
 		<div use:checkVisibility class="transform -translate-x-1/3 is-visible:translate-x-0 transition-all duration-700 rotate-6">
 			<PhoneMockup
-			mockup="screenshot-dashboard.png"
+			mockup="screenshot-dashboard-2.png"
 			color="bg-background"
 			class="w-56 -ml-36 md:w-60"
 			/>

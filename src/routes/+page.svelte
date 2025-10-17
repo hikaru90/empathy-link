@@ -15,6 +15,8 @@
 	import { browser } from '$app/environment';
 	import UspsSection from '$src/lib/components/UspsSection.svelte';
 	import FaqSection from '$src/lib/components/FaqSection.svelte';
+	import FooterWebsite from '$src/lib/components/FooterWebsite.svelte';
+
 
 	interface Props {
 		data: App.Locals;
@@ -108,6 +110,8 @@
 				<div id="faqSectionTarget" class="absolute -top-20"></div>
 			</div>
 			<FaqSection />
+
 		</div>
 	</div>
+	<FooterWebsite />
 </div>
