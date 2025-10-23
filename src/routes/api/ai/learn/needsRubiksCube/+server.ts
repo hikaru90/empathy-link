@@ -39,16 +39,22 @@ Antworte IMMER auf Deutsch und verwende nur Bedürfnisse aus der bereitgestellte
       config: {
         systemInstruction: systemPrompt,
         temperature: 0.3,
-        maxOutputTokens: 512,
+        maxOutputTokens: 4000,
       }
     });
 
     const prompt = `${instruction || 'Identifiziere die Bedürfnisse in diesem Satz'}: "${sentence}"`;
-    
+
+    console.log('Sending prompt to Gemini:', prompt);
     const result = await chat.sendMessage({ message: prompt });
+    console.log('Gemini result:', result);
+    console.log('Gemini result.text:', result.text);
+
     const response = result.text;
 
     if (!response) {
+      console.error('No text in Gemini response. Full result:', result);
+      console.error('Finish reason:', result.candidates?.[0]?.finishReason);
       throw new Error('No response from AI');
     }
 

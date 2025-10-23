@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       config: {
         systemInstruction: systemPrompt,
         temperature: 0.7,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 4000,
       }
     });
 

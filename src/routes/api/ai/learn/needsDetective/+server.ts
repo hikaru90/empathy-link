@@ -70,7 +70,7 @@ Erstelle eine einfühlsame Zusammenfassung dieser Selbstreflexion, die der Perso
       config: {
         systemInstruction: systemPrompt,
         temperature: 0.7,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 4000,
       }
     });
     
