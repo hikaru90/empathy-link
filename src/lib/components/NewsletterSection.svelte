@@ -76,14 +76,14 @@
 				</div>
 			{:else}
 				<form onsubmit={handleSubscribe} class="">
-					<div class="flex flex-col gap-4 md:flex-row items-center">
+					<div class="flex flex-col gap-4 md:flex-row items-start">
 						<Input
 							type="email"
 							bind:value={email}
 							placeholder="deine@email.de"
 							required
 							disabled={isLoading}
-							class="flex-1"
+							class="py-1"
 						/>
 						<button type="submit" disabled={isLoading || !email} class="whitespace-nowrap cursor-pointer">
 							{#if isLoading}

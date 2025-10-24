@@ -26,7 +26,7 @@
 	};
 </script>
 
-<div class="flex items-center justify-center py-20 bg-black/90">
+<div class="flex items-center justify-center py-20 bg-black/95">
 <a href="/app/auth/login" class="flex cursor-pointer text-lg">
 	<GradientImage
 		class="rounded-xl border border-black/5 bg-lilac font-bold text-black shadow-lg dark:shadow-gray-300/30"
@@ -49,14 +49,20 @@
 					KI-gestützten Coach lernst du, Konflikte friedlich zu lösen und tiefere Verbindungen zu
 					schaffen.
 				</p>
-				<div class="flex gap-4">
+				<!-- <div class="flex gap-4">
 					<a
 						href="mailto:contact@empathy-link.de"
 						class="text-gray-300 transition-colors hover:text-white"
 					>
 						contact@empathy-link.de
 					</a>
-				</div>
+				</div> -->
+				<p class="text-sm text-white/50 mb-4">
+					Gefördert von
+				</p>
+				<a href="https://nextmedia-hamburg.de/" target="_blank" title="Next Media Hamburg">
+					<img src="/nextMedia_Logo+Text_inverted.svg" alt="Next Media Logo" class="w-32 h-auto">
+				</a>
 			</div>
 
 			<!-- Navigation Links -->

@@ -5,6 +5,7 @@
 	import Briefcase from 'lucide-svelte/icons/briefcase';
 	import Check from 'lucide-svelte/icons/check';
 	import Send from 'lucide-svelte/icons/send';
+	import Loader2 from 'lucide-svelte/icons/loader-2';
 
 	let name = $state('');
 	let companyName = $state('');
@@ -102,7 +103,7 @@
 	const isFormValid = $derived(name && companyName && email && message);
 </script>
 
-<div class="bg-black/80 py-24 text-white">
+<div class="bg-black/90 py-24 text-white">
 	<div
 		use:checkVisibility
 		class="max-container translate-y-10 transform rounded-2xl opacity-0 transition-all duration-700 is-visible:translate-y-0 is-visible:opacity-100"
@@ -193,25 +194,26 @@
 						<button
 							type="submit"
 							disabled={isLoading || !isFormValid}
-							class="w-full cursor-pointer"
+							class="w-full cursor-pointer flex justify-start mt-4"
 						>
 							{#if isLoading}
 								<div
-									class="flex items-center justify-center gap-2 rounded-lg border border-black/10 bg-gray-400 px-6 py-3 text-black"
+									class="inline-flex items-center gap-2 bg-white/60 px-4 py-1.5 rounded-lg border border-black/10 text-black"
 								>
+									<Loader2 class="h-4 w-4 animate-spin" />
 									<span>Wird gesendet...</span>
 								</div>
 							{:else}
 								<div
-									class="flex items-center justify-center gap-2 rounded-lg border border-black/10 bg-green-400 px-6 py-3 text-black"
+									class="inline-flex items-center gap-2 bg-green-400 px-4 py-1.5 rounded-lg border border-black/10 text-black"
 								>
-									<Send class="h-5 w-5" />
+									<Send class="h-4 w-4" />
 									<span>Anfrage senden</span>
 								</div>
 							{/if}
 						</button>
 
-						<p class="text-center text-xs text-neutral-300">
+						<p class="text-left text-xs text-neutral-300">
 							Deine Daten werden vertraulich behandelt und nur für die Kontaktaufnahme verwendet.
 						</p>
 					</form>
